@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class MainController {
 
     @GetMapping("/{pageName}.do") //.do 해주세요
-    public String page(@PathVariable String pageName, Model model) {
-        model.addAttribute("pageName", pageName);
+    public String page(@PathVariable String pageName) {
         System.out.println("뷰이름:" + pageName);
 
-        return "view"; //언제나 view화면으로 이동합니다.
+        return "layout"; //언제나 view화면으로 이동합니다.
     }
 }

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/css/layout.css" />
+</head>
+<body>
+<div class="sidebar">
+    <h2>ERP Menu</h2>
+    <a href="#">Order</a>
+    <a href="#">Sales</a>
+    <a href="#">Product Code Manage</a>
+    <a href="#">Product Price Manage</a>
+    <a href="#">Buyer Manage</a>
+    <a href="#">Report</a>
+    <a href="#">Approval Authority Manage</a>
+</div>
+<div class="main-content">
+    <div class="header">
+        <div class="user-info">
+            <img src="https://via.placeholder.com/40" alt="User">
+            <div class="details">
+                <strong>홍길동님</strong>
+                <span>사업자명 : 2452342-342-34235</span>
+            </div>
+        </div>
+        <div class="header-buttons">
+            <button>로그아웃</button>
+            <i class="settings-icon">&#9881;</i> <!-- Unicode for gear icon -->
+            <i class="notification">&#128276;</i> <!-- Unicode for bell icon -->
+        </div>
+    </div>
+    <div id="root" class="content"></div>
+
+
+    <script th:src="@{'/bundle/' + ${pageName} + '.bundle.js'}"></script>
+</div>
+</body>
+</html>
