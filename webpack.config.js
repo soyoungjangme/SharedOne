@@ -7,6 +7,8 @@ module.exports = {
     entry: {
         main: './Main.js', //여러페이지 설정이 가능함
         user: './User.js',
+        login: './Login.js',
+        order: './Order.js',
 
 
     },
