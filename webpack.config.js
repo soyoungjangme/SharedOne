@@ -1,12 +1,10 @@
-var path = require('path');
+let path = require('path');
 const webpack = require('webpack');
 
 
 module.exports = {
     context: path.resolve(__dirname, 'src/main/react'),
     entry: {
-
-
         login: './login/Login.js', // 로그인
         user: './user/User.js', // 직원
         order: './order/Order.js', //주문
@@ -36,7 +34,13 @@ module.exports = {
         }, {
             test: /\.css$/,
             use: [ 'style-loader', 'css-loader' ]
-        } ]
+        }, {
+            test: /\.m?js/,
+            resolve: {
+                fullySpecified: false
+            }
+        }
+            ]
     },
 
     plugins: [
