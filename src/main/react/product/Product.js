@@ -1,23 +1,52 @@
 import React, { useState } from 'react';
 import ReactDOM from "react-dom/client";
+import axios from 'axios';
 import './Product.css'
 
 function Product() {
+    let [product, setProduct] = useState({
+        productNo: null,
+        productName: '',
+        productWriter: '',
+        productQty: 0,
+        productType: '',
+        productPrice: 0
+    });
+
+
+    let handleBtn = async () => {
+        let data = await fetch('/product/products').then(res => res.json());
+        console.log(JSON.stringify(data));
+        setProduct({ productNo: data.productNo,
+            productName: data.productName,
+            productWriter: data.productWriter,
+            productQty: data.productQty,
+            productType: data.productType,
+            productPrice: data.productPrice});
+    }
+
 
     return (
     <div>
+        <div>
+            <button type="button" onClick={handleBtn}>버튼</button>
+            <h1>productPrice:{product.productPrice}</h1>
+
+        </div>
 
 
-    <h1> <i className="bi bi-search"></i> 결재 리스트 </h1>
+
+
+    <h1> <i className="bi bi-search"></i>상품 관리</h1>
 
     <div className="breadcrumb">
     <a href="#">
     <span className="home-icon"></span>
     </a>
     <span className="separator"></span>
-    <a href="#">고객정보</a>
+    <a href="#">상품정보</a>
     <span class="separator"></span>
-    <a className="#">고객정보조회</a>
+    <a className="#">상품정보조회</a>
     </div>
 
 
@@ -117,26 +146,61 @@ function Product() {
     <tr>
     <td> <input type="checkbox"/></td>
     <td>1</td>
-    <td>삼국지</td>
-    <td>1234</td>
-    <td>반려됨</td>
-    <td>12345</td>
-    <td>123-45-67890</td>
-    <td>02-1234-5678</td>
-    <td><i className="bi bi-search"></i></td>
+    <td>A123</td>
+    <td>아기돼지삼형제</td>
+    <td>돼지</td>
+    <td>70</td>
+    <td>동화책</td>
+    <td>30,000</td>
+    <td>Y</td>
+    </tr>
+    <tr>
+    <td><input type="checkbox"/></td>
+    <td>3</td>
+    <td>C345</td>
+    <td>곰돌이 푸</td>
+    <td>밀너</td>
+    <td>60</td>
+    <td>동화책</td>
+    <td>28,000</td>
+    <td>N</td>
+    </tr>
+    <tr>
+    <td><input type="checkbox"/></td>
+    <td>4</td>
+    <td>D456</td>
+    <td>해리포터</td>
+    <td>롤링</td>
+    <td>40</td>
+    <td>소설</td>
+    <td>45,000</td>
+    <td>Y</td>
+    </tr>
+    <tr>
+    <td><input type="checkbox"/></td>
+    <td>5</td>
+    <td>E567</td>
+    <td>나의 라임오렌지나무</td>
+    <td>제이</td>
+    <td>30</td>
+    <td>소설</td>
+    <td>35,000</td>
+    <td>N</td>
+    </tr>
+    <tr>
+    <td><input type="checkbox"/></td>
+    <td>6</td>
+    <td>F678</td>
+    <td>어린 왕자</td>
+    <td>생텍쥐페리</td>
+    <td>80</td>
+    <td>동화책</td>
+    <td>20,000</td>
+    <td>Y</td>
     </tr>
 
-    <tr>
-    <td> <input type="checkbox"/></td>
-    <td>1</td>
-    <td>삼국지</td>
-    <td>1234</td>
-    <td>승인됨</td>
-    <td>12345</td>
-    <td>123-45-67890</td>
-    <td>02-1234-5678</td>
-    <td><i className="bi bi-search"></i></td>
-    </tr>
+
+
     </tbody>
     </table>
     </div>

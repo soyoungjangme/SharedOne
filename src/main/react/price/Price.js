@@ -9,7 +9,7 @@ function Price() {
 
     let handleBtn = async () => {
         let data = await fetch('/test/get').then(res => res.json());
-        console.log(data);
+        console.log(JSON.stringify(data));
         setUser({id:data.id, pw:data.pw});
     }
 
