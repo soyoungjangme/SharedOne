@@ -10,7 +10,7 @@
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
     "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-dom": "^18.3.1",
     "styled-components": "^6.1.13"
   },
   "devDependencies": {
@@ -28,7 +28,6 @@
     "watch": "node_modules\\.bin\\webpack --watch --devtool inline-source-map"
   },
   "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0"
+    "react": "^17.0.0 || ^18.0.0"
   }
 }
