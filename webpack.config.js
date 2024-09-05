@@ -9,6 +9,7 @@ module.exports = {
 
         login: './login/Login.js', // 로그인
         user: './user/User.js', // 직원
+        order: './order/Order.js' //주문
 
     },
     devtool: 'sourcemaps',
