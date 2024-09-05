@@ -1,4 +1,4 @@
-var path = require('path');
+let path = require('path');
 const webpack = require('webpack');
 
 
@@ -9,6 +9,7 @@ module.exports = {
 
         login: './login/Login.js', // 로그인
         user: './user/User.js', // 직원
+        price: './price/Price.js', // 직원
 
     },
     devtool: 'sourcemaps',
