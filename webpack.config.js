@@ -9,6 +9,7 @@ module.exports = {
 
         login: './login/Login.js', // 로그인
         user: './user/User.js', // 직원
+        order: './order/Order.js' //주문
         buyer: './buyer/Buyer.js' // 고객
         product: './product/Product.js' // 직원
         confirm: './confirm/Confirm.js', // 결재
