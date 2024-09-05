@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,35 +7,47 @@
     <link rel="stylesheet" type="text/css" href="/css/layout.css" />
 </head>
 <body>
-<div class="sidebar">
-    <h2>ERP Menu</h2>
-    <a href="#">Order</a>
-    <a href="#">Sales</a>
-    <a href="#">Product Code Manage</a>
-    <a href="#">Product Price Manage</a>
-    <a href="#">Buyer Manage</a>
-    <a href="#">Report</a>
-    <a href="#">Approval Authority Manage</a>
-</div>
-<div class="main-content">
-    <div class="header">
-        <div class="user-info">
-            <img src="https://via.placeholder.com/40" alt="User">
-            <div class="details">
-                <strong>홍길동님</strong>
-                <span>사업자명 : 2452342-342-34235</span>
+
+<div class='mainBox'>
+    <div class="sidebar">
+        <h2> LOGO </h2>
+
+        <a href="#"> 고객 관리 </a>
+        <a href="#"> 상품 관리 </a>
+        <a href="#"> 주문 관리 </a>
+        <a href="#"> 판매가 관리 </a>
+        <a href="#"> 결재 관리 </a>
+        <a href="#"> *직원/권한 관리 </a>
+    </div>
+
+    <div class="main-content">
+
+
+        <div class="top-nav">
+            <div class="user-profile">
+
+                <div class="user-profile-info">
+                    <div class="user-profile-box">
+
+                        <p>홍길동님 </p>
+                    </div>
+                    <button type="button" class="user-profile-button"> 로그아웃 </button>
+                </div>
+
             </div>
         </div>
-        <div class="header-buttons">
-            <button>로그아웃</button>
-            <i class="settings-icon">&#9881;</i> <!-- Unicode for gear icon -->
-            <i class="notification">&#128276;</i> <!-- Unicode for bell icon -->
-        </div>
+        <div id="root" class="content"></div>
     </div>
-    <div id="root" class="content"></div>
+
+
+
+</div>
+
 
 
     <script th:src="@{'/bundle/' + ${pageName} + '.bundle.js'}"></script>
+
+
 </div>
 </body>
 </html>
