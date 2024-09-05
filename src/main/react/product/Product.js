@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import ReactDOM from "react-dom/client";
-import './product.css'
+import './Product.css'
 
-function User() {
+function Product() {
 
     return (
     <div>
@@ -104,20 +104,13 @@ function User() {
     <tr>
     <th><input type="checkbox"/></th>
     <th> No.</th>
-    <th>고객 번호</th>
-    <th>업체명</th>
-    <th>업체주소</th>
-    <th>우편번호</th>
-    <th>사업자등록번호</th>
-    <th>업체 연락처</th>
-    <th>담당자명</th>
-    <th>부담당자명</th>
-    <th>담당자 이메일</th>
-    <th>담당자 번호</th>
-    <th>담당자 이메일</th>
-    <th>담당자 번호</th>
-    <th> 국가 </th>
-    <th>거래유형</th>
+    <th>상품코드</th>
+    <th>상품명</th>
+    <th>상품 저자</th>
+    <th>상품수량</th>
+    <th>상품종류</th>
+    <th>상품 원가</th>
+    <th>상품활성화</th>
     </tr>
     </thead>
     <tbody>
@@ -131,13 +124,6 @@ function User() {
     <td>123-45-67890</td>
     <td>02-1234-5678</td>
     <td><i className="bi bi-search"></i></td>
-    <td>이영희</td>
-    <td>kim@abc.com</td>
-    <td>010-1234-5678</td>
-    <td>lee@abc.com</td>
-    <td>010-8765-4321</td>
-    <td>대한민국</td>
-    <td>수출</td>
     </tr>
 
     <tr>
@@ -150,13 +136,6 @@ function User() {
     <td>123-45-67890</td>
     <td>02-1234-5678</td>
     <td><i className="bi bi-search"></i></td>
-    <td>이영희</td>
-    <td>kim@abc.com</td>
-    <td>010-1234-5678</td>
-    <td>lee@abc.com</td>
-    <td>010-8765-4321</td>
-    <td>대한민국</td>
-    <td>수출</td>
     </tr>
     </tbody>
     </table>
@@ -170,5 +149,5 @@ function User() {
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-<User />
+<Product />
 );
