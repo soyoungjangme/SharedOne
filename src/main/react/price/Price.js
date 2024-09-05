@@ -1,4 +1,4 @@
-// import axios from 'axios';
+import axios from 'axios';
 import React, {useState} from 'react';
 import ReactDOM from "react-dom/client";
 import './Price.css'
@@ -8,8 +8,10 @@ function Price() {
     let [user, setUser] = useState({id:0, pw:0});
 
     let handleBtn = async () => {
-        let data = await fetch('/test/get').then(res => res.json());
+        // let data = await fetch('/test/get').then(res => res.json());
+        let {data} = await axios.get('/test/get');
         console.log(data);
+
         setUser({id:data.id, pw:data.pw});
     }
 
