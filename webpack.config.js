@@ -9,6 +9,7 @@ module.exports = {
 
         login: './login/Login.js', // 로그인
         user: './user/User.js', // 직원
+        buyer: './buyer/Buyer.js' // 고객
 
     },
     devtool: 'sourcemaps',
@@ -40,4 +41,5 @@ module.exports = {
             process: 'process/browser',
         }),
     ],
+
 };
