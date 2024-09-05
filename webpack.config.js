@@ -5,11 +5,10 @@ const webpack = require('webpack');
 module.exports = {
     context: path.resolve(__dirname, 'src/main/react'),
     entry: {
-        main: './Main.js', //여러페이지 설정이 가능함
-        user: './User.js',
-        login: './Login.js',
-        order: './Order.js',
 
+
+        login: './login/Login.js', // 로그인
+        user: './user/User.js', // 직원
 
     },
     devtool: 'sourcemaps',
