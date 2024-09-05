@@ -26,10 +26,10 @@ public class DBTest1 {
         }
     }
 
-    @AfterEach
-    public void clear() {
-        for (int i = 1; i <= 10; i++) {
-            testRepository.deleteById(i);
-        }
-    }
+//    @AfterEach
+//    public void clear() {
+//        for (int i = 1; i <= 10; i++) {
+//            testRepository.deleteById(i);
+//        }
+//    }
 }
