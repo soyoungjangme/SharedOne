@@ -8,7 +8,7 @@ function Buyer() {
         <div>
 
 
-            <h1> <i className="bi bi-search"></i> 고객 리스트 </h1>
+            <h1> <i className="bi bi-search"></i> 고객 리스트 </h1> 
 
             <div className="breadcrumb">
                 <a href="#">
@@ -122,6 +122,7 @@ function Buyer() {
                     </thead>
                     <tbody>
                         <tr>
+                            
                             <td> <input type="checkbox" /></td>
                             <td>1</td>
                             <td>삼국지</td>
