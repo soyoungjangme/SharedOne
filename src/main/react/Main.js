@@ -11,8 +11,13 @@ function Main() {
 
     )
 }
+
 //페이지 root가 되는 JS는 root에 삽입되도록 처리
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <Main />
 );
+
+
+
+
