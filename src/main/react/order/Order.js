@@ -12,18 +12,6 @@ function Order() {
 
         <h1> <i className="bi bi-search"></i> 주문 리스트 </h1>
 
-        <div className="breadcrumb">
-            <a href="#">
-                <span className="home-icon"></span>
-            </a>
-            <span className="separator"></span>
-            <a href="#">주문 정보</a>
-            <span class="separator"></span>
-            <a className="#">주문 정보 조회</a>
-        </div>
-
-
-
         <div className="main-container">
             <div className="filter-container">
 
