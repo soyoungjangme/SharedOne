@@ -348,3 +348,12 @@ tr:nth-child(0) {
     height: 100%;
     align-items: center;
 }
+/*.search-table {*/
+/*    position: relative;*/
+/*}*/
+.delete-btn {
+    width: 65px;
+    height: 25px;
+    position: absolute;
+    top: 635px;
+}
