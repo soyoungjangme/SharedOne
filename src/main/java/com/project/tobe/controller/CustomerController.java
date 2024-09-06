@@ -32,5 +32,4 @@ public class CustomerController {
         return customerRepository.findById(1L).orElse(null);
     }
 
-
 }

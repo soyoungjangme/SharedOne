@@ -5,8 +5,21 @@ import axios from 'axios';
 
 function Buyer() {
 
+    //데이터 초기값
     let [customer, setCustomer] = useState({
-        customerName: 333
+        customerNo: 333, //고객번호
+        customerName: "bana", //고객명
+        customerAddr: "good", //고객주소
+        customerTel: "010-1234-1234", //고객 연락처
+        postNum: "12345", //우편번호
+        businessRegistraionNo: "1212-2424", //사업자 등록 번호
+        nation: "한국", //국가
+        dealType: "거래", //거래 유형
+
+        picName: "픽네임", //담당자명
+        picEmail: "123", //담당자 이메일
+        picTel: "3252", //담당자 연락처
+        activated: "Y" //활성화
     });
 
     let handleBtn = async () => {
@@ -22,8 +35,7 @@ function Buyer() {
 
             <div>
 
-                <button type="button" onClick={handleBtn}>test</button>
-                <h1>{customer.customerName}</h1>
+                <button type="button" onClick={handleBtn}>버튼 test</button>
 
 
             </div>
@@ -115,7 +127,7 @@ function Buyer() {
                     </div>
 
 
-                    <button className="filter-button">조회</button>
+                    <button className="filter-button" onClick={handleBtn}>조회</button>
                 </div>
 
 
@@ -123,42 +135,37 @@ function Buyer() {
                     <thead>
                         <tr>
                             <th><input type="checkbox" /></th>
-                            <th> No.</th>
                             <th>고객 번호</th>
-                            <th>업체명</th>
-                            <th>업체주소</th>
+                            <th>고객명</th>
+                            <th>고객 주소</th>
+                            <th>고객 연락처</th>
                             <th>우편번호</th>
-                            <th>사업자등록번호</th>
-                            <th>업체 연락처</th>
-                            <th>담당자명</th>
-                            <th>부담당자명</th>
-                            <th>담당자 이메일</th>
-                            <th>담당자 번호</th>
-                            <th>담당자 이메일</th>
-                            <th>담당자 번호</th>
-                            <th> 국가 </th>
+                            <th>사업자 등록 번호</th>
+                            <th>국가</th>
                             <th>거래유형</th>
+                            <th>담당자명</th>
+                            <th>담당자 이메일</th>
+                            <th>담당자 연락처</th>
+                            <th>활성화</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         <tr>
 
                             <td> <input type="checkbox" /></td>
-                            <td>1</td>
-                            <td>삼국지</td>
-                            <td>1234</td>
-                            <td>반려됨</td>
-                            <td>12345</td>
-                            <td>123-45-67890</td>
-                            <td>02-1234-5678</td>
-                            <td><i className="bi bi-search"></i></td>
-                            <td>이영희</td>
-                            <td>kim@abc.com</td>
-                            <td>010-1234-5678</td>
-                            <td>lee@abc.com</td>
-                            <td>010-8765-4321</td>
-                            <td>대한민국</td>
-                            <td>수출</td>
+                            <td>{customer.customerNo}</td>
+                            <td>{customer.customerName}</td>
+                            <td>{customer.customerAddr}</td>
+                            <td>{customer.customerTel}</td>
+                            <td>{customer.postNum}</td>
+                            <td>{customer.businessRegistraionNo}</td>
+                            <td>{customer.nation}</td>
+                            <td><i className="bi bi-search">{customer.dealType}</i></td>
+                            <td>{customer.picName}</td>
+                            <td>{customer.picEmail}</td>
+                            <td>{customer.picTel}</td>
+                            <td>{customer.activated}</td>
                         </tr>
 
                         <tr>
@@ -173,11 +180,8 @@ function Buyer() {
                             <td><i className="bi bi-search"></i></td>
                             <td>이영희</td>
                             <td>kim@abc.com</td>
-                            <td>010-1234-5678</td>
                             <td>lee@abc.com</td>
                             <td>010-8765-4321</td>
-                            <td>대한민국</td>
-                            <td>수출</td>
                         </tr>
 
                     </tbody>
