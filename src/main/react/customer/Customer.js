@@ -1,32 +1,69 @@
 import React, { useState } from 'react'; //어느 컴포넌트이든 React임포트가 필요합니다.
 import ReactDOM from 'react-dom/client'; //root에 리액트 돔방식으로 렌더링시 필요합니다.
-import './buyer.css' //css파일 임포트
+import './Customer.css' //css파일 임포트
 import axios from 'axios';
 
-function Buyer() {
+function Customer() {
 
-    //데이터 초기값
-    let [customer, setCustomer] = useState({
-        customerNo: 333, //고객번호
-        customerName: "bana", //고객명
-        customerAddr: "good", //고객주소
-        customerTel: "010-1234-1234", //고객 연락처
-        postNum: "12345", //우편번호
-        businessRegistraionNo: "1212-2424", //사업자 등록 번호
-        nation: "한국", //국가
-        dealType: "거래", //거래 유형
+    //데이터 초기값, 배열로
+    let [customer, setCustomer] = useState([
+        {
+            customerNo: 333, //고객번호
+            customerName: "bana", //고객명
+            customerAddr: "good", //고객주소
+            customerTel: "010-1234-1234", //고객 연락처
+            postNum: "12345", //우편번호
+            businessRegistrationNo: "1212-2424", //사업자 등록 번호
+            nation: "한국", //국가
+            dealType: "거래", //거래 유형
+            picName: "픽네임", //담당자명
+            picEmail: "123", //담당자 이메일
+            picTel: "3252", //담당자 연락처
+            activated: "Y" //활성화
+        }
+    ]);
 
-        picName: "픽네임", //담당자명
-        picEmail: "123", //담당자 이메일
-        picTel: "3252", //담당자 연락처
-        activated: "Y" //활성화
-    });
+    //단일 객체로
+    // let [customer, setCustomer] = useState({
+    //     customerNo: 333, //고객번호
+    //     customerName: "bana", //고객명
+    //     customerAddr: "good", //고객주소
+    //     customerTel: "010-1234-1234", //고객 연락처
+    //     postNum: "12345", //우편번호
+    //     businessRegistrationNo: "1212-2424", //사업자 등록 번호
+    //     nation: "한국", //국가
+    //     dealType: "거래", //거래 유형
+    //     picName: "픽네임", //담당자명
+    //     picEmail: "123", //담당자 이메일
+    //     picTel: "3252", //담당자 연락처
+    //     activated: "Y" //활성화
+    // });
 
     let handleBtn = async () => {
-         let data = await fetch('/Customer_test/customer').then(res => res.json());
-        console.log(data);
-        console.log(customer.customerName);
-        setCustomer(data);
+     try {
+            let response = await fetch('/Customer_test/customer');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
+            let data = await response.json();
+            console.log("전체 데이터!", data);
+            
+            // 서버 응답이 단일 객체인 경우, 배열로 변환
+            if (data && typeof data === 'object' && !Array.isArray(data)) {
+                setCustomer([data]); // 단일 객체를 배열로 감싸서 상태 업데이트
+            } else if (Array.isArray(data)) {
+                setCustomer(data);
+            } else {
+                console.error("데이터 형식이 올바르지 않습니다:", data);
+                setCustomer([]); // 빈 배열로 초기화
+            }
+        } catch (error) {
+            console.error("데이터 요청 중 오류 발생:", error);
+            setCustomer([]); // 빈 배열로 초기화
+        }
+
     }
 
 
@@ -133,6 +170,7 @@ function Buyer() {
 
                 <table className="seacrh-table">
                     <thead>
+
                         <tr>
                             <th><input type="checkbox" /></th>
                             <th>고객 번호</th>
@@ -148,25 +186,34 @@ function Buyer() {
                             <th>담당자 연락처</th>
                             <th>활성화</th>
                         </tr>
+
                     </thead>
 
                     <tbody>
-                        <tr>
 
-                            <td> <input type="checkbox" /></td>
-                            <td>{customer.customerNo}</td>
-                            <td>{customer.customerName}</td>
-                            <td>{customer.customerAddr}</td>
-                            <td>{customer.customerTel}</td>
-                            <td>{customer.postNum}</td>
-                            <td>{customer.businessRegistraionNo}</td>
-                            <td>{customer.nation}</td>
-                            <td><i className="bi bi-search">{customer.dealType}</i></td>
-                            <td>{customer.picName}</td>
-                            <td>{customer.picEmail}</td>
-                            <td>{customer.picTel}</td>
-                            <td>{customer.activated}</td>
-                        </tr>
+
+                        {customer.length === 0 ? (
+                            <tr><td colSpan="13">데이터가 없습니다</td></tr>
+                        ) : (
+                            customer.map((customer, index) => (
+                                <tr key={customer.customerNo}>
+                                    <td> <input type="checkbox" /></td>
+                                    <td>{customer.customerNo}</td>
+                                    <td>{customer.customerName}</td>
+                                    <td>{customer.customerAddr}</td>
+                                    <td>{customer.customerTel}</td>
+                                    <td>{customer.postNum}</td>
+                                    <td>{customer.businessRegistrationNo}</td>
+                                    <td>{customer.nation}</td>
+                                    <td><i className="bi bi-search">{customer.dealType}</i></td>
+                                    <td>{customer.picName}</td>
+                                    <td>{customer.picEmail}</td>
+                                    <td>{customer.picTel}</td>
+                                    <td>{customer.activated}</td>
+                                </tr>
+                            ))
+                        )}
+
 
                         <tr>
                             <td> <input type="checkbox" /></td>
@@ -201,7 +248,7 @@ function Buyer() {
 //페이지 root가 되는 JS는 root에 삽입되도록 처리
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <Buyer />
+    <Customer />
 );
 
 

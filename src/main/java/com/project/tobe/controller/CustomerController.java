@@ -20,13 +20,6 @@ public class CustomerController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    @GetMapping("/{pageName}.mo") //
-    public String page(@PathVariable String pageName, Model model) {
-        model.addAttribute("pageName", pageName);
-        System.out.println("view 이름 : " + pageName);
-        return "test"; // test.html로
-    }
-
     @GetMapping("/customer")
     public Customer getData() {
         return customerRepository.findById(1L).orElse(null);
