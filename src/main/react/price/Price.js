@@ -209,7 +209,7 @@ function Price() {
                     </tr>
                     </thead>
                     <tbody>
-                    {/*{newList}*/}
+                    {newList}
                     </tbody>
                 </table>
             </div>
