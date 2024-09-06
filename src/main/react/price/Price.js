@@ -1,4 +1,4 @@
-// import axios from 'axios';
+import axios from 'axios';
 import React, {useState} from 'react';
 import ReactDOM from "react-dom/client";
 import './Price.css';
@@ -120,8 +120,8 @@ function Price() {
     // console.log(priceDataSortedByInt);
 
     let newList = priceData.map((item, index) => {
-        return <tr key={index} className={checkItem[item.id] ? 'selected-row' : ''}>
-            <td><input type="checkbox" checked={checkItem[item.id] || false}
+        return <tr key={index} className={checkItem[index] ? 'selected-row' : ''}>
+            <td><input type="checkbox" checked={checkItem[index+1] || false}
                        onChange={handleCheckboxChange}/></td>
             <td>{index + 1}</td>
             <td>{item.registerDate}</td>
@@ -136,7 +136,17 @@ function Price() {
     });
 
     const handleSearchBtn = async () => {
-        let searchData = await axios.post('/price/')
+        let {data} = await axios.post('/price/search',JSON.stringify({customerNo: "11", registerDate: new Date(),
+            startDate: "2024-09-09", endDate: "2024-11-11"
+        }), {
+            headers: {
+                'content-type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then((res) => {
+            console.log(res)})
+            .catch((e) => {
+                console.log(e)});
     }
 
     return (
@@ -181,7 +191,7 @@ function Price() {
                     <button className="filter-button" onClick={handleSearchBtn}>조회</button>
                 </div>
 
-                <div style={{width: "100%", alignItems: "center", backgroundColor: "#fcfcfc"}}>
+                <div style={{width: "100%", alignItems: "center", backgroundColor: "#fcfcfc", marginBottom: "50px"}}>
                     <div className="chart-container">
                         <div className="chart-header">
                             <h3>분기별 매출 예측</h3>
@@ -192,7 +202,7 @@ function Price() {
                     </div>
                 </div>
 
-                <table className="seacrh-table">
+                <table className="seacrh-table" style={{marginTop:"50px"}}>
                     {showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}
                     <thead>
                     <tr>
