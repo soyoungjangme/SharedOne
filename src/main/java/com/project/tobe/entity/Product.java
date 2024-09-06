@@ -24,8 +24,13 @@ public class Product {
     private Long productNo;
     private String productName;
     private String productWriter;
+    private String productCategory;
     private Long productQty;
     private String productType;
     private Long productPrice;
+    private Character productYn;
 }
+
+
+
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -17,7 +18,7 @@ public class ProductController {
     private  ProductRepository productRepository;
 
     @GetMapping("/products")
-    public Product getProducts() {
-        return productRepository.findById(20).orElse(null);
+    public List<Product> getProducts() {
+        return productRepository.findAll();
     }
 }
