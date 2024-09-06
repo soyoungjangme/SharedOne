@@ -26,6 +26,17 @@ body {
   padding: 20px;
   padding-left: 35px;
 }
+
+.sidebar .bi-house-door-fill {
+  /*부트스트랩 아이콘 home 모양*/
+  font-size: 30px;
+  line-height: 30px;
+}
+
+.sidebar .bi-house-door-fill:hover {
+  cursor: pointer;
+}
+
 .sidebar h2 {
   margin: 0;
   margin-bottom: 20px;
@@ -43,42 +54,64 @@ body {
 
 
 
+/* home 아이콘 때문에 아래부터 다 건드림 */
 .top-nav {
   border-bottom: 1px solid #ddd;
   background-color: #f3f3f3;
   height: 80px;
-}
-
-.user-profile {
-  margin-top: 10px;
-  float: right;
-  width: 300px;
-  height: 100%;
-
-}
-
-
-.user-profile-box {
   display: flex;
-  align-items: center
+  align-items: center;
+  padding: 0 20px;
+  justify-content: space-between;
 }
 
-.user-profile-button{
-  padding: 10px 16px;
-  border: 1px solid #004e90;
-  background-color: #004e90;
-  color: white;
-  font-size: 16px;
-  border-radius: 2px;
+/* 아이콘 감싼 박스 */
+.icon-box {
+  width: 32px;
+}
+
+/* 홈 아이콘 크기 */
+.icon-box > .home-icon {
+  font-size: 32px;
   cursor: pointer;
 }
 
-.user-profile-info {
+.user-profile {
+  width: 300px;
+  display: flex;
   align-items: center;
+  justify-content: flex-end;
+}
+
+.user-profile-button {
+  border: 1px solid #004e90;
+  background-color: #004e90;
+  color: white;
+  font-size: 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  margin-left: 10px; /* 버튼 간의 간격 */
+}
+
+/* 마이 페이지 버튼 새로 생성함*/
+.user-mypage-button {
+  width: 80px;
+  height: 25px;
+  background-color: #f3f3f3;
+  color: #004e90;
+}
+
+/* 로그아웃 버튼도 덩달아 수정함 */
+.user-logout-button {
+  width: 80px;
+  height: 25px;
+}
+
+.user-profile-info {
   font-size: 18px;
   font-weight: bold;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   padding-left: 10px;
   padding-right: 10px;
 }
