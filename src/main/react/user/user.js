@@ -64,19 +64,6 @@ useEffect( () => {
 
 
     <h1> <i className="bi bi-search"></i> 결재 리스트 </h1>
-
-    <div className="breadcrumb">
-        <a href="#">
-            <span className="home-icon"></span>
-        </a>
-        <span className="separator"></span>
-        <a href="#">고객정보</a>
-        <span class="separator"></span>
-        <a className="#">고객정보조회</a>
-    </div>
-
-
-
     <div className="main-container">
         <div className="filter-container">
 
