@@ -1,14 +1,34 @@
-import React from 'react'; //어느 컴포넌트이든 React임포트가 필요합니다.
+import React, { useState } from 'react'; //어느 컴포넌트이든 React임포트가 필요합니다.
 import ReactDOM from 'react-dom/client'; //root에 리액트 돔방식으로 렌더링시 필요합니다.
-import './Buyer.css' //css파일 임포트
+import './buyer.css' //css파일 임포트
+import axios from 'axios';
 
 function Buyer() {
+
+    let [customer, setCustomer] = useState({
+        customerName: 333
+    });
+
+    let handleBtn = async () => {
+         let data = await fetch('/Customer_test/customer').then(res => res.json());
+        console.log(data);
+        console.log(customer.customerName);
+        setCustomer(data);
+    }
+
 
     return (
         <div>
 
+            <div>
 
-            <h1> <i className="bi bi-search"></i> 고객 리스트 </h1> 
+                <button type="button" onClick={handleBtn}>test</button>
+                <h1>{customer.customerName}</h1>
+
+
+            </div>
+
+            <h1> <i className="bi bi-search"></i> 고객 리스트 </h1>
 
             <div className="breadcrumb">
                 <a href="#">
@@ -122,7 +142,7 @@ function Buyer() {
                     </thead>
                     <tbody>
                         <tr>
-                            
+
                             <td> <input type="checkbox" /></td>
                             <td>1</td>
                             <td>삼국지</td>
