@@ -2,18 +2,19 @@
   border : 1px solid red;
   color : red;
 }
-
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-
+  height: 100%;
+  width: 100%;
   }
 
   .mainBox {
     margin: 0;
     padding: 0;
     display: flex;
+    height: 100%;
   }
 
 .sidebar {
@@ -25,6 +26,10 @@ body {
   flex-direction: column;
   padding: 20px;
   padding-left: 35px;
+
+  position: relative;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 .sidebar h2 {
   margin: 0;
@@ -96,4 +101,8 @@ body {
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
+}
+#root {
+  margin-left:50px;
+  margin-top:20px;
 }
