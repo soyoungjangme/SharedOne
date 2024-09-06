@@ -1,43 +1,44 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import ReactDOM from "react-dom/client";
-import './Confirm.css'
+import './Confirm.css';
 
 function Confirm() {
 
     /*li 태그로 불러오기 연습*/
     let [confirmList, setConfirmList] = useState([]);
     const handleClick = async () => {
-        let response = await fetch ('/confirm/get?allId=1,2,3');
+        let response = await fetch('/confirm/get?allId=1,2,3');
         let data = await response.json();
 
         if (Array.isArray(data)) {
             setConfirmList(data);
         }
-    }
+    };
 
     return (
         <div>
             <div>
                 {confirmList.map(item => (
-                    <li key={item.confirmNo}>결재 번호: {item.confirmNo} | 결재 여부: {item.confirmStatus} | 결재 제목: {item.confirmTitle} | 결재 내용 : {item.confirmContent} | 결재 요청일 : {item.confirmRegDate}</li>
+                    <li key={item.confirmNo}>결재 번호: {item.confirmNo} | 결재 여부: {item.confirmStatus} | 결재
+                        제목: {item.confirmTitle} | 결재 내용 : {item.confirmContent} | 결재 요청일 : {item.confirmRegDate}</li>
                 ))}
             </div>
 
             <h1> 결재 리스트 </h1>
 
-         <div className="main-container">
+            <div className="main-container">
                 <div className="filter-container">
-    <div className="main-container">
-        <div className="filter-container">
 
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="customerName">고객명</label>
-                        <input className="filter-input" type="text" id="customerName" placeholder="고객명" required/>
+                        <input className="filter-input" type="text" id="customerName" placeholder="고객명"
+                               required/>
                     </div>
 
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="employeeName">담당자</label>
-                        <input className="filter-input" type="text" id="employeeName" placeholder="담당자" required/>
+                        <input className="filter-input" type="text" id="employeeName" placeholder="담당자"
+                               required/>
                     </div>
 
                     <div className="filter-row">
@@ -146,7 +147,6 @@ function Confirm() {
             </div>
 
         </div>
-
     );
 }
 
