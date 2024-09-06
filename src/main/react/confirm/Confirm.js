@@ -25,16 +25,10 @@ function Confirm() {
 
             <h1> 결재 리스트 </h1>
 
-            <div className="breadcrumb">
-                <a href="#">
-                    <span className="home-icon"></span>
-                </a>
-                <span className="separator"></span>
-                <a href="#">고객 조회</a>
-            </div>
-
-            <div className="main-container">
+         <div className="main-container">
                 <div className="filter-container">
+    <div className="main-container">
+        <div className="filter-container">
 
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="customerName">고객명</label>

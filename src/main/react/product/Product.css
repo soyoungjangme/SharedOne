@@ -134,6 +134,7 @@ body {
     border-collapse: collapse;
     font-size: 0.8rem;
     margin-top: 50px;
+    position: relative;
 }
 .seacrh-table, th, td {
     border: 1px solid #ddd;
@@ -146,7 +147,6 @@ body {
 .seacrh-table tr:hover{
     background-color: rgba(200, 230, 255, 0.366);
 }
-
 
 
 tr:nth-child(0){
@@ -316,4 +316,17 @@ tr:nth-child(0){
     background-size: contain;
     display: inline-block;
     margin-right: 5px;
+}
+
+
+.selected-row {
+    background-color: rgba(200, 230, 255, 0.366);
+}
+
+.delete-btn {
+    width: 65px;
+    height: 25px;
+    position: absolute;
+    top: -35px;
+
 }

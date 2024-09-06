@@ -1,4 +1,4 @@
-var path = require('path');
+let path = require('path');
 const webpack = require('webpack');
 
 
@@ -35,7 +35,14 @@ module.exports = {
         }, {
             test: /\.css$/,
             use: [ 'style-loader', 'css-loader' ]
-        } ]
+        },
+            {
+            test: /\.m?js/,
+            resolve: {
+                fullySpecified: false
+            }
+        }
+            ]
     },
 
     plugins: [
