@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.tobe.order.OrderMapper">
+    <insert id="insert" parameterType="com.project.tobe.entity.OrderH">
+        INSERT INTO ORDER_HEADER (ORDER_NO, REG_DATE, DEL_DATE, CUSTOMER_NO)
+        VALUES (#{orderNo}, #{regDate}, #{delDate}, #{customerNo})
+    </insert>
+</mapper>
