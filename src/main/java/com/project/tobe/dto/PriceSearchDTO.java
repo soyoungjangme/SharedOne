@@ -12,8 +12,8 @@ import java.time.LocalDate;
 @Builder
 public class PriceSearchDTO {
     private Timestamp registerDate;
-    private Long productNo;
-    private Long customerNo;
+    private String productNo;
+    private String customerNo;
     private LocalDate startDate;
     private LocalDate endDate;
 }

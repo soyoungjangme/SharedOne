@@ -1,5 +1,5 @@
-// import axios from 'axios';
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, {useState} from 'react';
 import ReactDOM from "react-dom/client";
 import './Price.css';
 import useCheckboxManager from "../js/CheckboxManager";
@@ -97,32 +97,32 @@ function Price() {
     };
 
     const priceData = [
-        { registerDate: '2021-01-01T00:00:00.000Z', productNo: 1, customerNo: 1, customPrice: 1000, currency: '$', discount: 1, startDate: '2021-01-01', endDate: '2021-01-01' },
-        { registerDate: '2021-01-02T00:00:00.000Z', productNo: 2, customerNo: 2, customPrice: 2000, currency: '￦', discount: 2, startDate: '2021-01-02', endDate: '2021-01-02' },
-        { registerDate: '2021-01-03T00:00:00.000Z', productNo: 3, customerNo: 3, customPrice: 3000, currency: '$', discount: 3, startDate: '2021-01-03', endDate: '2021-01-03' },
-        { registerDate: '2021-01-04T00:00:00.000Z', productNo: 4, customerNo: 4, customPrice: 4000, currency: '￦', discount: 4, startDate: '2021-01-04', endDate: '2021-01-04' },
-        { registerDate: '2021-01-05T00:00:00.000Z', productNo: 5, customerNo: 5, customPrice: 5000, currency: '$', discount: 5, startDate: '2021-01-05', endDate: '2021-01-05' }
+        {registerDate : '2021-01-01T00:00:00.000Z', productNo : 1, customerNo : 1, customPrice : 1000, currency : '$', discount : 1, startDate : '2021-01-01', endDate : '2021-01-01'},
+        {registerDate : '2021-01-02T00:00:00.000Z', productNo : 2, customerNo : 2, customPrice : 2000, currency : '￦', discount : 2, startDate : '2021-01-02', endDate : '2021-01-02'},
+        {registerDate : '2021-01-03T00:00:00.000Z', productNo : 3, customerNo : 3, customPrice : 3000, currency : '$', discount : 3, startDate : '2021-01-03', endDate : '2021-01-03'},
+        {registerDate : '2021-01-04T00:00:00.000Z', productNo : 4, customerNo : 4, customPrice : 4000, currency : '￦', discount : 4, startDate : '2021-01-04', endDate : '2021-01-04'},
+        {registerDate : '2021-01-05T00:00:00.000Z', productNo : 5, customerNo : 5, customPrice : 5000, currency : '$', discount : 5, startDate : '2021-01-05', endDate : '2021-01-05'}
     ];
 
-    let priceDataSortedByProductNo = priceData.toSorted((a, b) => b.productNo - a.productNo);
+    let priceDataSortedByProductNo = priceData.toSorted((a,b) => b.productNo - a.productNo);
     // console.log(priceDataSortedByProductNo);
 
-    let priceDataSortedByCurrency = priceData.toSorted((a, b) => {
+    let priceDataSortedByCurrency = priceData.toSorted((a,b) => {
         if (a.currency > b.currency) return 1;
         else return -1;
     });
     // console.log(priceDataSortedByCurrency);
 
-    let priceDataSortedByInt = priceData.toSorted((a, b) => {
+    let priceDataSortedByInt = priceData.toSorted((a,b) => {
         if (a.customerNo < b.customerNo) return 1;
         else return -1;
     });
     // console.log(priceDataSortedByInt);
 
     let newList = priceData.map((item, index) => {
-        return <tr key={index} className={checkItem[item.id] ? 'selected-row' : ''}>
-            <td><input type="checkbox" checked={checkItem[item.id] || false}
-                onChange={handleCheckboxChange} /></td>
+        return <tr key={index} className={checkItem[index] ? 'selected-row' : ''}>
+            <td><input type="checkbox" checked={checkItem[index+1] || false}
+                       onChange={handleCheckboxChange}/></td>
             <td>{index + 1}</td>
             <td>{item.registerDate}</td>
             <td>{item.productNo}</td>
@@ -136,7 +136,17 @@ function Price() {
     });
 
     const handleSearchBtn = async () => {
-        let searchData = await axios.post('/price/')
+        let {data} = await axios.post('/price/search',JSON.stringify({customerNo: "11", registerDate: new Date(),
+            startDate: "2024-09-09", endDate: "2024-11-11"
+        }), {
+            headers: {
+                'content-type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then((res) => {
+            console.log(res)})
+            .catch((e) => {
+                console.log(e)});
     }
 
     return (
@@ -155,69 +165,72 @@ function Price() {
 
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="date">등록일자</label>
-                        <input className="filter-input" type="date" id="date" required />
+                        <input className="filter-input" type="date" id="date" required/>
                     </div>
 
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="manager">상품</label>
-                        <input className="filter-input" type="text" id="manager" placeholder="담당자" required />
+                        <input className="filter-input" type="text" id="manager" placeholder="담당자" required/>
                     </div>
 
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="warehouse">고객</label>
-                        <input className="filter-input" type="text" id="warehouse" placeholder="출하창고" required />
+                        <input className="filter-input" type="text" id="warehouse" placeholder="출하창고" required/>
                     </div>
 
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="date">시작일자</label>
-                        <input className="filter-input" type="date" id="date" required />
+                        <input className="filter-input" type="date" id="date" required/>
                     </div>
 
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="date">종료일자</label>
-                        <input className="filter-input" type="date" id="date" required />
+                        <input className="filter-input" type="date" id="date" required/>
                     </div>
 
                     <button className="filter-button" onClick={handleSearchBtn}>조회</button>
                 </div>
 
-                <div style={{ width: "100%", alignItems: "center", backgroundColor: "#fcfcfc" }}>
+                <div style={{width: "100%", alignItems: "center", backgroundColor: "#fcfcfc", marginBottom: "50px"}}>
                     <div className="chart-container">
                         <div className="chart-header">
                             <h3>분기별 매출 예측</h3>
                             <button>데이터 업데이트</button>
                         </div>
                         {/*<div className="canvas"><Bar data={data} options={options} /></div>*/}
-                        <Bar data={data} options={options} className="canvas" />
+                        <Bar data={data} options={options}  className="canvas"/>
                     </div>
                 </div>
 
-                <table className="seacrh-table">
+                <table className="seacrh-table" style={{marginTop:"50px"}}>
                     {showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}
                     <thead>
-                        <tr>
-                            <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange} /></th>
-                            <th> No.</th>
-                            <th> 등록일</th>
-                            <th> 상품명</th>
-                            <th> 업체명</th>
-                            <th> 가격</th>
-                            <th> 통화</th>
-                            <th> 할인율(%)</th>
-                            <th> 시작일</th>
-                            <th> 종료일</th>
-                        </tr>
+                    <tr>
+                        <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange}/></th>
+                        <th> No.</th>
+                        <th> 등록일</th>
+                        <th> 상품명</th>
+                        <th> 업체명</th>
+                        <th> 가격</th>
+                        <th> 통화</th>
+                        <th> 할인율(%)</th>
+                        <th> 시작일</th>
+                        <th> 종료일</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {/*{newList}*/}
+                    {newList}
                     </tbody>
                 </table>
             </div>
+
+
         </div>
+
     );
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <Price />
+    <Price/>
 );
