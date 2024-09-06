@@ -6,13 +6,16 @@ import useCheckboxManager from "../js/CheckboxManager";
 
 
 function User() {
-    const {  allCheck,
-                   checkItem,
-                   showDelete,
-                   handleMasterCheckboxChange,
-                   handleCheckboxChange,
-                   handleDelete
-    } = useCheckboxManager();
+
+    const {
+        allCheck,
+        checkItem,
+        showDelete,
+        handleMasterCheckboxChange,
+        handleCheckboxChange,
+        handleDelete
+    } = useCheckboxManager(setOrder);
+
 
 // --- 테이블 정렬 기능
 
@@ -210,7 +213,7 @@ useEffect( () => {
       <button  className="filter-button" id="add" type="button" onClick={handleAddClick}>
         직원 등록
       </button>
-        {/*{showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}*/}
+        {showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}
            <table className="search-table">
 
                       <thead>
@@ -256,11 +259,11 @@ useEffect( () => {
                       </thead>
 
                       <tbody>
-                        {order.map((item, rowIndex) => (
-                                               <tr key={rowIndex} className={checkItem[rowIndex] ? 'selected-row' : ''}>
-                                                   <td><input type="checkbox" checked={checkItem[rowIndex] || false}
+                        {order.map((item, index) => (
+                                               <tr key={index} className={checkItem[index + 1] ? 'selected-row' : ''}>
+                                                   <td><input type="checkbox" checked={checkItem[index + 1 ] || false}
                                                                               onChange={handleCheckboxChange}/></td>
-                                                   <td> {rowIndex + 1} </td>
+                                                   <td> {index + 1 }  </td>
                                                    <td>{item.employeeId} </td>
                                                    <td>{item.employeePw} </td>
                                                    <td>{item.employeeName} </td>
@@ -281,7 +284,7 @@ useEffect( () => {
 
 
 
-//  여기 아래는 모달이다.
+{/* 여기 아래는 모달이다. */}
 
 
       {isVisible && (
