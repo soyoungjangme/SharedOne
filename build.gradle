@@ -2,6 +2,11 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.18'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10' //2. 쿼리DSL 버전
+}
+
+ext {
+	queryDslVersion = '5.0.0' // 원하는 Querydsl 버전을 입력하세요.
 }
 
 group = 'com.project'
@@ -40,12 +45,31 @@ dependencies {
 
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0' //마이바티스
 
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
 	// 2022.10.28[프뚜]: postgreSQL
 	implementation 'org.postgresql:postgresql:42.7.2'
 
 // 2022.10.28[프뚜]: log4jdbc-log4j2
 	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+}
+def querydslDir = "$buildDir/generated/querydsl"
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+sourceSets {
+	main.java.srcDir querydslDir
+}
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	querydsl.extendsFrom compileClasspath
+}
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
 }
 
 tasks.named('test') {

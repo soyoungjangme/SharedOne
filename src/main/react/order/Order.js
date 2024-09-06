@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from "react-dom/client";
-import './Order.css';
+import './Order.css'
 
 function Order() {
     // 주문 데이터를 저장하는 상태
@@ -73,6 +73,8 @@ function Order() {
 
     return (
     <div>
+
+
         <h1> <i className="bi bi-search"></i> 주문 리스트 </h1>
 
         <div>
@@ -95,24 +97,25 @@ function Order() {
 
         <div className="main-container">
             <div className="filter-container">
+
                 <div className="filter-row">
-                    <label className="filter-label" htmlFor="date">등록 일자</label>
-                    <input className="filter-input" type="date" id="date" required />
+                <label className="filter-label" for="date">등록 일자</label>
+                <input className="filter-input" type="date" id="date" required />
                 </div>
 
                 <div className="filter-row">
-                    <label className="filter-label" htmlFor="orderNo">주문 번호</label>
-                    <input className="filter-input" type="text" id="orderNo" placeholder="담당자" required />
+                <label className="filter-label" for="manager">주문 번호</label>
+                <input className="filter-input" type="text" id="orderNo" placeholder="담당자" required/>
                 </div>
 
                 <div className="filter-row">
-                    <label className="filter-label" htmlFor="prod">상품</label>
-                    <input className="filter-input" type="text" id="prod" placeholder="출하창고" required />
+                <label className="filter-label" for="warehouse">상품</label>
+                <input className="filter-input" type="text" id="prod" placeholder="출하창고" required/>
                 </div>
 
                 <div className="filter-row">
-                    <label className="filter-label" htmlFor="manager">담당자</label>
-                    <input className="filter-input" type="text" id="manager" placeholder="거래처" required />
+                <label className="filter-label" for="transaction">담당자</label>
+                <input className="filter-input" type="text" id="manager" placeholder="거래처" required/>
                 </div>
 
                 <button className="filter-button">조회</button>
@@ -186,6 +189,8 @@ function Order() {
             </tbody>
         </table>
     </div>
+
+
     );
 }
 
