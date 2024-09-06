@@ -2,9 +2,66 @@ import React, { useState } from 'react';
 import ReactDOM from "react-dom/client";
 import './user.css'
 import {useEffect} from 'react';
+import useCheckboxManager from "../js/CheckboxManager";
 
 
 function User() {
+    const {  allCheck,
+                   checkItem,
+                   showDelete,
+                   handleMasterCheckboxChange,
+                   handleCheckboxChange,
+                   handleDelete
+    } = useCheckboxManager();
+
+// --- 테이블 정렬 기능
+
+ // 주문 데이터를 저장하는 상태
+    const [order, setOrder] = useState([{
+             employeeId: '',
+               employeePw: '',
+               employeeName: '',
+               employeeTel: '',
+               employeeEmail: '',
+               employeeAddr: '',
+               residentNum : '',
+               hireDate: null,
+               salary: 0,
+               employeeManagerId: '',
+               authorityGrade: ''
+       }]
+    );
+
+
+
+    // 정렬 상태와 방향을 저장하는 상태
+    const [sortConfig, setSortConfig] = useState({ key: 'employeeId', direction: 'ascending' });
+
+    // 정렬 함수
+    const sortData = (key) => {
+        let direction = 'ascending';
+        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+            direction = 'descending';
+        }
+        const sortOrder = [...order].sort((a, b) => { //order배열 정렬(매개변수 비교)
+            if (a[key] < b[key]) { // key는 변수명임 (ex. orderNo, manage, title ...)
+                return direction === 'ascending' ? -1 : 1; //
+            }
+            if (a[key] > b[key]) {
+                return direction === 'ascending' ? 1 : -1;
+            }
+            return 0;
+        });
+        setOrder(sortOrder);
+        setSortConfig({ key, direction });
+    };
+
+
+// --- 테이블 정렬 기능
+
+
+
+
 
 // ---  모달창 띄우는 스크립트
   const [isVisible, setIsVisible] = useState(false);
@@ -27,7 +84,7 @@ function User() {
             employeeTel: '',
             employeeEmail: '',
             employeeAddr: '',
-            residentNum : '',
+            residentNum: '',
             hireDate: null,
             salary: 0,
             employeeManagerId: '',
@@ -35,10 +92,20 @@ function User() {
     }]);
 
 
+
+
+
+
+
 useEffect( () => {
 	    let effectEmployee = async () => {
             let data = await fetch('/employee/employee').then(res => res.json());
+            console.log(JSON.stringify(data));
+
             setEmployee(data);
+            setOrder(data);
+//              console.log('Type of data.employeeId:', typeof data.employeeId);
+
         }
 
         effectEmployee();
@@ -143,50 +210,78 @@ useEffect( () => {
       <button  className="filter-button" id="add" type="button" onClick={handleAddClick}>
         직원 등록
       </button>
+        {/*{showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}*/}
+           <table className="search-table">
 
-            <table className="seacrh-table">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox"/></th>
-                        <th> No.</th>
-                        <th> 직원 아이디 </th>
-                        <th> 직원 비밀번호 </th>
-                        <th> 직원 이름 </th>
-                        <th> 직원 번호 </th>
-                        <th> 직원 이메일 </th>
-                        <th> 직원 주소 </th>
-                        <th> 주민등록번호 </th>
-                        <th> 입사일 </th>
-                        <th> 연봉 </th>
-                        <th> 담당 매니저  </th>
-                        <th> 권한 등급  </th>
-                    </tr>
-                </thead>
+                      <thead>
+                          <tr>
+                                          <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange}/></th>
+                                          <th> No.</th>
+                                          <th> 직원 아이디         <button className="sortBtn" onClick={() => sortData('employeeId')}>
+                                                                                                     {sortConfig.key === 'employeeId' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                                                                     </button>
+                                         </th>
+                                          <th> 직원 비밀번호     <button className="sortBtn" onClick={() => sortData('employeePw')}>
+                                                                                                  {sortConfig.key === 'employeePw' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                                                                  </button> </th>
+                                          <th> 직원 이름     <button className="sortBtn" onClick={() => sortData('employeeName')}>
+                                                                                                {sortConfig.key === 'employeeName' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                                                                </button> </th>
+                                          <th> 직원 번호     <button className="sortBtn" onClick={() => sortData('employeeTel')}>
+                                                                                                {sortConfig.key === 'employeeTel' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                                                                </button> </th>
+                                          <th> 직원 이메일     <button className="sortBtn" onClick={() => sortData('employeeEmail')}>
+                                                                                                 {sortConfig.key === 'employeeEmail' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                                                                 </button> </th>
+                                          <th> 직원 주소     <button className="sortBtn" onClick={() => sortData('employeeAddr')}>
+                                                                                                {sortConfig.key === 'employeeAddr' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                                                                </button> </th>
+                                          <th> 주민등록번호     <button className="sortBtn" onClick={() => sortData('residentNum')}>
+                                                                                                 {sortConfig.key === 'residentNum ' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                                                                 </button> </th>
+                                          <th> 입사일     <button className="sortBtn" onClick={() => sortData('hireDate')}>
+                                                                                              {sortConfig.key === 'hireDate' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                                                              </button> </th>
+                                          <th> 연봉     <button className="sortBtn" onClick={() => sortData('salary')}>
+                                                                                             {sortConfig.key === 'salary' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                                                             </button> </th>
+                                          <th> 담당 매니저      <button className="sortBtn" onClick={() => sortData('employeeManagerId')}>
+                                                                                                  {sortConfig.key === 'employeeManagerId' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                                                                  </button> </th>
+                                          <th> 권한 등급      <button className="sortBtn" onClick={() => sortData('authorityGrade')}>
+                                                                                                 {sortConfig.key === 'authorityGrade' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                                                                 </button> </th>
 
-                <tbody>
-                    {employee.map((item, index) => (
-                        <tr key={item.employeeId}>
-                            <td><input type="checkbox" /></td>
-                             <td> {index + 1}</td>
-                            <td>{item.employeeId}</td>
-                            <td>{item.employeePw}</td>
-                            <td>{item.employeeName}</td>
-                            <td>{item.employeeTel}</td>
-                            <td>{item.employeeEmail}</td>
-                            <td>{item.employeeAddr}</td>
-                            <td>{item.residentNum}</td>
-                            <td>{item.hireDate}</td>
-                            <td>{item.salary}</td>
-                            <td>{item.employeeManagerId}</td>
-                            <td>{item.authorityGrade}</td>
-                        </tr>
-                    ))}
+                          </tr>
+                      </thead>
 
-                    </tbody>
-            </table>
+                      <tbody>
+                        {order.map((item, rowIndex) => (
+                                               <tr key={rowIndex} className={checkItem[rowIndex] ? 'selected-row' : ''}>
+                                                   <td><input type="checkbox" checked={checkItem[rowIndex] || false}
+                                                                              onChange={handleCheckboxChange}/></td>
+                                                   <td> {rowIndex + 1} </td>
+                                                   <td>{item.employeeId} </td>
+                                                   <td>{item.employeePw} </td>
+                                                   <td>{item.employeeName} </td>
+                                                   <td>{item.employeeTel} </td>
+                                                   <td>{item.employeeEmail} </td>
+                                                   <td>{item.employeeAddr} </td>
+                                                   <td>{item.residentNum} </td>
+                                                   <td>{item.hireDate} </td>
+                                                   <td>{item.salary}</td>
+                                                   <td>{item.employeeManagerId}</td>
+                                                   <td>{item.authorityGrade}</td>
+                                               </tr>
+                                           ))}
+
+                      </tbody>
+                  </table>
     </div>
 
 
+
+//  여기 아래는 모달이다.
 
 
       {isVisible && (
