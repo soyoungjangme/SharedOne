@@ -1,4 +1,4 @@
-import axios from 'axios';
+// import axios from 'axios';
 import React, {useState} from 'react';
 import ReactDOM from "react-dom/client";
 import './Price.css';

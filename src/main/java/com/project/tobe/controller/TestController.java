@@ -1,6 +1,8 @@
 package com.project.tobe.controller;
 
+import com.project.tobe.entity.Product;
 import com.project.tobe.entity.TestDB;
+import com.project.tobe.repository.ProductRepository;
 import com.project.tobe.repository.TestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,4 +21,5 @@ public class TestController {
     public TestDB getData() {
         return testRepository.findById(1).orElse(null);
     }
+
 }
