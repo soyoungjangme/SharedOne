@@ -2,6 +2,7 @@
 import React, {useState} from 'react';
 import ReactDOM from "react-dom/client";
 import './Price.css';
+import useCheckboxManager from "../js/CheckboxManager";
 
 import { Bar, Line } from 'react-chartjs-2';
 import {
@@ -29,6 +30,14 @@ ChartJS.register(
 
 
 function Price() {
+    const {
+        allCheck,
+        checkItem,
+        showDelete,
+        handleMasterCheckboxChange,
+        handleCheckboxChange,
+        handleDelete
+    } = useCheckboxManager();
     let [price, setPrice] = useState();
 
     let handleBtn = async () => {
@@ -111,8 +120,9 @@ function Price() {
     // console.log(priceDataSortedByInt);
 
     let newList = priceData.map((item, index) => {
-        return <tr key={index}>
-            <td><input type="checkbox"/></td>
+        return <tr key={index} className={checkItem[item.id] ? 'selected-row' : ''}>
+            <td><input type="checkbox" checked={checkItem[item.id] || false}
+                       onChange={handleCheckboxChange}/></td>
             <td>{index + 1}</td>
             <td>{item.registerDate}</td>
             <td>{item.productNo}</td>
@@ -183,9 +193,10 @@ function Price() {
                 </div>
 
                 <table className="seacrh-table">
+                    {showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}
                     <thead>
                     <tr>
-                        <th><input type="checkbox"/></th>
+                        <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange}/></th>
                         <th> No.</th>
                         <th> 등록일</th>
                         <th> 상품명</th>
