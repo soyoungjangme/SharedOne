@@ -39,6 +39,7 @@ function Price() {
         handleDelete
     } = useCheckboxManager();
     let [price, setPrice] = useState();
+    let [searchPrice, setSearchPrice] = useState({registerDate: '', productNo: '', customerNo : '', startDate : '', endDate : ''});
 
     let handleBtn = async () => {
         // let data = await fetch('/test/get').then(res => res.json());
@@ -165,27 +166,27 @@ function Price() {
 
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="date">등록일자</label>
-                        <input className="filter-input" type="date" id="date" required/>
+                        <input className="filter-input" type="date" id="date" value={searchPrice.registerDate} onClick={(e) => {}} required/>
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" htmlFor="manager">상품</label>
-                        <input className="filter-input" type="text" id="manager" placeholder="담당자" required/>
+                        <label className="filter-label" htmlFor="product">상품</label>
+                        <input className="filter-input" type="text" id="product" value={searchPrice.productNo} placeholder="상품" required/>
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" htmlFor="warehouse">고객</label>
-                        <input className="filter-input" type="text" id="warehouse" placeholder="출하창고" required/>
+                        <label className="filter-label" htmlFor="customer">고객</label>
+                        <input className="filter-input" type="text" id="customer" value={searchPrice.customerNo} placeholder="고객" required/>
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" htmlFor="date">시작일자</label>
-                        <input className="filter-input" type="date" id="date" required/>
+                        <label className="filter-label" htmlFor="startDate">시작일자</label>
+                        <input className="filter-input" type="date" id="startDate" value={searchPrice.startDate} required/>
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" htmlFor="date">종료일자</label>
-                        <input className="filter-input" type="date" id="date" required/>
+                        <label className="filter-label" htmlFor="endDate">종료일자</label>
+                        <input className="filter-input" type="date" id="endDate" value={searchPrice.endDate} required/>
                     </div>
 
                     <button className="filter-button" onClick={handleSearchBtn}>조회</button>
