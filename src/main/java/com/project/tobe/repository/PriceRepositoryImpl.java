@@ -2,6 +2,7 @@ package com.project.tobe.repository;
 
 import com.project.tobe.dto.PriceSearchDTO;
 import com.project.tobe.entity.Price;
+import com.project.tobe.entity.QPrice;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -23,7 +24,7 @@ public class PriceRepositoryImpl implements PriceCustomRepository {
     public List<Price> getPriceByDTO(PriceSearchDTO dto) {
         BooleanBuilder builder = new BooleanBuilder();
 
-//        QPrice price = QPrice.price;
+        QPrice price = QPrice.price;
 
 
 
