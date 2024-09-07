@@ -1,14 +1,19 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+
+
 .app-title {
   border : 1px solid red;
   color : red;
 }
+
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  }
+  font-family: "Noto Sans KR", sans-serif;
+    margin: 0;
+    padding: 0;
+      height: 100%;
+      width: 100%;
+}
 
   .mainBox {
     margin: 0;
@@ -136,6 +141,5 @@ body {
   flex-direction: column;
 }
 #root {
-  margin-left:50px;
-  margin-top:20px;
+  margin: 20px 50px;
 }
