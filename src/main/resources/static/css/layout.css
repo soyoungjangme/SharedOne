@@ -81,42 +81,54 @@ body {
   cursor: pointer;
 }
 
+
 .user-profile {
+  margin-top: 10px;
+  float: right;
   width: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  height: 100%;
+
 }
 
-.user-profile-button {
+
+.user-profile-box {
+  /*홍길동 님*/
+  display: flex;
+  align-items: center
+}
+
+.user-profile-button{
+  /*버튼*/
+  /*padding: 10px 16px;*/
   border: 1px solid #004e90;
   background-color: #004e90;
   color: white;
   font-size: 12px;
   border-radius: 2px;
   cursor: pointer;
-  margin-left: 10px; /* 버튼 간의 간격 */
 }
 
-/* 마이 페이지 버튼 새로 생성함*/
-.user-mypage-button {
+.user-mypage-button{
+  /*마이페이지 버튼*/
   width: 80px;
   height: 25px;
   background-color: #f3f3f3;
   color: #004e90;
 }
 
-/* 로그아웃 버튼도 덩달아 수정함 */
-.user-logout-button {
+.user-logout-button{
+  /*로그아웃 버튼*/
   width: 80px;
   height: 25px;
 }
 
 .user-profile-info {
+  /*홍길동 님 + 버튼 2개 감싼 박스*/
+  align-items: center;
   font-size: 18px;
   font-weight: bold;
   display: flex;
-  align-items: center;
+  justify-content: space-between;
   padding-left: 10px;
   padding-right: 10px;
 }
@@ -127,6 +139,7 @@ body {
   border-radius: 100px;
   margin-right: 15px;
 }
+
 
 
 .main-content {
