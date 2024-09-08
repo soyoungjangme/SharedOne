@@ -1,14 +1,19 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+
+
 .app-title {
   border : 1px solid red;
   color : red;
 }
+
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  }
+  font-family: "Noto Sans KR", sans-serif;
+    margin: 0;
+    padding: 0;
+      height: 100%;
+      width: 100%;
+}
 
   .mainBox {
     margin: 0;
@@ -31,6 +36,17 @@ body {
   min-height: 100vh;
   box-sizing: border-box;
 }
+
+.sidebar .bi-house-door-fill {
+  /*부트스트랩 아이콘 home 모양*/
+  font-size: 30px;
+  line-height: 30px;
+}
+
+.sidebar .bi-house-door-fill:hover {
+  cursor: pointer;
+}
+
 .sidebar h2 {
   margin: 0;
   margin-bottom: 20px;
@@ -48,11 +64,28 @@ body {
 
 
 
+/* home 아이콘 때문에 아래부터 다 건드림 */
 .top-nav {
   border-bottom: 1px solid #ddd;
   background-color: #f3f3f3;
   height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  justify-content: space-between;
 }
+
+/* 아이콘 감싼 박스 */
+.icon-box {
+  width: 32px;
+}
+
+/* 홈 아이콘 크기 */
+.icon-box > .home-icon {
+  font-size: 32px;
+  cursor: pointer;
+}
+
 
 .user-profile {
   margin-top: 10px;
@@ -64,21 +97,38 @@ body {
 
 
 .user-profile-box {
+  /*홍길동 님*/
   display: flex;
   align-items: center
 }
 
 .user-profile-button{
-  padding: 10px 16px;
+  /*버튼*/
+  /*padding: 10px 16px;*/
   border: 1px solid #004e90;
   background-color: #004e90;
   color: white;
-  font-size: 16px;
+  font-size: 12px;
   border-radius: 2px;
   cursor: pointer;
 }
 
+.user-mypage-button{
+  /*마이페이지 버튼*/
+  width: 80px;
+  height: 25px;
+  background-color: #f3f3f3;
+  color: #004e90;
+}
+
+.user-logout-button{
+  /*로그아웃 버튼*/
+  width: 80px;
+  height: 25px;
+}
+
 .user-profile-info {
+  /*홍길동 님 + 버튼 2개 감싼 박스*/
   align-items: center;
   font-size: 18px;
   font-weight: bold;
@@ -96,6 +146,7 @@ body {
 }
 
 
+
 .main-content {
   flex: 1;
   background-color: #ffffff;
@@ -103,6 +154,5 @@ body {
   flex-direction: column;
 }
 #root {
-  margin-left:50px;
-  margin-top:20px;
+  margin: 20px 50px;
 }
