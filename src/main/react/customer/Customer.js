@@ -1,6 +1,7 @@
 import React, { useState } from 'react'; //어느 컴포넌트이든 React임포트가 필요합니다.
 import ReactDOM from 'react-dom/client'; //root에 리액트 돔방식으로 렌더링시 필요합니다.
 import './Customer.css' //css파일 임포트
+
 import axios from 'axios';
 
 function Customer() {
@@ -23,6 +24,12 @@ function Customer() {
         }
     ]);
 
+    // 고객 데이터 상태
+    // const [customers, setCustomers] = useState([]);
+
+    //선택된 행 저장
+    //const [selectedRows, setSelectedRows] = useState(new set());
+
     //단일 객체로
     // let [customer, setCustomer] = useState({
     //     customerNo: 333, //고객번호
@@ -40,16 +47,17 @@ function Customer() {
     // });
 
     let handleBtn = async () => {
-     try {
-            let response = await fetch('/Customer_test/customer');
+        try {
             
+            let response = await fetch('/Customer_test/customer');
+
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            
+
             let data = await response.json();
             console.log("전체 데이터!", data);
-            
+
             // 서버 응답이 단일 객체인 경우, 배열로 변환
             if (data && typeof data === 'object' && !Array.isArray(data)) {
                 setCustomer([data]); // 단일 객체를 배열로 감싸서 상태 업데이트
@@ -59,12 +67,15 @@ function Customer() {
                 console.error("데이터 형식이 올바르지 않습니다:", data);
                 setCustomer([]); // 빈 배열로 초기화
             }
+
         } catch (error) {
             console.error("데이터 요청 중 오류 발생:", error);
             setCustomer([]); // 빈 배열로 초기화
         }
 
     }
+
+
 
 
     return (
@@ -191,27 +202,29 @@ function Customer() {
 
                     <tbody>
 
-
-                        {customer.length === 0 ? (
-                            <tr><td colSpan="13">데이터가 없습니다</td></tr>
-                        ) : (
-                            customer.map((customer, index) => (
-                                <tr key={customer.customerNo}>
-                                    <td> <input type="checkbox" /></td>
-                                    <td>{customer.customerNo}</td>
-                                    <td>{customer.customerName}</td>
-                                    <td>{customer.customerAddr}</td>
-                                    <td>{customer.customerTel}</td>
-                                    <td>{customer.postNum}</td>
-                                    <td>{customer.businessRegistrationNo}</td>
-                                    <td>{customer.nation}</td>
-                                    <td><i className="bi bi-search">{customer.dealType}</i></td>
-                                    <td>{customer.picName}</td>
-                                    <td>{customer.picEmail}</td>
-                                    <td>{customer.picTel}</td>
-                                    <td>{customer.activated}</td>
+                        {/* 테이블 전부 나타내기 */}
+                        {customer.length > 0 ? (
+                            customer.map((cust) => (
+                                <tr key={cust.customerNo}>
+                                    <td><input type="checkbox" /></td>
+                                    <td>{cust.customerNo}</td>
+                                    <td>{cust.customerName}</td>
+                                    <td>{cust.customerAddr}</td>
+                                    <td>{cust.customerTel}</td>
+                                    <td>{cust.postNum}</td>
+                                    <td>{cust.businessRegistrationNo}</td>
+                                    <td>{cust.nation}</td>
+                                    <td>{cust.dealType}</td>
+                                    <td>{cust.picName}</td>
+                                    <td>{cust.picEmail}</td>
+                                    <td>{cust.picTel}</td>
+                                    <td>{cust.activated}</td>
                                 </tr>
                             ))
+                        ) : (
+                            <tr>
+                                <td colSpan="13">데이터가 없습니다.</td>
+                            </tr>
                         )}
 
 
