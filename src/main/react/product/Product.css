@@ -178,7 +178,6 @@ tr:nth-child(0){
 
 }
 
-
 .filter-container {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
