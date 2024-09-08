@@ -5,13 +5,19 @@ const webpack = require('webpack');
 module.exports = {
     context: path.resolve(__dirname, 'src/main/react'),
     entry: {
+
         login: './login/Login.js', // 로그인
         user: './user/User.js', // 직원
         order: './order/Order.js', //주문
+<<<<<<< HEAD
         customer: './customer/Customer.js',// 고객
         product: './product/Product.js', // 직원
+=======
+        buyer: './buyer/Buyer.js',// 고객
+        product: './product/Product.js', // 상품
+>>>>>>> main
         confirm: './confirm/Confirm.js', // 결재
-        price: './price/Price.js', // 직원
+        price: './price/Price.js', // 판매가
 
     },
     devtool: 'sourcemaps',
