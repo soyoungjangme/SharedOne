@@ -1,8 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
 
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
+    font-family: "Noto Sans KR", sans-serif;
+    margin: 0;
+    padding: 0;
   }
 
 
@@ -11,21 +12,21 @@ body {
 
 #add{
   float: right;
+    /*margin-top: 30px;*/
 }
 
 
 .modal {
-overflow: auto;
-display: none; /* 모달을 띄우기 위해 사용 (숨길 때는 'none') */
-position: fixed;
-top: 0px;
-left: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.5);
-justify-content: center;
-align-items: center;
-
+    overflow: auto;
+    display: none; /* 모달을 띄우기 위해 사용 (숨길 때는 'none') */
+    position: fixed;
+    top: 0px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
 }
 
 .modal-content {
@@ -122,19 +123,14 @@ color: white;
 background-color: #ddd;
 }
 
-
-
-
-body {
-  font-family: Arial, sans-serif;
-
-}
 .seacrh-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.8rem;
   margin-top: 50px;
+    /*position: relative;*/
 }
+
 .seacrh-table, th, td {
   border: 1px solid #ddd;
 }
@@ -147,16 +143,14 @@ body {
   background-color: rgba(200, 230, 255, 0.366);
 }
 
-
+.seacrh-table tbody td i {
+   float : right;
+   cursor :pointer;
+}
 
 tr:nth-child(0){
   font-weight: bold;
 }
-
-/* tr:nth-last-child(1) {
-  font-weight: bold;
-  background-color: #f4f4f4;
-} */
 
 .seacrh-table  th, td {
   padding: 10px;
@@ -164,8 +158,8 @@ tr:nth-child(0){
 
 }
 .seacrh-table  th {
-  background:#f4f4f4;
-
+    background: rgb(241,241,241);
+    background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
 }
 
 
@@ -178,20 +172,35 @@ tr:nth-child(0){
     border-radius: 2px;
     background-color: #f4f4f4;
     margin: auto;
+    background: linear-gradient(0deg, rgb(246 246 246) 0%, rgba(255, 255, 255, 1) 100%);
+    box-shadow: 0px 2px 20px 0px #fafafa;
+}
+
+.pageHeader {
+    margin-bottom : 60px;
+}
+
+.pageHeader .bi {
+    margin-right : 10px;
 }
 
 .filter-item {
     display: flex;
     align-items: center;
     position: relative;
-
     gap: 5px;
 }
 
-.filter-item label {
+.filter-label {
     margin-right: 8px;
     white-space: nowrap;
 
+}
+
+.filter-row {
+    position: relative;
+    display: inline-block;
+    margin: 10px;
 }
 
 .filter-input {
@@ -226,7 +235,6 @@ tr:nth-child(0){
 
 .filter-button {
     grid-column-end: 7;
-
     margin-top: 20px;
     padding: 8px 16px;
     border: 1px solid #004e90;
@@ -241,6 +249,14 @@ tr:nth-child(0){
     background-color: #0056b3;
 }
 
+.info-icon {
+    position: relative;
+    display: inline-block;
+}
+
+.info-icon i {
+    font-size: 13px;
+}
 
 
 .breadcrumb {
@@ -277,231 +293,48 @@ tr:nth-child(0){
           margin-right: 5px;
       }
 
-
-/*=======< 아래부터는 모달창 css >=======*/
-.fullBody {
-    padding: 0;
-    height: 100%;
-    font-size: 15px;
-    margin-top: 60px;
-
-}
-
-
-.confirmRegist {
-
-    overflow: auto;
-    position: fixed;
-    top: 0px;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-
-}
-
-.form-container {
-    position: relative;
-    width: 60%;
-    margin: auto;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 50px;
-    background-color: #ffffff;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-
-}
-.form-header {
-    grid-column: span 6;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.close-btn {
+/* 툴립 */
+.tooltip {
+    display: none;
     position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-/* ------------------ */
-
-
-
-.formTable , .formTable tr , .formTable  td {
-    border: 1px solid #ddd;
-    border-collapse: collapse;
-    margin-bottom: 5px;
-}
-
-.formTable  th {
-    background: rgb(241,241,241);
-    background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
-}
-
-.formTable {
-    width: 100%;
-    margin: 30px 0px ;
-    background-color: #ffffff;
-
-}
-
-.formTable  td {
-    text-align: center;
-    padding: 5px ;
-}
-
-
-.formTable  th {
-    text-align: center;
-    padding: 5px  ;
-}
-
-.formTable td > input {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    width: 80%;
-    margin:  0px;
-    padding: 5px;
-}
-
-.formTable td > select {
-    border: 1px solid #ddd;
-    width: 85%;
-    margin:  0px;
-    padding: 5px;
-    border-radius: 5px;
-}
-
-
-/* -------------------- */
-
-.RegistFormList {
-
-}
-
-
-
-.formTableList {
-    width: 100%;
-    margin: 30px 0px ;
-    background-color: #ffffff;
-
-}
-
-.formTableList , .formTableList th,  .formTableList tr , .formTableList td {
-    border: 1px solid #ddd;
-    border-collapse: collapse;
-
-}
-
-.formTableList  th {
-    background: rgb(241,241,241);
-    background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
-
-}
-
-
-.formTableList  tr:nth-last-child(1) {
-    background: rgb(241,241,241);
-    background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
-
-}
-
-
-.formTableList  td {
-    text-align: center;
-    padding: 5px ;
-}
-
-
-.formTableList  th {
-    text-align: center;
-    padding: 5px  ;
-}
-
-.formTableList td > input {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    width: 80%;
-    margin:  0px;
-    padding: 5px;
-}
-
-.formTableList td > select {
-    border: 1px solid #ddd;
-    width: 85%;
-    margin:  0px;
-    padding: 5px;
-    border-radius: 5px;
-}
-
-
-
-/* -------------------- */
-.btns {
-    display: flex;
-    gap: 3%;
-}
-
-
-
-.btn-add ,.btn-close{
-    grid-column: span 6;
-    text-align: right;
-    cursor: pointer;
-}
-
-
-.btn-add button  {
-    background-color: #004e90;
+    top: -120%;
+    left: -80%;
+    background-color: #555;
     color: #fff;
-    /* background-color: #fff;
-    box-shadow: 0 3px 3px rgba(189, 189, 189, 0.16), 0 3px 6px rgba(131, 131, 131, 0.23); */
-    /* background: rgb(241,241,241); */
-    /* background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%); */
-    border: 1px solid #ddd;
-    width: 60px;
-    height: 35px;
-    border-radius: 2px;
-    font-weight: bold;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 10px;
+    width: max-content;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 10;
+    font-size: 13px;
 }
 
-.btn-add2 button  {
-    background-color: #004e90;
-    color: #fff;
-    /* background-color: #fff;
-    box-shadow: 0 3px 3px rgba(189, 189, 189, 0.16), 0 3px 6px rgba(131, 131, 131, 0.23); */
-    /* background: rgb(241,241,241); */
-    /* background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%); */
-    border: 1px solid #ddd;
-    width: 90px;
-    height: 35px;
-    border-radius: 2px;
-    font-weight: bold;
+.tooltip::after {
+    content: "";
+    position: absolute;
+    bottom: -30%;
+    left: 15%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
 }
 
-.btn-close button  {
-    background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
-    border: 1px solid #ddd;
-    width: 30px;
-    height: 30px;
-    border-radius: 2px;
+.info-icon:hover .tooltip {
+    display: block;
+    opacity: 1;
 }
 
-.close-btn{
-    border: none;
-    background-color: #ffffff;
-    width: 30px;
-    height: 30px;
-    border-radius: 2px;
-}
-
-
-.btn-load {
-
+/*  sort */
+.sortBtn {
+    border: 1px solid #d0d0d0;
+    margin-left: 10px;
+    color: #4c4c4c;
+    font-size: 15px;
+    width: 22px;
+    height: 20px;
+    text-align: center;
+    padding: 0px;
 }
