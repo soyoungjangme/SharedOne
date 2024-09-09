@@ -3,9 +3,7 @@ package com.project.tobe.entity;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -14,16 +12,16 @@ import java.time.LocalDate;
 @Getter
 @ToString
 @Builder
-@Entity
-@Table (name = "confirm")
 public class Confirm {
-    @Id
-    private int confirmNo;
+
+    private Long confirmNo;
     private String confirmStatus;
     private String confirmTitle;
     private String confirmContent;
     private LocalDate confirmRegDate;
     private LocalDate confirmConfirmDate;
-    private String employeeId;
-    private int orderNo;
+    private String employeeId;//fk
+    private Long orderNo; //fk
+
+    private Employee employee; //fk, 직원 id에 따른 직원명 필요
 }

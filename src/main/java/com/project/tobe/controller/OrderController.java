@@ -1,34 +1,29 @@
 package com.project.tobe.controller;
 
 import com.project.tobe.entity.OrderH;
-import com.project.tobe.order.OrderService;
-import com.project.tobe.repository.OrderRepository;
+import com.project.tobe.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/order")
 public class OrderController {
 
     @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
     @Qualifier("orderservice")
     private OrderService orderService;
 
-    @GetMapping("/get")
-    public OrderH get(){
 
-        return orderRepository.findById(10).orElse(null);
+    @GetMapping("/orderList")
+    public List<OrderH> getOrder(){
+        System.out.println("getOrder실행됨");
+        return orderService.getOrder();
     }
 
-    @PostMapping("/insert")
-    public void insert(@RequestBody OrderH vo){
-        System.out.println(vo.toString());
-        orderService.insert(vo);
-    }
+
 
 
 }

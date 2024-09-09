@@ -2,10 +2,9 @@ package com.project.tobe.entity;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "employee")
@@ -26,7 +25,7 @@ public class Employee {
     private String residentNum;
     private String employeeAddr;
     private Date hireDate;
-    private int salary;
+    private Long salary;
     private String employeeManagerId;
     private String authorityGrade;
 

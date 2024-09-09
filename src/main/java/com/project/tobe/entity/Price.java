@@ -1,7 +1,6 @@
 package com.project.tobe.entity;
 
 import lombok.*;
-import org.hibernate.annotations.Check;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -26,7 +25,9 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqPrice")
     private Long priceNo;
     private LocalDate registerDate;
+    @Column(name = "PRODUCT_NO")
     private Long productNo;
+    @Column(name = "CUSTOMER_NO")
     private Long customerNo;
     private Double customPrice;
     private String currency;
@@ -56,4 +57,5 @@ public class Price {
         this.endDate = endDate;
         this.activated = activated;
     }
+
 }

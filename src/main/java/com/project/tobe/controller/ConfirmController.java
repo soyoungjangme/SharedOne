@@ -12,12 +12,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/confirm")
 public class ConfirmController {
-    @Autowired
-    ConfirmRepository confirmRepository;
+//    @Autowired
+//    ConfirmRepository confirmRepository;
 
-    @GetMapping("/get")
-    public List<Confirm> getData(@RequestParam List<Integer> allId) {
-
-        return confirmRepository.findAllById(allId);
-    }
+//    @GetMapping("/get")
+//    public List<Confirm> getData(@RequestParam List<Integer> allId) {
+//
+//        return confirmRepository.findAllById(allId);
+//    }
 }
