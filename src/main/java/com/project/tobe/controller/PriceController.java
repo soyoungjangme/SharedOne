@@ -22,7 +22,7 @@ public class PriceController {
         return priceService.getAllPrice();
     }
 
-    @PostMapping(SEARCH_PRICE)
+    @PostMapping(value=SEARCH_PRICE , produces = "application/json", consumes = "application/json")
     public List<Price> searchPrice(@RequestBody PriceSearchDTO dto) {
         System.out.println(dto);
         return priceService.getPriceByDTO(dto);

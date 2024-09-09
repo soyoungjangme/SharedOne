@@ -12,7 +12,9 @@ module.exports = {
         buyer: './buyer/Buyer.js',// 고객
         product: './product/Product.js', // 상품
         confirm: './confirm/Confirm.js', // 결재
-        price: './price/Price.js', // 판매가
+        price: './price/price.js', // 판매가
+        myPage: './myPage/myPage.js', // 판매가
+        main: './main/Main.js',
 
     },
     devtool: 'sourcemaps',

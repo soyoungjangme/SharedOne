@@ -56,8 +56,8 @@ body {
 
 .button-container {
     display: flex;
-    align-items: center; /* 세로(위아래) 가운데 정렬 */
-    justify-content: flex-end; /* 가로 가운데 정렬 (필요 시) */
+    align-items: flex-start; /* Align button at the top */
+    justify-content: flex-end; /* Push button to the right */
 }
 
 .search-btn {
@@ -70,14 +70,11 @@ body {
     font-size: 14px;
     width: 3%;
     text-align: center;
-    display: flex;
-    align-items: center; /* 세로(위아래) 가운데 정렬 */
-    justify-content: center; /* 가로 가운데 정렬 */
 }
 
 .search-btn .bi {
     text-align: center;
-    display: block;
+
 }
 
 .search-btn:hover {
@@ -221,36 +218,36 @@ input {
     background-color: #ddd;
 }
 
-.search-table {
+.seacrh-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.8rem;
     margin-top: 100px;
     position: relative;
 }
-.search-table, th, td {
+.seacrh-table, th, td {
     border: 1px solid #ddd;
 }
 
-.search-table th {
+.seacrh-table th {
     border-top : 2px solid #0063ac;
     text-align: center;
 }
 
-.search-table tr:hover{
+.seacrh-table tr:hover{
     background-color: rgba(200, 230, 255, 0.366);
 }
 
-.search-table tbody tr:last-child {
+.seacrh-table tbody tr:last-child {
     font-weight: bold; /* Apply bold styling */
     background: rgb(241,241,241);
          background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
 }
-.search-table tbody tr:last-child td {
+.seacrh-table tbody tr:last-child td {
     text-align: center;
 }
 
-.search-table tbody td i {
+.seacrh-table tbody td i {
     float : right;
     cursor :pointer;
 }
@@ -259,7 +256,7 @@ input {
     display: block;
     width: 100%;
     height: 100%;
-    margin-right: 10px;
+    margin: 0 auto;
 }
 
 tr:nth-child(0){

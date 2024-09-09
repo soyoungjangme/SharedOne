@@ -12,28 +12,5 @@ import java.util.List;
 @RequestMapping("/confirm")
 public class ConfirmController {
 
-    @Autowired
-    private ConfirmService confirmService;
-
-    @GetMapping
-    public ResponseEntity<List<Confirm>> getAllConfirms() {
-        return ResponseEntity.ok(confirmService.getAllConfirms());
-    }
-
-    @PostMapping
-    public ResponseEntity<Confirm> createConfirm(@RequestBody Confirm confirm) {
-        return ResponseEntity.ok(confirmService.saveConfirm());
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Confirm> updateConfirm(@PathVariable Long id, @RequestBody Confirm confirm) {
-        return ResponseEntity.ok(confirmService.updateConfirm(id, confirm));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteConfirm(@PathVariable Long id) {
-        confirmService.deleteConfirm(id);
-        return ResponseEntity.ok().build();
-    }
 
 }

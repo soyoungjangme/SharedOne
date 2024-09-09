@@ -8,13 +8,4 @@ import java.util.List;
 
 public interface ConfirmService {
 
-    public List<Confirm> getAllConfirms();
-
-    public Confirm getConfirmById(Long id);
-
-    public int saveConfirm(Confirm confirm);
-
-    public int deleteConfirm(Long id);
-
-    public List<Confirm> findByProductTypeAndMinimumQuantity(String productType, int minQty);
 }
