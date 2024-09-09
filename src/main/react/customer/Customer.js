@@ -1,14 +1,24 @@
-import React, { useState } from 'react'; //어느 컴포넌트이든 React임포트가 필요합니다.
-import ReactDOM from 'react-dom/client'; //root에 리액트 돔방식으로 렌더링시 필요합니다.
-import './Customer.css' //css파일 임포트
-
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from "react-dom/client";
+import './Customer.css'
+import './modalAdd.css'
+import './modalDetail.css'
+import useCheckboxManager from "../js/CheckboxManager";
 
 function Customer() {
+    const {
+        allCheck,
+        checkItem,
+        showDelete,
+        handleMasterCheckboxChange,
+        handleCheckboxChange,
+        handleDelete
+    } = useCheckboxManager(setProduct);
 
-    //데이터 초기값, 배열로
-    let [customer, setCustomer] = useState([
+
+    const [product, setProduct] = useState([
         {
+            //테스트용 초기 데이터
             customerNo: 333, //고객번호
             customerName: "bana", //고객명
             customerAddr: "good", //고객주소
@@ -22,226 +32,307 @@ function Customer() {
             picTel: "3252", //담당자 연락처
             activated: "Y" //활성화
         }
-    ]);
+    ]); // 리스트 데이터를 저장할 state
 
-    // 고객 데이터 상태
-    // const [customers, setCustomers] = useState([]);
-
-    //선택된 행 저장
-    //const [selectedRows, setSelectedRows] = useState(new set());
-
-    //단일 객체로
-    // let [customer, setCustomer] = useState({
-    //     customerNo: 333, //고객번호
-    //     customerName: "bana", //고객명
-    //     customerAddr: "good", //고객주소
-    //     customerTel: "010-1234-1234", //고객 연락처
-    //     postNum: "12345", //우편번호
-    //     businessRegistrationNo: "1212-2424", //사업자 등록 번호
-    //     nation: "한국", //국가
-    //     dealType: "거래", //거래 유형
-    //     picName: "픽네임", //담당자명
-    //     picEmail: "123", //담당자 이메일
-    //     picTel: "3252", //담당자 연락처
-    //     activated: "Y" //활성화
-    // });
-
-    let handleBtn = async () => {
-        try {
-            
-            let response = await fetch('/Customer_test/customer');
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+    // 서버에서 데이터 가져오기
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                let data = await fetch('/Customer/customer').then(res => res.json());
+                setProduct(data); // 데이터를 state에 저장
+                setOrder(data);
+            } catch (error) {
+                console.error("데이터를 가져오는 중 오류 발생:", error);
             }
+        };
 
-            let data = await response.json();
-            console.log("전체 데이터!", data);
+        fetchData();
+    }, []); // 컴포넌트가 처음 마운트될 때만 실행
 
-            // 서버 응답이 단일 객체인 경우, 배열로 변환
-            if (data && typeof data === 'object' && !Array.isArray(data)) {
-                setCustomer([data]); // 단일 객체를 배열로 감싸서 상태 업데이트
-            } else if (Array.isArray(data)) {
-                setCustomer(data);
-            } else {
-                console.error("데이터 형식이 올바르지 않습니다:", data);
-                setCustomer([]); // 빈 배열로 초기화
-            }
 
-        } catch (error) {
-            console.error("데이터 요청 중 오류 발생:", error);
-            setCustomer([]); // 빈 배열로 초기화
+    // --- 테이블 정렬 기능
+
+    // 주문 데이터를 저장하는 상태
+    const [order, setOrder] = useState([
+        {
+            customerNo: 0, //고객번호
+            customerName: "", //고객명
+            customerAddr: "", //고객주소
+            customerTel: "", //고객 연락처
+            postNum: "", //우편번호
+            businessRegistrationNo: "", //사업자 등록 번호
+            nation: "", //국가
+            dealType: "", //거래 유형
+            picName: "", //담당자명
+            picEmail: "", //담당자 이메일
+            picTel: "", //담당자 연락처
+            activated: "" //활성화
         }
+    ]); // 리스트 데이터를 저장할 state
+
+
+    // 정렬 상태와 방향을 저장하는 상태
+    const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
+
+    // 정렬 함수
+    const sortData = (key) => {
+        let direction = 'ascending';
+        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+            direction = 'descending';
+        }
+        const sortOrder = [...order].sort((a, b) => { //order배열 정렬(매개변수 비교)
+            if (a[key] < b[key]) { // key는 변수명임 (ex. orderNo, manage, title ...)
+                return direction === 'ascending' ? -1 : 1; //
+            }
+            if (a[key] > b[key]) {
+                return direction === 'ascending' ? 1 : -1;
+            }
+            return 0;
+        });
+        setOrder(sortOrder);
+        setSortConfig({ key, direction });
+    };
+
+
+    // --- 테이블 정렬 기능
+
+
+    // ---  모달창 띄우는 스크립트
+    const [isVisibleDetail, setIsVisibleDetail] = useState(false);
+
+    const handleAddClickDetail = () => {
+        setIsVisibleDetail(true);
+    };
+
+    const handleCloseClickDetail = () => {
+        setIsVisibleDetail(false);
+    };
+
+    const [isVisibleCSV, setIsVisibleCSV] = useState(false);
+
+    const handleAddClickCSV = () => {
+        setIsVisibleCSV((prevState) => !prevState);
+    };
+
+
+    const [isVisible, setIsVisible] = useState(false);
+
+    const handleAddClick = () => {
+        setIsVisible(true);
+    };
+
+    const handleCloseClick = () => {
+        setIsVisible(false);
+    };
+
+    const [modifyItem, setModifyItem] = useState([
+        {
+            customerNo: 0, //고객번호
+            customerName: "", //고객명
+            customerAddr: "", //고객주소
+            customerTel: "", //고객 연락처
+            postNum: "", //우편번호
+            businessRegistrationNo: "", //사업자 등록 번호
+            nation: "", //국가
+            dealType: "", //거래 유형
+            picName: "", //담당자명
+            picEmail: "", //담당자 이메일
+            picTel: "", //담당자 연락처
+            activated: "" //활성화
+        }
+    ]);
+    const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
+    const handleModify = (item) => {
+        setModifyItem(item);
+        setIsModifyModalVisible(true);
 
     }
 
+    const handleModifyCloseClick = () => {
+        setIsModifyModalVisible(false);
+    }
 
+    // --- 모달창 띄우는 스크립트
 
 
     return (
         <div>
 
-            <div>
-
-                <button type="button" onClick={handleBtn}>버튼 test</button>
-
-
-            </div>
-
-            <h1> <i className="bi bi-search"></i> 고객 리스트 </h1>
-
-            <div className="breadcrumb">
-                <a href="#">
-                    <span className="home-icon"></span>
-                </a>
-                <span className="separator"></span>
-                <a href="#">고객정보</a>
-                <span class="separator"></span>
-                <a className="#">고객정보조회</a>
-            </div>
-
-
+            <div className="pageHeader"><h1><i className="bi bi-search"></i>고객 리스트</h1></div>
 
             <div className="main-container">
+
+                {/* 조회하는 부분 */}
                 <div className="filter-container">
 
-                    <div className="filter-row">
-                        <label className="filter-label" for="date">일자</label>
+                    <div className="breadcrumb">
+                        <a href="#">
+                            <span className="home-icon"></span>
+                        </a>
+                        <span className="separator"></span>
+                        <a href="#">고객정보</a>
+                        <span class="separator"></span>
+                        <a className="#">고객정보조회</a>
+                    </div>
+
+                    {/* (text) 고객명
+                    (text) 고객 주소 (API 사용)
+                    (number)고객 연락처
+                    (number)우편번호 (API 사용)
+                    (number)사업자 등록 번호
+                    (select)국가
+                    (select)거래 유형
+                    (text)담당자명
+                    (email)담당자 이메일
+                    (text)담당자 연락처 */}
+
+
+                    {/* <div className="filter-row">
+                        <label className="filter-label" htmlFor="date">일자</label>
                         <input className="filter-input" type="date" id="date" required />
+                    </div> */}
+
+                    <div className="filter-row">
+                        <label className="filter-label" htmlFor="productNo">상품코드</label>
+                        <input className="filter-input" type="text" id="productNo" placeholder="상품코드" required />
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" for="manager">담당자</label>
-                        <input className="filter-input" type="text" id="manager" placeholder="담당자" required />
+                        <label className="filter-label" htmlFor="productName">상품명</label>
+                        <input className="filter-input" type="text" id="productName" placeholder="상품명" required />
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" for="warehouse">창고</label>
-                        <input className="filter-input" type="text" id="warehouse" placeholder="출하창고" required />
+                        <label className="filter-label" htmlFor="productWriter">상품저자</label>
+                        <input className="filter-input" type="text" id="productWriter" placeholder="상품저자" required />
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" for="transaction">거래처</label>
-                        <input className="filter-input" type="text" id="transaction" placeholder="거래처" required />
+                        <label className="filter-label" htmlFor="productWriter">상품카테고리</label>
+                        <input className="filter-input" type="text" id="productWriter" placeholder="상품카테고리" required />
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" for="department">부서</label>
-                        <input className="filter-input" type="text" id="department" placeholder="부서" required />
+                        <label className="filter-label" htmlFor="productQty">상품수량</label>
+                        <input className="filter-input" type="text" id="productQty" placeholder="상품수량" required />
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" for="transactionType">거래유형</label>
-                        <select className="filter-select" id="transactionType" required>
-                            <option value="부가세율 적용">부가세율 적용</option>
-                            <option value="부가세율 미적용">부가세율 미적용</option>
-                        </select>
-                    </div>
-                    <div className="filter-row">
-                        <label className="filter-label" for="transactionType">거래유형</label>
-                        <select className="filter-select" id="transactionType" required>
-                            <option value="부가세율 적용">부가세율 적용</option>
-                            <option value="부가세율 미적용">부가세율 미적용</option>
-                        </select>
-                    </div>
-                    <div className="filter-row">
-                        <label className="filter-label" for="transactionType">거래유형</label>
-                        <select className="filter-select" id="transactionType" required>
-                            <option value="부가세율 적용">부가세율 적용</option>
-                            <option value="부가세율 미적용">부가세율 미적용</option>
-                        </select>
+                        <label className="filter-label" htmlFor="productPrice">상품원가</label>
+                        <input className="filter-input" type="text" id="productPrice" placeholder="상품원가" required />
                     </div>
 
-                    <div className="filter-row">
-                        <label className="filter-label" for="transactionType">거래유형</label>
-                        <select className="filter-select" id="transactionType" required>
-                            <option value="부가세율 적용">부가세율 적용</option>
-                            <option value="부가세율 미적용">부가세율 미적용</option>
-                        </select>
-                    </div>
-                    <div className="filter-row">
-                        <label className="filter-label" for="warehouse">창고</label>
-                        <input className="filter-input" type="text" id="warehouse" placeholder="출하창고" required />
-                    </div>
-
-                    <div className="filter-row">
-                        <label className="filter-label" for="transaction">거래처</label>
-                        <input className="filter-input" type="text" id="transaction" placeholder="거래처" required />
-                    </div>
-
-                    <div className="filter-row">
-                        <label className="filter-label" for="department">부서</label>
-                        <input className="filter-input" type="text" id="department" placeholder="부서" required />
-                    </div>
-
-
-                    <button className="filter-button" onClick={handleBtn}>조회</button>
+                    <button className="filter-button">조회</button>
                 </div>
+                <button className="filter-button" id="add" type="button" onClick={handleAddClick}>
+                    직원 등록
+                </button>
 
 
+                {/* 테이블 표 부분 */}
                 <table className="seacrh-table">
+                    {showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}
                     <thead>
-
                         <tr>
-                            <th><input type="checkbox" /></th>
-                            <th>고객 번호</th>
-                            <th>고객명</th>
-                            <th>고객 주소</th>
-                            <th>고객 연락처</th>
-                            <th>우편번호</th>
-                            <th>사업자 등록 번호</th>
-                            <th>국가</th>
-                            <th>거래유형</th>
-                            <th>담당자명</th>
-                            <th>담당자 이메일</th>
-                            <th>담당자 연락처</th>
-                            <th>활성화</th>
+                            <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange} /></th>
+                            <th> No.</th>
+                            <th>고객 번호
+                                <button className="sortBtn" onClick={() => sortData('customerNo')}>
+                                    {sortConfig.key === 'customerNo' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>
+                            <th>고객명
+                                <button className="sortBtn" onClick={() => sortData('customerName')}>
+                                    {sortConfig.key === 'customerName' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>
+                            <th>고객 주소
+                                <button className="sortBtn" onClick={() => sortData('customerAddr')}>
+                                    {sortConfig.key === 'customerAddr' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>
+                            <th>고객 연락처
+                                <button className="sortBtn" onClick={() => sortData('customerTel')}>
+                                    {sortConfig.key === 'customerTel' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>
+                            <th>우편번호
+                                <button className="sortBtn" onClick={() => sortData('postNum')}>
+                                    {sortConfig.key === 'postNum' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>
+                            <th>사업자 등록 번호
+                                <button className="sortBtn" onClick={() => sortData('businessRegistrationNo')}>
+                                    {sortConfig.key === 'businessRegistrationNo' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>
+                            <th>국가
+                                <button className="sortBtn" onClick={() => sortData('nation')}>
+                                    {sortConfig.key === 'nation' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>
+                            <th>거래유형
+                                <button className="sortBtn" onClick={() => sortData('dealType')}>
+                                    {sortConfig.key === 'dealType' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>
+                            <th>담당자명
+                                <button className="sortBtn" onClick={() => sortData('picName')}>
+                                    {sortConfig.key === 'picName' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>
+                            <th>담당자 이메일
+                                <button className="sortBtn" onClick={() => sortData('picEmail')}>
+                                    {sortConfig.key === 'picEmail' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>
+                            <th>담당자 연락처
+                                <button className="sortBtn" onClick={() => sortData('picTel')}>
+                                    {sortConfig.key === 'picTel' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>
+                            <th>활성화
+                                <button className="sortBtn" onClick={() => sortData('activated')}>
+                                    {sortConfig.key === 'activated' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>
                         </tr>
-
                     </thead>
-
                     <tbody>
-
-                        {/* 테이블 전부 나타내기 */}
-                        {customer.length > 0 ? (
-                            customer.map((cust) => (
-                                <tr key={cust.customerNo}>
-                                    <td><input type="checkbox" /></td>
-                                    <td>{cust.customerNo}</td>
-                                    <td>{cust.customerName}</td>
-                                    <td>{cust.customerAddr}</td>
-                                    <td>{cust.customerTel}</td>
-                                    <td>{cust.postNum}</td>
-                                    <td>{cust.businessRegistrationNo}</td>
-                                    <td>{cust.nation}</td>
-                                    <td>{cust.dealType}</td>
-                                    <td>{cust.picName}</td>
-                                    <td>{cust.picEmail}</td>
-                                    <td>{cust.picTel}</td>
-                                    <td>{cust.activated}</td>
+                        {order.length > 0 ? (
+                            order.map((item, index) => (
+                                <tr key={index} className={checkItem[index + 1] ? 'selected-row' : ''}>
+                                    <td><input type="checkbox" checked={checkItem[index + 1] || false}
+                                        onChange={handleCheckboxChange} /></td>
+                                    <td>{index + 1}</td>
+                                    <td>{item.customerNo}</td>
+                                    <td>{item.customerName}</td>
+                                    <td>{item.customerAddr}
+                                        {/* 아래 두줄은 상세보기 기능 */}
+                                        <i className="bi bi-search details"
+                                            onClick={handleAddClickDetail} />
+                                    </td>
+                                    <td>{item.customerTel}</td>
+                                    <td>{item.postNum}</td>
+                                    <td>{item.businessRegistrationNo}</td>
+                                    <td>{item.nation}</td>
+                                    <td>{item.dealType}</td>
+                                    <td>{item.picName}</td>
+                                    <td>{item.picEmail}</td>
+                                    <td>{item.picTel}</td>
+                                    <td>{item.activated}</td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="13">데이터가 없습니다.</td>
+                                <td colSpan="10">등록된 고객이 없습니다😭</td>
                             </tr>
                         )}
 
 
                         <tr>
-                            <td> <input type="checkbox" /></td>
-                            <td>1</td>
-                            <td>삼국지</td>
-                            <td>1234</td>
-                            <td>승인됨</td>
-                            <td>12345</td>
-                            <td>123-45-67890</td>
-                            <td>02-1234-5678</td>
-                            <td><i className="bi bi-search"></i></td>
-                            <td>이영희</td>
-                            <td>kim@abc.com</td>
-                            <td>lee@abc.com</td>
-                            <td>010-8765-4321</td>
+                            <td colspan="13"></td>
+                            <td colspan="1"> 6 건</td>
                         </tr>
 
                     </tbody>
@@ -249,19 +340,237 @@ function Customer() {
             </div>
 
 
+            {/* 여기 아래는 모달이다. */}
+            {isVisible && (
+                <div class="confirmRegist">
+                    <div class="fullBody">
+                        <div class="form-container">
+                            <button className="close-btn" onClick={handleCloseClick}> &times;
+                            </button>
+                            <div class="form-header">
+                                <h1>직원 등록</h1>
+
+                                <div class="btns">
+                                    <div class="btn-add2">
+                                        <button> 등록하기</button>
+                                    </div>
+                                    <div class="btn-close">
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="RegistForm">
+                                <table class="formTable">
+
+                                    <tr>
+
+                                        <th colspan="1"><label for="">직원 ID</label></th>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" /></td>
+
+                                        <th colspan="1"><label for="">직원 PW</label></th>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" /></td>
+
+                                    </tr>
+
+
+                                    <tr>
+                                        <th><label for="">연락처</label></th>
+                                        <td><input type="text" placeholder="필드 입력" /></td>
+
+
+                                        <th><label for="">연락처</label></th>
+                                        <td><input type="text" placeholder="필드 입력" /></td>
+
+
+                                        <th><label for="">연락처</label></th>
+                                        <td><input type="text" placeholder="필드 입력" /></td>
+                                        <th><label for="">직원 ID</label></th>
+                                        <td><input type="text" placeholder="필드 입력" /></td>
+
+                                    </tr>
+
+
+                                    <tr>
+                                        <th colspan="1"><label for="">연락처</label></th>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" /></td>
+
+                                        <th colspan="1"><label for="">연락처</label></th>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" /></td>
+                                    </tr>
+
+
+                                    <tr>
+
+                                        <th colspan="1"><label for="">연락처</label></th>
+                                        <td colspan="3"><select>
+                                            <option>담당 직원</option>
+                                        </select></td>
+
+                                        <th colspan="1"><label for="">연락처</label></th>
+                                        <td colspan="3"><select>
+                                            <option>담당 직원</option>
+                                        </select></td>
+                                    </tr>
+
+
+                                </table>
+
+
+                                <button id="downloadCsv">CSV 샘플 양식</button>
+                                <button id="uploadCsv" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
+                                {isVisibleCSV && (
+                                    <input type="file" id="uploadCsvInput" accept=".csv" />)}
+
+                                <div className="btn-add">
+                                    <button> 추가</button>
+                                </div>
+
+
+                            </div>
+
+                            <div class="RegistFormList">
+                                <div style={{ fontWeight: 'bold' }}> 총 N 건</div>
+                                <table class="formTableList">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" /></th>
+                                            <th>no</th>
+                                            <th>품목명</th>
+                                            <th>규격</th>
+                                            <th>단위</th>
+                                            <th>창고</th>
+                                            <th>LOT</th>
+                                            <th>현재고</th>
+                                            <th>실사수량</th>
+                                            <th>조정수량</th>
+                                            <th>단가</th>
+                                            <th>공급가액</th>
+                                            <th>부가세</th>
+                                            <th>총금액</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="checkbox" /></td>
+                                            <td>1</td>
+                                            <td>제품공고1</td>
+                                            <td>EA</td>
+                                            <td>EA</td>
+                                            <td>재품창고1</td>
+                                            <td>L2017-11-260001</td>
+                                            <td>4,900</td>
+                                            <td>5,000</td>
+                                            <td>100</td>
+                                            <td>3,000</td>
+                                            <td>300,000</td>
+                                            <td>30,000</td>
+                                            <td>330,000</td>
+                                        </tr>
+
+                                        <tr style={{ fontWeight: 'bold' }}>
+                                            <td colspan="12"> 합계</td>
+                                            <td colspan="2"> 13,000,000</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            )}
+            {/* 모달창의 끝  */}
+
+            {/* 수정 모달창 */}
+            {isModifyModalVisible && (
+                <div class="confirmRegist">
+                    <div class="fullBody">
+                        <div class="form-container">
+                            <button className="close-btn" onClick={handleModifyCloseClick}> &times;
+                            </button>
+                            <div class="form-header">
+                                <h1>직원 등록</h1>
+                                <div class="btns">
+                                    <div class="btn-add2">
+                                        <button> 등록하기</button>
+                                    </div>
+                                    <div class="btn-close">
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="RegistForm">
+                                <table class="formTable">
+                                    <tr>
+                                        <th colspan="1"><label for="">직원 ID</label></th>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+
+                                        <th colspan="1"><label for="">직원 PW</label></th>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                    </tr>
+                                    <tr>
+                                        <th><label for="">연락처</label></th>
+                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                        <th><label for="">연락처</label></th>
+                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                        <th><label for="">연락처</label></th>
+                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                        <th><label for="">직원 ID</label></th>
+                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="1"><label for="">연락처</label></th>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                        <th colspan="1"><label for="">연락처</label></th>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="1"><label for="">연락처</label></th>
+                                        <td colspan="3"><select>
+                                            <option>담당 직원</option>
+                                        </select></td>
+                                        <th colspan="1"><label for="">연락처</label></th>
+                                        <td colspan="3"><select>
+                                            <option>담당 직원</option>
+                                        </select></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            )}
+            {/* 모달창의 끝  */}
+
+            {/* 새로운 모달창 */}
+            {isVisibleDetail && (
+
+                <div class="confirmRegist">
+                    <div class="fullBody">
+                        <div class="form-container-Detail">
+                            <div>
+                                <button className="" onClick={handleCloseClickDetail}> &times; </button>
+                            </div>
+
+                            내용 상세페이지 넣을 예정입니다. ㅎㅎ!
+
+                        </div>
+                    </div>
+                </div>
+
+
+            )}
+
+
         </div>
-
     );
-
-
 }
 
-
-
-//페이지 root가 되는 JS는 root에 삽입되도록 처리
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <Customer />
 );
-
-
