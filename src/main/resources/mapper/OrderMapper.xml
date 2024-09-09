@@ -5,26 +5,27 @@
 
 <mapper namespace="com.project.tobe.mapper.OrderMapper">
 
-
     <select id="getOrder" resultMap="Confirm">
+        SELECT list.*, PROD.PRODUCT_NO AS productNo, PROD.PRODUCT_NAME AS productName
+        FROM ORDER_BODY OB
+        JOIN PRODUCT PROD ON PROD.PRODUCT_NO = OB.PRODUCT_NO
+        JOIN(
         SELECT OH.ORDER_NO AS orderNo,
-            CONFINFO.CONFIRM_TITLE AS confirmTitle,
-            CONFINFO.CONFIRM_CONTENT AS confirmContent,
-            CONFINFO.EMPLOYEE_NAME AS employeeName,
-            CONFINFO.CONFIRM_STATUS AS confirmStatus,
-            CONFINFO.CONFIRM_CONFIRM_DATE AS confirmConfirmDate
+        CONFINFO.CONFIRM_TITLE AS confirmTitle,
+        CONFINFO.CONFIRM_CONTENT AS confirmContent,
+        CONFINFO.EMPLOYEE_NAME AS employeeName,
+        CONFINFO.CONFIRM_STATUS AS confirmStatus,
+        CONFINFO.CONFIRM_CONFIRM_DATE AS confirmConfirmDate
         FROM ORDER_HEADER OH
         JOIN (
-            SELECT EMP.EMPLOYEE_NAME, CONF.CONFIRM_TITLE, CONF.CONFIRM_CONTENT, CONF.CONFIRM_STATUS, CONF.CONFIRM_CONFIRM_DATE, CONF.ORDER_NO
-            FROM EMPLOYEE EMP
-            JOIN CONFIRM CONF ON CONF.EMPLOYEE_ID = EMP.EMPLOYEE_ID
-            ) CONFINFO ON CONFINFO.ORDER_NO = OH.ORDER_NO
-        GROUP BY OH.ORDER_NO, CONFINFO.CONFIRM_TITLE, CONFINFO.CONFIRM_CONTENT, CONFINFO.EMPLOYEE_NAME, CONFINFO.CONFIRM_STATUS, CONFINFO.CONFIRM_CONFIRM_DATE
+        SELECT EMP.EMPLOYEE_NAME, CONF.CONFIRM_TITLE, CONF.CONFIRM_CONTENT, CONF.CONFIRM_STATUS, CONF.CONFIRM_CONFIRM_DATE, CONF.ORDER_NO
+        FROM EMPLOYEE EMP
+        JOIN CONFIRM CONF ON CONF.EMPLOYEE_ID = EMP.EMPLOYEE_ID
+        ) CONFINFO ON CONFINFO.ORDER_NO = OH.ORDER_NO
+        )list ON list.orderNo = OB.ORDER_NO
     </select>
 
-
-
-    <resultMap id="Confirm" type="com.project.tobe.entity.Confirm">
+    <resultMap id="Confirm" type="Confirm">
         <result column="orderNo" property="orderNo"/>
         <result column="confirmTitle" property="confirmTitle"/>
         <result column="confirmContent" property="confirmContent"/>
@@ -33,18 +34,20 @@
         <association property="employee" javaType="Employee">
             <result column="employeeName" property="employeeName"/>
         </association>
+        <association property="orderH" resultMap="OrderH"/>
     </resultMap>
 
-<!--    <resultMap id="OrderH" type="OrderH">
+    <resultMap id="OrderH" type="OrderH">
         <result column="orderNo" property="orderNo"/>
-        <collection property="confirmList" resultMap="Confirm"/>
+        <collection property="orderBList" resultMap="OrderB"/>
     </resultMap>
 
-    <resultMap id="Employee" type="Employee">
-        <id column="employeeId" property="employeeId"/>
-        <result column="employeeName" property="employeeName"/>
-        <collection property="confirmList" resultMap="Confirm"/>
-    </resultMap>-->
-
+    <resultMap id="OrderB" type="OrderB">
+        <result column="orderNo" property="orderNo"/>
+        <association property="product" javaType="Product">
+            <result column="productNo" property="productNo"/>
+            <result column="productName" property="productName"/>
+        </association>
+    </resultMap>
 
 </mapper>

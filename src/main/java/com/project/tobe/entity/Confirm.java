@@ -22,5 +22,6 @@ public class Confirm {
     private String employeeId;//fk
     private Long orderNo; //fk
 
+    private OrderH orderH;
     private Employee employee; //fk, 직원 id에 따른 직원명 필요
 }

@@ -22,4 +22,6 @@ public class OrderH {
     private Date delDate; //납품일
     private Long customerNo;//fk
 
+    private List<OrderB> orderBList;
+
 }

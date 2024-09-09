@@ -3,6 +3,7 @@ package com.project.tobe.repository;
 import com.project.tobe.dto.PriceSearchDTO;
 import com.project.tobe.entity.Price;
 import com.project.tobe.entity.QPrice;
+import com.project.tobe.util.constants.YesNo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.project.tobe.util.constants.YesNo;
+import static com.project.tobe.util.constants.YesNo.*;
 
 public class PriceRepositoryImpl implements PriceCustomRepository {
     @PersistenceContext
@@ -41,7 +42,7 @@ public class PriceRepositoryImpl implements PriceCustomRepository {
         customerNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customerNo.eq(Long.parseLong(s))));
         startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
         endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
-        builder.and(price.activated.eq(Y));
+//        builder.and(price.activated.eq('Y'));
 
         return jpaQueryFactory.select(price).from(price).where(builder).orderBy(price.priceNo.desc()).fetch();
     }
