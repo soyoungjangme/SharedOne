@@ -190,25 +190,21 @@
 
 
 
-    .btn-add ,.btn-close{
+.btn-close{
       grid-column: span 6;
       text-align: right;
       cursor: pointer;
     }
 
+.btn-add-p {
+    float: right;
+}
 
+.btn-add {
+    margin-bottom: 33px;
+}
     .btn-add button  {
-      background-color: #004e90;
-      color: #fff;
-      /* background-color: #fff;
-      box-shadow: 0 3px 3px rgba(189, 189, 189, 0.16), 0 3px 6px rgba(131, 131, 131, 0.23); */
-      /* background: rgb(241,241,241); */
-      /* background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%); */
-      border: 1px solid #ddd;
-      width: 60px;
-      height: 35px;
-      border-radius: 2px;
-      font-weight: bold;
+
     }
 
     .btn-add2 button  {
@@ -240,7 +236,16 @@
       height: 30px;
       border-radius: 2px;
     }
-
+      .btn-CSV {
+          padding: 4px 6px;
+          border: 1px solid #004e90;
+          background-color: #004e90;
+          color: white;
+          font-size: 14px;
+          border-radius: 3px;
+          cursor: pointer;
+          margin-right: 3px;
+      }
 
     .btn-load {
 
