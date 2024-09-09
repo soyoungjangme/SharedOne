@@ -13,34 +13,18 @@ function Customer() {
         handleMasterCheckboxChange,
         handleCheckboxChange,
         handleDelete
-    } = useCheckboxManager(setProduct);
+    } = useCheckboxManager(setCustomer);
 
-
-    const [product, setProduct] = useState([
-        {
-            //테스트용 초기 데이터
-            customerNo: 333, //고객번호
-            customerName: "bana", //고객명
-            customerAddr: "good", //고객주소
-            customerTel: "010-1234-1234", //고객 연락처
-            postNum: "12345", //우편번호
-            businessRegistrationNo: "1212-2424", //사업자 등록 번호
-            nation: "한국", //국가
-            dealType: "거래", //거래 유형
-            picName: "픽네임", //담당자명
-            picEmail: "123", //담당자 이메일
-            picTel: "3252", //담당자 연락처
-            activated: "Y" //활성화
-        }
-    ]); // 리스트 데이터를 저장할 state
+    const [customer, setCustomer] = useState([]);     // 리스트 데이터를 저장할 state
 
     // 서버에서 데이터 가져오기
     useEffect(() => {
         const fetchData = async () => {
             try {
                 let data = await fetch('/Customer/customer').then(res => res.json());
-                setProduct(data); // 데이터를 state에 저장
+                setCustomer(data); // 데이터를 state에 저장
                 setOrder(data);
+                console.log(data)
             } catch (error) {
                 console.error("데이터를 가져오는 중 오류 발생:", error);
             }
@@ -49,25 +33,26 @@ function Customer() {
         fetchData();
     }, []); // 컴포넌트가 처음 마운트될 때만 실행
 
+    // 서버에서 데이터 가져오기
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                let data = await fetch('/Customer/customer').then(res => res.json());
+                setCustomer(data); // 데이터를 state에 저장
+                sortData(sortConfig.key, sortConfig.direction, data); // 정렬 적용
+            } catch (error) {
+                console.error("데이터를 가져오는 중 오류 발생:", error);
+            }
+        };
+
+        fetchData();
+    }, [sortConfig]); // sortConfig가 변경될 때마다 데이터 재정렬
 
     // --- 테이블 정렬 기능
 
     // 주문 데이터를 저장하는 상태
     const [order, setOrder] = useState([
-        {
-            customerNo: 0, //고객번호
-            customerName: "", //고객명
-            customerAddr: "", //고객주소
-            customerTel: "", //고객 연락처
-            postNum: "", //우편번호
-            businessRegistrationNo: "", //사업자 등록 번호
-            nation: "", //국가
-            dealType: "", //거래 유형
-            picName: "", //담당자명
-            picEmail: "", //담당자 이메일
-            picTel: "", //담당자 연락처
-            activated: "" //활성화
-        }
+
     ]); // 리스트 데이터를 저장할 state
 
 
@@ -114,7 +99,6 @@ function Customer() {
         setIsVisibleCSV((prevState) => !prevState);
     };
 
-
     const [isVisible, setIsVisible] = useState(false);
 
     const handleAddClick = () => {
@@ -152,28 +136,16 @@ function Customer() {
         setIsModifyModalVisible(false);
     }
 
-    // --- 모달창 띄우는 스크립트
-
-
     return (
-        <div>
-
+        <div className='fade_effect'>
+            <div>
+                <p>테스트용123  {customer.customerName}</p>
+            </div>
             <div className="pageHeader"><h1><i className="bi bi-search"></i>고객 리스트</h1></div>
-
             <div className="main-container">
 
                 {/* 조회하는 부분 */}
                 <div className="filter-container">
-
-                    <div className="breadcrumb">
-                        <a href="#">
-                            <span className="home-icon"></span>
-                        </a>
-                        <span className="separator"></span>
-                        <a href="#">고객정보</a>
-                        <span class="separator"></span>
-                        <a className="#">고객정보조회</a>
-                    </div>
 
                     {/* (text) 고객명
                     (text) 고객 주소 (API 사용)
@@ -193,33 +165,33 @@ function Customer() {
                     </div> */}
 
                     <div className="filter-row">
-                        <label className="filter-label" htmlFor="productNo">상품코드</label>
-                        <input className="filter-input" type="text" id="productNo" placeholder="상품코드" required />
+                        <label className="filter-label" htmlFor="customerNo">고객명</label>
+                        <input className="filter-input" type="text" id="customerNo" placeholder="상품코드" required />
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" htmlFor="productName">상품명</label>
-                        <input className="filter-input" type="text" id="productName" placeholder="상품명" required />
+                        <label className="filter-label" htmlFor="customerName">상품명</label>
+                        <input className="filter-input" type="text" id="customerName" placeholder="상품명" required />
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" htmlFor="productWriter">상품저자</label>
-                        <input className="filter-input" type="text" id="productWriter" placeholder="상품저자" required />
+                        <label className="filter-label" htmlFor="customerWriter">상품저자</label>
+                        <input className="filter-input" type="text" id="customerWriter" placeholder="상품저자" required />
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" htmlFor="productWriter">상품카테고리</label>
-                        <input className="filter-input" type="text" id="productWriter" placeholder="상품카테고리" required />
+                        <label className="filter-label" htmlFor="customerWriter">상품카테고리</label>
+                        <input className="filter-input" type="text" id="customerWriter" placeholder="상품카테고리" required />
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" htmlFor="productQty">상품수량</label>
-                        <input className="filter-input" type="text" id="productQty" placeholder="상품수량" required />
+                        <label className="filter-label" htmlFor="customerQty">상품수량</label>
+                        <input className="filter-input" type="text" id="customerQty" placeholder="상품수량" required />
                     </div>
 
                     <div className="filter-row">
-                        <label className="filter-label" htmlFor="productPrice">상품원가</label>
-                        <input className="filter-input" type="text" id="productPrice" placeholder="상품원가" required />
+                        <label className="filter-label" htmlFor="customerPrice">상품원가</label>
+                        <input className="filter-input" type="text" id="customerPrice" placeholder="상품원가" required />
                     </div>
 
                     <button className="filter-button">조회</button>
@@ -299,43 +271,36 @@ function Customer() {
                         </tr>
                     </thead>
                     <tbody>
-                        {order.length > 0 ? (
-                            order.map((item, index) => (
-                                <tr key={index} className={checkItem[index + 1] ? 'selected-row' : ''}>
-                                    <td><input type="checkbox" checked={checkItem[index + 1] || false}
-                                        onChange={handleCheckboxChange} /></td>
-                                    <td>{index + 1}</td>
-                                    <td>{item.customerNo}</td>
-                                    <td>{item.customerName}</td>
-                                    <td>{item.customerAddr}
-                                        {/* 아래 두줄은 상세보기 기능 */}
-                                        <i className="bi bi-search details"
-                                            onClick={handleAddClickDetail} />
-                                    </td>
-                                    <td>{item.customerTel}</td>
-                                    <td>{item.postNum}</td>
-                                    <td>{item.businessRegistrationNo}</td>
-                                    <td>{item.nation}</td>
-                                    <td>{item.dealType}</td>
-                                    <td>{item.picName}</td>
-                                    <td>{item.picEmail}</td>
-                                    <td>{item.picTel}</td>
-                                    <td>{item.activated}</td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="10">등록된 고객이 없습니다😭</td>
+                        {customer.length > 0 ? customer.map((item, index) => (
+                            <tr key={item.customerNo}>
+                                <td><input type="checkbox" checked={checkItem.includes(item.customerNo)} onChange={() => handleCheckboxChange(item.customerNo)} /></td>
+                                <td>{index + 1}</td>
+                                <td>{item.customerNo}</td>
+                                <td>{item.customerName}</td>
+                                <td>{item.customerAddr}</td>
+                                <td>{item.customerTel}</td>
+                                <td>{item.postNum}</td>
+                                <td>{item.businessRegistrationNo}</td>
+                                <td>{item.nation}</td>
+                                <td>{item.dealType}</td>
+                                <td>{item.picName}</td>
+                                <td>{item.picEmail}</td>
+                                <td>{item.picTel}</td>
+                                <td>{item.activated}</td>
+                                <td>
+                                    <button onClick={() => handleModify(item)}>수정</button>
+                                </td>
                             </tr>
+                        )) : (
+                            <tr><td colSpan="14">데이터가 없습니다</td></tr>
                         )}
-
-
                         <tr>
-                            <td colspan="13"></td>
-                            <td colspan="1"> 6 건</td>
+                            <td colSpan="13"></td>
+                            <td colSpan="2">{customer.length} 건</td>
                         </tr>
-
                     </tbody>
+
+
                 </table>
             </div>
 
@@ -506,26 +471,26 @@ function Customer() {
                                 <table class="formTable">
                                     <tr>
                                         <th colspan="1"><label for="">직원 ID</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.customerNo} /></td>
 
                                         <th colspan="1"><label for="">직원 PW</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.customerNo} /></td>
                                     </tr>
                                     <tr>
                                         <th><label for="">연락처</label></th>
-                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.customerNo} /></td>
                                         <th><label for="">연락처</label></th>
-                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.customerNo} /></td>
                                         <th><label for="">연락처</label></th>
-                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.customerNo} /></td>
                                         <th><label for="">직원 ID</label></th>
-                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.customerNo} /></td>
                                     </tr>
                                     <tr>
                                         <th colspan="1"><label for="">연락처</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.customerNo} /></td>
                                         <th colspan="1"><label for="">연락처</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.productNo} /></td>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.customerNo} /></td>
                                     </tr>
                                     <tr>
                                         <th colspan="1"><label for="">연락처</label></th>
@@ -568,6 +533,8 @@ function Customer() {
 
         </div>
     );
+
+
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

@@ -308,3 +308,32 @@ tr:nth-child(0){
        text-align: center;
        padding: 0px;
     }
+
+
+
+
+
+
+
+/* 화면 애니메이션 해보기*/
+.fade_effect {
+    background: white;
+    /* animation: name duration timing-function delay iteration-count direction fill-mode; */
+    animation: fadein 0.3s ease-in;
+}
+/* 위에 fadein 옵션 조절하기 */
+@keyframes fadein { 
+    from {
+        opacity :0;
+    } to {
+        opacity: 1;
+    }
+}
+
+
+
+
+
+
+
+

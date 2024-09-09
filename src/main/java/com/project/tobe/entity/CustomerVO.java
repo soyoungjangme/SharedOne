@@ -2,20 +2,15 @@ package com.project.tobe.entity;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Setter
-@Getter
-@ToString
-@Table(name= "customer")
-public class Customer {
+@Table(name = "customer") // 데이터베이스 테이블과 매핑
+public class CustomerVO {
 
     @Id
     private Long customerNo;
