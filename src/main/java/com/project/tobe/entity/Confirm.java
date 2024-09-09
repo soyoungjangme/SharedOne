@@ -28,11 +28,4 @@ public class Confirm {
     private String confirmContent;
     private LocalDate confirmRegDate;
     private LocalDate confirmConfirmDate;
-    private String employeeName;
-    private Double customPrice;
-    private String productName;
-    private String productType;
-    private Long productQty;
-    private String custName;
-    private LocalDate delDate;
 }

@@ -5,6 +5,8 @@ import './modal_confirm1.css';
 import useCheckboxManager from '../js/CheckboxManager';
 
 function Confirm() {
+
+// 체크박스 이벤트
     const {
         allCheck,
         checkItem,
@@ -17,7 +19,10 @@ function Confirm() {
     const [product, setProduct] = useState([]);
     const [confirm, setConfirm] = useState([]);
     const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
+    const [openModal, setOpenModal] = useState(false);
+    const [isVisibleCSV, setIsVisibleCSV] = useState(false);
 
+// 정렬 이벤트
     const sortData = (key) => {
         let direction = 'ascending';
         if (sortConfig.key === key && sortConfig.direction === 'ascending') {
@@ -49,11 +54,10 @@ function Confirm() {
         fetchData();
     }, []);
 
-    const [openModal, setOpenModal] = useState(false);
+
     const handleOpenClick = () => setOpenModal(true);
     const handleCloseClick = () => setOpenModal(false);
 
-    const [isVisibleCSV, setIsVisibleCSV] = useState(false);
     const handleAddClickCSV = () => setIsVisibleCSV(prevState => !prevState);
 
     return (
