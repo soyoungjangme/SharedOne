@@ -5,10 +5,7 @@ import com.project.tobe.entity.Price;
 import com.project.tobe.service.PriceService;
 import com.project.tobe.util.constants.URLConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,8 +22,9 @@ public class PriceController {
         return priceService.getAllPrice();
     }
 
-    @PostMapping(SEARCH_PRICE)
-    public List<Price> searchPrice(PriceSearchDTO dto) {
+    @PostMapping(value=SEARCH_PRICE , produces = "application/json", consumes = "application/json")
+    public List<Price> searchPrice(@RequestBody PriceSearchDTO dto) {
+        System.out.println(dto);
         return priceService.getPriceByDTO(dto);
     }
 }
