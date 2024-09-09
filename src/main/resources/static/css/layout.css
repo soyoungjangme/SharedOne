@@ -67,7 +67,7 @@ body {
 /* home 아이콘 때문에 아래부터 다 건드림 */
 .top-nav {
   border-bottom: 1px solid #ddd;
-  background-color: #f3f3f3;
+  /*background-color: #f3f3f3;*/
   height: 80px;
   display: flex;
   align-items: center;

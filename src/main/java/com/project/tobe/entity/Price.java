@@ -9,7 +9,6 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "price")
-//@Check(name = "check_yes_no", expression = "activated IN ('y', 'n')")
 @Getter
 @Setter
 @ToString

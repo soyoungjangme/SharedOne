@@ -32,7 +32,7 @@ public class PriceTest {
         Price price2 = Price.builder()
                 .registerDate(LocalDate.now())
                 .productNo(1002L)
-                .customerNo(2002L)
+                .customerNo(2L)
                 .customPrice(250.00)
                 .currency("EUR")
                 .discount(5.0)
@@ -97,7 +97,7 @@ public class PriceTest {
                 .currency("USD")
                 .discount(9.5)
                 .startDate(LocalDate.of(2024, 7, 1))
-                .endDate(LocalDate.of(2024, 6, 30))
+                .endDate(LocalDate.of(2025, 6, 30))
                 .activated(YesNo.Y)
                 .build();
 
@@ -109,7 +109,7 @@ public class PriceTest {
                 .currency("CAD")
                 .discount(3.0)
                 .startDate(LocalDate.of(2024, 8, 1))
-                .endDate(LocalDate.of(2024, 5, 31))
+                .endDate(LocalDate.of(2025, 5, 31))
                 .activated(YesNo.Y)
                 .build();
 
@@ -121,7 +121,7 @@ public class PriceTest {
                 .currency("AUD")
                 .discount(2.5)
                 .startDate(LocalDate.of(2024, 9, 1))
-                .endDate(LocalDate.of(2024, 4, 30))
+                .endDate(LocalDate.of(2025, 4, 30))
                 .activated(YesNo.Y)
                 .build();
 
@@ -133,7 +133,7 @@ public class PriceTest {
                 .currency("SGD")
                 .discount(15.0)
                 .startDate(LocalDate.of(2024, 10, 1))
-                .endDate(LocalDate.of(2024, 3, 31))
+                .endDate(LocalDate.of(2025, 3, 31))
                 .activated(YesNo.Y)
                 .build();
 
@@ -145,7 +145,7 @@ public class PriceTest {
                 .currency("HKD")
                 .discount(6.5)
                 .startDate(LocalDate.of(2024, 11, 1))
-                .endDate(LocalDate.of(2024, 2, 29))
+                .endDate(LocalDate.of(2025, 3, 29))
                 .activated(YesNo.Y)
                 .build();
 
@@ -157,7 +157,7 @@ public class PriceTest {
                 .currency("INR")
                 .discount(5.5)
                 .startDate(LocalDate.of(2024, 12, 1))
-                .endDate(LocalDate.of(2024, 1, 31))
+                .endDate(LocalDate.of(2025, 1, 31))
                 .activated(YesNo.Y)
                 .build();
 
@@ -169,7 +169,7 @@ public class PriceTest {
                 .currency("BRL")
                 .discount(7.0)
                 .startDate(LocalDate.of(2024, 1, 15))
-                .endDate(LocalDate.of(2024, 12, 15))
+                .endDate(LocalDate.of(2025, 12, 15))
                 .activated(YesNo.Y)
                 .build();
 
@@ -181,7 +181,7 @@ public class PriceTest {
                 .currency("ZAR")
                 .discount(3.5)
                 .startDate(LocalDate.of(2024, 2, 15))
-                .endDate(LocalDate.of(2024, 11, 15))
+                .endDate(LocalDate.of(2025, 11, 15))
                 .activated(YesNo.Y)
                 .build();
 
@@ -193,7 +193,7 @@ public class PriceTest {
                 .currency("MXN")
                 .discount(6.0)
                 .startDate(LocalDate.of(2024, 3, 15))
-                .endDate(LocalDate.of(2024, 10, 15))
+                .endDate(LocalDate.of(2025, 10, 15))
                 .activated(YesNo.Y)
                 .build();
 
@@ -205,7 +205,7 @@ public class PriceTest {
                 .currency("RUB")
                 .discount(4.0)
                 .startDate(LocalDate.of(2024, 4, 15))
-                .endDate(LocalDate.of(2024, 9, 15))
+                .endDate(LocalDate.of(2025, 9, 15))
                 .activated(YesNo.Y)
                 .build();
 
@@ -217,7 +217,7 @@ public class PriceTest {
                 .currency("SEK")
                 .discount(5.0)
                 .startDate(LocalDate.of(2024, 5, 15))
-                .endDate(LocalDate.of(2024, 8, 15))
+                .endDate(LocalDate.of(2025, 8, 15))
                 .activated(YesNo.Y)
                 .build();
 
@@ -229,7 +229,7 @@ public class PriceTest {
                 .currency("NOK")
                 .discount(4.5)
                 .startDate(LocalDate.of(2024, 6, 15))
-                .endDate(LocalDate.of(2024, 7, 15))
+                .endDate(LocalDate.of(2025, 7, 15))
                 .activated(YesNo.Y)
                 .build();
 
@@ -241,7 +241,7 @@ public class PriceTest {
                 .currency("CHF")
                 .discount(8.0)
                 .startDate(LocalDate.of(2024, 7, 15))
-                .endDate(LocalDate.of(2024, 6, 15))
+                .endDate(LocalDate.of(2025, 6, 15))
                 .activated(YesNo.Y)
                 .build();
 
@@ -253,7 +253,7 @@ public class PriceTest {
                 .currency("NZD")
                 .discount(9.0)
                 .startDate(LocalDate.of(2024, 8, 15))
-                .endDate(LocalDate.of(2024, 5, 15))
+                .endDate(LocalDate.of(2025, 5, 15))
                 .activated(YesNo.Y)
                 .build();
 
