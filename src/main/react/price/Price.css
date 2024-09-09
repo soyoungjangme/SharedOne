@@ -1,15 +1,17 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
+  font-family: "Noto Sans KR", sans-serif;
     margin: 0;
     padding: 0;
 }
 
-
 /* styles.css */
 
-#add {
+#add{
     float: right;
+    margin-top: 30px;
 }
 
 
@@ -49,7 +51,7 @@ body {
     margin: 40px;
 }
 
-.main-name1 {
+.main-name1{
     font-size: 30px;
     font-weight: bold;
     margin-bottom: 40px;
@@ -72,7 +74,7 @@ h2 {
     flex-direction: column;
 }
 
-.form-group label {
+.form-group label{
     font-weight: bold;
 }
 
@@ -102,6 +104,8 @@ input {
 }
 
 
+
+
 .submit-btn, .cancel-btn, .cancel-btn2, .cancel-btn3 {
     padding: 10px 20px;
     font-size: 14px;
@@ -115,7 +119,7 @@ input {
     color: white;
 }
 
-.cancel-btn, .cancel-btn2 {
+.cancel-btn , .cancel-btn2{
     background-color: #ddd;
 }
 
@@ -123,22 +127,38 @@ input {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.8rem;
+    margin-top: 100px;
+    position: relative;
 }
-
 .seacrh-table, th, td {
     border: 1px solid #ddd;
 }
 
 .seacrh-table th {
-    border-top: 2px solid #0063ac;
+    border-top : 2px solid #0063ac;
 }
 
-.seacrh-table tr:hover {
+.seacrh-table tr:hover{
     background-color: rgba(200, 230, 255, 0.366);
 }
 
+.seacrh-table tbody tr:last-child {
+    font-weight: bold; /* Apply bold styling */
+    background: rgb(241,241,241);
+         background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
+}
+.seacrh-table tbody tr:last-child td {
+    text-align: center;
+}
 
-tr:nth-child(0) {
+.seacrh-table tbody td i {
+    float : right;
+    cursor :pointer;
+}
+
+
+
+tr:nth-child(0){
     font-weight: bold;
 }
 
@@ -147,67 +167,15 @@ tr:nth-child(0) {
   background-color: #f4f4f4;
 } */
 
-.seacrh-table th, td {
+.seacrh-table  th, td {
     padding: 10px;
     text-align: left;
 
 }
+.seacrh-table  th {
+     background: rgb(241,241,241);
+     background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
 
-.seacrh-table th {
-    background: #f4f4f4;
-
-}
-
-
-.top-nav {
-    border-bottom: 1px solid #ddd;
-    background-color: #f3f3f3;
-    height: 80px;
-
-
-}
-
-
-.user-profile {
-    margin-top: 10px;
-    float: right;
-    width: 300px;
-    height: 100%;
-
-}
-
-
-.user-profile-box {
-    display: flex;
-
-    align-items: center
-}
-
-.user-profile-button {
-    padding: 10px 16px;
-    border: 1px solid #004e90;
-    background-color: #004e90;
-    color: white;
-    font-size: 16px;
-    border-radius: 2px;
-    cursor: pointer;
-}
-
-.user-profile-info {
-    align-items: center;
-    font-size: 18px;
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.user-profile-img {
-    width: 50px;
-    height: 50px;
-    border-radius: 100px;
-    margin-right: 15px;
 }
 
 
@@ -220,6 +188,17 @@ tr:nth-child(0) {
     border-radius: 2px;
     background-color: #f4f4f4;
     margin: auto;
+    background: linear-gradient(0deg, rgb(246 246 246) 0%, rgba(255, 255, 255, 1) 100%);
+        box-shadow: 0px 2px 20px 0px #fafafa;
+}
+
+.pageHeader {
+    margin-bottom : 60px;
+}
+
+
+.pageHeader .bi {
+    margin-right : 10px;
 }
 
 .filter-item {
@@ -255,7 +234,7 @@ tr:nth-child(0) {
 }
 
 .filter-button {
-    grid-column-end: 7;
+    grid-column-end  : 7;
 
     margin-top: 20px;
     padding: 8px 16px;
@@ -306,6 +285,32 @@ tr:nth-child(0) {
     margin-right: 5px;
 }
 
+
+.selected-row {
+    background-color: rgba(200, 230, 255, 0.366);
+}
+
+.delete-btn {
+    width: 65px;
+    height: 25px;
+    position: absolute;
+    top: -35px;
+
+}
+
+/*  sort */
+.sortBtn {
+   border: 1px solid #d0d0d0;
+       margin-left: 10px;
+       color: #4c4c4c;
+       font-size: 15px;
+       width: 22px;
+       height: 20px;
+       text-align: center;
+       padding: 0px;
+    }
+
+
 .chart-container {
     margin: 0 auto;
     position: relative;
@@ -347,13 +352,4 @@ tr:nth-child(0) {
     width: 100%;
     height: 100%;
     align-items: center;
-}
-/*.search-table {*/
-/*    position: relative;*/
-/*}*/
-.delete-btn {
-    width: 65px;
-    height: 25px;
-    position: absolute;
-    top: 635px;
 }
