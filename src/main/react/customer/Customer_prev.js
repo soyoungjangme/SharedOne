@@ -1,14 +1,107 @@
-import React from 'react'; //어느 컴포넌트이든 React임포트가 필요합니다.
+import React, { useState } from 'react'; //어느 컴포넌트이든 React임포트가 필요합니다.
 import ReactDOM from 'react-dom/client'; //root에 리액트 돔방식으로 렌더링시 필요합니다.
-import './Buyer.css' //css파일 임포트
+import './Customer.css' //css파일 임포트
 
-function Buyer() {
+import axios from 'axios';
+
+function Customer() {
+
+    //데이터 초기값, 배열로
+    let [customer, setCustomer] = useState([
+        {
+            customerNo: 333, //고객번호
+            customerName: "bana", //고객명
+            customerAddr: "good", //고객주소
+            customerTel: "010-1234-1234", //고객 연락처
+            postNum: "12345", //우편번호
+            businessRegistrationNo: "1212-2424", //사업자 등록 번호
+            nation: "한국", //국가
+            dealType: "거래", //거래 유형
+            picName: "픽네임", //담당자명
+            picEmail: "123", //담당자 이메일
+            picTel: "3252", //담당자 연락처
+            activated: "Y" //활성화
+        }
+    ]);
+
+    // 고객 데이터 상태
+    // const [customers, setCustomers] = useState([]);
+
+    //선택된 행 저장
+    //const [selectedRows, setSelectedRows] = useState(new set());
+
+    //단일 객체로
+    // let [customer, setCustomer] = useState({
+    //     customerNo: 333, //고객번호
+    //     customerName: "bana", //고객명
+    //     customerAddr: "good", //고객주소
+    //     customerTel: "010-1234-1234", //고객 연락처
+    //     postNum: "12345", //우편번호
+    //     businessRegistrationNo: "1212-2424", //사업자 등록 번호
+    //     nation: "한국", //국가
+    //     dealType: "거래", //거래 유형
+    //     picName: "픽네임", //담당자명
+    //     picEmail: "123", //담당자 이메일
+    //     picTel: "3252", //담당자 연락처
+    //     activated: "Y" //활성화
+    // });
+
+    let handleBtn = async () => {
+        try {
+            
+            let response = await fetch('/Customer_test/customer');
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            let data = await response.json();
+            console.log("전체 데이터!", data);
+
+            // 서버 응답이 단일 객체인 경우, 배열로 변환
+            if (data && typeof data === 'object' && !Array.isArray(data)) {
+                setCustomer([data]); // 단일 객체를 배열로 감싸서 상태 업데이트
+            } else if (Array.isArray(data)) {
+                setCustomer(data);
+            } else {
+                console.error("데이터 형식이 올바르지 않습니다:", data);
+                setCustomer([]); // 빈 배열로 초기화
+            }
+
+        } catch (error) {
+            console.error("데이터 요청 중 오류 발생:", error);
+            setCustomer([]); // 빈 배열로 초기화
+        }
+
+    }
+
+
+
 
     return (
         <div>
 
+            <div>
+
+                <button type="button" onClick={handleBtn}>버튼 test</button>
+
+
+            </div>
 
             <h1> <i className="bi bi-search"></i> 고객 리스트 </h1>
+
+            <div className="breadcrumb">
+                <a href="#">
+                    <span className="home-icon"></span>
+                </a>
+                <span className="separator"></span>
+                <a href="#">고객정보</a>
+                <span class="separator"></span>
+                <a className="#">고객정보조회</a>
+            </div>
+
+
+
             <div className="main-container">
                 <div className="filter-container">
 
@@ -82,51 +175,58 @@ function Buyer() {
                     </div>
 
 
-                    <button className="filter-button">조회</button>
+                    <button className="filter-button" onClick={handleBtn}>조회</button>
                 </div>
 
 
                 <table className="seacrh-table">
                     <thead>
+
                         <tr>
                             <th><input type="checkbox" /></th>
-                            <th> No.</th>
                             <th>고객 번호</th>
-                            <th>업체명</th>
-                            <th>업체주소</th>
+                            <th>고객명</th>
+                            <th>고객 주소</th>
+                            <th>고객 연락처</th>
                             <th>우편번호</th>
-                            <th>사업자등록번호</th>
-                            <th>업체 연락처</th>
-                            <th>담당자명</th>
-                            <th>부담당자명</th>
-                            <th>담당자 이메일</th>
-                            <th>담당자 번호</th>
-                            <th>담당자 이메일</th>
-                            <th>담당자 번호</th>
-                            <th> 국가 </th>
+                            <th>사업자 등록 번호</th>
+                            <th>국가</th>
                             <th>거래유형</th>
+                            <th>담당자명</th>
+                            <th>담당자 이메일</th>
+                            <th>담당자 연락처</th>
+                            <th>활성화</th>
                         </tr>
+
                     </thead>
+
                     <tbody>
-                        <tr>
-                            
-                            <td> <input type="checkbox" /></td>
-                            <td>1</td>
-                            <td>삼국지</td>
-                            <td>1234</td>
-                            <td>반려됨</td>
-                            <td>12345</td>
-                            <td>123-45-67890</td>
-                            <td>02-1234-5678</td>
-                            <td><i className="bi bi-search"></i></td>
-                            <td>이영희</td>
-                            <td>kim@abc.com</td>
-                            <td>010-1234-5678</td>
-                            <td>lee@abc.com</td>
-                            <td>010-8765-4321</td>
-                            <td>대한민국</td>
-                            <td>수출</td>
-                        </tr>
+
+                        {/* 테이블 전부 나타내기 */}
+                        {customer.length > 0 ? (
+                            customer.map((cust) => (
+                                <tr key={cust.customerNo}>
+                                    <td><input type="checkbox" /></td>
+                                    <td>{cust.customerNo}</td>
+                                    <td>{cust.customerName}</td>
+                                    <td>{cust.customerAddr}</td>
+                                    <td>{cust.customerTel}</td>
+                                    <td>{cust.postNum}</td>
+                                    <td>{cust.businessRegistrationNo}</td>
+                                    <td>{cust.nation}</td>
+                                    <td>{cust.dealType}</td>
+                                    <td>{cust.picName}</td>
+                                    <td>{cust.picEmail}</td>
+                                    <td>{cust.picTel}</td>
+                                    <td>{cust.activated}</td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="13">데이터가 없습니다.</td>
+                            </tr>
+                        )}
+
 
                         <tr>
                             <td> <input type="checkbox" /></td>
@@ -140,11 +240,8 @@ function Buyer() {
                             <td><i className="bi bi-search"></i></td>
                             <td>이영희</td>
                             <td>kim@abc.com</td>
-                            <td>010-1234-5678</td>
                             <td>lee@abc.com</td>
                             <td>010-8765-4321</td>
-                            <td>대한민국</td>
-                            <td>수출</td>
                         </tr>
 
                     </tbody>
@@ -164,7 +261,7 @@ function Buyer() {
 //페이지 root가 되는 JS는 root에 삽입되도록 처리
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <Buyer />
+    <Customer />
 );
 
 
