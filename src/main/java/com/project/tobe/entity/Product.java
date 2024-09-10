@@ -28,6 +28,7 @@ public class Product {
     private Long productQty;
     private String productType;
     private Long productPrice;
+    @Column(name = "product_yn")
     private Character productYn;
 }
 
