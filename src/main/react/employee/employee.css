@@ -32,6 +32,14 @@ body {
     align-items: center;
     gap: 5px; /* Reduced space between label and input */
 }
+
+.filter-item select {
+    width: 80%;
+    height: 30px;
+border: 1px solid #ccc;
+    border-radius: 4px;
+    }
+
 .filter-item label {
     width: 25%;
     font-weight: bold;
