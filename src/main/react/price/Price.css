@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
 
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
 
@@ -6,9 +7,6 @@ body {
     margin: 0;
     padding: 0;
 }
-
-
-
 .filter-containers {
     padding: 20px;
     border: 1px solid #ddd;
@@ -36,15 +34,12 @@ body {
     align-items: center;
     gap: 5px; /* Reduced space between label and input */
 }
-
 .filter-item label {
-
     width: 25%;
     font-weight: bold;
     font-size: 14px;
     color: #333;
 }
-
 .filter-item input {
     flex: 1;
     padding: 8px;
@@ -53,13 +48,11 @@ body {
     font-size: 14px;
     box-sizing: border-box;
 }
-
 .button-container {
     display: flex;
     align-items: center; /* 세로(위아래) 가운데 정렬 */
     justify-content: flex-end; /* 가로 가운데 정렬 (필요 시) */
 }
-
 .search-btn {
     padding: 10px 20px;
     background-color: #004e90;
@@ -74,7 +67,6 @@ body {
     align-items: center; /* 세로(위아래) 가운데 정렬 */
     justify-content: center; /* 가로 가운데 정렬 */
 }
-
 .search-btn .bi {
     text-align: center;
     display: block;
@@ -83,15 +75,6 @@ body {
 .search-btn:hover {
     background-color: #003561;
 }
-
-
-
-
-
-
-
-
-
 /* styles.css */
 
 .btn-common {
@@ -124,7 +107,6 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
-
 }
 
 .modal-content {
@@ -201,9 +183,6 @@ input {
     gap: 10px;
 }
 
-
-
-
 .submit-btn, .cancel-btn, .cancel-btn2, .cancel-btn3 {
     padding: 10px 20px;
     font-size: 14px;
@@ -271,33 +250,29 @@ tr:nth-child(0){
   background-color: #f4f4f4;
 } */
 
-.seacrh-table  th, td {
+.search-table  th, td {
     padding: 10px;
     text-align: left;
 
 }
-.seacrh-table  th {
+.search-table  th {
      background: rgb(241,241,241);
      background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
 
 }
 
-
-
+.search-table th:nth-child(1),
+.search-table th:nth-child(2),
+.search-table td:nth-child(3),
+.search-table td:nth-child(1) {
+    text-align: center;
+}
 .pageHeader {
     margin-bottom : 60px;
 }
-
-
 .pageHeader .bi {
     margin-right : 10px;
 }
-
-
-
-
-
-
 
 .search-button {
     position: absolute;
