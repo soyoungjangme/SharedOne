@@ -309,7 +309,7 @@ tr:nth-child(0){
 }
 
 /*  sort */
-/*.sortBtn {
+.sortBtn {
    border: 1px solid #d0d0d0;
    margin-left: 10px;
    color: #4c4c4c;
@@ -318,8 +318,9 @@ tr:nth-child(0){
    height: 20px;
    text-align: center;
    padding: 0px;
-}*/
-/*정렬버튼*/
+}
+/*
+정렬버튼
 .sortBtn {
     display: flex;
     align-items: center;
@@ -333,4 +334,4 @@ tr:nth-child(0){
     background-color: #f0f0f0;
     box-shadow: inset 2px 2px 2px  rgba(0, 0, 0, 0.3);
 }
-/*----------------------------------*/
+----------------------------------*/

@@ -1,9 +1,10 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import ReactDOM from "react-dom/client";
 import './Order.css'
 import './OrderRegist.css'
 import './OrderModalDetail.css'
 import useCheckboxManager from "../js/CheckboxManager";
+import axios from 'axios';
 
 function Order() {
     const {
@@ -16,17 +17,7 @@ function Order() {
     } = useCheckboxManager(setOrder);
 
     // 주문 데이터를 저장하는 상태
-    const [order, setOrder] = useState([
-        {
-            orderNo: 0,
-            title: '',
-            details: '',
-            manager: '',
-            status: '',
-            date: '',
-            prodName: ''
-        }
-    ]);
+    const [order, setOrder] = useState([]);
 
     //주문목록 불러오기
     useEffect( () => {
@@ -35,25 +26,18 @@ function Order() {
             try{
                 let data = await fetch('/order/orderList').then(res => res.json());
 
-                const transformData = data.map(item => {
-                    // orderBList 배열의 첫 번째 요소를 안전하게 가져오기
-                    const firstOrderB = item.orderH.orderBList[0] || {};
-                    const productName = firstOrderB.product ? firstOrderB.product.productName : '';
+                const transfomData = data.map(item => ({
+                    orderNo: item.orderNo,
+                    title: item.confirmTitle,
+                    details: item.confirmContent,
+                    manager: item.employee.employeeName,
+                    status: item.confirmStatus,
+                    date: item.confirmConfirmDate,
+                    prodName:  item.orderH.orderBList.map(orderB => orderB.product.productName)
+                }));
 
-                    return {
-                        orderNo: item.orderNo,
-                        title: item.confirmTitle,
-                        details: item.confirmContent,
-                        manager: item.employee.employeeName,
-                        status: item.confirmStatus,
-                        date: item.confirmConfirmDate,
-                        prodName: productName
-                    };
-                });
-
-
-                setOrder(transformData);
-                console.log(transformData);
+                setOrder(transfomData);
+                console.log(transfomData);
             } catch (error){
                 console.error('error발생함 : ', error);
             }
@@ -93,6 +77,7 @@ function Order() {
     /*조건 검색*/
     const [prod, setProd] = useState([]);
 
+    //상품명 목록 Data
     useEffect ( () => {
         let effectProd = async() => {
             let getProd = await fetch('/product/products').then(res => res.json());
@@ -101,20 +86,43 @@ function Order() {
         effectProd();
     },[]);
 
+    const selectRef = useRef(null); //해당 값에 직접 접근
 
-    /*const [customers, setCustomer] = useState([]);
-    useEffect ( () => {
-        let effectCustomer = async() => {
-            let getCustomer = await fetch('').then(res => res.json());
-            setCustomer(getCustomer);
-        }
-        effectCustomer();
-    },[]);*/
+    const [form, setForm] = useState({});
 
+    const handleChange = (e) => {
+        let copy = {...form, [e.target.id]: e.target.value};
+        setForm(copy);
+    }
 
     const handleSearchClick = async() => {
-        let getSearch = await fetch('/order/orderList').then(res => res.json());
-        setOrder(getSearch);
+        //서버로 데이터 보내기
+        const date = form.date || null;
+        const orderNo = form.orderNo|| null;
+        const prod = form.prod || null;
+        const manager = form.manager || null;
+
+        const res = await axios.post('/order/searchSelect', {
+            inputDate: date, inputOrderNo: orderNo, inputProdNo: prod, inputManager: manager
+        }); //{매개변수 : 전달 값}
+
+        const searchOrderData = res.data; //이렇게 먼저 묶고 반복 돌려야함.
+
+        if(Array.isArray(searchOrderData)){
+            const getSearchOrder = searchOrderData.map(item => ({ //res.data.map안된다는 소리
+                orderNo: item.orderNo,
+                title: item.confirmTitle,
+                details: item.confirmContent,
+                manager: item.employee.employeeName,
+                status: item.confirmStatus,
+                date: item.confirmConfirmDate,
+                prodName:  item.orderH.orderBList.map(orderB => orderB.product.productName)
+            }))
+
+            setOrder(getSearchOrder);
+        } else {
+            console.log('서버로부터 받은 데이터가 배열이 아닙니다.', searchOrderData);
+        }
     };
 
 
@@ -180,7 +188,7 @@ function Order() {
     return (
         <div>
 
-            <div className="pageHeader"><h1><i className="bi bi-search"></i>주문 관리</h1></div>
+            <div className="pageHeader"><h1><i class="bi bi-menu-up"></i>주문 관리</h1></div>
 
             <div className="main-container">
                 <div className="filter-container">
@@ -192,12 +200,12 @@ function Order() {
 
                     <div className="filter-row">
                     <label className="filter-label" htmlFor="date">등록 일자</label>
-                    <input className="filter-input" type="date" id="date" required />
+                    <input className="filter-input" type="date" id="date" value={form.date || ''} onChange={handleChange} ref={selectRef} required />
                     </div>
 
                     <div className="filter-row">
                     <label className="filter-label" htmlFor="orderNo">주문 번호</label>
-                    <input className="filter-input" type="text" id="orderNo" placeholder="주문 번호" required/>
+                    <input className="filter-input" type="text" id="orderNo" value={form.orderNo || ''} onChange={handleChange} ref={selectRef} placeholder="주문 번호" required/>
                     </div>
 
                     <div className="filter-row">
@@ -214,7 +222,7 @@ function Order() {
 
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="prod">상품명</label>
-                        <select id="prod" className="filter-input">
+                        <select id="prod" className="filter-input" value={form.prod || ''} onChange={handleChange} ref={selectRef}>
                             <option value="">선택</option>
                                 {prod.map((product) => (
                                     <option key={product.productNo} value={product.productNo}>
@@ -226,7 +234,7 @@ function Order() {
 
                     <div className="filter-row">
                     <label className="filter-label" htmlFor="transaction">담당자명</label>
-                    <input className="filter-input" type="text" id="manager" placeholder="담당자명" required/>
+                    <input className="filter-input" type="text" id="manager" value={form.manager || ''} onChange={handleChange} ref={selectRef} placeholder="담당자명" required/>
                     </div>
 
                     <button className="filter-button" id="searchOrder" onClick={handleSearchClick}>조회</button>
@@ -278,19 +286,19 @@ function Order() {
                         </button>
                         </th>
 
-                        <th>
+                        {/*<th>
                         상품명
                         <button className="sortBtn" onClick={() => sortData('prodName')}>
                         {sortConfig.key === 'prodName' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                         </button>
-                        </th>
+                        </th>*/}
 
                     </tr>
                     </thead>
                     <tbody>
                     {order.length > 0 ? (
                         order.map((item, index) => (
-                                <tr key={`${item.orderNo}-${item.prodName}`} className={checkItem[index + 1] ? 'selected-row' : ''}>
+                                <tr key={`${item.orderNo}-${index}`} className={checkItem[index+1] ? 'selected-row' : ''}>
                                 <td>
                                     <input
                                     type="checkbox"
@@ -305,17 +313,17 @@ function Order() {
                                 <td>{item.manager}</td>
                                 <td>{item.status}</td>
                                 <td>{item.date}</td>
-                                <td>{item.prodName}</td>
+                                {/*<td>{item.prodName}</td>*/}
                                 </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="6">등록된 상품이 없습니다😭</td>
+                            <td colSpan="6">등록된 주문이 없습니다😭</td>
                         </tr>
                     )}
                     <tr>
-                        <td colspan="5"></td>
-                        <td colspan="1"> 6 건</td>
+                        <td colSpan="5"></td>
+                        <td colSpan="1"> 6 건</td>
                     </tr>
 
                     </tbody>

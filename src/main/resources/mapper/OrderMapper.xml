@@ -9,7 +9,7 @@
         SELECT list.*, PROD.PRODUCT_NO AS productNo, PROD.PRODUCT_NAME AS productName
         FROM ORDER_BODY OB
         JOIN PRODUCT PROD ON PROD.PRODUCT_NO = OB.PRODUCT_NO
-        JOIN(
+        JOIN (
         SELECT OH.ORDER_NO AS orderNo,
         CONFINFO.CONFIRM_TITLE AS confirmTitle,
         CONFINFO.CONFIRM_CONTENT AS confirmContent,
@@ -18,12 +18,29 @@
         CONFINFO.CONFIRM_CONFIRM_DATE AS confirmConfirmDate
         FROM ORDER_HEADER OH
         JOIN (
-        SELECT EMP.EMPLOYEE_NAME, CONF.CONFIRM_TITLE, CONF.CONFIRM_CONTENT, CONF.CONFIRM_STATUS, CONF.CONFIRM_CONFIRM_DATE, CONF.ORDER_NO
+        SELECT EMP.EMPLOYEE_NAME, CONF.CONFIRM_TITLE, CONF.CONFIRM_CONTENT,
+        CONF.CONFIRM_STATUS, CONF.CONFIRM_CONFIRM_DATE, CONF.ORDER_NO
         FROM EMPLOYEE EMP
         JOIN CONFIRM CONF ON CONF.EMPLOYEE_ID = EMP.EMPLOYEE_ID
         ) CONFINFO ON CONFINFO.ORDER_NO = OH.ORDER_NO
-        )list ON list.orderNo = OB.ORDER_NO
+        ) list ON list.orderNo = OB.ORDER_NO
+        WHERE list.confirmStatus = '승인'
+            <if test="inputProdNo != null">
+                AND PROD.PRODUCT_NO = #{inputProdNo}
+            </if>
+            <if test="inputDate != null">
+                AND list.confirmConfirmDate = #{inputDate}
+            </if>
+            <if test="inputOrderNo != null">
+                AND list.orderNo = #{inputOrderNo}
+            </if>
+            <if test="inputManager != null">
+                AND list.employeeName = #{inputManager}
+            </if>
+
     </select>
+
+
 
     <resultMap id="Confirm" type="Confirm">
         <result column="orderNo" property="orderNo"/>
@@ -38,7 +55,6 @@
     </resultMap>
 
     <resultMap id="OrderH" type="OrderH">
-        <result column="orderNo" property="orderNo"/>
         <collection property="orderBList" resultMap="OrderB"/>
     </resultMap>
 
