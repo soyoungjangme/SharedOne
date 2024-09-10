@@ -22,4 +22,5 @@ public class Employee {
     private Long salary;
     private String employeeManagerId;
     private String authorityGrade;
+    private String emplYn;
 }
