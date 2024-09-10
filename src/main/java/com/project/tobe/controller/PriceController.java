@@ -6,6 +6,7 @@ import com.project.tobe.entity.Product;
 import com.project.tobe.service.PriceService;
 import com.project.tobe.util.constants.URLConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -37,5 +38,11 @@ public class PriceController {
     public List<Price> searchPrice(@RequestBody PriceSearchDTO dto) {
         System.out.println(dto);
         return priceService.getPriceByDTO(dto);
+    }
+
+    @PostMapping(value=REGISTER_PRICE , produces = "application/json", consumes = "application/json")
+    public ResponseEntity<String> savePrice(@RequestBody List<PriceSearchDTO> list) {
+        System.out.println(list);
+        return priceService.savePrice(list);
     }
 }
