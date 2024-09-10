@@ -5,6 +5,7 @@ import './Price.css';
 import useCheckboxManager from "../js/CheckboxManager";
 import useSort from '../js/useSort';
 import '../js/modalAdd.css';
+import ModalDetail from '../js/ModalDetail';
 
 import {Bar} from 'react-chartjs-2';
 import {
@@ -19,6 +20,7 @@ import {
     PointElement
 } from 'chart.js';
 import e from "babel-loader/lib/Error";
+import modalDetail from "../js/ModalDetail";
 
 ChartJS.register(
     BarElement,
@@ -202,8 +204,23 @@ function Price() {
 
 // --- 상세 모달창 띄우는 스크립트
     const [isVisibleDetail, setIsVisibleDetail] = useState(false);
+    const [modalDetailTitle, setModalDetailTitle] = useState('');
+    const [modalDetailData, setModalDetailData] = useState({});
 
-    const handleAddClickDetail = () => {
+    const handleAddClickDetail = (title, id) => {
+        let data = {};
+
+        if (title === 'product') {
+            data = product.filter((item) => item.productNo === id)[0];
+        }
+
+        if (title === 'customer') {
+            data = customer.filter((item) => item.customerNo === id)[0];
+        }
+
+        setModalDetailData(data);
+        setModalDetailTitle(title);
+
         setIsVisibleDetail(true);
     };
 
@@ -257,6 +274,19 @@ function Price() {
     const handleModifyItemChange = (e) => {
         let copy = {...modifyItem, [e.name]: e.value};
         setModifyItem(copy);
+    }
+
+    const handleModifyBtn = async () => {
+        await axios.post('/price/modify', JSON.stringify(modifyItem), {
+            headers: {
+                'content-type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then(r => {
+            console.log(r);
+            setIsModifyModalVisible(false);
+            fetchData();
+        }) ;
     }
 
     let [insertPrice, setInsertPrice] = useState({
@@ -467,13 +497,13 @@ function Price() {
                                 <td>{item.productName}
                                     <i className="bi bi-search details"
                                        onClick={() => {
-                                           handleAddClickDetail(item.productNo)
+                                           handleAddClickDetail('product', item.productNo)
                                        }}/>
                                 </td>
                                 <td>
                                     {item.customerName}
                                     <i className="bi bi-search details"
-                                       onClick={() => {handleAddClickDetail(item.customerNo)}} />
+                                       onClick={() => {handleAddClickDetail('customer', item.customerNo)}} />
                                 </td>
                                 <td>{item.customPrice}</td>
                                 <td>{item.currency}</td>
@@ -630,12 +660,6 @@ function Price() {
                                             <td colSpan="10">등록된 상품이 없습니다<i className="bi bi-emoji-tear"></i></td>
                                         </tr>
                                     )}
-
-                                    {/*<tr style={{fontWeight: 'bold'}}>*/}
-                                    {/*    <td colSpan="9"> 합계</td>*/}
-                                    {/*    <td colSpan="1"> 13,000,000</td>*/}
-                                    {/*</tr>*/}
-
                                     </tbody>
                                 </table>
                             </div>
@@ -658,7 +682,7 @@ function Price() {
 
                                 <div className="btns">
                                     <div className="btn-add2">
-                                        <button> 수정하기</button>
+                                        <button onClick={handleModifyBtn}> 수정하기</button>
                                     </div>
                                     <div className="btn-close">
 
@@ -737,67 +761,9 @@ function Price() {
                         <div className="form-container">
                             <button className="close-btn" onClick={handleCloseClickDetail}> &times;
                             </button>
-                            <div className="form-header">
-                                <h1> 고객 상세보기 </h1>
-
-                                <div className="btns">
-                                    <div className="btn-close">
-
-                                    </div>
-                                </div>
-                            </div>
 
 
-                            {/*<div className="RegistForm">*/}
-                            {/*    <table className="formTable">*/}
-                            {/*        <tr>*/}
-                            {/*            <th colSpan="1"><label htmlFor="productNo">상품</label></th>*/}
-                            {/*            <td colSpan="3"><input type="text" placeholder="필드 입력" id="productNo"*/}
-                            {/*                                   value={modifyItem.productNo} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/></td>*/}
-
-                            {/*            <th colSpan="1"><label htmlFor="customerNo">고객</label></th>*/}
-                            {/*            <td colSpan="3"><input type="text" placeholder="필드 입력" id="customerNo"*/}
-                            {/*                                   value={modifyItem.customerNo} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/></td>*/}
-                            {/*        </tr>*/}
-                            {/*        <tr>*/}
-                            {/*            <th><label htmlFor="customPrice">가격</label></th>*/}
-                            {/*            <td><input type="number" placeholder="필드 입력" id="customPrice"*/}
-                            {/*                       value={modifyItem.customPrice} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/></td>*/}
-
-                            {/*            <th><label htmlFor="currency">통화</label></th>*/}
-                            {/*            <td><input type="text" placeholder="필드 입력" id="currency"*/}
-                            {/*                       value={modifyItem.currency} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/></td>*/}
-
-                            {/*            <th><label htmlFor="discount">할인율(%)</label></th>*/}
-                            {/*            <td><input type="number" placeholder="필드 입력" id="discount"*/}
-                            {/*                       value={modifyItem.discount} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/></td>*/}
-                            {/*        </tr>*/}
-                            {/*        <tr>*/}
-                            {/*            <th colSpan="1"><label htmlFor="registStartDate">연락처</label></th>*/}
-                            {/*            <td colSpan="3"><input type="text" placeholder="필드 입력" id="registStartDate"*/}
-                            {/*                                   value={modifyItem.startDate} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/>*/}
-                            {/*            </td>*/}
-
-                            {/*            <th colSpan="1"><label htmlFor="registEndDate">연락처</label></th>*/}
-                            {/*            <td colSpan="3"><input type="text" placeholder="필드 입력" id="registEndDate"*/}
-                            {/*                                   value={modifyItem.endDate} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/></td>*/}
-                            {/*        </tr>*/}
-                            {/*    </table>*/}
-                            {/*</div>*/}
+                            <ModalDetail title={modalDetailTitle} data={modalDetailData} />
                         </div>
                     </div>
                 </div>

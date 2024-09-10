@@ -5,4 +5,5 @@ public interface URLConstants {
     String PRICE_ALL = "/all";
     String SEARCH_PRICE = "/search";
     String REGISTER_PRICE = "/register";
+    String MODIFY_PRICE = "/modify";
 }
