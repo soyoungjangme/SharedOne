@@ -7,7 +7,7 @@ module.exports = {
     entry: {
 
         login: './login/Login.js', // 로그인
-        user: './user/User.js', // 직원
+        employee: './employee/employee.js', // 직원
         order: './order/Order.js', //주문
         customer: './customer/Customer.js',// 고객
         product: './product/Product.js', // 직원
@@ -15,8 +15,6 @@ module.exports = {
         price: './price/price.js', // 판매가
         myPage: './myPage/myPage.js', // 판매가
         main: './main/Main.js',
-
-
     },
     devtool: 'sourcemaps',
     cache: true,

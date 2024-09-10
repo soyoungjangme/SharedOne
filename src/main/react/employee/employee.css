@@ -1,7 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
-
 body {
   font-family: "Noto Sans KR", sans-serif;
     margin: 0;
@@ -260,7 +258,6 @@ tr:nth-child(0){
      background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
 
 }
-
 .search-table th:nth-child(1),
 .search-table th:nth-child(2),
 .search-table td:nth-child(3),
@@ -273,6 +270,12 @@ tr:nth-child(0){
 .pageHeader .bi {
     margin-right : 10px;
 }
+
+
+
+
+
+
 
 .search-button {
     position: absolute;
