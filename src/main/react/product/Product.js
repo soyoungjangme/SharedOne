@@ -155,7 +155,7 @@ function Product() {
                     </div> */}
 
                     <div className="filter-row">
-                        <label className="filter-label" htmlFor="productNo">상품코드</label>
+                        <label className="filter-label" htmlFor="productNo">   상품코드</label>
                         <input className="filter-input" type="text" id="productNo" placeholder="상품코드" required/>
                     </div>
 
