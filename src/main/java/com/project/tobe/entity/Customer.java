@@ -6,7 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-
+@Entity
+@Table(name = "customer")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -14,8 +15,7 @@ import javax.persistence.Table;
 @Getter
 @ToString
 public class Customer {
-
-
+    @Id
     private Long customerNo;
     private String customerName;
     private String customerAddr;
