@@ -421,7 +421,7 @@ function Price() {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="10">등록된 상품이 없습니다😭</td>
+                            <td colSpan="10">등록된 상품이 없습니다<i class="bi bi-emoji-tear"></i></td>
                         </tr>
                     )}
                     <tr>
@@ -554,7 +554,7 @@ function Price() {
                                         </tr>
                                     ))) : (
                                         <tr>
-                                            <td colSpan="10">등록된 상품이 없습니다😭</td>
+                                            <td colSpan="10">등록된 상품이 없습니다<i class="bi bi-emoji-tear"></i></td>
                                         </tr>
                                     )}
 
