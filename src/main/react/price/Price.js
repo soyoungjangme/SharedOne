@@ -121,7 +121,7 @@ function Price() {
     ]); // 리스트 데이터를 저장할 state
 
     // 서버에서 데이터 가져오기
-    useEffect( () => {
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 let {data} = await axios('/price/all');
@@ -167,7 +167,7 @@ function Price() {
 
 
 // --- 테이블 정렬 기능
-    const { sortedData, sortData, sortConfig } = useSort(price);
+    const {sortedData, sortData, sortConfig} = useSort(price);
 
 // --- 상세 모달창 띄우는 스크립트
     const [isVisibleDetail, setIsVisibleDetail] = useState(false);
@@ -210,7 +210,7 @@ function Price() {
             endDate: ''
         }
     ]);
-    const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
+    let [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
     const handleModify = (item) => {
         setModifyItem(item);
         setIsModifyModalVisible(true);
@@ -226,7 +226,7 @@ function Price() {
         setModifyItem(copy);
     }
 
-    const [insertPrice, setInsertPrice] = useState({
+    let [insertPrice, setInsertPrice] = useState({
         priceNo: '',
         registerDate: '',
         productNo: '',
@@ -243,21 +243,26 @@ function Price() {
         setInsertPrice(copy);
     }
 
-    const [insertPriceList, setInsertPriceList] = useState([{
-        priceNo: '',
-        registerDate: '',
-        productNo: '',
-        customerNo: '',
-        customPrice: '',
-        currency: 0,
-        discount: '',
-        startDate: 0,
-        endDate: ''
-    }]);
+    let [insertPriceList, setInsertPriceList] = useState([]);
 
     const handleInsertPriceList = () => {
         let copy = [...insertPriceList, insertPrice];
         setInsertPriceList(copy);
+    }
+
+    const handleRegisterAddBtn = () => {
+        if (insertPriceList.length === 0) {
+            alert('값을 추가해 주세요');
+            return;
+        }
+
+        axios.post('/price/register', JSON.stringify(insertPriceList), {
+            headers: {
+                'content-type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then(r => {
+            console.log(r)}) ;
     }
 
     return (
@@ -287,13 +292,11 @@ function Price() {
                                            handleSearchPriceChange(e.target)
                                        }}/>
                             </div>
-                            
+
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="date">등록일자</label>
                                 <input name="registerDate" className="filter-input" type="date" id="date"
                                        value={searchPrice.registerDate}
-                                       onClick={(e) => {
-                                       }}
                                        onChange={(e) => {
                                            handleSearchPriceChange(e.target)
                                        }}
@@ -430,7 +433,7 @@ function Price() {
             {isVisible && (
                 <div className="confirmRegist">
                     <div className="fullBody">
-                    <div className="form-container">
+                        <div className="form-container">
                             <button className="close-btn" onClick={handleCloseClick}> &times;
                             </button>
                             <div className="form-header">
@@ -438,7 +441,7 @@ function Price() {
 
                                 <div className="btns">
                                     <div className="btn-add2">
-                                        <button> 등록하기</button>
+                                        <button onClick={handleRegisterAddBtn}> 등록하기</button>
                                     </div>
                                     <div className="btn-close">
 
@@ -449,41 +452,66 @@ function Price() {
 
                             <div className="RegistForm">
                                 <table className="formTable">
+                                    <thead>
                                     <tr>
-                                        <th colSpan="1"><label htmlFor="productNo">상품</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="productNo" value={insertPrice.productNo} onChange={(e) => {handleInsertPrice(e.target)}}/></td>
+                                        <th colSpan="1"><label htmlFor="registProductNo">상품</label></th>
+                                        <td colSpan="3"><input name="productNo" type="text" placeholder="필드 입력" id="registProductNo"
+                                                               value={insertPrice.productNo} onChange={(e) => {
+                                            handleInsertPrice(e.target)
+                                        }}/></td>
 
-                                        <th colSpan="1"><label htmlFor="customerNo">고객</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="customerNo" value={insertPrice.customerNo} onChange={(e) => {handleInsertPrice(e.target)}}/></td>
+                                        <th colSpan="1"><label htmlFor="registCustomerNo">고객</label></th>
+                                        <td colSpan="3"><input name="customerNo" type="text" placeholder="필드 입력" id="registCustomerNo"
+                                                               value={insertPrice.customerNo} onChange={(e) => {
+                                            handleInsertPrice(e.target)
+                                        }}/></td>
                                     </tr>
                                     <tr>
-                                        <th><label htmlFor="customPrice">가격</label></th>
-                                        <td><input type="number" placeholder="필드 입력" id="customPrice" value={insertPrice.customPrice} onChange={(e) => {handleInsertPrice(e.target)}}/></td>
+                                        <th><label htmlFor="registCustomPrice">가격</label></th>
+                                        <td><input name="customPrice" type="number" placeholder="필드 입력" id="registCustomPrice"
+                                                   value={insertPrice.customPrice} onChange={(e) => {
+                                            handleInsertPrice(e.target)
+                                        }}/></td>
 
-                                        <th><label htmlFor="currency">통화</label></th>
-                                        <td><input type="text" placeholder="필드 입력" id="currency" value={insertPrice.currency} onChange={(e) => {handleInsertPrice(e.target)}}/></td>
+                                        <th><label htmlFor="registCurrency">통화</label></th>
+                                        <td><input name="currency" type="text" placeholder="필드 입력" id="registCurrency"
+                                                   value={insertPrice.currency} onChange={(e) => {
+                                            handleInsertPrice(e.target)
+                                        }}/></td>
 
-                                        <th><label htmlFor="discount">할인율(%)</label></th>
-                                        <td><input type="number" placeholder="필드 입력" id="discount" value={insertPrice.discount} onChange={(e) => {handleInsertPrice(e.target)}}/></td>
+                                        <th><label htmlFor="registDiscount">할인율(%)</label></th>
+                                        <td><input name="discount" type="number" placeholder="필드 입력" id="registDiscount"
+                                                   value={insertPrice.discount} onChange={(e) => {
+                                            handleInsertPrice(e.target)
+                                        }}/></td>
                                     </tr>
                                     <tr>
-                                        <th colSpan="1"><label htmlFor="startDate">연락처</label></th>
-                                        <td colSpan="3"><input type="date" placeholder="필드 입력" id="startDate" value={insertPrice.startDate} onChange={(e) => {handleInsertPrice(e.target)}}/>
+                                        <th colSpan="1"><label htmlFor="registStartDate">시작일</label></th>
+                                        <td colSpan="3"><input name="startDate" type="date" placeholder="필드 입력" id="registStartDate"
+                                                               value={insertPrice.startDate} onChange={(e) => {
+                                            handleInsertPrice(e.target)
+                                        }}/>
                                         </td>
 
-                                        <th colSpan="1"><label htmlFor="endDate">연락처</label></th>
-                                        <td colSpan="3"><input type="date" placeholder="필드 입력" id="endDate" value={insertPrice.endDate} onChange={(e) => {handleInsertPrice(e.target)}}/></td>
+                                        <th colSpan="1"><label htmlFor="registEndDate">종료일</label></th>
+                                        <td colSpan="3"><input name="endDate" type="date" placeholder="필드 입력" id="registEndDate"
+                                                               value={insertPrice.endDate} onChange={(e) => {
+                                            handleInsertPrice(e.target)
+                                        }}/></td>
                                     </tr>
+                                    </thead>
                                 </table>
 
 
                                 <div className="btn-add">
                                     <button id="downloadCsv" className="btn-CSV">CSV 샘플 양식</button>
-                                    <button id="uploadCsv" className="btn-CSV" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
+                                    <button id="uploadCsv" className="btn-CSV" onClick={handleAddClickCSV}>CSV 파일 업로드
+                                    </button>
                                     {isVisibleCSV && (
                                         <input type="file" id="uploadCsvInput" accept=".csv"/>)}
 
-                                    <button className="btn-common btn-add-p"> 추가</button>
+                                    <button className="btn-common btn-add-p" onClick={handleInsertPriceList}> 추가
+                                    </button>
                                 </div>
                             </div>
 
@@ -494,42 +522,45 @@ function Price() {
                                     <tr>
                                         <th><input type="checkbox"/></th>
                                         <th>no</th>
-                                        <th>품목명</th>
-                                        <th>규격</th>
-                                        <th>단위</th>
-                                        <th>창고</th>
-                                        <th>LOT</th>
-                                        <th>현재고</th>
-                                        <th>실사수량</th>
-                                        <th>조정수량</th>
-                                        <th>단가</th>
-                                        <th>공급가액</th>
-                                        <th>부가세</th>
-                                        <th>총금액</th>
+                                        <th>상품</th>
+                                        <th>고객</th>
+                                        <th>가격</th>
+                                        <th>통화</th>
+                                        <th>할인율</th>
+                                        <th>시작일</th>
+                                        <th>종료일</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <td><input type="checkbox"/></td>
-                                        <td>1 </td>
-                                        <td>제품공고1</td>
-                                        <td>EA</td>
-                                        <td>EA</td>
-                                        <td>재품창고1 </td>
-                                        <td>L2017-11-260001</td>
-                                        <td>4,900</td>
-                                        <td>5,000</td>
-                                        <td>100</td>
-                                        <td>3,000</td>
-                                        <td>300,000</td>
-                                        <td>30,000</td>
-                                        <td>330,000</td>
-                                    </tr>
+                                    {insertPriceList.length > 0 ? (insertPriceList.map((item, index) => (
+                                        <tr key={index}>
+                                            <td><input type="checkbox" checked={checkItem[index] || false}
+                                                       onChange={handleCheckboxChange}/></td>
+                                            <td style={{display: 'none'}}>{index}</td>
+                                            <td>{index + 1}</td>
+                                            <td>{item.registerDate} </td>
+                                            <td>{item.productNo}</td>
+                                            <td>
+                                                {item.customerNo}
+                                                <i className="bi bi-search details"
+                                                   onClick={handleAddClickDetail}/>
+                                            </td>
+                                            <td>{item.customPrice}</td>
+                                            <td>{item.currency}</td>
+                                            <td>{item.discount}</td>
+                                            <td>{item.startDate}</td>
+                                            <td>{item.endDate}</td>
+                                        </tr>
+                                    ))) : (
+                                        <tr>
+                                            <td colSpan="10">등록된 상품이 없습니다😭</td>
+                                        </tr>
+                                    )}
 
-                                    <tr style={{fontWeight: 'bold'}}>
-                                        <td colSpan="12"> 합계</td>
-                                        <td colSpan="2"> 13,000,000</td>
-                                    </tr>
+                                    {/*<tr style={{fontWeight: 'bold'}}>*/}
+                                    {/*    <td colSpan="9"> 합계</td>*/}
+                                    {/*    <td colSpan="1"> 13,000,000</td>*/}
+                                    {/*</tr>*/}
 
                                     </tbody>
                                 </table>
@@ -565,36 +596,56 @@ function Price() {
                             <div className="RegistForm">
                                 <table className="formTable">
                                     <tr>
-                                        <th colSpan="1"><label htmlFor="productNo">상품</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="productNo" value={modifyItem.productNo} onChange={(e) => {handleModifyItemChange(e.target)}}/></td>
+                                        <th colSpan="1"><label htmlFor="modifyProductNo">상품</label></th>
+                                        <td colSpan="3"><input name="productNo" type="text" placeholder="필드 입력" id="modifyProductNo"
+                                                               value={modifyItem.productNo} onChange={(e) => {
+                                            handleModifyItemChange(e.target)
+                                        }}/></td>
 
-                                        <th colSpan="1"><label htmlFor="customerNo">고객</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="customerNo" value={modifyItem.customerNo} onChange={(e) => {handleModifyItemChange(e.target)}}/></td>
+                                        <th colSpan="1"><label htmlFor="modifyCustomerNo">고객</label></th>
+                                        <td colSpan="3"><input name="customerNo" type="text" placeholder="필드 입력" id="modifyCustomerNo"
+                                                               value={modifyItem.customerNo} onChange={(e) => {
+                                            handleModifyItemChange(e.target)
+                                        }}/></td>
                                     </tr>
                                     <tr>
-                                        <th><label htmlFor="customPrice">가격</label></th>
-                                        <td><input type="number" placeholder="필드 입력" id="customPrice" value={modifyItem.customPrice} onChange={(e) => {handleModifyItemChange(e.target)}}/></td>
+                                        <th><label htmlFor="modifyCustomPrice">가격</label></th>
+                                        <td><input name="customPrice" type="number" placeholder="필드 입력" id="modifyCustomPrice"
+                                                   value={modifyItem.customPrice} onChange={(e) => {
+                                            handleModifyItemChange(e.target)
+                                        }}/></td>
 
-                                        <th><label htmlFor="currency">통화</label></th>
-                                        <td><input type="text" placeholder="필드 입력" id="currency" value={modifyItem.currency} onChange={(e) => {handleModifyItemChange(e.target)}}/></td>
+                                        <th><label htmlFor="modifyCurrency">통화</label></th>
+                                        <td><input name="currency" type="text" placeholder="필드 입력" id="modifyCurrency"
+                                                   value={modifyItem.currency} onChange={(e) => {
+                                            handleModifyItemChange(e.target)
+                                        }}/></td>
 
-                                        <th><label htmlFor="discount">할인율(%)</label></th>
-                                        <td><input type="number" placeholder="필드 입력" id="discount" value={modifyItem.discount} onChange={(e) => {handleModifyItemChange(e.target)}}/></td>
+                                        <th><label htmlFor="modifyDiscount">할인율(%)</label></th>
+                                        <td><input name="discount" type="number" placeholder="필드 입력" id="modifyDiscount"
+                                                   value={modifyItem.discount} onChange={(e) => {
+                                            handleModifyItemChange(e.target)
+                                        }}/></td>
                                     </tr>
                                     <tr>
-                                        <th colSpan="1"><label htmlFor="registStartDate">연락처</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="registStartDate" value={modifyItem.startDate} onChange={(e) => {handleModifyItemChange(e.target)}}/>
+                                        <th colSpan="1"><label htmlFor="modifyStartDate">연락처</label></th>
+                                        <td colSpan="3"><input name="startDate" type="text" placeholder="필드 입력" id="modifyStartDate"
+                                                               value={modifyItem.startDate} onChange={(e) => {
+                                            handleModifyItemChange(e.target)
+                                        }}/>
                                         </td>
 
-                                        <th colSpan="1"><label htmlFor="registEndDate">연락처</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="registEndDate" value={modifyItem.endDate} onChange={(e) => {handleModifyItemChange(e.target)}}/></td>
+                                        <th colSpan="1"><label htmlFor="modifyEndDate">연락처</label></th>
+                                        <td colSpan="3"><input name="endDate" type="text" placeholder="필드 입력" id="modifyEndDate"
+                                                               value={modifyItem.endDate} onChange={(e) => {
+                                            handleModifyItemChange(e.target)
+                                        }}/></td>
                                     </tr>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
-
             )}
             {/* 수정 모달창 끝  */}
 
@@ -610,9 +661,6 @@ function Price() {
                                 <h1> 고객 상세보기 </h1>
 
                                 <div className="btns">
-                                    <div className="btn-add2">
-                                        <button> 수정하기</button>
-                                    </div>
                                     <div className="btn-close">
 
                                     </div>
@@ -620,56 +668,56 @@ function Price() {
                             </div>
 
 
-                            <div className="RegistForm">
-                                <table className="formTable">
-                                    <tr>
-                                        <th colSpan="1"><label htmlFor="productNo">상품</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="productNo"
-                                                               value={modifyItem.productNo} onChange={(e) => {
-                                            handleModifyItemChange(e.target)
-                                        }}/></td>
+                            {/*<div className="RegistForm">*/}
+                            {/*    <table className="formTable">*/}
+                            {/*        <tr>*/}
+                            {/*            <th colSpan="1"><label htmlFor="productNo">상품</label></th>*/}
+                            {/*            <td colSpan="3"><input type="text" placeholder="필드 입력" id="productNo"*/}
+                            {/*                                   value={modifyItem.productNo} onChange={(e) => {*/}
+                            {/*                handleModifyItemChange(e.target)*/}
+                            {/*            }}/></td>*/}
 
-                                        <th colSpan="1"><label htmlFor="customerNo">고객</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="customerNo"
-                                                               value={modifyItem.customerNo} onChange={(e) => {
-                                            handleModifyItemChange(e.target)
-                                        }}/></td>
-                                    </tr>
-                                    <tr>
-                                        <th><label htmlFor="customPrice">가격</label></th>
-                                        <td><input type="number" placeholder="필드 입력" id="customPrice"
-                                                   value={modifyItem.customPrice} onChange={(e) => {
-                                            handleModifyItemChange(e.target)
-                                        }}/></td>
+                            {/*            <th colSpan="1"><label htmlFor="customerNo">고객</label></th>*/}
+                            {/*            <td colSpan="3"><input type="text" placeholder="필드 입력" id="customerNo"*/}
+                            {/*                                   value={modifyItem.customerNo} onChange={(e) => {*/}
+                            {/*                handleModifyItemChange(e.target)*/}
+                            {/*            }}/></td>*/}
+                            {/*        </tr>*/}
+                            {/*        <tr>*/}
+                            {/*            <th><label htmlFor="customPrice">가격</label></th>*/}
+                            {/*            <td><input type="number" placeholder="필드 입력" id="customPrice"*/}
+                            {/*                       value={modifyItem.customPrice} onChange={(e) => {*/}
+                            {/*                handleModifyItemChange(e.target)*/}
+                            {/*            }}/></td>*/}
 
-                                        <th><label htmlFor="currency">통화</label></th>
-                                        <td><input type="text" placeholder="필드 입력" id="currency"
-                                                   value={modifyItem.currency} onChange={(e) => {
-                                            handleModifyItemChange(e.target)
-                                        }}/></td>
+                            {/*            <th><label htmlFor="currency">통화</label></th>*/}
+                            {/*            <td><input type="text" placeholder="필드 입력" id="currency"*/}
+                            {/*                       value={modifyItem.currency} onChange={(e) => {*/}
+                            {/*                handleModifyItemChange(e.target)*/}
+                            {/*            }}/></td>*/}
 
-                                        <th><label htmlFor="discount">할인율(%)</label></th>
-                                        <td><input type="number" placeholder="필드 입력" id="discount"
-                                                   value={modifyItem.discount} onChange={(e) => {
-                                            handleModifyItemChange(e.target)
-                                        }}/></td>
-                                    </tr>
-                                    <tr>
-                                        <th colSpan="1"><label htmlFor="registStartDate">연락처</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="registStartDate"
-                                                               value={modifyItem.startDate} onChange={(e) => {
-                                            handleModifyItemChange(e.target)
-                                        }}/>
-                                        </td>
+                            {/*            <th><label htmlFor="discount">할인율(%)</label></th>*/}
+                            {/*            <td><input type="number" placeholder="필드 입력" id="discount"*/}
+                            {/*                       value={modifyItem.discount} onChange={(e) => {*/}
+                            {/*                handleModifyItemChange(e.target)*/}
+                            {/*            }}/></td>*/}
+                            {/*        </tr>*/}
+                            {/*        <tr>*/}
+                            {/*            <th colSpan="1"><label htmlFor="registStartDate">연락처</label></th>*/}
+                            {/*            <td colSpan="3"><input type="text" placeholder="필드 입력" id="registStartDate"*/}
+                            {/*                                   value={modifyItem.startDate} onChange={(e) => {*/}
+                            {/*                handleModifyItemChange(e.target)*/}
+                            {/*            }}/>*/}
+                            {/*            </td>*/}
 
-                                        <th colSpan="1"><label htmlFor="registEndDate">연락처</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="registEndDate"
-                                                               value={modifyItem.endDate} onChange={(e) => {
-                                            handleModifyItemChange(e.target)
-                                        }}/></td>
-                                    </tr>
-                                </table>
-                            </div>
+                            {/*            <th colSpan="1"><label htmlFor="registEndDate">연락처</label></th>*/}
+                            {/*            <td colSpan="3"><input type="text" placeholder="필드 입력" id="registEndDate"*/}
+                            {/*                                   value={modifyItem.endDate} onChange={(e) => {*/}
+                            {/*                handleModifyItemChange(e.target)*/}
+                            {/*            }}/></td>*/}
+                            {/*        </tr>*/}
+                            {/*    </table>*/}
+                            {/*</div>*/}
                         </div>
                     </div>
                 </div>
