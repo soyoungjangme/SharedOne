@@ -1,6 +1,6 @@
 package com.project.tobe.customer;
 
-import com.project.tobe.entity.CustomerVO;
+import com.project.tobe.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,15 +15,9 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public List<CustomerVO> getList(Criteria criteria) {
-        return customerMapper.getList(criteria);
+    public List<Customer> getList() {
+        return customerMapper.getList();
     }
-
-    @Override
-    public void addList(CustomerVO customerVO) {
-
-    }
-
 
 
 }

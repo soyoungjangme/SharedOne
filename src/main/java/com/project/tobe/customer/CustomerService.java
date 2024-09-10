@@ -1,15 +1,12 @@
 package com.project.tobe.customer;
 
-import com.project.tobe.entity.CustomerVO;
+import com.project.tobe.entity.Customer;
 
 import java.util.List;
 
 public interface CustomerService {
 
-    //리스트 조회하기
-    List<CustomerVO> getList(Criteria criteria);
+    List<Customer> getList();
     
-    //고객 추가하기
-    public void addList(CustomerVO customerVO);
 
 }
