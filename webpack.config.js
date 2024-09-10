@@ -13,7 +13,7 @@ module.exports = {
         product: './product/Product.js', // 상품
         confirm: './confirm/Confirm.js', // 결재
         price: './price/price.js', // 판매가
-        myPage: './myPage/myPage.js', // 판매가
+        myPage: './myPage/myPage.js', // 마이페이지
         main: './main/Main.js',
 
 
