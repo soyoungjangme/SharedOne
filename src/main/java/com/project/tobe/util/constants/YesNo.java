@@ -1,10 +1,7 @@
 package com.project.tobe.util.constants;
 
 public enum YesNo {
-<<<<<<< HEAD
-    Y,
-    N
-=======
+
     Y('Y'),
     N('N');
 
@@ -17,6 +14,6 @@ public enum YesNo {
     public char getValue() {
         return value;
     }
->>>>>>> main
+
 }
 

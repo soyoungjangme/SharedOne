@@ -7,6 +7,9 @@ import useCheckboxManager from "../js/CheckboxManager";
 import axios from 'axios';
 
 function Order() {
+
+    const selectRef = useRef(null); //해당 값에 직접 접근
+
     const {
         allCheck,
         checkItem,
@@ -86,7 +89,9 @@ function Order() {
         effectProd();
     },[]);
 
-    const selectRef = useRef(null); //해당 값에 직접 접근
+
+
+
 
     const [form, setForm] = useState({});
 
@@ -95,7 +100,8 @@ function Order() {
         setForm(copy);
     }
 
-    const handleSearchClick = async() => {
+
+    const handleSearchBtn = async() => {
         //서버로 데이터 보내기
         const date = form.date || null;
         const orderNo = form.orderNo|| null;
@@ -191,54 +197,57 @@ function Order() {
             <div className="pageHeader"><h1><i class="bi bi-menu-up"></i>주문 관리</h1></div>
 
             <div className="main-container">
-                <div className="filter-container">
+                <div className="filter-containers">
+                    <div className="filter-container">
+                        <div className="filter-items">
 
-                    {/* <div className="filter-row">
-                        <label className="filter-label" htmlFor="date">일자</label>
-                        <input className="filter-input" type="date" id="date" required />
-                    </div> */}
+                            <div className="filter-item">
+                                <label className="filter-label" htmlFor="date">등록 일자</label>
+                                <input className="filter-input" type="date" id="date" value={form.date || ''} onChange={handleChange} ref={selectRef} required />
+                            </div>
 
-                    <div className="filter-row">
-                    <label className="filter-label" htmlFor="date">등록 일자</label>
-                    <input className="filter-input" type="date" id="date" value={form.date || ''} onChange={handleChange} ref={selectRef} required />
+                            <div className="filter-item">
+                                <label className="filter-label" htmlFor="orderNo">주문 번호</label>
+                                <input className="filter-input" type="text" id="orderNo" value={form.orderNo || ''} onChange={handleChange} ref={selectRef} placeholder="주문 번호" required/>
+                            </div>
+
+                            <div className="filter-item">
+                                <label className="filter-label" htmlFor="prod">고객사명</label>
+                                <select id="customers" className="filter-input">
+                                    <option value="">선택</option>
+                                    {/*{customers.map((customer) => (
+                                        <option key={customer.customerNo} value={customer.customerNo}>
+                                            {customer.customertName}
+                                        </option>
+                                    ))}*/}
+                                </select>
+                            </div>
+
+                            <div className="filter-item">
+                                <label className="filter-label" htmlFor="prod">상품명</label>
+                                <select id="prod" className="filter-input" value={form.prod || ''} onChange={handleChange} ref={selectRef}>
+                                    <option value="">선택</option>
+                                        {prod.map((product) => (
+                                            <option key={product.productNo} value={product.productNo}>
+                                                {product.productName}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+
+                            <div className="filter-item">
+                                <label className="filter-label" htmlFor="transaction">담당자명</label>
+                                <input className="filter-input" type="text" id="manager" value={form.manager || ''} onChange={handleChange} ref={selectRef} placeholder="담당자명" required/>
+                            </div>
+                        </div>
                     </div>
-
-                    <div className="filter-row">
-                    <label className="filter-label" htmlFor="orderNo">주문 번호</label>
-                    <input className="filter-input" type="text" id="orderNo" value={form.orderNo || ''} onChange={handleChange} ref={selectRef} placeholder="주문 번호" required/>
+                    <div className="button-container">
+                        <button type="button" className="search-btn" id="searchOrder" onClick={handleSearchBtn}><i
+                        className="b    i bi-search search-icon"></i>
+                        </button>
                     </div>
-
-                    <div className="filter-row">
-                    <label className="filter-label" htmlFor="prod">고객사명</label>
-                    <select id="customers" className="filter-input">
-                        <option value="">선택</option>
-                        {/*{customers.map((customer) => (
-                            <option key={customer.customerNo} value={customer.customerNo}>
-                                {customer.customertName}
-                            </option>
-                        ))}*/}
-                    </select>
-                    </div>
-
-                    <div className="filter-row">
-                        <label className="filter-label" htmlFor="prod">상품명</label>
-                        <select id="prod" className="filter-input" value={form.prod || ''} onChange={handleChange} ref={selectRef}>
-                            <option value="">선택</option>
-                                {prod.map((product) => (
-                                    <option key={product.productNo} value={product.productNo}>
-                                        {product.productName}
-                                    </option>
-                                ))}
-                        </select>
-                    </div>
-
-                    <div className="filter-row">
-                    <label className="filter-label" htmlFor="transaction">담당자명</label>
-                    <input className="filter-input" type="text" id="manager" value={form.manager || ''} onChange={handleChange} ref={selectRef} placeholder="담당자명" required/>
-                    </div>
-
-                    <button className="filter-button" id="searchOrder" onClick={handleSearchClick}>조회</button>
                 </div>
+
                 <button className="filter-button" id="add" type="button" onClick={handleAddClick}>
                     주문 등록
                 </button>

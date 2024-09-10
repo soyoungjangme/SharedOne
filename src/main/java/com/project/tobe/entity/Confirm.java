@@ -28,12 +28,11 @@ public class Confirm {
     private String confirmContent;
     private LocalDate confirmRegDate;
     private LocalDate confirmConfirmDate;
-<<<<<<< HEAD
+
     private String employeeId;//fk
     private Long orderNo; //fk
 
     private OrderH orderH;
     private Employee employee;
-=======
->>>>>>> main
+
 }
