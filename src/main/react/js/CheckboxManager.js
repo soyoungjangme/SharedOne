@@ -49,11 +49,11 @@ function useCheckboxManager() {
         }
     };
 
-    const handleDelete = () => {
-        const itemsToDelete = Object.keys(checkItem).filter(id => checkItem[id]);
-        console.log("선택된 삭제 항목:", itemsToDelete);
-        // 여기에 삭제 로직을 추가하세요, 예를 들어, axios.post('/delete', { ids: itemsToDelete })
-    };
+//    const handleDelete = () => {
+//        const itemsToDelete = Object.keys(checkItem).filter(id => checkItem[id]);
+//        console.log("선택된 삭제 항목:", itemsToDelete);
+//        // 여기에 삭제 로직을 추가하세요, 예를 들어, axios.post('/delete', { ids: itemsToDelete })
+//    };
 
     return {
         allCheck,
@@ -61,7 +61,7 @@ function useCheckboxManager() {
         showDelete,
         handleMasterCheckboxChange,
         handleCheckboxChange,
-        handleDelete
+        //handleDelete
     };
 }
 
