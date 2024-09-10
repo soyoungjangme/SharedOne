@@ -7,7 +7,7 @@
 
     <!-- 고객 목록 조회 쿼리 -->
     <select id="getList" resultType="Customer">
-        SELECT * FROM customer
+        SELECT * FROM customer where activated='Y'
     </select>
 
 </mapper>
