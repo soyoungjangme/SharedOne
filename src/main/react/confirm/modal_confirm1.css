@@ -6,7 +6,6 @@
     margin-top: 60px;
 }
 
-
 .confirmRegist {
     overflow: auto;
     position: fixed;
@@ -28,7 +27,6 @@
     padding: 50px;
     background-color: #ffffff;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-
 }
 
 .form-header {
@@ -47,9 +45,6 @@
 }
 
 /* ------------------ */
-
-
-
 .formTable , .formTable tr , .formTable  td {
     border: 1px solid #ddd;
     border-collapse: collapse;
@@ -152,9 +147,35 @@
     border-radius: 5px;
 }
 
+/*---------------------*/
+.btns {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
 
+.btn-add, .btn-close {
+    text-align: center;
+}
 
-/* -------------------- */
+.btn-add button, .btn-close button {
+    background-color: #004e90;
+    color: #fff;
+    border: 1px solid #ddd;
+    width: 60px;
+    height: 35px;
+    border-radius: 2px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* 호버 효과 추가 */
+.btn-add button:hover, .btn-close button:hover {
+    background-color: #003c6f;
+}
+
 .modalBtn  {
     float : right;
 }

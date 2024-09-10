@@ -20,21 +20,46 @@ import java.time.LocalDate;
         initialValue = 1,
         allocationSize = 1
 )
+
 public class Confirm {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqConfirm")
     private Long confirmNo;
 
-//    @ManyToOne
-//    @JoinColumn(name = "employee_id")
-//    private Employee approver; // 결재자
+    private String confirmStatus; // 대기, 반려, 승인 3가지 있음
 
-//    @ManyToOne
-//    @JoinColumn(name = "order_id")
-//    private Order order; // 주문 정보
-
-    private String confirmStatus;
-    private String confirmContent;
+    private String confirmTitle;
     private LocalDate confirmRegDate;
-    private LocalDate confirmConfirmDate;
+    private LocalDate confirmDate;
+    private String remarks;
+
+//    일단 주석 처리
+//    @ManyToOne
+//    @JoinColumn (name = "price_no")
+//    private Price price;
+
+//    @ManyToOne
+//    @JoinColumn (name = "employee_id")
+//    private Employee employee;
+
+//    @ManyToOne
+//    @JoinColumn (name = "employee_id")
+//    private Employee approver;
+
+    private int customPrice;
+    private Long orderNo;
+    private LocalDate delDate;
+
+    private String productName;
+    private String productType;
+
+    private String customerName;
+    private int orderQty;
+    private String employeeName;
+
+
+    @Transient
+    public double getTotalAmount() {
+        return this.orderQty * this.customPrice;
+    }
 }

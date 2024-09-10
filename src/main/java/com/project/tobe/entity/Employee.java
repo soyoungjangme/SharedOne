@@ -2,6 +2,9 @@ package com.project.tobe.entity;
 
 import lombok.*;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -10,7 +13,10 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Builder
+@Entity
+@Table(name = "employee")
 public class Employee {
+    @Id
     private String employeeId;
     private String employeePw;
     private String employeeName;
