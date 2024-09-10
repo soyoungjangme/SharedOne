@@ -250,19 +250,21 @@ function Price() {
         setInsertPriceList(copy);
     }
 
-    const handleRegisterAddBtn = () => {
+    const handleRegisterAddBtn = async () => {
         if (insertPriceList.length === 0) {
             alert('값을 추가해 주세요');
             return;
         }
 
-        axios.post('/price/register', JSON.stringify(insertPriceList), {
+        await axios.post('/price/register', JSON.stringify(insertPriceList), {
             headers: {
                 'content-type': 'application/json',
                 'Accept': 'application/json'
             }
         }).then(r => {
-            console.log(r)}) ;
+            console.log(r);
+            setIsVisible(false);
+        }) ;
     }
 
     return (
@@ -419,7 +421,7 @@ function Price() {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="10">등록된 상품이 없습니다😭</td>
+                            <td colSpan="10">등록된 상품이 없습니다<i class="bi bi-emoji-tear"></i></td>
                         </tr>
                     )}
                     <tr>
@@ -468,7 +470,7 @@ function Price() {
                                     </tr>
                                     <tr>
                                         <th><label htmlFor="registCustomPrice">가격</label></th>
-                                        <td><input name="customPrice" type="number" placeholder="필드 입력" id="registCustomPrice"
+                                        <td><input name="price" type="number" placeholder="필드 입력" id="registCustomPrice"
                                                    value={insertPrice.customPrice} onChange={(e) => {
                                             handleInsertPrice(e.target)
                                         }}/></td>
@@ -538,7 +540,6 @@ function Price() {
                                                        onChange={handleCheckboxChange}/></td>
                                             <td style={{display: 'none'}}>{index}</td>
                                             <td>{index + 1}</td>
-                                            <td>{item.registerDate} </td>
                                             <td>{item.productNo}</td>
                                             <td>
                                                 {item.customerNo}
@@ -553,7 +554,7 @@ function Price() {
                                         </tr>
                                     ))) : (
                                         <tr>
-                                            <td colSpan="10">등록된 상품이 없습니다😭</td>
+                                            <td colSpan="10">등록된 상품이 없습니다<i class="bi bi-emoji-tear"></i></td>
                                         </tr>
                                     )}
 
