@@ -15,6 +15,9 @@ public class PriceSearchDTO {
     private LocalDate registerDate;
     private String productNo;
     private String customerNo;
+    private Integer customPrice;
+    private String currency;
+    private Double discount;
     private LocalDate startDate;
     private LocalDate endDate;
 }
