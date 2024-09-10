@@ -49,11 +49,12 @@ function useCheckboxManager() {
         }
     };
 
-    const handleDelete = () => {
-        const itemsToDelete = Object.keys(checkItem).filter(id => checkItem[id]);
-        console.log("선택된 삭제 항목:", itemsToDelete);
-        // 여기에 삭제 로직을 추가하세요, 예를 들어, axios.post('/delete', { ids: itemsToDelete })
-    };
+   const handleDelete = () => {
+       const itemsToDelete = Object.keys(checkItem).filter(id => checkItem[id]);
+       console.log("선택된 삭제 항목:", itemsToDelete);
+       // 여기에 삭제 로직을 추가하세요, 예를 들어, axios.post('/delete', { ids: itemsToDelete })
+       setShowDelete(false); //삭제버튼 클릭하고 남아있는 삭제 버튼 사라지게!
+   };
 
     return {
         allCheck,
