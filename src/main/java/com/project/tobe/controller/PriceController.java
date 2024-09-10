@@ -1,6 +1,8 @@
 package com.project.tobe.controller;
 
+import com.project.tobe.customer.CustomerService;
 import com.project.tobe.dto.PriceSearchDTO;
+import com.project.tobe.entity.Customer;
 import com.project.tobe.entity.Price;
 import com.project.tobe.entity.Product;
 import com.project.tobe.service.PriceService;
@@ -22,10 +24,13 @@ public class PriceController {
     @Autowired
     private PriceService priceService;
 
+    @Autowired
+    private CustomerService customerService;
+
     @GetMapping(PRICE_ALL)
     public Map<String, List<?>> getAllPrice() {
         List<Price> priceList = priceService.getAllPrice();
-        List<Product> productList = new ArrayList<>();
+        List<Customer> customerList = customerService.getList();
 
         Map<String, List<?>> map = new HashMap<>();
         map.put("priceList", priceList);

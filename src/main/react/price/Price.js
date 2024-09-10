@@ -120,6 +120,23 @@ function Price() {
         }
     ]); // 리스트 데이터를 저장할 state
 
+    const [customer, setCustomer] = useState([
+        {
+            customerNo: 0, //고객번호
+            customerName: "", //고객명
+            customerAddr: "", //고객주소
+            customerTel: "", //고객 연락처
+            postNum: "", //우편번호
+            businessRegistrationNo: "", //사업자 등록 번호
+            nation: "", //국가
+            dealType: "", //거래 유형
+            picName: "", //담당자명
+            picEmail: "", //담당자 이메일
+            picTel: "", //담당자 연락처
+            activated: "" //활성화
+        }
+    ]);
+
     // 서버에서 데이터 가져오기
     useEffect(() => {
         const fetchData = async () => {
@@ -127,7 +144,8 @@ function Price() {
                 let {data} = await axios('/price/all');
 
                 setPrice(data.priceList); // 데이터를 state에 저장
-                // setOrder(data.priceList);
+                setProduct(data.productList);
+                setCustomer(data.customerList);
             } catch (error) {
                 console.error("데이터를 가져오는 중 오류 발생:", error);
             }
