@@ -18,6 +18,7 @@ import {
     LineElement,
     PointElement
 } from 'chart.js';
+import e from "babel-loader/lib/Error";
 
 ChartJS.register(
     BarElement,
@@ -55,6 +56,8 @@ function Price() {
             }
         ]
     };
+
+    const [isChartVisible, setIsChartVisible] = useState(false);
 
     const options = {
         responsive: true,
@@ -133,8 +136,6 @@ function Price() {
 
     }, []); // 컴포넌트가 처음 마운트될 때만 실행
 
-
-
     let [searchPrice, setSearchPrice] = useState({
         registerDate: '',
         productNo: '',
@@ -148,11 +149,27 @@ function Price() {
         setSearchPrice(copy);
     }
 
+    const handleSearchBtn = async () => {
+        console.log(JSON.stringify(searchPrice));
+        let {data} = await axios.post('/price/search', JSON.stringify(searchPrice), {
+            headers: {
+                'content-type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+        console.log(JSON.stringify(data));
+        setPrice(data);
+
+        if (searchPrice.productNo !== '' && searchPrice.customerNo !== '') {
+            setIsChartVisible(true);
+        }
+    }
+
 
 // --- 테이블 정렬 기능
     const { sortedData, sortData, sortConfig } = useSort(price);
 
-// ---  모달창 띄우는 스크립트
+// --- 상세 모달창 띄우는 스크립트
     const [isVisibleDetail, setIsVisibleDetail] = useState(false);
 
     const handleAddClickDetail = () => {
@@ -169,7 +186,7 @@ function Price() {
         setIsVisibleCSV((prevState) => !prevState);
     };
 
-
+// --- 추가 모달창 띄우는 스크립트
     const [isVisible, setIsVisible] = useState(false);
 
     const handleAddClick = () => {
@@ -179,20 +196,6 @@ function Price() {
     const handleCloseClick = () => {
         setIsVisible(false);
     };
-
-// --- 모달창 띄우는 스크립트
-
-    const handleSearchBtn = async () => {
-        console.log(JSON.stringify(searchPrice));
-        let {data} = await axios.post('/price/search', JSON.stringify(searchPrice), {
-            headers: {
-                'content-type': 'application/json',
-                'Accept': 'application/json'
-            }
-        });
-        console.log(JSON.stringify(data));
-        setPrice(data);
-    }
 
     const [modifyItem, setModifyItem] = useState([
         {
@@ -223,6 +226,40 @@ function Price() {
         setModifyItem(copy);
     }
 
+    const [insertPrice, setInsertPrice] = useState({
+        priceNo: '',
+        registerDate: '',
+        productNo: '',
+        customerNo: '',
+        customPrice: '',
+        currency: 0,
+        discount: '',
+        startDate: 0,
+        endDate: ''
+    });
+
+    const handleInsertPrice = (e) => {
+        let copy = {...insertPrice, [e.name]: e.value};
+        setInsertPrice(copy);
+    }
+
+    const [insertPriceList, setInsertPriceList] = useState([{
+        priceNo: '',
+        registerDate: '',
+        productNo: '',
+        customerNo: '',
+        customPrice: '',
+        currency: 0,
+        discount: '',
+        startDate: 0,
+        endDate: ''
+    }]);
+
+    const handleInsertPriceList = () => {
+        let copy = [...insertPriceList, insertPrice];
+        setInsertPriceList(copy);
+    }
+
     return (
 
         <div>
@@ -231,18 +268,6 @@ function Price() {
                 <div className="filter-containers">
                     <div className="filter-container">
                         <div className="filter-items">
-                            <div className="filter-item">
-                                <label className="filter-label" htmlFor="date">등록일자</label>
-                                <input name="registerDate" className="filter-input" type="date" id="date"
-                                       value={searchPrice.registerDate}
-                                       onClick={(e) => {
-                                       }}
-                                       onChange={(e) => {
-                                           handleSearchPriceChange(e.target)
-                                       }}
-                                />
-                            </div>
-
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="product">상품</label>
                                 <input name="productNo" className="filter-input" type="text" id="product"
@@ -261,6 +286,18 @@ function Price() {
                                        onChange={(e) => {
                                            handleSearchPriceChange(e.target)
                                        }}/>
+                            </div>
+                            
+                            <div className="filter-item">
+                                <label className="filter-label" htmlFor="date">등록일자</label>
+                                <input name="registerDate" className="filter-input" type="date" id="date"
+                                       value={searchPrice.registerDate}
+                                       onClick={(e) => {
+                                       }}
+                                       onChange={(e) => {
+                                           handleSearchPriceChange(e.target)
+                                       }}
+                                />
                             </div>
 
                             <div className="filter-item">
@@ -290,7 +327,8 @@ function Price() {
                     </div>
                 </div>
 
-                <div style={{width: "100%", alignItems: "center", backgroundColor: "#fcfcfc", marginBottom: "50px"}}>
+                {isChartVisible && <div
+                    style={{width: "100%", alignItems: "center", backgroundColor: "#fcfcfc", marginBottom: "50px"}}>
                     <div className="chart-container">
                         <div className="chart-header">
                             <h3>분기별 매출 예측</h3>
@@ -298,7 +336,7 @@ function Price() {
                         {/*<div className="canvas"><Bar data={data} options={options} /></div>*/}
                         <Bar data={chartData} options={options} className="canvas"/>
                     </div>
-                </div>
+                </div>}
 
                 <button className="btn-common add" type="button" onClick={handleAddClick}>
                     판매가 등록
@@ -413,28 +451,28 @@ function Price() {
                                 <table className="formTable">
                                     <tr>
                                         <th colSpan="1"><label htmlFor="productNo">상품</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="productNo"/></td>
+                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="productNo" value={insertPrice.productNo} onChange={(e) => {handleInsertPrice(e.target)}}/></td>
 
                                         <th colSpan="1"><label htmlFor="customerNo">고객</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="customerNo"/></td>
+                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="customerNo" value={insertPrice.customerNo} onChange={(e) => {handleInsertPrice(e.target)}}/></td>
                                     </tr>
                                     <tr>
                                         <th><label htmlFor="customPrice">가격</label></th>
-                                        <td><input type="number" placeholder="필드 입력" id="customPrice"/></td>
+                                        <td><input type="number" placeholder="필드 입력" id="customPrice" value={insertPrice.customPrice} onChange={(e) => {handleInsertPrice(e.target)}}/></td>
 
                                         <th><label htmlFor="currency">통화</label></th>
-                                        <td><input type="text" placeholder="필드 입력" id="currency"/></td>
+                                        <td><input type="text" placeholder="필드 입력" id="currency" value={insertPrice.currency} onChange={(e) => {handleInsertPrice(e.target)}}/></td>
 
                                         <th><label htmlFor="discount">할인율(%)</label></th>
-                                        <td><input type="number" placeholder="필드 입력" id="discount"/></td>
+                                        <td><input type="number" placeholder="필드 입력" id="discount" value={insertPrice.discount} onChange={(e) => {handleInsertPrice(e.target)}}/></td>
                                     </tr>
                                     <tr>
-                                        <th colSpan="1"><label htmlFor="registStartDate">연락처</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="registStartDate"/>
+                                        <th colSpan="1"><label htmlFor="startDate">연락처</label></th>
+                                        <td colSpan="3"><input type="date" placeholder="필드 입력" id="startDate" value={insertPrice.startDate} onChange={(e) => {handleInsertPrice(e.target)}}/>
                                         </td>
 
-                                        <th colSpan="1"><label htmlFor="registEndDate">연락처</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="registEndDate"/></td>
+                                        <th colSpan="1"><label htmlFor="endDate">연락처</label></th>
+                                        <td colSpan="3"><input type="date" placeholder="필드 입력" id="endDate" value={insertPrice.endDate} onChange={(e) => {handleInsertPrice(e.target)}}/></td>
                                     </tr>
                                 </table>
 
