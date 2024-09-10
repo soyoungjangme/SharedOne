@@ -42,7 +42,8 @@ public class PriceRepositoryImpl implements PriceCustomRepository {
         customerNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customerNo.eq(Long.parseLong(s))));
         startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
         endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
-        builder.and(price.activated.eq(Y));
+        builder.and(price.activated.eq(YesNo.Y.getValue()));
+
 
         return jpaQueryFactory.select(price).from(price).where(builder).orderBy(price.priceNo.desc()).fetch();
     }
