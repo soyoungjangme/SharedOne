@@ -14,14 +14,26 @@ import java.time.LocalDate;
 public class Confirm {
 
     private Long confirmNo;
+
+//    @ManyToOne
+//    @JoinColumn(name = "employee_id")
+//    private Employee approver; // 결재자
+
+//    @ManyToOne
+//    @JoinColumn(name = "order_id")
+//    private Order order; // 주문 정보
+
     private String confirmStatus;
     private String confirmTitle;
     private String confirmContent;
     private LocalDate confirmRegDate;
     private LocalDate confirmConfirmDate;
+<<<<<<< HEAD
     private String employeeId;//fk
     private Long orderNo; //fk
 
     private OrderH orderH;
     private Employee employee;
+=======
+>>>>>>> main
 }

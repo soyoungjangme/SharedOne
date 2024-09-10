@@ -1,19 +1,32 @@
 package com.project.tobe.serviceimpl;
 
+import com.project.tobe.customer.CustomerService;
+import com.project.tobe.dto.PriceProductCustomerDTO;
 import com.project.tobe.dto.PriceSearchDTO;
+import com.project.tobe.entity.Customer;
 import com.project.tobe.entity.Price;
+import com.project.tobe.entity.Product;
+import com.project.tobe.repository.CustomerRepository;
 import com.project.tobe.repository.PriceRepository;
+import com.project.tobe.repository.ProductRepository;
 import com.project.tobe.service.PriceService;
 import com.project.tobe.util.constants.YesNo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class PriceServiceImpl implements PriceService {
     @Autowired
     private PriceRepository priceRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Override
     public List<Price> getAllPrice() {
@@ -23,5 +36,36 @@ public class PriceServiceImpl implements PriceService {
     @Override
     public List<Price> getPriceByDTO(PriceSearchDTO dto) {
         return priceRepository.getPriceByDTO(dto);
+    }
+
+    @Override
+    public List<PriceProductCustomerDTO> getPriceProductCustomerDTO(PriceSearchDTO dto) {
+        return priceRepository.getPriceJoinByDTO(dto);
+    }
+
+
+    @Override
+    public ResponseEntity<String> savePrice(List<PriceSearchDTO> list) {
+        for (PriceSearchDTO dto : list) {
+            // Customer와 Product를 조회하여 연관관계를 설정
+            Customer customer = customerRepository.findById(Long.parseLong(dto.getCustomerNo())).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
+            Product product = productRepository.findById(Long.parseLong(dto.getProductNo())).orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+            Price price = Price.builder()
+                    .registerDate(LocalDate.now())
+                    .product(product)
+                    .customer(customer)
+                    .customPrice(Double.valueOf(dto.getCustomPrice()))
+                    .currency(dto.getCurrency())
+                    .discount(dto.getDiscount())
+                    .startDate(dto.getStartDate())
+                    .endDate(dto.getEndDate())
+                    .activated(YesNo.Y)
+                    .build();
+
+            priceRepository.save(price);
+        }
+
+        return ResponseEntity.ok().build();
     }
 }

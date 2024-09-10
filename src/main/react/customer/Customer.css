@@ -105,6 +105,7 @@ input {
 
 
 
+
 .submit-btn, .cancel-btn, .cancel-btn2, .cancel-btn3 {
     padding: 10px 20px;
     font-size: 14px;
@@ -122,35 +123,35 @@ input {
     background-color: #ddd;
 }
 
-.search-table {
+.seacrh-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.8rem;
     margin-top: 100px;
     position: relative;
 }
-.search-table, th, td {
+.seacrh-table, th, td {
     border: 1px solid #ddd;
 }
 
-.search-table th {
+.seacrh-table th {
     border-top : 2px solid #0063ac;
 }
 
-.search-table tr:hover{
+.seacrh-table tr:hover{
     background-color: rgba(200, 230, 255, 0.366);
 }
 
-.search-table tbody tr:last-child {
+.seacrh-table tbody tr:last-child {
     font-weight: bold; /* Apply bold styling */
     background: rgb(241,241,241);
          background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
 }
-.search-table tbody tr:last-child td {
+.seacrh-table tbody tr:last-child td {
     text-align: center;
 }
 
-.search-table tbody td i {
+.seacrh-table tbody td i {
     float : right;
     cursor :pointer;
 }
@@ -166,17 +167,16 @@ tr:nth-child(0){
   background-color: #f4f4f4;
 } */
 
-.search-table  th, td {
+.seacrh-table  th, td {
     padding: 10px;
     text-align: left;
 
 }
-.search-table  th {
+.seacrh-table  th {
      background: rgb(241,241,241);
      background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
 
 }
-
 
 .filter-container {
     display: grid;
@@ -289,15 +289,11 @@ tr:nth-child(0){
     background-color: rgba(200, 230, 255, 0.366);
 }
 
-.main-container {
-    position: relative;
-}
-
 .delete-btn {
     width: 65px;
     height: 25px;
     position: absolute;
-    top: 230px;
+    top: -35px;
 
 }
 
@@ -312,3 +308,32 @@ tr:nth-child(0){
        text-align: center;
        padding: 0px;
     }
+
+
+
+
+
+
+
+/* 화면 애니메이션 해보기*/
+.fade_effect {
+    background: white;
+    /* animation: name duration timing-function delay iteration-count direction fill-mode; */
+    animation: fadein 0.3s ease-in;
+}
+/* 위에 fadein 옵션 조절하기 */
+@keyframes fadein { 
+    from {
+        opacity :0;
+    } to {
+        opacity: 1;
+    }
+}
+
+
+
+
+
+
+
+
