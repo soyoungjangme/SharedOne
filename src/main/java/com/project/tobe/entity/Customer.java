@@ -27,6 +27,6 @@ public class Customer {
     private String picName;
     private String picEmail;
     private String picTel; // 수정된 타입
-    private char activated;
+    private String activated;
 
 }

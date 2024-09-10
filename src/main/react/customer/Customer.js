@@ -137,7 +137,7 @@ function Customer() {
     return (
         <div className='fade_effect'>
             
-            <div className="pageHeader"><h1><i className="bi bi-search"></i>고객 리스트</h1></div>
+            <div className="pageHeader"><h1>  <i class="bi bi-people-fill"></i>  고객 리스트</h1></div>
             <div className="main-container">
 
                 {/* 조회하는 부분 */}

@@ -25,7 +25,6 @@ public class CustomerController {
 
         System.out.println(customerService.getList());
 
-
         return customerService.getList();
 
         }
