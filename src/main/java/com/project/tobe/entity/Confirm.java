@@ -4,7 +4,6 @@ package com.project.tobe.entity;
 import lombok.*;
 import org.springframework.data.relational.core.sql.In;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -21,10 +20,8 @@ import java.time.LocalDate;
         initialValue = 1,
         allocationSize = 1
 )
-
 public class Confirm {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqConfirm")
+
     private Long confirmNo;
 
     private String confirmStatus; // 대기, 반려, 승인 3가지 있음
@@ -42,7 +39,16 @@ public class Confirm {
 //    @ManyToOne
 //    @JoinColumn (name = "employee_id")
 //    private Employee employee;
+    private String confirmStatus;
+    private String confirmTitle;
+    private String confirmContent;
+    private LocalDate confirmRegDate;
+    private LocalDate confirmConfirmDate;
 
+    private String employeeId;//fk
+    private Long orderNo; //fk
+
+    private Employee employee;
 //    @ManyToOne
 //    @JoinColumn (name = "employee_id")
 //    private Employee approver;

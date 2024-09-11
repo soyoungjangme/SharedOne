@@ -3,6 +3,7 @@ package com.project.tobe.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -29,6 +30,7 @@ public class Product {
     private String productType;
     private Long productPrice;
     private Character productYn;
+
 }
 
 
