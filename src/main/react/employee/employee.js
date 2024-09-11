@@ -32,29 +32,6 @@ ChartJS.register(
 
 
 function Employee() {
-//    // Data and options for the chart
-//    const chartData = {
-//        labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-//        datasets: [
-//            {
-//                label: '매출액 (억 원)',
-//                data: [12, 19, 3, 5, 2, 3, 7, 8, 5, 9, 10, 14],
-//                backgroundColor: 'rgba(0, 123, 255, 0.8)',
-//                borderColor: 'rgba(0, 123, 255, 1)',
-//                borderWidth: 1,
-//                type: 'bar'
-//            },
-//            {
-//                label: '전년 대비 (%)',
-//                data: [5, 15, -3, -5, 2, 10, 7, 12, 5, -2, 0, 4],
-//                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-//                borderColor: 'rgba(255, 99, 132, 1)',
-//                borderWidth: 2,
-//                fill: false,
-//                type: 'line'
-//            }
-//        ]
-//    };
 
     const options = {
         responsive: true,
@@ -90,7 +67,6 @@ function Employee() {
         handleDelete
     } = useCheckboxManager();
 
-
   // 메인 리스트
     let [employee, setEmployee] = useState([{
           employeeId: '',
@@ -111,19 +87,21 @@ function Employee() {
         axios.get('/employee/employeeALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
           .then(response => setEmployee(response.data))  // 응답 데이터를 상태로 설정
           .catch(error => console.error('Error fetching employee data:', error));
-      }, []);
-
+      },[]);
 
 // 검색,필터 기능
     let [emSearch, setEmSearch] = useState({
-          employeeId: '',
-            employeeName: '',
-            employeeTel: '',
-            employeeEmail: '',
-            employeeAddr: '',
-            hireDate: null,
-            employeeManagerId: '',
-            authorityGrade: ''
+             employeeId: '',
+                 employeePw: '',
+                 employeeName: '',
+                 employeeTel: '',
+                 employeeEmail: '',
+                 employeeAddr: '',
+                 residentNum: '',
+                 hireDate: null,
+                 salary: 0,
+                 employeeManagerId: '',
+                 authorityGrade: ''
     });
 
 // 필터 변경 핸들러
@@ -138,9 +116,7 @@ function Employee() {
   };
 
 
-
 // 검색 리스트
-
 const handleSearchEmployee = () => {
   if (emSearch) {
     axios.post('/employee/employeeSearch', emSearch, {
@@ -154,6 +130,113 @@ const handleSearchEmployee = () => {
     console.error('[핸들러 작동 잘 함]');
   }
 };
+
+// 직원 추가  리스트
+  const [test, setTest] = useState({  employeeId: '',
+                                                     employeePw: '',
+                                                     employeeName: '',
+                                                     employeeTel: '',
+                                                     employeeEmail: '',
+                                                     employeeAddr: '',
+                                                     residentNum: '',
+                                                     hireDate: null,
+                                                     salary: 0,
+                                                     employeeManagerId: '',
+                                                     authorityGrade: ''});
+    const [list, setList] = useState([]);
+    const [emregist, setEmRegist] = useState([]);
+
+    const handleInputAddChange = (e) => {
+        const { name, value } = e.target;
+        setTest((prevTest) => ({
+            ...prevTest,
+            [name]: value,
+        }));
+        console.log(test);
+    };
+
+// 추가 핸들러
+  const handleInputRegistAdd = (e) => {
+    const { id, value } = e.target;
+        console.log(e.target);
+    // 변경된 필드의 값을 업데이트합니다.
+    setEmRegist((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+    console.log(emregist);
+  };
+
+    // 리스트에 입력값 추가 핸들러
+    const onClickListAdd = () => {
+            setList((prevList) => [...prevList, test]);
+            setTest({employeeId: '',
+                       employeePw: '',
+                       employeeName: '',
+                       employeeTel: '',
+                       employeeEmail: '',
+                       employeeAddr: '',
+                       residentNum: '',
+                       hireDate: null,
+                       salary: 0,
+                       employeeManagerId: '',
+                       authorityGrade: '' }); // 입력값 초기화
+
+        console.log('리스트:', JSON.stringify(list));
+    };
+
+const onClickRegistBtn = () => {
+    if (list.length > 0) {
+        setEmRegist(list); // 등록할 항목이 있는 경우에만 상태 업데이트
+
+        // 서버에 등록 요청 보내기
+        axios
+            .post('/employee/employeeRegist', list, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then((response) => {
+                setEmployee(response.data); // 서버 응답 데이터로 employee 상태 업데이트
+                console.log('등록 성공:', response.data);
+            })
+            .catch((error) => console.error('서버 요청 중 오류 발생', error))
+            .finally(() => setIsVisible(false)); // 요청 완료 후 항상 실행되는 블록
+         window.location.reload();
+        setList([]); // 기존 목록 초기화
+    } else {
+        console.error('등록할 항목이 없습니다');
+    }
+};
+
+//    const onClickRegistBtn = () => {
+//           setEmRegist(list);
+//           setList([]);
+//       };
+//
+//            useEffect(() => {
+//                                 if (emregist.length > 0) {
+//                                     axios.post('/employee/employeeRegist', emregist, {
+//                                         headers: {
+//                                             'Content-Type': 'application/json'
+//                                         }
+//                                     })
+//                                     .then(response => setEmployee(response.data))
+//                                     .catch(error => console.error('서버 요청 중 오류 발생', error));
+//                                 } else if (emregist.length === 0) {
+//                                     console.error('등록할 항목이 없습니다');
+//                                 }
+//                                 setIsVisible(false);
+//                             }, [emregist]);
+
+
+
+    // 상태가 업데이트된 후 로그를 출력하기 위한 useEffect
+//    useEffect(() => {
+//        console.log('업데이트된 emregist:', JSON.stringify(emregist));
+//    }, [emregist]);
+
+
 
 
 // --- 테이블 정렬 기능
@@ -182,45 +265,116 @@ const handleSearchEmployee = () => {
         setIsVisible(true);
     };
     const handleCloseClick = () => {
+      setList([]); // 기존 목록 초기화
         setIsVisible(false);
     };
 
-// --- 수정 모달
 
-//    const [modifyItem, setModifyItem] = useState([
-//        {
-//             employeeId: '',
-//              employeePw: '',
-//              employeeName: '',
-//              employeeTel: '',
-//              employeeEmail: '',
-//              employeeAddr: '',
-//              residentNum: '',
-//              hireDate: null,
-//              salary: 0,
-//              employeeManagerId: '',
-//              authorityGrade: ''
-//        }
-//    ]);
 
-    const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
-    const handleModify = (item) => {
-        setModifyItem(item);
-        setIsModifyModalVisible(true);
-    }
-    const handleModifyCloseClick = () => {
+// --- 수정 기능
+    const [modifyItem, setModifyItem] = useState(
+        {
+             employeeId: '',
+              employeePw: '',
+              employeeName: '',
+              employeeTel: '',
+              employeeEmail: '',
+              employeeAddr: '',
+              residentNum: '',
+              hireDate: null,
+              salary: 0,
+              employeeManagerId: '',
+              authorityGrade: ''
+        }
+    );
+
+const handleUpdateClick = () => {
+    console.log(modifyItem);
+
+    axios.post('/employee/employeeUpdate', modifyItem, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        setEmployee(response.data);  // 서버 응답 데이터로 employee 상태 업데이트
+        console.log('업데이트 성공:', response.data);
+    })
+    .catch(error => console.error('서버 요청 중 오류 발생', error))
+    .finally(() => {
         setIsModifyModalVisible(false);
-    }
+            window.location.reload();// 모달 숨기기
+    });
+};
 
-//    const handleModifyItemChange = (e) => {
-//        let copy = {...modifyItem, [e.name]: e.value};
-//        setModifyItem(copy);
-//    }
+
+// 수정 창 모달
+      const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
+
+      const handleModify = (item) => {
+          setModifyItem(item);
+          setIsModifyModalVisible(true);
+
+      }
+
+      const handleModifyCloseClick = () => {
+          setIsModifyModalVisible(false);
+      }
+
+      const handleModifyItemChange = (e) => {
+          let copy = {...modifyItem, [e.name]: e.value};
+          console.log(modifyItem);
+          setModifyItem(copy);
+      }
+
+
+
+
+// 삭제 기능
+
+
+
+     const [checkedIds, setCheckedIds] = useState([]);
+
+       useEffect(() => {
+        // 모든 체크된 체크박스를 선택합니다.
+        const checkedCheckboxes = Array.from(document.querySelectorAll('input.mainCheckbox:checked'));
+
+        // 체크된 체크박스의 ID 값을 배열로 저장합니다.
+        const ids = checkedCheckboxes.map(checkbox => checkbox.id);
+
+        // 상태를 업데이트하여 배열에 저장합니다.
+        console.log(checkedIds);
+        setCheckedIds(ids);
+      }, [checkItem]);
+
+
+
+      const handleDeleteClick = () => {
+        axios.post('/employee/employeeDelete', checkedIds, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            console.log('삭제 요청 성공', response.data);
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('서버 요청 중 오류 발생', error);
+        });
+      }
+
+
+
+
+
+
 
     return (
 
         <div>
-            <h1><i className="bi bi-search"></i> 직원 목록  </h1>
+            <h1><i class="bi bi-person-lines-fill"></i> 직원 관리 </h1>
             <div className="main-container">
                 <div className="filter-containers">
                     <div className="filter-container">
@@ -268,7 +422,7 @@ const handleSearchEmployee = () => {
                          <option value="">선택하세요</option>
                          <option value="S">S</option>
                           <option value="A">A</option>
-                        <option value="B">C</option>
+                        <option value="B">B</option>
                          <option value="C">C</option>
 
                        </select>
@@ -287,12 +441,12 @@ const handleSearchEmployee = () => {
                 </div>
 
 
-                <button className="btn-common add" type="button">
+                <button className="btn-common add" type="button" onClick={handleAddClick}>
                     직원 등록
                 </button>
 
                 <table className="search-table" style={{marginTop: "50px"}}>
-                    {showDelete && <button className='delete-btn btn-common' onClick={handleDelete}>삭제</button>}
+                    {showDelete && <button className='delete-btn btn-common' onClick={handleDeleteClick}>삭제</button>}
                     <thead>
                     <tr>
                         <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange}/></th>
@@ -356,12 +510,12 @@ const handleSearchEmployee = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {employee.length > 0 ? (
-                        employee.map((item, index) => (
+                    {sortedData.length > 0 ? (
+                        sortedData.map((item, index) => (
                             <tr key={index} className={checkItem[index] ? 'selected-row' : ''} onDoubleClick={() => {
                                 handleModify(item)
                             }}>
-                                <td><input type="checkbox" checked={checkItem[index] || false}
+                                <td><input className="mainCheckbox" type="checkbox" id={item.employeeId} checked={checkItem[index] || false}
                                            onChange={handleCheckboxChange}/></td>
                                 <td style={{display: 'none'}}>{index}</td>
                                 <td>{index + 1}</td>
@@ -380,7 +534,7 @@ const handleSearchEmployee = () => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="13">등록된 상품이 없습니다😭</td>
+                            <td colSpan="13">등록된 상품이 없습니다<i class="bi bi-emoji-tear"></i></td>
                         </tr>
                     )}
                     <tr>
@@ -391,6 +545,8 @@ const handleSearchEmployee = () => {
                 </table>
             </div>
 
+
+{/* 추가/등록 모달창 */}
             {isVisible && (
                 <div className="confirmRegist">
                     <div className="fullBody">
@@ -402,7 +558,7 @@ const handleSearchEmployee = () => {
 
                                 <div className="btns">
                                     <div className="btn-add2">
-                                        <button> 등록하기</button>
+                                        <button type="button" onClick={onClickRegistBtn}> 등록하기</button>
                                     </div>
                                     <div className="btn-close">
 
@@ -414,47 +570,48 @@ const handleSearchEmployee = () => {
                             <div className="RegistForm">
                                 <table className="formTable">
                                     <tr>
+
                                         <th colSpan="1"><label htmlFor="productNo">직원명</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="productNo"/></td>
+                                        <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeeName" name="employeeName" value={test.employeeName} onChange={handleInputAddChange} /></td>
 
                                         <th colSpan="1"><label htmlFor="customerNo">아이디</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="customerNo"/></td>
+                                        <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeeId" name="employeeId" value={test.employeeId} onChange={handleInputAddChange}/></td>
 
                                         <th colSpan="1"><label htmlFor="customerNo">비밀번호</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="customerNo"/></td>
+                                        <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeePw" name="employeePw" value={test.employeePw} onChange={handleInputAddChange}/></td>
                                     </tr>
                                     <tr>
-                                        <th><label htmlFor="customPrice">연락처</label></th>
-                                        <td><input type="number" placeholder="필드 입력" id="customPrice"/></td>
+                                        <th colSpan="1"><label htmlFor="customPrice">연락처</label></th>
+                                        <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeeTel" name="employeeTel" value={test.employeeTel} onChange={handleInputAddChange}/></td>
 
-                                        <th><label htmlFor="currency">이메일</label></th>
-                                        <td><input type="text" placeholder="필드 입력" id="currency"/></td>
+                                        <th colSpan="1"><label htmlFor="currency">이메일</label></th>
+                                        <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeeEmail" name="employeeEmail" value={test.employeeEmail} onChange={handleInputAddChange}/></td>
 
-                                        <th><label htmlFor="discount">주소</label></th>
-                                        <td><input type="number" placeholder="필드 입력" id="discount"/></td>
+                                        <th colSpan="1"><label htmlFor="discount">주소</label></th>
+                                        <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeeAddr" name="employeeAddr" value={test.employeeAddr} onChange={handleInputAddChange}/></td>
                                     </tr>
                                     <tr>
                                         <th colSpan="1"><label htmlFor="registStartDate">주민번호</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="registStartDate"/> </td>
+                                        <td colSpan="2"><input type="text" placeholder="필드 입력" id="residentNum" name="residentNum" value={test.residentNum} onChange={handleInputAddChange}/> </td>
 
 
                                         <th colSpan="1"><label htmlFor="registEndDate">입사일</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="registEndDate"/></td>
+                                        <td colSpan="2"><input type="date" placeholder="필드 입력" id="hireDate" name="hireDate" value={test.hireDate} onChange={handleInputAddChange}/></td>
 
                                         <th colSpan="1"><label htmlFor="registEndDate">급여</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" id="registEndDate"/></td>
+                                        <td colSpan="2"><input type="text" placeholder="필드 입력" id="salary" name="salary" value={test.salary} onChange={handleInputAddChange}/></td>
                                     </tr>
 
                                     <tr>
                                      <th colSpan="1"><label htmlFor="registEndDate">직속상사</label></th>
-                                    <td colSpan="3"><input type="text" placeholder="필드 입력" id="registEndDate"/></td>
+                                    <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeeManagerId" name="employeeManagerId" value={test.employeeManagerId} onChange={handleInputAddChange}/></td>
 
                                      <th colSpan="1"><label htmlFor="registEndDate">권한</label></th>
-                                    <td colSpan="3">        <select>
+                                    <td colSpan="2">        <select id="authorityGrade" name="authorityGrade" value={test.authorityGrade} onChange={handleInputAddChange}>
                                                              <option value="">선택하세요</option>
                                                              <option value="S">S</option>
                                                               <option value="A">A</option>
-                                                            <option value="B">C</option>
+                                                            <option value="B">B</option>
                                                              <option value="C">C</option>
                                                            </select>
 
@@ -472,7 +629,7 @@ const handleSearchEmployee = () => {
                                     {isVisibleCSV && (
                                         <input type="file" id="uploadCsvInput" accept=".csv"/>)}
 
-                                    <button className="btn-common btn-add-p"> 추가</button>
+                                    <button className="btn-common btn-add-p" onClick={onClickListAdd}> 추가</button>
                                 </div>
                             </div>
 
@@ -480,45 +637,41 @@ const handleSearchEmployee = () => {
                                 <div style={{fontWeight: 'bold'}}> 총 N 건</div>
                                 <table className="formTableList">
                                     <thead>
-                                    <tr>
-                                        <th><input type="checkbox"/></th>
-                                        <th>no</th>
-                                        <th>품목명</th>
-                                        <th>규격</th>
-                                        <th>단위</th>
-                                        <th>창고</th>
-                                        <th>LOT</th>
-                                        <th>현재고</th>
-                                        <th>실사수량</th>
-                                        <th>조정수량</th>
-                                        <th>단가</th>
-                                        <th>공급가액</th>
-                                        <th>부가세</th>
-                                        <th>총금액</th>
-                                    </tr>
+
+                                  <tr>
+                                      <th><input type="checkbox" /></th>
+                                      <th>No.</th>
+                                      <th>직원ID</th>
+                                      <th>직원PW</th>
+                                      <th>직원명</th>
+                                      <th>전화번호</th>
+                                      <th>이메일</th>
+                                      <th>주소</th>
+                                      <th>주민번호</th>
+                                      <th>입사일</th>
+                                      <th>급여</th>
+                                      <th>직속상사</th>
+                                      <th>권한</th>
+                                  </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <td><input type="checkbox"/></td>
-                                        <td>1 </td>
-                                        <td>제품공고1</td>
-                                        <td>EA</td>
-                                        <td>EA</td>
-                                        <td>재품창고1 </td>
-                                        <td>L2017-11-260001</td>
-                                        <td>4,900</td>
-                                        <td>5,000</td>
-                                        <td>100</td>
-                                        <td>3,000</td>
-                                        <td>300,000</td>
-                                        <td>30,000</td>
-                                        <td>330,000</td>
-                                    </tr>
-
-                                    <tr style={{fontWeight: 'bold'}}>
-                                        <td colSpan="12"> 합계</td>
-                                        <td colSpan="2"> 13,000,000</td>
-                                    </tr>
+                            {list.map((item, index) => (
+                               <tr>
+                                    <td><input type="checkbox"/></td>
+                                    <td key={index}> {index  + 1 } </td>
+                                          <td>{item.employeeId}</td>
+                                          <td>{item.employeePw}</td>
+                                          <td>{item.employeeName}</td>
+                                          <td>{item.employeeTel}</td>
+                                          <td>{item.employeeEmail}</td>
+                                          <td>{item.employeeAddr}</td>
+                                          <td>{item.residentNum}</td>
+                                          <td>{item.hireDate}</td>
+                                          <td>{item.salary}</td>
+                                          <td>{item.employeeManagerId}</td>
+                                          <td>{item.authorityGrade}</td>
+                               </tr>
+                            ))}
 
                                     </tbody>
                                 </table>
@@ -529,11 +682,79 @@ const handleSearchEmployee = () => {
 
             )}
             {/* 모달창의 끝  */}
+ {/* 수정 모달창 */}
+          {isModifyModalVisible && (
+              <div className="confirmRegist">
+                  <div className="fullBody">
+                      <div className="form-container">
+                          <button className="close-btn" onClick={handleModifyCloseClick}> &times; </button>
+                          <div className="form-header">
+                              <h1>직원 수정</h1>
+                              <div className="btns">
+                                  <div className="btn-add2">
+                                      <button type="button" onClick={handleUpdateClick}>수정하기</button>
+                                  </div>
+                                  <div className="btn-close">
+                                      {/* 다른 버튼이 필요한 경우 여기에 추가 */}
+                                  </div>
+                              </div>
+                          </div>
+                          <div className="RegistForm">
+                              <table className="formTable">
+                                  <tbody>
+                                      <tr>
+                                          <th><label htmlFor="employeeName">직원명</label></th>
+                                          <td><input type="text" id="employeeName" name="employeeName" value={modifyItem.employeeName} onChange={(e) => handleModifyItemChange(e.target)} /></td>
 
-            {/* 수정 모달창 */}
-            {isModifyModalVisible && (
-                <div> 수정 모달창  </div>
-            )}
+                                          <th><label htmlFor="employeeId">아이디</label></th>
+                                          <td><input type="text" id="employeeId" name="employeeId" value={modifyItem.employeeId} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+
+                                          <th><label htmlFor="employeePw">비밀번호</label></th>
+                                          <td><input type="text" id="employeePw" name="employeePw" value={modifyItem.employeePw} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                      </tr>
+                                      <tr>
+                                          <th><label htmlFor="employeeTel">연락처</label></th>
+                                          <td><input type="text" id="employeeTel" name="employeeTel" value={modifyItem.employeeTel} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+
+                                          <th><label htmlFor="employeeEmail">이메일</label></th>
+                                          <td><input type="text" id="employeeEmail" name="employeeEmail" value={modifyItem.employeeEmail} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+
+                                          <th><label htmlFor="employeeAddr">주소</label></th>
+                                          <td><input type="text" id="employeeAddr" name="employeeAddr" value={modifyItem.employeeAddr} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                      </tr>
+                                      <tr>
+                                          <th><label htmlFor="residentNum">주민번호</label></th>
+                                          <td><input type="text" id="residentNum" name="residentNum" value={modifyItem.residentNum} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+
+                                          <th><label htmlFor="hireDate">입사일</label></th>
+                                          <td><input type="date" id="hireDate" name="hireDate" value={modifyItem.hireDate} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+
+                                          <th><label htmlFor="salary">급여</label></th>
+                                          <td><input type="text" id="salary" name="salary" value={modifyItem.salary} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                      </tr>
+                                      <tr>
+                                          <th><label htmlFor="employeeManagerId">직속상사</label></th>
+                                          <td><input type="text" id="employeeManagerId" name="employeeManagerId" value={modifyItem.employeeManagerId} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+
+                                          <th><label htmlFor="authorityGrade">권한</label></th>
+                                          <td>
+                                              <select id="authorityGrade" name="authorityGrade" value={modifyItem.authorityGrade} onChange={(e) => handleModifyItemChange(e.target)}>
+                                                  <option value="">선택하세요</option>
+                                                  <option value="S">S</option>
+                                                  <option value="A">A</option>
+                                                  <option value="B">B</option>
+                                                  <option value="C">C</option>
+                                              </select>
+                                          </td>
+                                      </tr>
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          )}
+
             {/* 수정 모달창 끝  */}
 
             {/* 새로운 모달창 */}

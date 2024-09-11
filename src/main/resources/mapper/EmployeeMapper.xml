@@ -5,7 +5,7 @@
 
 <mapper namespace="com.project.tobe.mapper.EmployeeMapper">
     <select id="getAllList" resultType="Employee">
-        select * from employee
+        select * from employee where empl_yn = 'y'
     </select>
 
     <select id="getPickList" resultType="Employee">
@@ -40,5 +40,56 @@
         </where>
     </select>
 
+
+
+    <insert id="employeeRegistTest" parameterType="java.util.List">
+
+        INSERT INTO employee (
+        employee_id,
+        employee_pw,
+        employee_name,
+        employee_tel,
+        employee_email,
+        employee_addr,
+        resident_num,
+        hire_date,
+        salary,
+        employee_manager_id,
+        authority_grade,
+        empl_yn
+        )
+        VALUES
+        <foreach collection="list" item="employee" separator=",">
+            (#{employee.employeeId}, #{employee.employeePw}, #{employee.employeeName},
+            #{employee.employeeTel}, #{employee.employeeEmail}, #{employee.employeeAddr},
+            #{employee.residentNum}, #{employee.hireDate}, #{employee.salary},
+            #{employee.employeeManagerId}, #{employee.authorityGrade},'y')
+        </foreach>
+    </insert>
+
+    <update id="employeeUpdateTest" parameterType="Employee" >
+            UPDATE employee
+            SET
+            employee_pw = #{employeePw},
+            employee_name = #{employeeName},
+            employee_tel = #{employeeTel},
+            employee_email = #{employeeEmail},
+            employee_addr = #{employeeAddr},
+            resident_num = #{residentNum},
+            hire_date = #{hireDate},
+            salary = #{salary},
+            employee_manager_id = #{employeeManagerId},
+            authority_grade = #{authorityGrade}
+            WHERE employee_id = #{employeeId}
+    </update>
+
+    <update id="employeeDeleteTest" parameterType="java.util.List">
+        UPDATE employee
+        SET empl_yn = 'n'
+        WHERE employee_id IN
+        <foreach collection="list" item="employeeId" open="(" separator="," close=")">
+            #{employeeId}
+        </foreach>
+    </update>
 
 </mapper>
