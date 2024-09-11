@@ -1,5 +1,6 @@
 package com.project.tobe.controller;
 
+import com.opencsv.exceptions.CsvValidationException;
 import com.project.tobe.customer.CustomerService;
 import com.project.tobe.dto.PriceProductCustomerDTO;
 import com.project.tobe.dto.PriceDTO;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,14 +52,16 @@ public class PriceController {
         return priceService.getPriceProductCustomerDTO(dto);
     }
 
+
     @PostMapping(value=REGISTER_PRICE, produces = "application/json", consumes = "application/json")
     public ResponseEntity<String> savePrice(@RequestBody List<PriceDTO> list) {
         return priceService.savePrice(list);
     }
 
-    @PostMapping(value=REGISTER_PRICE_CSV, produces = "application/json", consumes = "application/json")
-    public ResponseEntity<String> savePriceByCsv(@RequestBody List<MultipartFile> list) {
-        return priceService.savePriceByCsv(list);
+    @PostMapping(value=REGISTER_PRICE_CSV, consumes = "multipart/form-data", produces = "application/json")
+    public ResponseEntity<String> savePriceByCsv (@RequestParam(value = "file") MultipartFile file) throws IOException, CsvValidationException {
+
+        return priceService.savePriceByCsv(file);
     }
 
     @PostMapping(value=MODIFY_PRICE , produces = "application/json", consumes = "application/json")

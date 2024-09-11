@@ -204,8 +204,7 @@ function Price() {
         setIsVisibleCSV((prevState) => !prevState);
     };
 
-    const [selectedFiles, setSelectedFiles] = useState([]);
-    const fileInputRef = useRef(null);
+    const [selectedFiles, setSelectedFiles] = useState();
 
     const handleFileChange = async (e) => {
         setSelectedFiles(e.target.files);
@@ -342,21 +341,45 @@ function Price() {
     }
 
     const handleRegisterAddBtn = async () => {
+        console.log(selectedFiles);
         if (insertPriceList.length === 0 && selectedFiles.length === 0) {
             alert('값을 추가해 주세요');
             return;
         }
 
-        await axios.post('/price/register', JSON.stringify(insertPriceList), {
-            headers: {
-                'content-type': 'application/json',
-                'Accept': 'application/json'
-            }
-        }).then(r => {
-            console.log(r);
-            setIsVisible(false);
-            fetchData();
-        }) ;
+        if (insertPriceList.length > 0 ) {
+            await axios.post('/price/register', JSON.stringify(insertPriceList), {
+                headers: {
+                    'content-type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            }).then(r => {
+                console.log(r);
+                setIsVisible(false);
+                fetchData();
+            });
+        }
+
+        if (selectedFiles !== null) {
+            const formData = new FormData();
+
+            Array.from(selectedFiles).forEach((item) => {
+                formData.append('file', item);
+            });
+
+            console.log(typeof formData);
+
+            await axios.post('/price/register/csv', formData, {
+                headers : {
+                    'content-type': 'multipart/form-data',
+                    'Accept': 'application/json'
+                }
+            }).then(r => {
+                console.log(r);
+                setIsVisible(false);
+                fetchData();
+            });
+        }
     }
 
     return (
