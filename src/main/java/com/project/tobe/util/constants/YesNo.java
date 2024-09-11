@@ -1,6 +1,7 @@
 package com.project.tobe.util.constants;
 
 public enum YesNo {
+
     Y('Y'),
     N('N');
 
@@ -13,5 +14,6 @@ public enum YesNo {
     public char getValue() {
         return value;
     }
+
 }
 

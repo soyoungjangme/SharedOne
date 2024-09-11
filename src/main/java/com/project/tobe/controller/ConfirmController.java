@@ -1,6 +1,5 @@
 package com.project.tobe.controller;
-import com.project.tobe.entity.Confirm;
-import com.project.tobe.service.ConfirmService;
+import com.project.tobe.entity.Confirm;vice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +9,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/confirm")
 public class ConfirmController {
-
     private final ConfirmService confirmService;
 
     @Autowired
@@ -27,5 +25,4 @@ public class ConfirmController {
     public List<Confirm> getAllConfirms() {
         return confirmService.getAllConfirms();
     }
-
 }
