@@ -21,7 +21,6 @@ import java.time.LocalDate;
         initialValue = 1,
         allocationSize = 1
 )
-
 public class Confirm {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqConfirm")
@@ -46,7 +45,7 @@ public class Confirm {
 
     @ManyToOne
     @JoinColumn (name = "employee_id")
-    private Customer Customer;
+    private Employee employee;
 
     private Integer customPrice = 0;
     private LocalDate delDate;
@@ -54,9 +53,9 @@ public class Confirm {
     private String productName;
     private String productType;
 
-    private String customerName;
     private Integer orderQty = 0;
-    private String employeeName;
+
+
 
 
     @Transient

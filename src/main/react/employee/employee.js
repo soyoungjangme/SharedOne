@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from "react-dom/client";
-import './Customer.css';
+import './Employee.css';
 import useCheckboxManager from "../js/CheckboxManager";
 import useSort from '../js/useSort';
 import '../js/modalAdd.css';
@@ -31,7 +31,7 @@ ChartJS.register(
 );
 
 
-function Customer() {
+function employee() {
 
     const options = {
         responsive: true,
@@ -68,7 +68,7 @@ function Customer() {
     } = useCheckboxManager();
 
     // 메인 리스트
-    let [Customer, setEmployee] = useState([{
+    let [employee, setEmployee] = useState([{
         employeeId: '',
         employeePw: '',
         employeeName: '',
@@ -84,7 +84,7 @@ function Customer() {
 
     // 메인 리스트 가져오기 axios
     useEffect(() => {
-        axios.get('/Customer/employeeALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
+        axios.get('/employee/employeeALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
             .then(response => setEmployee(response.data))  // 응답 데이터를 상태로 설정
             .catch(error => console.error('Error fetching Customer data:', error));
     }, []);
@@ -119,7 +119,7 @@ function Customer() {
     // 검색 리스트
     const handleSearchEmployee = () => {
         if (emSearch) {
-            axios.post('/Customer/employeeSearch', emSearch, {
+            axios.post('/employee/employeeSearch', emSearch, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -195,7 +195,7 @@ function Customer() {
 
             // 서버에 등록 요청 보내기
             axios
-                .post('/Customer/employeeRegist', list, {
+                .post('/employee/employeeRegist', list, {
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -244,7 +244,7 @@ function Customer() {
 
 
     // --- 테이블 정렬 기능
-    const { sortedData, sortData, sortConfig } = useSort(Customer);
+    const { sortedData, sortData, sortConfig } = useSort(employee);
 
     // ---  모달창 띄우는 스크립트
     const [isVisibleDetail, setIsVisibleDetail] = useState(false);
@@ -295,7 +295,7 @@ function Customer() {
     const handleUpdateClick = () => {
         console.log(modifyItem);
 
-        axios.post('/Customer/employeeUpdate', modifyItem, {
+        axios.post('/employee/employeeUpdate', modifyItem, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -355,7 +355,7 @@ function Customer() {
 
 
     const handleDeleteClick = () => {
-        axios.post('/Customer/employeeDelete', checkedIds, {
+        axios.post('/employee/employeeDelete', checkedIds, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -543,7 +543,7 @@ function Customer() {
                         )}
                         <tr>
                             <td colSpan="12"></td>
-                            <td colSpan="1"> {Customer.length} 건</td>
+                            <td colSpan="1"> {employee.length} 건</td>
                         </tr>
                     </tbody>
                 </table>
@@ -774,5 +774,5 @@ function Customer() {
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <Customer />
+    <Employee />
 );
