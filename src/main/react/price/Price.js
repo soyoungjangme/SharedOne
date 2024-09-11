@@ -1,10 +1,11 @@
 import axios from 'axios';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import ReactDOM from "react-dom/client";
 import './Price.css';
 import useCheckboxManager from "../js/CheckboxManager";
 import useSort from '../js/useSort';
 import '../js/modalAdd.css';
+import ModalDetail from '../js/ModalDetail';
 
 import {Bar} from 'react-chartjs-2';
 import {
@@ -19,6 +20,7 @@ import {
     PointElement
 } from 'chart.js';
 import e from "babel-loader/lib/Error";
+import modalDetail from "../js/ModalDetail";
 
 ChartJS.register(
     BarElement,
@@ -196,25 +198,45 @@ function Price() {
         }
     }
 
+    const [isVisibleCSV, setIsVisibleCSV] = useState(false);
 
+    const handleAddClickCSV = () => {
+        setIsVisibleCSV((prevState) => !prevState);
+    };
+
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const fileInputRef = useRef(null);
+
+    const handleFileChange = async (e) => {
+        setSelectedFiles(e.target.files);
+    }
 // --- 테이블 정렬 기능
     const {sortedData, sortData, sortConfig} = useSort(price);
 
 // --- 상세 모달창 띄우는 스크립트
     const [isVisibleDetail, setIsVisibleDetail] = useState(false);
+    const [modalDetailTitle, setModalDetailTitle] = useState('');
+    const [modalDetailData, setModalDetailData] = useState({});
 
-    const handleAddClickDetail = () => {
+    const handleAddClickDetail = (title, id) => {
+        let data = {};
+
+        if (title === 'product') {
+            data = product.filter((item) => item.productNo === id)[0];
+        }
+
+        if (title === 'customer') {
+            data = customer.filter((item) => item.customerNo === id)[0];
+        }
+
+        setModalDetailData(data);
+        setModalDetailTitle(title);
+
         setIsVisibleDetail(true);
     };
 
     const handleCloseClickDetail = () => {
         setIsVisibleDetail(false);
-    };
-
-    const [isVisibleCSV, setIsVisibleCSV] = useState(false);
-
-    const handleAddClickCSV = () => {
-        setIsVisibleCSV((prevState) => !prevState);
     };
 
 // --- 추가 모달창 띄우는 스크립트
@@ -257,6 +279,19 @@ function Price() {
     const handleModifyItemChange = (e) => {
         let copy = {...modifyItem, [e.name]: e.value};
         setModifyItem(copy);
+    }
+
+    const handleModifyBtn = async () => {
+        await axios.post('/price/modify', JSON.stringify(modifyItem), {
+            headers: {
+                'content-type': 'application/json',
+                'Accept': 'application/json'
+            }
+        }).then(r => {
+            console.log(r);
+            setIsModifyModalVisible(false);
+            fetchData();
+        }) ;
     }
 
     let [insertPrice, setInsertPrice] = useState({
@@ -307,7 +342,7 @@ function Price() {
     }
 
     const handleRegisterAddBtn = async () => {
-        if (insertPriceList.length === 0) {
+        if (insertPriceList.length === 0 && selectedFiles.length === 0) {
             alert('값을 추가해 주세요');
             return;
         }
@@ -326,7 +361,7 @@ function Price() {
 
     return (
         <div>
-            <h1><i className="bi bi-search"></i> 판매가 리스트 </h1>
+            <h1><i className="bi bi-currency-dollar"></i> 판매가 리스트 </h1>
             <div className="main-container">
                 <div className="filter-containers">
                     <div className="filter-container">
@@ -467,13 +502,13 @@ function Price() {
                                 <td>{item.productName}
                                     <i className="bi bi-search details"
                                        onClick={() => {
-                                           handleAddClickDetail(item.productNo)
+                                           handleAddClickDetail('product', item.productNo)
                                        }}/>
                                 </td>
                                 <td>
                                     {item.customerName}
                                     <i className="bi bi-search details"
-                                       onClick={() => {handleAddClickDetail(item.customerNo)}} />
+                                       onClick={() => {handleAddClickDetail('customer', item.customerNo)}} />
                                 </td>
                                 <td>{item.customPrice}</td>
                                 <td>{item.currency}</td>
@@ -484,7 +519,14 @@ function Price() {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="10">등록된 상품이 없습니다<i class="bi bi-emoji-tear"></i></td>
+                            <td colSpan="10">등록된 상품이 없습니다
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     className="bi bi-emoji-tear" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path
+                                        d="M6.831 11.43A3.1 3.1 0 0 1 8 11.196c.916 0 1.607.408 2.25.826.212.138.424-.069.282-.277-.564-.83-1.558-2.049-2.532-2.049-.53 0-1.066.361-1.536.824q.126.27.232.535.069.174.135.373ZM6 11.333C6 12.253 5.328 13 4.5 13S3 12.254 3 11.333c0-.706.882-2.29 1.294-2.99a.238.238 0 0 1 .412 0c.412.7 1.294 2.284 1.294 2.99M7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5m4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5m-1.5-3A.5.5 0 0 1 10 3c1.162 0 2.35.584 2.947 1.776a.5.5 0 1 1-.894.448C11.649 4.416 10.838 4 10 4a.5.5 0 0 1-.5-.5M7 3.5a.5.5 0 0 0-.5-.5c-1.162 0-2.35.584-2.947 1.776a.5.5 0 1 0 .894.448C4.851 4.416 5.662 4 6.5 4a.5.5 0 0 0 .5-.5"/>
+                                </svg>
+                            </td>
                         </tr>
                     )}
                     <tr>
@@ -583,7 +625,7 @@ function Price() {
                                     <button id="uploadCsv" className="btn-CSV" onClick={handleAddClickCSV}>CSV 파일 업로드
                                     </button>
                                     {isVisibleCSV && (
-                                        <input type="file" id="uploadCsvInput" accept=".csv"/>)}
+                                        <input type="file" id="uploadCsvInput" accept=".csv" onChange={handleFileChange}/>)}
 
                                     <button className="btn-common btn-add-p" onClick={handleInsertPriceList}> 추가
                                     </button>
@@ -627,15 +669,19 @@ function Price() {
                                         </tr>
                                     ))) : (
                                         <tr>
-                                            <td colSpan="10">등록된 상품이 없습니다<i className="bi bi-emoji-tear"></i></td>
+                                            {/*<td colSpan="10">등록된 상품이 없습니다<i className="bi bi-emoji-tear"></i></td>*/}
+                                            <td colSpan="10">등록된 상품이 없습니다
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                     fill="currentColor" className="bi bi-emoji-tear"
+                                                     viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                                    <path
+                                                        d="M6.831 11.43A3.1 3.1 0 0 1 8 11.196c.916 0 1.607.408 2.25.826.212.138.424-.069.282-.277-.564-.83-1.558-2.049-2.532-2.049-.53 0-1.066.361-1.536.824q.126.27.232.535.069.174.135.373ZM6 11.333C6 12.253 5.328 13 4.5 13S3 12.254 3 11.333c0-.706.882-2.29 1.294-2.99a.238.238 0 0 1 .412 0c.412.7 1.294 2.284 1.294 2.99M7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5m4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5m-1.5-3A.5.5 0 0 1 10 3c1.162 0 2.35.584 2.947 1.776a.5.5 0 1 1-.894.448C11.649 4.416 10.838 4 10 4a.5.5 0 0 1-.5-.5M7 3.5a.5.5 0 0 0-.5-.5c-1.162 0-2.35.584-2.947 1.776a.5.5 0 1 0 .894.448C4.851 4.416 5.662 4 6.5 4a.5.5 0 0 0 .5-.5"/>
+                                                </svg>
+                                            </td>
                                         </tr>
                                     )}
-
-                                    {/*<tr style={{fontWeight: 'bold'}}>*/}
-                                    {/*    <td colSpan="9"> 합계</td>*/}
-                                    {/*    <td colSpan="1"> 13,000,000</td>*/}
-                                    {/*</tr>*/}
-
                                     </tbody>
                                 </table>
                             </div>
@@ -658,7 +704,7 @@ function Price() {
 
                                 <div className="btns">
                                     <div className="btn-add2">
-                                        <button> 수정하기</button>
+                                        <button onClick={handleModifyBtn}> 수정하기</button>
                                     </div>
                                     <div className="btn-close">
 
@@ -737,67 +783,9 @@ function Price() {
                         <div className="form-container">
                             <button className="close-btn" onClick={handleCloseClickDetail}> &times;
                             </button>
-                            <div className="form-header">
-                                <h1> 고객 상세보기 </h1>
-
-                                <div className="btns">
-                                    <div className="btn-close">
-
-                                    </div>
-                                </div>
-                            </div>
 
 
-                            {/*<div className="RegistForm">*/}
-                            {/*    <table className="formTable">*/}
-                            {/*        <tr>*/}
-                            {/*            <th colSpan="1"><label htmlFor="productNo">상품</label></th>*/}
-                            {/*            <td colSpan="3"><input type="text" placeholder="필드 입력" id="productNo"*/}
-                            {/*                                   value={modifyItem.productNo} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/></td>*/}
-
-                            {/*            <th colSpan="1"><label htmlFor="customerNo">고객</label></th>*/}
-                            {/*            <td colSpan="3"><input type="text" placeholder="필드 입력" id="customerNo"*/}
-                            {/*                                   value={modifyItem.customerNo} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/></td>*/}
-                            {/*        </tr>*/}
-                            {/*        <tr>*/}
-                            {/*            <th><label htmlFor="customPrice">가격</label></th>*/}
-                            {/*            <td><input type="number" placeholder="필드 입력" id="customPrice"*/}
-                            {/*                       value={modifyItem.customPrice} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/></td>*/}
-
-                            {/*            <th><label htmlFor="currency">통화</label></th>*/}
-                            {/*            <td><input type="text" placeholder="필드 입력" id="currency"*/}
-                            {/*                       value={modifyItem.currency} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/></td>*/}
-
-                            {/*            <th><label htmlFor="discount">할인율(%)</label></th>*/}
-                            {/*            <td><input type="number" placeholder="필드 입력" id="discount"*/}
-                            {/*                       value={modifyItem.discount} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/></td>*/}
-                            {/*        </tr>*/}
-                            {/*        <tr>*/}
-                            {/*            <th colSpan="1"><label htmlFor="registStartDate">연락처</label></th>*/}
-                            {/*            <td colSpan="3"><input type="text" placeholder="필드 입력" id="registStartDate"*/}
-                            {/*                                   value={modifyItem.startDate} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/>*/}
-                            {/*            </td>*/}
-
-                            {/*            <th colSpan="1"><label htmlFor="registEndDate">연락처</label></th>*/}
-                            {/*            <td colSpan="3"><input type="text" placeholder="필드 입력" id="registEndDate"*/}
-                            {/*                                   value={modifyItem.endDate} onChange={(e) => {*/}
-                            {/*                handleModifyItemChange(e.target)*/}
-                            {/*            }}/></td>*/}
-                            {/*        </tr>*/}
-                            {/*    </table>*/}
-                            {/*</div>*/}
+                            <ModalDetail title={modalDetailTitle} data={modalDetailData} />
                         </div>
                     </div>
                 </div>
