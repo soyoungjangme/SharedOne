@@ -105,7 +105,6 @@ function Order() {
     const handleChange = (e) => {
         let copy = {...form, [e.target.id]: e.target.value};
         setForm(copy);
-        console.log(copy);
     }
 
 
@@ -414,17 +413,15 @@ function Order() {
                                 <input type="text" />
                                 <button type="button" className="btn-common">추가</button>
                             </div>
-                                <div className="bookResultList">
-                                    <ul>
-                                    <li> <p> 신서유기 </p> </li>
-                                    <li> <p> 신서유기 </p></li>
-                                    <li> <p> 신서유기 </p></li>
-                                    <li> <p> 신서유기 </p></li>
-                                    <li> <p> 신서유기 </p></li>
-
-
-                                    </ul>
-                                </div>
+                            <div className="bookResultList">
+                                <ul>
+                                {mycustomer.map((customer) => (
+                                    <li key={customer.customerNo}>
+                                    {customer.customerName}
+                                    </li>
+                                ))}
+                                </ul>
+                            </div>
                             </div>
 
 

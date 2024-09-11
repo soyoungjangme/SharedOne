@@ -5,48 +5,46 @@
 
 <mapper namespace="com.project.tobe.mapper.OrderMapper">
 
+    <!-- 주문 데이터 조회 -->
     <select id="getOrder" resultMap="OrderH">
-        SELECT list.*, PROD.PRODUCT_NO AS productNo, PROD.PRODUCT_NAME AS productName
-        FROM ORDER_BODY OB
-        JOIN PRODUCT PROD ON PROD.PRODUCT_NO = OB.PRODUCT_NO
-        JOIN (
-        SELECT OH.ORDER_NO AS orderNo,
-        CUS.CUSTOMER_NAME AS customerName,
-        CUS.CUSTOMER_NO AS customerNo,
-        CONFINFO.CONFIRM_TITLE AS confirmTitle,
-        CONFINFO.CONFIRM_CONTENT AS confirmContent,
-        CONFINFO.EMPLOYEE_NAME AS employeeName,
-        CONFINFO.CONFIRM_STATUS AS confirmStatus,
-        CONFINFO.CONFIRM_CONFIRM_DATE AS confirmConfirmDate
-        FROM ORDER_HEADER OH
-        JOIN (
-        SELECT EMP.EMPLOYEE_NAME, CONF.CONFIRM_TITLE, CONF.CONFIRM_CONTENT,
-        CONF.CONFIRM_STATUS, CONF.CONFIRM_CONFIRM_DATE, CONF.ORDER_NO
-        FROM EMPLOYEE EMP
-        JOIN CONFIRM CONF ON CONF.EMPLOYEE_ID = EMP.EMPLOYEE_ID
-        ) CONFINFO ON CONFINFO.ORDER_NO = OH.ORDER_NO
-        JOIN CUSTOMER CUS ON CUS.CUSTOMER_NO = OH.CUSTOMER_NO
-        ) list ON list.orderNo = OB.ORDER_NO
-        WHERE list.confirmStatus = '승인'
-
-            <if test="inputProdNo != null">
-                AND PROD.PRODUCT_NO = #{inputProdNo}
-            </if>
-            <if test="inputDate != null">
-                AND list.confirmConfirmDate = #{inputDate}
-            </if>
-            <if test="inputOrderNo != null">
-                AND list.orderNo = #{inputOrderNo}
-            </if>
-            <if test="inputManager != null">
-                AND list.employeeName = #{inputManager}
-            </if>
-            <if test="inputCustomerNo != null">
-                AND list.customerNo = #{inputCustomerNo}
-            </if>
-
+        select list.*, prod.product_no as productNo, prod.product_name as productName
+        from order_body ob
+        join product prod on prod.product_no = ob.product_no
+        join (
+        select
+        cus.customer_name as customerName,
+        cus.customer_no as customerNo,
+        confinfo.*
+        from order_header oh
+        join (
+        select emp.employee_name as employeeName,
+        conf.confirm_title as confirmTitle,
+        conf.confirm_content as confirmContent,
+        conf.confirm_status as confirmStatus,
+        conf.confirm_confirm_date as confirmConfirmDate,
+        conf.order_no as orderNo
+        from employee emp
+        join confirm conf on conf.employee_id = emp.employee_id
+        ) confinfo on confinfo.orderNo = oh.order_no
+        join customer cus on cus.customer_no = oh.customer_no
+        ) list on list.orderNo = ob.order_no
+        where list.confirmStatus = '승인'
+        <if test="inputProdNo != null">
+            AND prod.productNo = #{inputProdNo}
+        </if>
+        <if test="inputDate != null">
+            AND list.confirm_confirm_date = #{inputDate}
+        </if>
+        <if test="inputOrderNo != null">
+            AND list.orderNo = #{inputOrderNo}
+        </if>
+        <if test="inputManager != null">
+            AND list.employeeName = #{inputManager}
+        </if>
+        <if test="inputCustomerNo != null">
+            AND list.customerNo = #{inputCustomerNo}
+        </if>
     </select>
-
 
     <resultMap id="OrderH" type="OrderH">
         <result column="orderNo" property="orderNo"/>
@@ -75,5 +73,5 @@
         </association>
     </resultMap>
 
-
 </mapper>
+
