@@ -15,6 +15,8 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Builder
+@Entity
+@Table(name = "employee")
 public class Employee {
     @Id
     private String employeeId;

@@ -21,6 +21,7 @@ import java.time.LocalDate;
         initialValue = 1,
         allocationSize = 1
 )
+
 public class Confirm {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqConfirm")
