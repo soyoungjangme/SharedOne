@@ -12,12 +12,12 @@ import java.util.List;
 
 @Service
 public class ConfirmServiceImpl implements ConfirmService {
-    private final ConfirmRepository confirmRepository;
-
     @Autowired
-    public ConfirmServiceImpl(ConfirmRepository confirmRepository) {
-        this.confirmRepository = confirmRepository;
-    }
+    private ConfirmRepository confirmRepository;
+
+//    public ConfirmServiceImpl(ConfirmRepository confirmRepository) {
+//        this.confirmRepository = confirmRepository;
+//    }
 
     @Override
     public List<Confirm> saveConfirms(List<Confirm> confirms) {
