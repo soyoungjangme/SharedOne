@@ -81,7 +81,7 @@ function Order() {
     const [mycustomer, setMycustomer] = useState([]);
 
     //상품명 목록 Data
-    useEffect ( () => {
+    const sadfdsaf  ( () => {
         let effectProd = async() => {
             let getProd = await fetch('/product/products').then(res => res.json());
             setProd(getProd);
