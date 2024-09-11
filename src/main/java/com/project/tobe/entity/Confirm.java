@@ -45,7 +45,7 @@ public class Confirm {
 
     @ManyToOne
     @JoinColumn (name = "employee_id")
-    private Employee employee;
+    private Customer Customer;
 
     private Integer customPrice = 0;
     private LocalDate delDate;
