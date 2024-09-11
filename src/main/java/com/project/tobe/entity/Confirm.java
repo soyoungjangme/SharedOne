@@ -4,6 +4,10 @@ package com.project.tobe.entity;
 import lombok.*;
 import org.springframework.data.relational.core.sql.In;
 
+import javax.persistence.Entity;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -13,7 +17,7 @@ import java.time.LocalDate;
 @ToString
 @Builder
 @Entity
-@Table (name = "confirm")
+@Table(name = "confirm")
 @SequenceGenerator(
         name = "seqConfirm",
         sequenceName = "seq_confirm",
@@ -39,10 +43,7 @@ public class Confirm {
 //    @ManyToOne
 //    @JoinColumn (name = "employee_id")
 //    private Employee employee;
-    private String confirmStatus;
-    private String confirmTitle;
     private String confirmContent;
-    private LocalDate confirmRegDate;
     private LocalDate confirmConfirmDate;
 
     private String employeeId;//fk
@@ -54,7 +55,6 @@ public class Confirm {
 //    private Employee approver;
 
     private Integer customPrice = 0;
-    private Long orderNo;
     private LocalDate delDate;
 
     private String productName;
