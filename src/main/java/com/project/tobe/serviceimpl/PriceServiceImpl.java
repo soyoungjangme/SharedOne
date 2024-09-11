@@ -1,8 +1,7 @@
 package com.project.tobe.serviceimpl;
 
-import com.project.tobe.customer.CustomerService;
 import com.project.tobe.dto.PriceProductCustomerDTO;
-import com.project.tobe.dto.PriceSearchDTO;
+import com.project.tobe.dto.PriceDTO;
 import com.project.tobe.entity.Customer;
 import com.project.tobe.entity.Price;
 import com.project.tobe.entity.Product;
@@ -14,6 +13,7 @@ import com.project.tobe.util.constants.YesNo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -34,19 +34,19 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
-    public List<Price> getPriceByDTO(PriceSearchDTO dto) {
+    public List<Price> getPriceByDTO(PriceDTO dto) {
         return priceRepository.getPriceByDTO(dto);
     }
 
     @Override
-    public List<PriceProductCustomerDTO> getPriceProductCustomerDTO(PriceSearchDTO dto) {
+    public List<PriceProductCustomerDTO> getPriceProductCustomerDTO(PriceDTO dto) {
         return priceRepository.getPriceJoinByDTO(dto);
     }
 
 
     @Override
-    public ResponseEntity<String> savePrice(List<PriceSearchDTO> list) {
-        for (PriceSearchDTO dto : list) {
+    public ResponseEntity<String> savePrice(List<PriceDTO> list) {
+        for (PriceDTO dto : list) {
             // Customer와 Product를 조회하여 연관관계를 설정
             Customer customer = customerRepository.findById(Long.parseLong(dto.getCustomerNo())).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
             Product product = productRepository.findById(Long.parseLong(dto.getProductNo())).orElseThrow(() -> new EntityNotFoundException("Product not found"));
@@ -67,5 +67,18 @@ public class PriceServiceImpl implements PriceService {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<String> updatePrice(PriceDTO dto) {
+        priceRepository.updatePrice(dto);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<String> savePriceByCsv(List<MultipartFile> list) {
+        System.out.println(list);
+        return null;
     }
 }
