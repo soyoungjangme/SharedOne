@@ -136,17 +136,14 @@ background-color: #ddd;
 }
 
 /* 각 컬럼의 너비 설정 */
-.seacrh-table th:nth-child(1) { width: 5%; }
-.seacrh-table th:nth-child(2) { width: 10%; }
-.seacrh-table th:nth-child(3) { width: 10%; }
+.seacrh-table th:nth-child(1) { width: 8%; }
+.seacrh-table th:nth-child(2) { width: 8%; }
+.seacrh-table th:nth-child(3) { width: 30%; }
 .seacrh-table th:nth-child(4) { width: 10%; }
 .seacrh-table th:nth-child(5) { width: 10%; }
 .seacrh-table th:nth-child(6) { width: 10%; }
-.seacrh-table th:nth-child(7) { width: 10%; }
-.seacrh-table th:nth-child(8) { width: 10%; }
-.seacrh-table th:nth-child(9) { width: 8%; }
-.seacrh-table th:nth-child(10) { width: 8%; }
-.seacrh-table th:nth-child(11) { width: 8%; }
+.seacrh-table th:nth-child(7) { width: 12%; }
+.seacrh-table th:nth-child(8) { width: 12%; }
 
 .seacrh-table th {
   border-top : 2px solid #0063ac;

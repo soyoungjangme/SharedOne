@@ -5,7 +5,7 @@ import useCheckboxManager from '../js/CheckboxManager';
 
 const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem}) => {
     const initialFormData = {
-        confirmNo: null,
+        confirmNo: '',
         customerName: '',
         employeeName: '',
         productType: '도서',
@@ -15,8 +15,9 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
         delDate: '',
         customPrice: 0,
         approver: '',
-        confirmStatus: 'pending',
-        remarks: ''
+        confirmStatus: '대기',
+        remarks: '',
+        confirmTitle: ''
     };
 
 
@@ -68,8 +69,8 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
             const promises = formList.map(async item => {
                 const confirmNo = item.confirmNo ? item.confirmNo.toString() : null;
                 const url = item.confirmNo
-                    ? `/api/confirms/${item.confirmNo}`
-                    : '/api/confirms';
+                    ? `/confirm/${item.confirmNo}`
+                    : '/confirm';
                 const method = item.confirmNo ? 'PUT' : 'POST';
                 console.log(`Sending ${method} request to ${url}`, item);  // 디버깅용 로그
                 const response = await fetch(url, {
@@ -111,7 +112,7 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                         <div className="form-container">
                             <button className="close-btn" onClick={handleCloseClick}> &times; </button>
                             <div className="form-header">
-                                <h1>주문 및 결재 상세 조회</h1>
+                                <h1>결재 상세 조회</h1>
                                 <div className="btns">
                                     <div className="btn-add">
                                         <button type="button" onClick={handleSubmit}>등록</button> {/* Changed type to "button" */}
@@ -123,8 +124,18 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                                 <table className="formTable">
                                     <tbody>
                                     <tr>
+                                        <th colSpan="1"><label htmlFor="confirmTitle">제목</label></th>
+                                        <td colSpan="2">
+                                            <input
+                                                type="text"
+                                                name="confirmTitle"
+                                                value={formData.confirmTitle}
+                                                onChange={handleInputChange}
+                                                placeholder="필드 입력"
+                                            />
+                                        </td>
                                         <th colSpan="1"><label htmlFor="customerName">고객명</label></th>
-                                        <td colSpan="3">
+                                        <td colSpan="2">
                                             <input
                                                 type="text"
                                                 name="customerName"
@@ -134,11 +145,11 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                                             />
                                         </td>
                                         <th colSpan="1"><label htmlFor="picName">담당자명</label></th>
-                                        <td colSpan="3">
+                                        <td colSpan="2">
                                             <input
                                                 type="text"
-                                                name="picName"
-                                                value={formData.picName}
+                                                name="employeeName"
+                                                value={formData.employeeName}
                                                 onChange={handleInputChange}
                                                 placeholder="필드입력"
                                             />
@@ -171,8 +182,8 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                                         <td>
                                             <input
                                                 type="text"
-                                                name="qty"
-                                                value={formData.qty}
+                                                name="orderQty"
+                                                value={formData.orderQty}
                                                 onChange={handleInputChange}
                                                 placeholder="필드 입력"
                                             />
@@ -223,8 +234,8 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                                         <th><label htmlFor="approvalStatus">결재 여부</label></th>
                                         <td>
                                             <select
-                                                name="approvalStatus"
-                                                value={formData.approvalStatus}
+                                                name="confirmStatus"
+                                                value={formData.confirmStatus}
                                                 onChange={handleInputChange}
                                             >
                                                 <option value="pending">대기</option>
