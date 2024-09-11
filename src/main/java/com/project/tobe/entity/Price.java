@@ -26,7 +26,7 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqPrice")
     private Long priceNo;
     private LocalDate registerDate;
-//    private Long productNo;
+    //    private Long productNo;
 //    private Long customerNo;
     private Double customPrice;
     private String currency;

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.tobe.mapper.OrderMapper">
+
+    <select id="getOrder" resultMap="OrderH">
+        SELECT list.*, PROD.PRODUCT_NO AS productNo, PROD.PRODUCT_NAME AS productName
+        FROM ORDER_BODY OB
+        JOIN PRODUCT PROD ON PROD.PRODUCT_NO = OB.PRODUCT_NO
+        JOIN (
+        SELECT OH.ORDER_NO AS orderNo,
+        CUS.CUSTOMER_NAME AS customerName,
+        CUS.CUSTOMER_NO AS customerNo,
+        CONFINFO.CONFIRM_TITLE AS confirmTitle,
+        CONFINFO.CONFIRM_CONTENT AS confirmContent,
+        CONFINFO.EMPLOYEE_NAME AS employeeName,
+        CONFINFO.CONFIRM_STATUS AS confirmStatus,
+        CONFINFO.CONFIRM_CONFIRM_DATE AS confirmConfirmDate
+        FROM ORDER_HEADER OH
+        JOIN (
+        SELECT EMP.EMPLOYEE_NAME, CONF.CONFIRM_TITLE, CONF.CONFIRM_CONTENT,
+        CONF.CONFIRM_STATUS, CONF.CONFIRM_CONFIRM_DATE, CONF.ORDER_NO
+        FROM EMPLOYEE EMP
+        JOIN CONFIRM CONF ON CONF.EMPLOYEE_ID = EMP.EMPLOYEE_ID
+        ) CONFINFO ON CONFINFO.ORDER_NO = OH.ORDER_NO
+        JOIN CUSTOMER CUS ON CUS.CUSTOMER_NO = OH.CUSTOMER_NO
+        ) list ON list.orderNo = OB.ORDER_NO
+        WHERE list.confirmStatus = '승인'
+            <if test="inputProdNo != null">
+                AND PROD.PRODUCT_NO = #{inputProdNo}
+            </if>
+            <if test="inputDate != null">
+                AND list.confirmConfirmDate = #{inputDate}
+            </if>
+            <if test="inputOrderNo != null">
+                AND list.orderNo = #{inputOrderNo}
+            </if>
+            <if test="inputManager != null">
+                AND list.employeeName = #{inputManager}
+            </if>
+            <if test="inputCustomerNo != null">
+                AND list.customerNo = #{inputCustomerNo}
+            </if>
+
+    </select>
+
+
+    <resultMap id="OrderH" type="OrderH">
+        <result column="orderNo" property="orderNo"/>
+        <association property="customer" javaType="Customer">
+            <result column="customerName" property="customerName"/>
+        </association>
+        <collection property="confirmList" resultMap="Confirm"/>
+        <collection property="orderBList" resultMap="OrderB"/>
+    </resultMap>
+
+    <resultMap id="Confirm" type="Confirm">
+        <result column="confirmTitle" property="confirmTitle"/>
+        <result column="confirmContent" property="confirmContent"/>
+        <result column="confirmStatus" property="confirmStatus"/>
+        <result column="confirmConfirmDate" property="confirmConfirmDate"/>
+        <association property="employee" javaType="Employee">
+            <result column="employeeName" property="employeeName"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="OrderB" type="OrderB">
+        <result column="orderNo" property="orderNo"/>
+        <association property="product" javaType="Product">
+            <result column="productNo" property="productNo"/>
+            <result column="productName" property="productName"/>
+        </association>
+    </resultMap>
+
+
+</mapper>

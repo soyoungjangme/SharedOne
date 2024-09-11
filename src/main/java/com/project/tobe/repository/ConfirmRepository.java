@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ConfirmRepository extends JpaRepository<Confirm, Long> {
+public interface ConfirmRepository extends JpaRepository<Confirm, Long>{
 
 
 }

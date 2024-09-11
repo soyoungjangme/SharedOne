@@ -2,7 +2,6 @@ package com.project.tobe.dto;
 
 import lombok.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -11,11 +10,12 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Builder
-public class PriceSearchDTO {
+public class PriceDTO {
+    private Long priceNo;
     private LocalDate registerDate;
     private String productNo;
     private String customerNo;
-    private Integer customPrice;
+    private Double customPrice;
     private String currency;
     private Double discount;
     private LocalDate startDate;

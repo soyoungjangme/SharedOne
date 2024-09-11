@@ -1,7 +1,7 @@
 package com.project.tobe.repository;
 
 import com.project.tobe.dto.PriceProductCustomerDTO;
-import com.project.tobe.dto.PriceSearchDTO;
+import com.project.tobe.dto.PriceDTO;
 import com.project.tobe.entity.Price;
 import com.project.tobe.entity.QCustomer;
 import com.project.tobe.entity.QPrice;
@@ -9,9 +9,11 @@ import com.project.tobe.entity.QProduct;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +31,7 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
     }
 
     @Override
-    public List<Price> getPriceByDTO(PriceSearchDTO dto) {
+    public List<Price> getPriceByDTO(PriceDTO dto) {
         BooleanBuilder builder = new BooleanBuilder();
 
         QPrice price = QPrice.price;
@@ -52,7 +54,7 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
     }
 
     @Override
-    public List<PriceProductCustomerDTO> getPriceJoinByDTO(PriceSearchDTO dto) {
+    public List<PriceProductCustomerDTO> getPriceJoinByDTO(PriceDTO dto) {
         BooleanBuilder builder = new BooleanBuilder();
 
         QPrice price = QPrice.price;
@@ -70,7 +72,7 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
         customerNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customer.customerNo.eq(Long.parseLong(s))));
         startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
         endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
-        builder.and(price.activated.eq(Y));
+//        builder.and(price.activated.eq(Y));
 
         return jpaQueryFactory
                 .select(
@@ -97,5 +99,35 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
                 .where(builder)
                 .orderBy(price.priceNo.desc())
                 .fetch();
+    }
+
+    @Override
+    @Transactional
+    public void updatePrice(PriceDTO dto) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        QPrice price = QPrice.price;
+        builder.and(price.priceNo.eq(dto.getPriceNo()));
+
+        JPAUpdateClause updateQuery = jpaQueryFactory.update(price).where(builder);
+
+        // 각 필드가 null이 아닐 때만 업데이트 조건을 추가합니다.
+        Optional.ofNullable(dto.getStartDate()).ifPresent(startDate ->
+                updateQuery.set(price.startDate, startDate)
+        );
+        Optional.ofNullable(dto.getEndDate()).ifPresent(endDate ->
+                updateQuery.set(price.endDate, endDate)
+        );
+        Optional.ofNullable(dto.getCustomPrice()).ifPresent(customPrice ->
+                updateQuery.set(price.customPrice, customPrice)
+        );
+        Optional.ofNullable(dto.getDiscount()).ifPresent(discount ->
+                updateQuery.set(price.discount, discount)
+        );
+        Optional.ofNullable(dto.getCurrency()).ifPresent(currency ->
+                updateQuery.set(price.currency, currency)
+        );
+
+        updateQuery.execute();
     }
 }
