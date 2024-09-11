@@ -1,20 +1,19 @@
 package com.project.tobe.mapper;
 
-import com.project.tobe.dto.EmployeeSearchDTO;
-import com.project.tobe.dto.EmployeeTestDTO;
-import com.project.tobe.entity.Employee;
+import com.project.tobe.dto.CustomerSearchDTO;
+import com.project.tobe.dto.CustomerDTO;
+import com.project.tobe.entity.Customer;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
 public interface EmployeeMapper {
 
-  public List<Employee> getAllList();
-  public List<Employee> getPickList(EmployeeSearchDTO dto);
-  public void employeeRegistTest( List<EmployeeTestDTO> dto);
-  public void employeeUpdateTest(EmployeeTestDTO dto);
+  public List<Customer> getAllList();
+  public List<Customer> getPickList(CustomerSearchDTO dto);
+  public void employeeRegistTest( List<CustomerDTO> dto);
+  public void employeeUpdateTest(CustomerDTO dto);
   public void employeeDeleteTest(List<String> employeeIds);
 }
 
