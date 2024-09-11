@@ -92,7 +92,7 @@ function Order() {
     //고객명 목록 data
     useEffect ( () => {
         let effectCustomer = async() => {
-            let getCustomer = await fetch('/customer/customerList').then(res => res.json());
+            let getCustomer = await fetch('/customer/customerAll').then(res => res.json());
             setMycustomer(getCustomer);
         }
         effectCustomer();
