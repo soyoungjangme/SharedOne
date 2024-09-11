@@ -4,10 +4,7 @@ package com.project.tobe.entity;
 import lombok.*;
 import org.springframework.data.relational.core.sql.In;
 
-import javax.persistence.Entity;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -25,7 +22,8 @@ import java.time.LocalDate;
         allocationSize = 1
 )
 public class Confirm {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqConfirm")
     private Long confirmNo;
 
     private String confirmStatus; // 대기, 반려, 승인 3가지 있음
@@ -35,24 +33,19 @@ public class Confirm {
     private LocalDate confirmDate;
     private String remarks;
 
-//    일단 주석 처리
-//    @ManyToOne
-//    @JoinColumn (name = "price_no")
-//    private Price price;
+    @ManyToOne
+    @JoinColumn (name = "price_no")
+    private Price price;
 
-//    @ManyToOne
-//    @JoinColumn (name = "employee_id")
-//    private Employee employee;
+
     private String confirmContent;
     private LocalDate confirmConfirmDate;
 
-    private String employeeId;//fk
     private Long orderNo; //fk
 
+    @ManyToOne
+    @JoinColumn (name = "employee_id")
     private Employee employee;
-//    @ManyToOne
-//    @JoinColumn (name = "employee_id")
-//    private Employee approver;
 
     private Integer customPrice = 0;
     private LocalDate delDate;
