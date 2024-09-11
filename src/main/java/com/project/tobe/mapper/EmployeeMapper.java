@@ -1,6 +1,5 @@
 package com.project.tobe.mapper;
 
-import com.project.tobe.dto.EmployeeDTO;
 import com.project.tobe.dto.EmployeeSearchDTO;
 import com.project.tobe.dto.EmployeeTestDTO;
 import com.project.tobe.entity.Employee;

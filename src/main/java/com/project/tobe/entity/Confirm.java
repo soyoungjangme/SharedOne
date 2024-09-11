@@ -53,9 +53,9 @@ public class Confirm {
     private String productName;
     private String productType;
 
-    private String customerName;
     private Integer orderQty = 0;
-    private String employeeName;
+
+
 
 
     @Transient

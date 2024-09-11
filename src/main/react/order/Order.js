@@ -33,7 +33,7 @@ function Order() {
                     orderNo: item.orderNo,
                     title: item.confirmList.map(confirm => confirm.confirmTitle),
                     details: item.confirmList.map(confirm => confirm.confirmContent),
-                    manager: item.confirmList.map(confirm => confirm.employee.employeeName),
+                    manager: item.confirmList.map(confirm => confirm.Customer.employeeName),
                     status: item.confirmList.map(confirm => confirm.confirmStatus),
                     date: item.confirmList.map(confirm => confirm.confirmConfirmDate)
                 }));
@@ -105,7 +105,6 @@ function Order() {
     const handleChange = (e) => {
         let copy = {...form, [e.target.id]: e.target.value};
         setForm(copy);
-        console.log(copy);
     }
 
 
@@ -128,7 +127,7 @@ function Order() {
                 orderNo: item.orderNo,
                 title: item.confirmList.map(confirm => confirm.confirmTitle),
                 details: item.confirmList.map(confirm => confirm.confirmContent),
-                manager: item.confirmList.map(confirm => confirm.employee.employeeName),
+                manager: item.confirmList.map(confirm => confirm.Customer.employeeName),
                 status: item.confirmList.map(confirm => confirm.confirmStatus),
                 date: item.confirmList.map(confirm => confirm.confirmConfirmDate),
                 prodName:  item.orderBList.map(orderB => orderB.product.productName),
@@ -414,17 +413,15 @@ function Order() {
                                 <input type="text" />
                                 <button type="button" className="btn-common">추가</button>
                             </div>
-                                <div className="bookResultList">
-                                    <ul>
-                                    <li> <p> 신서유기 </p> </li>
-                                    <li> <p> 신서유기 </p></li>
-                                    <li> <p> 신서유기 </p></li>
-                                    <li> <p> 신서유기 </p></li>
-                                    <li> <p> 신서유기 </p></li>
-
-
-                                    </ul>
-                                </div>
+                            <div className="bookResultList">
+                                <ul>
+                                {mycustomer.map((customer) => (
+                                    <li key={customer.customerNo}>
+                                    {customer.customerName}
+                                    </li>
+                                ))}
+                                </ul>
+                            </div>
                             </div>
 
 

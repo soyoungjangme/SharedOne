@@ -1,7 +1,6 @@
 package com.project.tobe.dto;
 
 
-import com.project.tobe.entity.Employee;
 import lombok.*;
 
 import java.time.LocalDate;
