@@ -186,13 +186,13 @@ function Order() {
             date: ''
         }
     ]);
+
     const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
+
     const handleModify = (item) => {
-        setModifyItem(item);
         setIsModifyModalVisible(true);
 
     }
-
     const handleModifyCloseClick = () => {
         setIsModifyModalVisible(false);
     }
@@ -259,7 +259,7 @@ function Order() {
                     </div>
                 </div>
 
-                <button className="filter-button" id="add" type="button" onClick={handleAddClick}>
+                <button className="btn-common add" type="button" onClick={handleAddClick}>
                     주문 등록
                 </button>
 
@@ -334,12 +334,12 @@ function Order() {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="6">등록된 주문이 없습니다😭</td>
+                            <td colSpan="8">등록된 주문이 없습니다😭</td>
                         </tr>
                     )}
                     <tr>
-                        <td colSpan="5"></td>
-                        <td colSpan="1"> 6 건</td>
+                        <td colSpan="7"></td>
+                        <td colSpan="1"> {order.length} 건</td>
                     </tr>
 
                     </tbody>
@@ -399,27 +399,32 @@ function Order() {
                                 </table>
 
 
-                                <button id="downloadCsv">CSV 샘플 양식</button>
-                                <button id="uploadCsv" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
-                                {isVisibleCSV && (
-                                    <input type="file" id="uploadCsvInput" accept=".csv"/>)}
+                                 <div className="btn-add">
+                                                                  <button id="downloadCsv" className="btn-CSV">CSV 샘플 양식</button>
+                                                                  <button id="uploadCsv" className="btn-CSV" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
+                                                                  {isVisibleCSV && (
+                                                                      <input type="file" id="uploadCsvInput" accept=".csv"/>)}
 
-                                <div className="btn-add">
-                                    <button> 추가</button>
-                                </div>
+
+                                                              </div>
                             </div>
 
-                            <div>
+                            <div className="bookSearchBox">
+                            <div className="bookSearch">
                                 <input type="text" />
-                                <button type="button" >추가</button>
+                                <button type="button" className="btn-common">추가</button>
+                            </div>
+                                <div className="bookResultList">
+                                    <ul>
+                                    <li> <p> 신서유기 </p> </li>
+                                    <li> <p> 신서유기 </p></li>
+                                    <li> <p> 신서유기 </p></li>
+                                    <li> <p> 신서유기 </p></li>
+                                    <li> <p> 신서유기 </p></li>
 
-                                <ul>
-                                <li>신서유기</li>
-                                <li>신라면</li>
-                                <li>신봉선</li>
-                                <li>신발장</li>
-                                <li>신동엽</li>
-                                </ul>
+
+                                    </ul>
+                                </div>
                             </div>
 
 
@@ -466,7 +471,106 @@ function Order() {
             )}
             {/* 모달창의 끝  */}
 
+ {isModifyModalVisible && (
 
+      <div class="confirmRegist">
+                        <div class="fullBody">
+                            <div class="form-container">
+                                <button className="close-btn" onClick={handleModifyCloseClick}> &times;
+                                </button>
+                                <div class="form-header">
+                                    <h1>주문 상세보기</h1>
+
+
+                                </div>
+
+                                {/*주문정보-헤더*/}
+                                <div class="RegistForm">
+                                    <table class="formTable">
+
+                                        <tr>
+
+                                            <th colspan="1"><label for="">고객사 명</label></th>
+                                            <td colspan="3">
+                                            <select>
+                                            <option>선택</option>
+                                            </select></td>
+
+                                            <th colspan="1"><label for="">납품 요청일</label></th>
+                                            <td colspan="3"><input type="date" placeholder="필드 입력"/></td>
+
+                                        </tr>
+
+
+                                        <tr>
+                                            <th colspan="1"><label for="">담당자명</label></th>
+                                            <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
+
+
+                                            <th colspan="1"><label for="">결재자</label></th>
+                                            <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
+
+                                        </tr>
+
+                                        <tr>
+                                            <th colspan="1"><label for="">결재상태</label></th>
+                                            <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
+
+
+                                            <th colspan="1"><label for="">결재일자</label></th>
+                                            <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
+
+                                        </tr>
+
+                                    </table>
+
+
+
+                                </div>
+
+
+
+
+                                <div class="RegistFormList">
+                                    <div style={{fontWeight: 'bold'}}> 총 N 건</div>
+                                    <table class="formTableList">
+                                        <thead>
+                                            <tr>
+                                                <th><input type="checkbox"/></th>
+                                                <th>no</th>
+                                                <th>상품 종류</th>
+                                                <th>상품 명</th>
+                                                <th>상품 수량</th>
+                                                <th>총 액</th>
+                                                <th>판매시작날짜</th>
+                                                <th>판매종료날짜</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><input type="checkbox"/></td>
+                                                <td>1</td>
+                                                <td>제품공고1</td>
+                                                <td>EA</td>
+                                                <td>EA</td>
+                                                <td>재품창고1</td>
+                                                <td>L2017-11-260001</td>
+                                                <td>4,900</td>
+                                            </tr>
+
+                                            <tr style={{fontWeight: 'bold'}}>
+                                                <td colspan="6"> 합계</td>
+                                                <td colspan="2"> 13,000,000</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+            )}
 
 
             </div>
