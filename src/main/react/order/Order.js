@@ -33,7 +33,7 @@ function Order() {
                     orderNo: item.orderNo,
                     title: item.confirmList.map(confirm => confirm.confirmTitle),
                     details: item.confirmList.map(confirm => confirm.confirmContent),
-                    manager: item.confirmList.map(confirm => confirm.Customer.employeeName),
+                    manager: item.confirmList.map(confirm => confirm.employee.employeeName),
                     status: item.confirmList.map(confirm => confirm.confirmStatus),
                     date: item.confirmList.map(confirm => confirm.confirmConfirmDate)
                 }));
@@ -92,7 +92,7 @@ function Order() {
     //고객명 목록 data
     useEffect ( () => {
         let effectCustomer = async() => {
-            let getCustomer = await fetch('/customer/customerList').then(res => res.json());
+            let getCustomer = await fetch('/customer/customerALL').then(res => res.json());
             setMycustomer(getCustomer);
         }
         effectCustomer();
@@ -127,7 +127,7 @@ function Order() {
                 orderNo: item.orderNo,
                 title: item.confirmList.map(confirm => confirm.confirmTitle),
                 details: item.confirmList.map(confirm => confirm.confirmContent),
-                manager: item.confirmList.map(confirm => confirm.Customer.employeeName),
+                manager: item.confirmList.map(confirm => confirm.employee.employeeName),
                 status: item.confirmList.map(confirm => confirm.confirmStatus),
                 date: item.confirmList.map(confirm => confirm.confirmConfirmDate),
                 prodName:  item.orderBList.map(orderB => orderB.product.productName),

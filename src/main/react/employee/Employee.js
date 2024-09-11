@@ -31,7 +31,7 @@ ChartJS.register(
 );
 
 
-function employee() {
+function Employee() {
 
     const options = {
         responsive: true,
