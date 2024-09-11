@@ -20,4 +20,14 @@ public class PriceDTO {
     private Double discount;
     private LocalDate startDate;
     private LocalDate endDate;
+
+    public PriceDTO(String productNo, String customerNo, Double customPrice, String currency, Double discount, LocalDate startDate, LocalDate endDate) {
+        this.productNo = productNo;
+        this.customerNo = customerNo;
+        this.customPrice = customPrice;
+        this.currency = currency;
+        this.discount = discount;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 }
