@@ -159,13 +159,12 @@ h2 {
     gap: 15px;
 }
 
-input {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 2px;
-    font-size: 14px;
+.filter-item select {
+    width: 80%;
+    height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
-
 .map img {
     width: 70%;
     margin: auto;
