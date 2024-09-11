@@ -44,7 +44,7 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
 //
 //        registerDate.ifPresent(localDate -> builder.and(price.registerDate.eq(localDate)));
 //        productNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.product.productNo.eq(Long.parseLong(s))));
-//        customerNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customer.customerNo.eq(Long.parseLong(s))));
+//        customerNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.employee.customerNo.eq(Long.parseLong(s))));
 //        startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
 //        endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
 //        builder.and(price.activated.eq(Y));
@@ -71,7 +71,7 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
         productNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.product.productNo.eq(Long.parseLong(s))));
         customerNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customer.customerNo.eq(Long.parseLong(s))));
         startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
-        endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
+        endDate.ifPresent(localDate -> builder.and(price.endDate.before(ocalDate)));
 //        builder.and(price.activated.eq(Y));
 
         return jpaQueryFactory

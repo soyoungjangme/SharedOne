@@ -4,7 +4,6 @@ package com.project.tobe.controller;
 import com.project.tobe.dto.CustomerSearchDTO;
 import com.project.tobe.dto.CustomerDTO;
 import com.project.tobe.entity.Customer;
-import com.project.tobe.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
