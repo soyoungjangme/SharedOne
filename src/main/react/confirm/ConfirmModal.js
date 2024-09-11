@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom/client';
 import './Confirm.css';
 import './modal_confirm1.css';
 import useCheckboxManager from '../js/CheckboxManager';
 
-const ConfirmModal = ({openModal, handleCloseClick, selectedItem }) => {
-
-    const [formData, setFormData] = useState({
+const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem}) => {
+    const initialFormData = {
+        confirmNo: '',
         customerName: '',
-        picName: '',
+        employeeName: '',
         productType: '도서',
         productName: '',
-        qty: '',
-        totalAmount: '',
+        orderQty: 0,
+        totalAmount: 0,
         delDate: '',
-        startDate: '',
-        endDate: '',
+        customPrice: 0,
         approver: '',
-        approvalStatus: 'pending',
-        remarks: ''
-    });
+        confirmStatus: '대기',
+        remarks: '',
+        confirmRegDate: new Date().toISOString().split('T')[0]
+    };
+
+
+    const [formData, setFormData] = useState(initialFormData);
+    const [formList, setFormList] = useState([]);
+    const [isVisibleCSV, setIsVisibleCSV] = useState(false);
 
     const {
         allCheck,
@@ -27,42 +31,62 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem }) => {
         showDelete,
         handleMasterCheckboxChange,
         handleCheckboxChange,
-        handleDelete
+        handleDelete: handleDeleteItems
     } = useCheckboxManager();
 
-    const [formList, setFormList] = useState([]);
-    const [isVisibleCSV, setIsVisibleCSV] = useState(false);
+
+
+    useEffect(() => {
+        if (selectedItem) {
+            setFormData(selectedItem);
+            setFormList([selectedItem]);
+        } else {
+            setFormData(initialFormData);
+            setFormList([]);
+        }
+    }, [selectedItem]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+        setFormData(prevState => ({
+            ...prevState,
+            [name] : value
+        }));
     };
 
     const handleAddClick = () => {
-        setFormList([...formList, formData]);
-        // Reset formData
-        setFormData({
-            customerName: '',
-            picName: '',
-            productType: '도서',
-            productName: '',
-            qty: '',
-            totalAmount: '',
-            delDate: '',
-            startDate: '',
-            endDate: '',
-            approver: '',
-            approvalStatus: '대기',
-            remarks: ''
-        });
+        setFormList(prevList => [...prevList, { ...formData, confirmNo: prevList.length + 1}]);
+        setFormData(initialFormData);
+    };
+
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch('http://localhost:8383/confirm/batch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formList),
+            });
+
+            const result = await response.json();
+            onUpdateItem(result);
+            handleCloseClick();
+            setFormList([]);
+        } catch (error) {
+            console.error('Error saving confirms:', error);
+            alert('저장 중 오류가 발생했습니다.');
+        }
     };
 
     const handleAddClickCSV = () => {
         setIsVisibleCSV(!isVisibleCSV);
         // 여기다가 CSV 구현 예정
+    };
+
+    const handleDelete = () => {
+        const newFormList = formList.filter((_, index) => !checkItem[index]);
+        setFormList(newFormList);
     };
 
     return(
@@ -76,12 +100,12 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem }) => {
                                 <h1>주문 및 결재 상세 조회</h1>
                                 <div className="btns">
                                     <div className="btn-add">
-                                        <button>수정</button>
+                                        <button type="button" onClick={handleSubmit}>등록</button> {/* Changed type to "button" */}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="RegistForm">
+                            <form onSubmit={(e) => e.preventDefault() } className="RegistForm">
                                 <table className="formTable">
                                     <tbody>
                                     <tr>
@@ -95,12 +119,12 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem }) => {
                                                 placeholder="필드 입력"
                                             />
                                         </td>
-                                        <th colSpan="1"><label htmlFor="picName">담당자명</label></th>
+                                        <th colSpan="1"><label htmlFor="employeeName">담당자명</label></th>
                                         <td colSpan="3">
                                             <input
                                                 type="text"
-                                                name="picName"
-                                                value={formData.picName}
+                                                name="employeeName"
+                                                value={formData.employeeName}
                                                 onChange={handleInputChange}
                                                 placeholder="필드입력"
                                             />
@@ -129,20 +153,30 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem }) => {
                                                 placeholder="필드 입력"
                                             />
                                         </td>
-                                        <th><label htmlFor="qty">상품수량</label></th>
+                                        <th><label htmlFor="orderQty">상품수량</label></th>
                                         <td>
                                             <input
                                                 type="text"
-                                                name="qty"
-                                                value={formData.qty}
+                                                name="orderQty"
+                                                value={formData.orderQty}
                                                 onChange={handleInputChange}
                                                 placeholder="필드 입력"
                                             />
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th><label htmlFor="totalAmount">총 금액</label></th>
-                                        <td>
+                                        <th colSpan="1"><label htmlFor="customPrice">판매가</label></th>
+                                        <td colSpan="1">
+                                            <input
+                                                type="text"
+                                                name="customPrice"
+                                                value={formData.customPrice}
+                                                onChange={handleInputChange}
+                                                placeholder="필드 입력"
+                                            />
+                                        </td>
+                                        <th colSpan="1"><label htmlFor="totalAmount">총 금액</label></th>
+                                        <td colSpan="3">
                                             <input
                                                 type="text"
                                                 name="totalAmount"
@@ -151,30 +185,12 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem }) => {
                                                 placeholder="필드 입력"
                                             />
                                         </td>
-                                        <th><label htmlFor="delDate">납품요청일</label></th>
-                                        <td>
+                                        <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
+                                        <td colSpan="2">
                                             <input
                                                 type="date"
                                                 name="delDate"
                                                 value={formData.delDate}
-                                                onChange={handleInputChange}
-                                            />
-                                        </td>
-                                        <th><label htmlFor="startDate">판매 시작날짜</label></th>
-                                        <td>
-                                            <input
-                                                type="date"
-                                                name="startDate"
-                                                value={formData.startDate}
-                                                onChange={handleInputChange}
-                                            />
-                                        </td>
-                                        <th><label htmlFor="endDate">판매 종료날짜</label></th>
-                                        <td>
-                                            <input
-                                                type="date"
-                                                name="endDate"
-                                                value={formData.endDate}
                                                 onChange={handleInputChange}
                                             />
                                         </td>
@@ -190,11 +206,11 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem }) => {
                                                 placeholder="필드 입력"
                                             />
                                         </td>
-                                        <th><label htmlFor="approvalStatus">결재 여부</label></th>
+                                        <th><label htmlFor="confirmStatus">결재 여부</label></th>
                                         <td>
                                             <select
-                                                name="approvalStatus"
-                                                value={formData.approvalStatus}
+                                                name="confirmStatus"
+                                                value={formData.confirmStatus}
                                                 onChange={handleInputChange}
                                             >
                                                 <option value="pending">대기</option>
@@ -203,7 +219,7 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem }) => {
                                             </select>
                                         </td>
                                         <th colSpan="1"><label htmlFor="remarks">비고</label></th>
-                                        <td colSpan="3">
+                                        <td colSpan="4">
                                             <input
                                                 type="text"
                                                 name="remarks"
@@ -217,20 +233,19 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem }) => {
                                 </table>
 
                                 <button id="downloadCsv">CSV 샘플 양식</button>
-                                <button id="uploadCsv" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
+                                <button id="uploadCsv" onClick={handleAddClickCSV}>CSV 업로드</button>
                                 {isVisibleCSV && (
                                     <input type="file" id="uploadCsvInput" accept=".csv"/>
                                 )}
 
                                 <div className="btn-add">
-                                    <button onClick={handleAddClick}>추가</button>
+                                    <button type="button" onClick={handleAddClick}>추가</button>
                                 </div>
-                            </div>
+                            </form>
 
                             <div className="RegistFormList">
-                                <div style={{ fontWeight: 'bold' }}> 총 {formList.length} 건 </div>
+                                <div style={{fontWeight: 'bold'}}> 총 {formList.length} 건</div>
                                 <table className="formTableList">
-                                    {showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}
                                     <thead>
                                     <tr>
                                         <th><input type="checkbox" checked={allCheck}
@@ -240,34 +255,31 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem }) => {
                                         <th>상품 종류</th>
                                         <th>상품명</th>
                                         <th>상품 수량</th>
+                                        <th>판매가</th>
                                         <th>총 금액</th>
                                         <th>납품 요청일</th>
-                                        <th>판매 시작일</th>
-                                        <th>판매 종료일</th>
                                         <th>담당자</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {formList.map((item, index) => (
-                                        <tr key={index}>
+                                        <tr key={item.No || index}>
                                             <td><input type="checkbox" checked={checkItem[index]}
-                                                       onChange={handleCheckboxChange}/></td>
-                                            <td>{index}</td>
+                                                       onChange={() => handleCheckboxChange( index)}/></td>
+                                            <td>{item.confirmNo || index + 1}</td>
                                             <td>{item.customerName}</td>
                                             <td>{item.productType}</td>
                                             <td>{item.productName}</td>
-                                            <td>{item.qty}</td>
+                                            <td>{item.orderQty}</td>
+                                            <td>{item.customPrice}</td>
                                             <td>{item.totalAmount}</td>
                                             <td>{item.delDate}</td>
-                                            <td>{item.startDate}</td>
-                                            <td>{item.endDate}</td>
-                                            <td>{item.picName}</td>
+                                            <td>{item.employeeName}</td>
                                         </tr>
                                     ))}
-                                    <tr style={{ fontWeight: 'bold' }}>
-                                        <td colSpan="9"> 합계</td>
+                                    <tr style={{fontWeight: 'bold'}}>
+                                        <td colSpan="8"> 합계</td>
                                         <td colSpan="2">
-                                            {/* Calculate sum based on formList */}
                                             {formList.reduce((acc, item) => acc + (parseFloat(item.totalAmount) || 0), 0)}
                                         </td>
                                     </tr>
