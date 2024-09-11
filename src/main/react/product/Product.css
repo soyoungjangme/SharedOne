@@ -298,7 +298,11 @@ tr:nth-child(0){
     height: 25px;
     position: absolute;
     top: 230px;
-
+    border: 1px solid #004e90;
+    background-color: #004e90;
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
 }
 
 /*  sort */
@@ -312,3 +316,7 @@ tr:nth-child(0){
        text-align: center;
        padding: 0px;
     }
+
+.bi-emoji-tear {
+    margin: 0 0 2px 2px;
+}
