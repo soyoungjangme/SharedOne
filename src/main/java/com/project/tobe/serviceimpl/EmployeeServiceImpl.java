@@ -1,9 +1,9 @@
 package com.project.tobe.serviceimpl;
 
 
-import com.project.tobe.dto.CustomerSearchDTO;
-import com.project.tobe.dto.CustomerDTO;
-import com.project.tobe.entity.Customer;
+import com.project.tobe.dto.EmployeeSearchDTO;
+import com.project.tobe.dto.EmployeeDTO;
+import com.project.tobe.entity.Employee;
 import com.project.tobe.mapper.EmployeeMapper;
 import com.project.tobe.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,26 +17,26 @@ public class EmployeeServiceImpl implements EmployeeService {
   EmployeeMapper employeeMapper;
 
   @Override
-  public List<Customer> getAllList() {
+  public List<Employee> getAllList() {
     return employeeMapper.getAllList();
 
   }
 
   @Override
-  public List<Customer> getPickList(CustomerSearchDTO dto) {
+  public List<Employee> getPickList(EmployeeSearchDTO dto) {
     System.out.println("서비스");
     System.out.println("작동됨 picList" + employeeMapper.getPickList(dto));
     return employeeMapper.getPickList(dto);
   }
 
   @Override
-  public void employeeRegistTest( List<CustomerDTO> dto) {
+  public void employeeRegistTest( List<EmployeeDTO> dto) {
     System.out.println("서비스");
     employeeMapper.employeeRegistTest(dto);
   }
 
   @Override
-  public void employeeUpdateTest(CustomerDTO dto) {
+  public void employeeUpdateTest(EmployeeDTO dto) {
     System.out.println("서비스");
     employeeMapper.employeeUpdateTest(dto);
   }
