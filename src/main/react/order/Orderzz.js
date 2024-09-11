@@ -49,7 +49,7 @@ function Order() {
                     orderNo: item.orderNo,
                     title: item.confirmTitle,
                     details: item.confirmContent,
-                    manager: item.employee.employeeName,
+                    manager: item.Customer.employeeName,
                     status: item.confirmStatus,
                     date: item.confirmConfirmDate
                 }))

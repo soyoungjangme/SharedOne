@@ -22,7 +22,7 @@
         JOIN (
         SELECT EMP.EMPLOYEE_NAME, CONF.CONFIRM_TITLE, CONF.CONFIRM_CONTENT,
         CONF.CONFIRM_STATUS, CONF.CONFIRM_CONFIRM_DATE, CONF.ORDER_NO
-        FROM EMPLOYEE EMP
+        FROM Customer EMP
         JOIN CONFIRM CONF ON CONF.EMPLOYEE_ID = EMP.EMPLOYEE_ID
         ) CONFINFO ON CONFINFO.ORDER_NO = OH.ORDER_NO
         JOIN CUSTOMER CUS ON CUS.CUSTOMER_NO = OH.CUSTOMER_NO
@@ -61,7 +61,7 @@
         <result column="confirmContent" property="confirmContent"/>
         <result column="confirmStatus" property="confirmStatus"/>
         <result column="confirmConfirmDate" property="confirmConfirmDate"/>
-        <association property="employee" javaType="Employee">
+        <association property="Customer" javaType="Customer">
             <result column="employeeName" property="employeeName"/>
         </association>
     </resultMap>

@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "employee")
+@Table(name = "Customer")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

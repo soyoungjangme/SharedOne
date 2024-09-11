@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, {useEffect, useState} from 'react';
 import ReactDOM from "react-dom/client";
-import './employee.css';
+import './Customer.css';
 import useCheckboxManager from "../js/CheckboxManager";
 import useSort from '../js/useSort';
 import '../js/modalAdd.css';
@@ -31,7 +31,7 @@ ChartJS.register(
 );
 
 
-function Employee() {
+function Customer() {
 
     const options = {
         responsive: true,
@@ -68,7 +68,7 @@ function Employee() {
     } = useCheckboxManager();
 
   // 메인 리스트
-    let [employee, setEmployee] = useState([{
+    let [Customer, setEmployee] = useState([{
           employeeId: '',
             employeePw: '',
             employeeName: '',
@@ -84,9 +84,9 @@ function Employee() {
 
 // 메인 리스트 가져오기 axios
     useEffect(() => {
-        axios.get('/employee/employeeALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
+        axios.get('/Customer/employeeALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
           .then(response => setEmployee(response.data))  // 응답 데이터를 상태로 설정
-          .catch(error => console.error('Error fetching employee data:', error));
+          .catch(error => console.error('Error fetching Customer data:', error));
       },[]);
 
 // 검색,필터 기능
@@ -119,7 +119,7 @@ function Employee() {
 // 검색 리스트
 const handleSearchEmployee = () => {
   if (emSearch) {
-    axios.post('/employee/employeeSearch', emSearch, {
+    axios.post('/Customer/employeeSearch', emSearch, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -191,13 +191,13 @@ const onClickRegistBtn = () => {
 
         // 서버에 등록 요청 보내기
         axios
-            .post('/employee/employeeRegist', list, {
+            .post('/Customer/employeeRegist', list, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             })
             .then((response) => {
-                setEmployee(response.data); // 서버 응답 데이터로 employee 상태 업데이트
+                setEmployee(response.data); // 서버 응답 데이터로 Customer 상태 업데이트
                 console.log('등록 성공:', response.data);
             })
             .catch((error) => console.error('서버 요청 중 오류 발생', error))
@@ -216,7 +216,7 @@ const onClickRegistBtn = () => {
 //
 //            useEffect(() => {
 //                                 if (emregist.length > 0) {
-//                                     axios.post('/employee/employeeRegist', emregist, {
+//                                     axios.post('/Customer/employeeRegist', emregist, {
 //                                         headers: {
 //                                             'Content-Type': 'application/json'
 //                                         }
@@ -240,7 +240,7 @@ const onClickRegistBtn = () => {
 
 
 // --- 테이블 정렬 기능
-    const { sortedData, sortData, sortConfig } = useSort(employee);
+    const { sortedData, sortData, sortConfig } = useSort(Customer);
 
 // ---  모달창 띄우는 스크립트
     const [isVisibleDetail, setIsVisibleDetail] = useState(false);
@@ -291,13 +291,13 @@ const onClickRegistBtn = () => {
 const handleUpdateClick = () => {
     console.log(modifyItem);
 
-    axios.post('/employee/employeeUpdate', modifyItem, {
+    axios.post('/Customer/employeeUpdate', modifyItem, {
         headers: {
             'Content-Type': 'application/json'
         }
     })
     .then(response => {
-        setEmployee(response.data);  // 서버 응답 데이터로 employee 상태 업데이트
+        setEmployee(response.data);  // 서버 응답 데이터로 Customer 상태 업데이트
         console.log('업데이트 성공:', response.data);
     })
     .catch(error => console.error('서버 요청 중 오류 발생', error))
@@ -351,7 +351,7 @@ const handleUpdateClick = () => {
 
 
       const handleDeleteClick = () => {
-        axios.post('/employee/employeeDelete', checkedIds, {
+        axios.post('/Customer/employeeDelete', checkedIds, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -539,7 +539,7 @@ const handleUpdateClick = () => {
                     )}
                     <tr>
                         <td colSpan="12"></td>
-                        <td colSpan="1"> {employee.length} 건</td>
+                        <td colSpan="1"> {Customer.length} 건</td>
                     </tr>
                     </tbody>
                 </table>
@@ -770,5 +770,5 @@ const handleUpdateClick = () => {
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <Employee/>
+    <Customer/>
 );
