@@ -270,7 +270,7 @@
     .bookResultList {
     border: 1px solid #ddd;
     background: #fff;
-    /* display: none; */
+    display: none;
     position: absolute;
     top: 33px;
    left: 0px;
