@@ -43,7 +43,7 @@ public class Price {
 
     @ManyToOne
     @JoinColumn
-    private Customer customer;
+    private Employee employee;
 
     public Price(
             LocalDate registerDate,

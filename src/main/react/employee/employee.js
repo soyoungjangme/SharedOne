@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from "react-dom/client";
-import './Customer.css';
+import './Employee.css';
 import useCheckboxManager from "../js/CheckboxManager";
 import useSort from '../js/useSort';
 import '../js/modalAdd.css';
@@ -31,7 +31,7 @@ ChartJS.register(
 );
 
 
-function Customer() {
+function Employee() {
 
     const options = {
         responsive: true,
@@ -68,7 +68,7 @@ function Customer() {
     } = useCheckboxManager();
 
     // 메인 리스트
-    let [Customer, setEmployee] = useState([{
+    let [Employee, setEmployee] = useState([{
         employeeId: '',
         employeePw: '',
         employeeName: '',

@@ -152,6 +152,7 @@ function Customer() {
         } else {
             console.error('핸들러 작동 잘 함, 필터 값이 없음');
         }
+        console.log(321321)
     };
 
     // 직원 추가  리스트
@@ -216,6 +217,8 @@ function Customer() {
         if (list.length > 0) {
             setcustomerRegist(list); // 등록할 항목이 있는 경우에만 상태 업데이트
 
+            console.log("클릭이벤트")
+
             // 서버에 등록 요청 보내기
             axios
                 .post('/customer/customerRegist', list, {
@@ -234,6 +237,7 @@ function Customer() {
         } else {
             console.error('등록할 항목이 없습니다');
         }
+
     };
 
 
@@ -429,7 +433,7 @@ function Customer() {
                             <option value="C2C">C2C</option>
                         </select>
                     </div>
-                    <button className="filter-button">조회</button>
+                    <button className="filter-button" onClick={handleSearchcustomer}>조회</button>
                 </div>
 
                 <button className="filter-button" id="add" type="button" onClick={handleAddClick}>
@@ -528,6 +532,7 @@ function Customer() {
                                     <td>{item.dealType}</td>
                                     <td>{item.picName}</td>
                                     <td>{item.picEmail}</td>
+                                    <td>{item.picTel}</td>
                                     <td>{item.activated}</td>
                                 </tr>
                             ))
@@ -537,7 +542,7 @@ function Customer() {
                             </tr>
                         )}
                         <tr>
-                            <td colSpan="12"></td>
+                            <td colSpan="13"></td>
                             <td colSpan="2"> {customer.length} 건</td>
                         </tr>
 
@@ -564,6 +569,7 @@ function Customer() {
                                         <div className="btn-add2">
                                             <button type="button" onClick={onClickRegistBtn}> 등록하기</button>
                                         </div>
+
                                         <div className="btn-close">
 
                                         </div>
