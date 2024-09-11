@@ -28,6 +28,7 @@
         JOIN CUSTOMER CUS ON CUS.CUSTOMER_NO = OH.CUSTOMER_NO
         ) list ON list.orderNo = OB.ORDER_NO
         WHERE list.confirmStatus = '승인'
+
             <if test="inputProdNo != null">
                 AND PROD.PRODUCT_NO = #{inputProdNo}
             </if>
