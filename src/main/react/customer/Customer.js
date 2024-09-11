@@ -371,7 +371,7 @@ function Customer() {
 
     return (
 
-        <div>
+        <div className='fade_effect'>
             <h1><i class="bi bi-person-lines-fill"></i> 고객 관리 </h1>
             <div className="main-container">
 
@@ -508,29 +508,39 @@ function Customer() {
 
                     <tbody>
 
-                        {customer.map((item, index) => (
+                    
+                        {sortedData.length > 0 ? (
+                            sortedData.map((item, index) => (
+                                <tr key={index} className={checkItem[index] ? 'selected-row' : ''} onDoubleClick={() => {
+                                    handleModify(item)
+                                }}>
+                                    <td><input className="mainCheckbox" type="checkbox" id={item.customerNo} checked={checkItem[index] || false}
+                                        onChange={handleCheckboxChange} /></td>
+                                    <td style={{ display: 'none' }}>{index}</td>
+                                    <td>{index + 1}</td>
+                                    <td>{item.customerNo}</td>
+                                    <td>{item.customerName}</td>
+                                    <td>{item.customerAddr}</td>
+                                    <td>{item.customerTel}</td>
+                                    <td>{item.postNum}</td>
+                                    <td>{item.businessRegistrationNo}</td>
+                                    <td>{item.nation}</td>
+                                    <td>{item.dealType}</td>
+                                    <td>{item.picName}</td>
+                                    <td>{item.picEmail}</td>
+                                    <td>{item.activated}</td>
+                                </tr>
+                            ))
+                        ) : (
                             <tr>
-                                <td><input type="checkbox" checked={checkItem[index + 1] || false} onChange={handleCheckboxChange} /></td>
-                                <td>{index + 1}</td>
-                                <td>{item.customerNo}</td>
-                                <td>{item.customerName} </td>
-                                <td>{item.customerAddr} </td>
-                                <td>{item.customerTel}</td>
-                                <td>{item.postNum}</td>
-                                <td>{item.businessRegistrationNo}</td>
-                                <td>{item.nation}</td>
-                                <td>{item.dealType}</td>
-                                <td>{item.picName} <i className="bi bi-search details" onClick={handleAddClickDetail} /> </td>
-                                <td>{item.picEmail}</td>
-                                <td>{item.picTel}</td>
-                                <td>{item.activated}</td>
+                                <td colSpan="13">등록된 상품이 없습니다<i class="bi bi-emoji-tear"></i></td>
                             </tr>
-
-                        ))}
+                        )}
                         <tr>
-                            <td colSpan="13"></td>
-                            <td colSpan="1"> {Customer.length} 건</td>
+                            <td colSpan="12"></td>
+                            <td colSpan="2"> {customer.length} 건</td>
                         </tr>
+
 
 
                     </tbody>
