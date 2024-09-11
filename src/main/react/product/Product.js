@@ -132,7 +132,7 @@ function Product() {
             });
 
             // 체크박스 상태 초기화
-            alert(productNos.length + " 개의 상품이 삭제되었습니다.");
+            alert("총 " + productNos.length + " 개의 상품이 삭제되었습니다.");
         } catch (error) {
             console.error("삭제 중 오류 발생:", error);
             alert("삭제 중 오류가 발생했습니다.");
@@ -141,11 +141,10 @@ function Product() {
 
 
 
-    // ---------------------- 조회 부분 ----------------------
+    // ---------------------- 상품 조회 부분 ----------------------
 
     // 검색 필터의 상태 관리
     const [filters, setFilters] = useState({
-        productNo: '',
         productName: '',
         productWriter: '',
         productCategory: '',
@@ -165,27 +164,29 @@ function Product() {
     // 조회 버튼 클릭 시 필터링
     const handleSearch = () => {
         const filteredData = product.filter(item => {
+            const itemPrice = parseFloat(item.productPrice);
+            const filterPrice = parseFloat(filters.productPrice);
+
             return (
-                (!filters.productNo || String(item.productNo).includes(filters.productNo)) &&
                 (!filters.productName || item.productName.includes(filters.productName)) &&
                 (!filters.productWriter || item.productWriter.includes(filters.productWriter)) &&
                 (!filters.productCategory || item.productCategory.includes(filters.productCategory)) &&
                 (!filters.productType || item.productType.toString().includes(filters.productType)) &&
-                (!filters.productPrice || item.productPrice.toString().includes(filters.productPrice))
+                (isNaN(filterPrice) || itemPrice >= filterPrice)
             );
+
+
         });
         setOrder(filteredData);
     };
 
-    // ----------------------  상품 등록 모달창  ----------------------
+    // ---------------------- 상품 등록 모달 ----------------------
     const [isVisible, setIsVisible] = useState(false);
     const [isVisibleCSV, setIsVisibleCSV] = useState(false);
     const [productForm, setProductForm] = useState({
         productName: '',
-        productNo: '',
         productWriter: '',
         productCategory: '',
-        productQty: '',
         productType: '',
         productPrice: '',
         productYn: 'Y'
@@ -217,24 +218,39 @@ function Product() {
         return Object.values(otherFields).every(value => value.trim() !== '');
     };
 
+    // 상품명 중복 체크
+    const isProductNameDuplicate = (name) => {
+        return productList.some(product => product.productName === name);
+    };
+
+    // 화면에 띄워진 상품명과 중복되는지 체크
+    const isProductNameOnScreen = (name) => {
+        return product.some(product => product.productName === name);
+    };
 
     const handleAddProduct = () => {
         if (isFormValid()) {
+            if (isProductNameOnScreen(productForm.productName)) {
+                alert('동일한 상품명이 이미 화면에 있습니다.');
+                return;
+            }
+            if (isProductNameDuplicate(productForm.productName)) {
+                alert('동일한 상품명이 이미 추가된 목록에 존재합니다.');
+                return;
+            }
+
             setProductList(prevList => [
                 ...prevList,
                 {
                     no: prevList.length + 1,
                     ...productForm,
-                    productQty: parseInt(productForm.productQty),
-                    productPrice: parseInt(productForm.productPrice),
+                    productPrice: parseInt(productForm.productPrice, 10), // 숫자 변환 시 radix 추가
                 }
             ]);
             setProductForm({
                 productName: '',
-                productNo: '',
                 productWriter: '',
                 productCategory: '',
-                productQty: '',
                 productType: '',
                 productPrice: '',
                 productYn: 'Y'
@@ -249,6 +265,11 @@ function Product() {
             alert('추가한 상품이 없습니다. 상품을 추가한 후 등록해 주세요.');
             return;
         }
+
+        if (!confirm('상품을 등록하시겠습니까?')) {
+            return;
+        }
+
         try {
             // 상품 등록 API 호출
             await Promise.all(productList.map(product =>
@@ -260,38 +281,39 @@ function Product() {
                     body: JSON.stringify(product),
                 })
             ));
+
             // 성공적으로 등록 후 상태 초기화 및 원래 화면 데이터 갱신
             setProductList([]);
             await fetchData(); // 원래 화면 데이터 갱신
             // 모달 창 닫기
             setIsVisible(false);
-            alert(productList.length + ' 개의 상품이 등록되었습니다.');
+            alert("총 " + productList.length + " 개의 상품이 등록되었습니다.");
         } catch (error) {
             console.error('상품 등록 중 오류 발생:', error);
             alert('상품 등록 중 오류가 발생했습니다.');
         }
-    }
+    };
+
+
 
 
     // ---------------------- 상품 수정 모달창 ----------------------
-    const [modifyItem, setModifyItem] = useState([
-        {
-            productName: '',
-            productNo: '',
-            productWriter: '',
-            productCategory: '',
-            productQty: '',
-            productType: '',
-            productPrice: '',
-            productYn: 'Y'
-        }
-    ]);
+    const [modifyItem, setModifyItem] = useState({
+        productName: '',
+        productWriter: '',
+        productCategory: '',
+        productType: '',
+        productPrice: '',
+        productYn: 'Y'
+    });
 
+    const [originalItem, setOriginalItem] = useState(null);
     let [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
+
     const handleModify = (item) => {
+        setOriginalItem(item);
         setModifyItem(item);
         setIsModifyModalVisible(true);
-
     }
 
     const handleModifyCloseClick = () => {
@@ -308,7 +330,17 @@ function Product() {
 
     const handleModifySubmit = async () => {
         if (!confirm('상품을 수정하시겠습니까?')) {
-            return; // 사용자가 '취소'를 누르면 함수 실행을 중단
+            return;
+        }
+
+        // 수정된 내용이 있는지 확인
+        const hasChanges = Object.keys(modifyItem).some(
+            key => modifyItem[key] !== originalItem[key]
+        );
+
+        if (!hasChanges) {
+            alert('수정한 내용이 없습니다.');
+            return;
         }
 
         try {
@@ -335,20 +367,26 @@ function Product() {
         }
     };
 
+
     return (
         <div>
 
-            <div className="pageHeader"><h1><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-box-seam-fill" viewBox="0 0 16 16">
+            <div className="pageHeader"><h1>
+                {/* <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-box-seam-fill" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M15.528 2.973a.75.75 0 0 1 .472.696v8.662a.75.75 0 0 1-.472.696l-7.25 2.9a.75.75 0 0 1-.557 0l-7.25-2.9A.75.75 0 0 1 0 12.331V3.669a.75.75 0 0 1 .471-.696L7.443.184l.01-.003.268-.108a.75.75 0 0 1 .558 0l.269.108.01.003zM10.404 2 4.25 4.461 1.846 3.5 1 3.839v.4l6.5 2.6v7.922l.5.2.5-.2V6.84l6.5-2.6v-.4l-.846-.339L8 5.961 5.596 5l6.154-2.461z" />
-            </svg>상품 관리</h1></div>
+            </svg> */}
+                <i class="bi bi-cart-check-fill"></i>
+                {/* <i class="bi bi-cart-check"></i> 2번 */}
+                {/* <i class="bi bi-cart-plus-fill"></i> 3번 */}
+                {/* <i class="bi bi-cart-plus"></i> 4번 */}
+                {/* <i class="bi bi-box-seam"></i> */}
+                상품 관리</h1></div>
+
+            {/* <i class="bi bi-chat-square-text-fill"></i> 주문관리 아이콘*/}
 
             <div className="main-container">
                 <div className="filter-container">
 
-                    <div className="filter-row">
-                        <label className="filter-label" htmlFor="productNo">상품코드</label>
-                        <input className="filter-input" type="text" id="productNo" placeholder="상품코드" value={filters.productNo} onChange={handleFilterChange} />
-                    </div>
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="productName">상품명</label>
                         <input className="filter-input" type="text" id="productName" placeholder="상품명" value={filters.productName} onChange={handleFilterChange} />
@@ -367,7 +405,7 @@ function Product() {
                     </div>
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="productPrice">상품원가</label>
-                        <input className="filter-input" type="text" id="productPrice" placeholder="상품원가" value={filters.productPrice} onChange={handleFilterChange} />
+                        <input className="filter-input" type="number" id="productPrice" placeholder="상품원가" value={filters.productPrice} onChange={handleFilterChange} />
                     </div>
 
                     <button className="filter-button" onClick={handleSearch}>조회</button>
@@ -380,11 +418,6 @@ function Product() {
                         <tr>
                             <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange} /></th>
                             <th> No.</th>
-                            <th>상품코드
-                                <button className="sortBtn" onClick={() => sortData('productNo')}>
-                                    {sortConfig.key === 'productNo' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                </button>
-                            </th>
                             <th>상품명
                                 <button className="sortBtn" onClick={() => sortData('productName')}>
                                     {sortConfig.key === 'productName' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
@@ -398,11 +431,6 @@ function Product() {
                             <th>상품카테고리
                                 <button className="sortBtn" onClick={() => sortData('productCategory')}>
                                     {sortConfig.key === 'productCategory' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                </button>
-                            </th>
-                            <th>상품수량
-                                <button className="sortBtn" onClick={() => sortData('productQty')}>
-                                    {sortConfig.key === 'productQty' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                 </button>
                             </th>
                             <th>상품종류
@@ -427,11 +455,9 @@ function Product() {
                                     }}>
                                         <td><input type="checkbox" checked={checkItem[index + 1] || false} onChange={handleCheckboxChange} /></td>
                                         <td>{index + 1}</td>
-                                        <td>{item.productNo}</td>
                                         <td>{item.productName}</td>
                                         <td>{item.productWriter}</td>
                                         <td>{item.productCategory}</td>
-                                        <td>{item.productQty}</td>
                                         <td>{item.productType}</td>
                                         <td>{item.productPrice}</td>
                                     </tr>
@@ -439,7 +465,7 @@ function Product() {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="10">등록된 상품이 없습니다
+                                <td colSpan="7" style={{ textAlign: 'center', verticalAlign: 'middle' }}>등록된 상품이 없습니다
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-emoji-tear" viewBox="0 0 16 16" style={{ verticalAlign: 'middle' }}>
                                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
                                         <path d="M6.831 11.43A3.1 3.1 0 0 1 8 11.196c.916 0 1.607.408 2.25.826.212.138.424-.069.282-.277-.564-.83-1.558-2.049-2.532-2.049-.53 0-1.066.361-1.536.824q.126.27.232.535.069.174.135.373ZM6 11.333C6 12.253 5.328 13 4.5 13S3 12.254 3 11.333c0-.706.882-2.29 1.294-2.99a.238.238 0 0 1 .412 0c.412.7 1.294 2.284 1.294 2.99M7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5m4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5m-1.5-3A.5.5 0 0 1 10 3c1.162 0 2.35.584 2.947 1.776a.5.5 0 1 1-.894.448C11.649 4.416 10.838 4 10 4a.5.5 0 0 1-.5-.5M7 3.5a.5.5 0 0 0-.5-.5c-1.162 0-2.35.584-2.947 1.776a.5.5 0 1 0 .894.448C4.851 4.416 5.662 4 6.5 4a.5.5 0 0 0 .5-.5" />
@@ -449,7 +475,7 @@ function Product() {
 
                         )}
                         <tr>
-                            <td colSpan="7">합계</td>
+                            <td colSpan="5">합계</td>
                             <td colSpan="2">{visibleCount}건</td>
                         </tr>
                     </tbody>
@@ -480,33 +506,25 @@ function Product() {
                                             <th><label htmlFor="productName">상품명</label></th>
                                             <td><input type="text" name="productName" value={productForm.productName} onChange={handleInputChange} placeholder="상품명" /></td>
 
-                                            <th><label htmlFor="productNo">상품코드</label></th>
-                                            <td><input type="number" name="productNo" value={productForm.productNo} onChange={handleInputChange} placeholder="상품코드" /></td>
-
-
-                                        </tr>
-                                        <tr>
-                                            <th><label htmlFor="productCategory">상품카테고리</label></th>
-                                            <td><input type="text" name="productCategory" value={productForm.productCategory} onChange={handleInputChange} placeholder="상품카테고리" /></td>
-
-                                            <th><label htmlFor="productQty">상품수량</label></th>
-                                            <td><input type="number" name="productQty" value={productForm.productQty} onChange={handleInputChange} placeholder="상품수량" /></td>
-                                        </tr>
-                                        <tr>
-                                            <th><label htmlFor="productType">상품종류</label></th>
-                                            <td><input type="text" name="productType" value={productForm.productType} onChange={handleInputChange} placeholder="상품종류" /></td>
-
                                             <th><label htmlFor="productWriter">상품저자</label></th>
                                             <td><input type="text" name="productWriter" value={productForm.productWriter} onChange={handleInputChange} placeholder="상품저자" /></td>
 
                                         </tr>
-                                        <th><label htmlFor="productPrice">상품원가</label></th>
-                                        <td><input type="number" name="productPrice" value={productForm.productPrice} onChange={handleInputChange} placeholder="상품원가" /></td>
 
-                                        <th><label htmlFor="productYn">상품활성화</label></th>
-                                        <td><input type="text" name="productYn" value={productForm.productYn} readOnly /></td>
+                                        <tr>
+                                            <th><label htmlFor="productCategory">상품카테고리</label></th>
+                                            <td><input type="text" name="productCategory" value={productForm.productCategory} onChange={handleInputChange} placeholder="상품카테고리" /></td>
+                                            <th><label htmlFor="productType">상품종류</label></th>
+                                            <td><input type="text" name="productType" value={productForm.productType} onChange={handleInputChange} placeholder="상품종류" /></td>
+                                        </tr>
+
                                         <tr>
 
+                                            <th><label htmlFor="productPrice">상품원가</label></th>
+                                            <td><input type="number" name="productPrice" value={productForm.productPrice} onChange={handleInputChange} placeholder="상품원가" /></td>
+
+                                            <th><label htmlFor="productYn">상품활성화</label></th>
+                                            <td><input type="text" name="productYn" value={productForm.productYn} readOnly /></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -530,10 +548,8 @@ function Product() {
                                             <th><input type="checkbox" /></th>
                                             <th>no</th>
                                             <th>상품명</th>
-                                            <th>상품코드</th>
                                             <th>상품저자</th>
                                             <th>상품카테고리</th>
-                                            <th>상품수량</th>
                                             <th>상품종류</th>
                                             <th>상품원가</th>
                                         </tr>
@@ -544,16 +560,14 @@ function Product() {
                                                 <td><input type="checkbox" /></td>
                                                 <td>{index + 1}</td>
                                                 <td>{product.productName}</td>
-                                                <td>{product.productNo}</td>
                                                 <td>{product.productWriter}</td>
                                                 <td>{product.productCategory}</td>
-                                                <td>{product.productQty}</td>
                                                 <td>{product.productType}</td>
                                                 <td>{product.productPrice}</td>
                                             </tr>
                                         ))}
                                         <tr style={{ fontWeight: 'bold' }}>
-                                            <td colSpan="7">합계</td>
+                                            <td colSpan="5">합계</td>
                                             <td colSpan="2">
                                                 {productList.length}건
                                             </td>
@@ -587,17 +601,7 @@ function Product() {
                                 <div className="RegistForm">
                                     <table className="formTable">
                                         <tr>
-                                            <th colSpan="1"><label htmlFor="productNo">상품코드</label></th>
-                                            <td colSpan="3">
-                                                <input
-                                                    type="text"
-                                                    name="productNo"
-                                                    readOnly
-                                                    placeholder="상품코드"
-                                                    value={modifyItem.productNo}
-                                                    onChange={handleModifyItemChange}
-                                                />
-                                            </td>
+
 
                                             <th colSpan="1"><label htmlFor="productName">상품명</label></th>
                                             <td colSpan="3">
@@ -609,9 +613,7 @@ function Product() {
                                                     onChange={handleModifyItemChange}
                                                 />
                                             </td>
-                                        </tr>
 
-                                        <tr>
                                             <th colSpan="1"><label htmlFor="productWriter">상품저자</label></th>
                                             <td colSpan="3">
                                                 <input
@@ -622,6 +624,11 @@ function Product() {
                                                     onChange={handleModifyItemChange}
                                                 />
                                             </td>
+                                        </tr>
+
+
+
+                                        <tr>
 
                                             <th colSpan="1"><label htmlFor="productCategory">상품카테고리</label></th>
                                             <td colSpan="3">
@@ -633,19 +640,7 @@ function Product() {
                                                     onChange={handleModifyItemChange}
                                                 />
                                             </td>
-                                        </tr>
 
-                                        <tr>
-                                            <th colSpan="1"><label htmlFor="productQty">상품수량</label></th>
-                                            <td colSpan="3">
-                                                <input
-                                                    type="text"
-                                                    name="productQty"
-                                                    placeholder="상품수량"
-                                                    value={modifyItem.productQty}
-                                                    onChange={handleModifyItemChange}
-                                                />
-                                            </td>
 
                                             <th colSpan="1"><label htmlFor="productType">상품종류</label></th>
                                             <td colSpan="3">
