@@ -114,8 +114,8 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                             <div className="form-header">
                                 <h1>결재 상세 조회</h1>
                                 <div className="btns">
-                                    <div className="btn-add">
-                                        <button type="button" onClick={handleSubmit}>등록</button> {/* Changed type to "button" */}
+                                    <div className="btn-add2">
+                                        <button type="button" onClick={handleSubmit}>수정하기</button>
                                     </div>
                                 </div>
                             </div>
@@ -257,8 +257,8 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                                     </tbody>
                                 </table>
 
-                                <button id="downloadCsv">CSV 샘플 양식</button>
-                                <button id="uploadCsv" onClick={handleAddClickCSV}>CSV 업로드</button>
+                                <button id="btn-CSV">CSV 샘플 양식</button>
+                                <button id="btn-CSV" onClick={handleAddClickCSV}>CSV 업로드</button>
                                 {isVisibleCSV && (
                                     <input type="file" id="uploadCsvInput" accept=".csv"/>
                                 )}
