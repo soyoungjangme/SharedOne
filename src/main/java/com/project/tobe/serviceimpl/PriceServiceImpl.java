@@ -13,6 +13,7 @@ import com.project.tobe.util.constants.YesNo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -73,5 +74,11 @@ public class PriceServiceImpl implements PriceService {
         priceRepository.updatePrice(dto);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<String> savePriceByCsv(List<MultipartFile> list) {
+        System.out.println(list);
+        return null;
     }
 }

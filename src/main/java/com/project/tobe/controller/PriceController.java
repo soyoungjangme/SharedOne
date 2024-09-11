@@ -7,9 +7,12 @@ import com.project.tobe.entity.Customer;
 import com.project.tobe.entity.Product;
 import com.project.tobe.service.PriceService;
 import com.project.tobe.service.ProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +23,7 @@ import static com.project.tobe.util.constants.URLConstants.*;
 @RestController
 @RequestMapping(PRICE_HOME)
 public class PriceController {
+    private static final Logger log = LoggerFactory.getLogger(PriceController.class);
     @Autowired
     private PriceService priceService;
     @Autowired
@@ -43,13 +47,21 @@ public class PriceController {
 
     @PostMapping(value=SEARCH_PRICE , produces = "application/json", consumes = "application/json")
     public List<PriceProductCustomerDTO> searchPrice(@RequestBody PriceDTO dto) {
-        System.out.println(dto);
         return priceService.getPriceProductCustomerDTO(dto);
     }
 
+    @PostMapping(value=REGISTER_PRICE, produces = "application/json", consumes = "application/json")
+    public ResponseEntity<String> savePrice(@RequestBody List<PriceDTO> list) {
+        return priceService.savePrice(list);
+    }
+
+    @PostMapping(value=REGISTER_PRICE_CSV, produces = "application/json", consumes = "application/json")
+    public ResponseEntity<String> savePriceByCsv(@RequestBody List<MultipartFile> list) {
+        return priceService.savePriceByCsv(list);
+    }
+
     @PostMapping(value=MODIFY_PRICE , produces = "application/json", consumes = "application/json")
-    public ResponseEntity<String> savePrice(@RequestBody PriceDTO dto) {
-        System.out.println(dto);
+    public ResponseEntity<String> updatePrice(@RequestBody PriceDTO dto) {
         return priceService.updatePrice(dto);
     }
 }
