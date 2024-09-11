@@ -15,7 +15,7 @@ import javax.persistence.*;
 @SequenceGenerator(
         name = "seqProduct",
         sequenceName = "seq_product",
-        initialValue = 1,
+        initialValue = 1000,
         allocationSize = 1
 )
 public class Product {

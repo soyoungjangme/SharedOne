@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    
+
     List<Product> findByProductYnEquals(Character productYn);
 
     @Transactional

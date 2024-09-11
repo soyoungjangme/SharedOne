@@ -316,3 +316,7 @@ tr:nth-child(0){
        text-align: center;
        padding: 0px;
     }
+
+.bi-emoji-tear {
+    margin: 0 0 2px 2px;
+}
