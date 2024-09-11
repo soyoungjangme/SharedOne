@@ -262,3 +262,18 @@ tr:nth-child(0){
           display: inline-block;
           margin-right: 5px;
       }
+
+/* Customer.css */
+
+.selected-row {
+  background-color: #f0f0f0; /* Highlight color for selected rows */
+}
+
+.delete-btn {
+  margin-left: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}

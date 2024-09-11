@@ -2,6 +2,7 @@
 package com.project.tobe.entity;
 
 import lombok.*;
+import org.springframework.data.relational.core.sql.In;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @ToString
 @Builder
 @Entity
-@Table (name = "confirm")
+@Table(name = "confirm")
 @SequenceGenerator(
         name = "seqConfirm",
         sequenceName = "seq_confirm",
@@ -25,36 +26,41 @@ public class Confirm {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqConfirm")
     private Long confirmNo;
+
     private String confirmStatus; // 대기, 반려, 승인 3가지 있음
+
     private String confirmTitle;
-    @Column (name = "confirm_reg_date")
     private LocalDate confirmRegDate;
-    @Column (name = "confirm_confirm_date")
-    private LocalDate confirmConfirmDate;
+    private LocalDate confirmDate;
     private String remarks;
 
-//    @ManyToOne
-//    @JoinColumn (name = "price_no")
-//    private Price price;
+    @ManyToOne
+    @JoinColumn (name = "price_no")
+    private Price price;
+
+
+    private String confirmContent;
+    private LocalDate confirmConfirmDate;
+
+    private Long orderNo; //fk
 
     @ManyToOne
     @JoinColumn (name = "employee_id")
     private Employee employee;
 
-    private int customPrice;
-    private Long orderNo;
+    private Integer customPrice = 0;
     private LocalDate delDate;
 
     private String productName;
     private String productType;
 
     private String customerName;
-    private int orderQty;
+    private Integer orderQty = 0;
     private String employeeName;
 
 
     @Transient
     public double getTotalAmount() {
-        return this.orderQty * this.customPrice;
+        return (orderQty != null ? orderQty : 0) * (customPrice != null ? customPrice : 0);
     }
 }

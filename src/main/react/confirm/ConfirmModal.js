@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import './Confirm.css';
 import './modal_confirm1.css';
 import useCheckboxManager from '../js/CheckboxManager';
@@ -17,12 +17,12 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
         approver: '',
         confirmStatus: '대기',
         remarks: '',
-        confirmTitle: ''
+        confirmTitle: '',
+        confirmRegDate: new Date().toISOString().split('T')[0]
     };
 
 
     const [formData, setFormData] = useState(initialFormData);
-
     const {
         allCheck,
         checkItem,
@@ -32,10 +32,6 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
         handleDelete: handleDeleteItems
     } = useCheckboxManager();
 
-    const handleDelete = () => {
-        const newFormList = formList.filter((_, index) => !checkItem[index]);
-        setFormList(newFormList);
-    };
     const [formList, setFormList] = useState([]);
     const [isVisibleCSV, setIsVisibleCSV] = useState(false);
 
@@ -50,52 +46,35 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
     }, [selectedItem]);
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData(prevState => ({
             ...prevState,
-            [name]: name === 'orderQty' || name === 'customPrice' || name === 'totalAmount'
-            ? Number(value) : value
+            [name]: value
         }));
     };
 
     const handleAddClick = () => {
-        setFormList(prevList => [...prevList, { ...formData, confirmNo: prevList.length + 1}]);
+        setFormList(prevList => [...prevList, {...formData, confirmNo: prevList.length + 1}]);
         setFormData(initialFormData);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         try {
-            const promises = formList.map(async item => {
-                const confirmNo = item.confirmNo ? item.confirmNo.toString() : null;
-                const url = item.confirmNo
-                    ? `/confirm/${item.confirmNo}`
-                    : '/confirm';
-                const method = item.confirmNo ? 'PUT' : 'POST';
-                console.log(`Sending ${method} request to ${url}`, item);  // 디버깅용 로그
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(item),
-                });
-
-                if (!response.ok) {
-                    const errorBody = await response.text();
-                    console.error(`HTTP error! status: ${response.status}, url: ${url}, method: ${method}, body: ${errorBody}`);
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                return response.json();
+            const response = await fetch('http://localhost:8383/confirm/batch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formList),
             });
 
-            const results = await Promise.all(promises);
-            onUpdateItem(results);
+            const result = await response.json();
+            onUpdateItem(result);
             handleCloseClick();
+            setFormList([]);
         } catch (error) {
             console.error('Error saving confirms:', error);
-            alert(`저장 중 오류가 발생했습니다: ${error.message}`);
+            alert('저장 중 오류가 발생했습니다.');
         }
     };
 
@@ -104,7 +83,12 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
         // 여기다가 CSV 구현 예정
     };
 
-    return(
+    const handleDelete = () => {
+        const newFormList = formList.filter((_, index) => !checkItem[index]);
+        setFormList(newFormList);
+    };
+
+    return (
         <div>
             {openModal && (
                 <div className="confirmRegist">
@@ -114,13 +98,13 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                             <div className="form-header">
                                 <h1>결재 상세 조회</h1>
                                 <div className="btns">
-                                    <div className="btn-add2">
-                                        <button type="button" onClick={handleSubmit}>수정하기</button>
+                                    <div className="btn-add">
+                                        <button type="button" onClick={handleSubmit}>등록</button>
+                                        {/* Changed type to "button" */}
                                     </div>
                                 </div>
                             </div>
-
-                            <form onSubmit={(e) => e.preventDefault() } className="RegistForm">
+                            <form onSubmit={(e) => e.preventDefault()} className="RegistForm">
                                 <table className="formTable">
                                     <tbody>
                                     <tr>
@@ -257,8 +241,8 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                                     </tbody>
                                 </table>
 
-                                <button id="btn-CSV">CSV 샘플 양식</button>
-                                <button id="btn-CSV" onClick={handleAddClickCSV}>CSV 업로드</button>
+                                <button id="downloadCsv">CSV 샘플 양식</button>
+                                <button id="uploadCsv" onClick={handleAddClickCSV}>CSV 업로드</button>
                                 {isVisibleCSV && (
                                     <input type="file" id="uploadCsvInput" accept=".csv"/>
                                 )}
@@ -290,7 +274,7 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                                     {formList.map((item, index) => (
                                         <tr key={item.No || index}>
                                             <td><input type="checkbox" checked={checkItem[index]}
-                                                       onChange={() => handleCheckboxChange( index)}/></td>
+                                                       onChange={() => handleCheckboxChange(index)}/></td>
                                             <td>{item.confirmNo || index + 1}</td>
                                             <td>{item.customerName}</td>
                                             <td>{item.productType}</td>

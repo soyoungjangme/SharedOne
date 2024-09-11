@@ -105,7 +105,6 @@ input {
 
 
 
-
 .submit-btn, .cancel-btn, .cancel-btn2, .cancel-btn3 {
     padding: 10px 20px;
     font-size: 14px;
@@ -123,35 +122,35 @@ input {
     background-color: #ddd;
 }
 
-.seacrh-table {
+.search-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.8rem;
     margin-top: 100px;
     position: relative;
 }
-.seacrh-table, th, td {
+.search-table, th, td {
     border: 1px solid #ddd;
 }
 
-.seacrh-table th {
+.search-table th {
     border-top : 2px solid #0063ac;
 }
 
-.seacrh-table tr:hover{
+.search-table tr:hover{
     background-color: rgba(200, 230, 255, 0.366);
 }
 
-.seacrh-table tbody tr:last-child {
+.search-table tbody tr:last-child {
     font-weight: bold; /* Apply bold styling */
     background: rgb(241,241,241);
          background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
 }
-.seacrh-table tbody tr:last-child td {
+.search-table tbody tr:last-child td {
     text-align: center;
 }
 
-.seacrh-table tbody td i {
+.search-table tbody td i {
     float : right;
     cursor :pointer;
 }
@@ -167,12 +166,12 @@ tr:nth-child(0){
   background-color: #f4f4f4;
 } */
 
-.seacrh-table  th, td {
+.search-table  th, td {
     padding: 10px;
     text-align: left;
 
 }
-.seacrh-table  th {
+.search-table  th {
      background: rgb(241,241,241);
      background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%);
 
@@ -290,11 +289,15 @@ tr:nth-child(0){
     background-color: rgba(200, 230, 255, 0.366);
 }
 
+.main-container {
+    position: relative;
+}
+
 .delete-btn {
     width: 65px;
     height: 25px;
     position: absolute;
-    top: -35px;
+    top: 230px;
 
 }
 
