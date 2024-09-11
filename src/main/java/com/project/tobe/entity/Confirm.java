@@ -48,14 +48,14 @@ public class Confirm {
     @JoinColumn (name = "employee_id")
     private Customer Customer;
 
-    private Integer customPrice = 0;
+    private Integer customPrice;
     private LocalDate delDate;
 
     private String productName;
     private String productType;
 
     private String customerName;
-    private Integer orderQty = 0;
+    private Integer orderQty;
     private String employeeName;
 
 

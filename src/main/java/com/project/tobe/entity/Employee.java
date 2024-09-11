@@ -7,8 +7,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "Customer")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -18,6 +16,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "employee")
 public class Employee {
+
     @Id
     private String employeeId;
     private String employeePw;
