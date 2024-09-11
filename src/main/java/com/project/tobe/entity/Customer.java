@@ -2,9 +2,7 @@ package com.project.tobe.entity;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "customer")
@@ -28,5 +26,9 @@ public class Customer {
     private String picEmail;
     private String picTel; // 수정된 타입
     private String activated;
+
+//    @OneToOne
+//    @JoinColumn("employee_id")
+//    private Employee employee;
 
 }

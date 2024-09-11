@@ -1,8 +1,10 @@
 package com.project.tobe.controller;
 
 
+import com.project.tobe.dto.EmployeeDTO;
 import com.project.tobe.dto.EmployeeSearchDTO;
 import com.project.tobe.dto.EmployeeDTO;
+import com.project.tobe.dto.EmployeeTestDTO;
 import com.project.tobe.entity.Employee;
 import com.project.tobe.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/Employee")
+@RequestMapping("/employee")
 public class EmployeeController {
 
 //  @Autowired
@@ -29,13 +31,13 @@ public class EmployeeController {
 //        }
 
     @GetMapping("/employeeALL")
-    public List<Employee> employeeALL() {
-      List<Employee> emploList = employeeService.getAllList();
+    public List<EmployeeDTO> employeeALL() {
+      List<EmployeeDTO> emploList = employeeService.getAllList();
       return employeeService.getAllList();
     }
 
   @PostMapping("/employeeSearch")
-  public List<Employee> employeePick(@RequestBody EmployeeSearchDTO dto) {
+  public List<EmployeeDTO> employeePick(@RequestBody EmployeeSearchDTO dto) {
     System.out.println("검색 예제 컨트롤러");
     System.out.println(dto);
     return employeeService.getPickList(dto);
@@ -43,14 +45,14 @@ public class EmployeeController {
 
 
   @PostMapping("/employeeRegist")
-  public void employeeRegistTest(@RequestBody List<EmployeeDTO> dto) {
+  public void employeeRegistTest(@RequestBody List<EmployeeTestDTO> dto) {
     System.out.println("등록 예제 컨트롤러");
     System.out.println(dto);
     employeeService.employeeRegistTest(dto);
   }
 
   @PostMapping("/employeeUpdate")
-  public void employeeUpdateTest(@RequestBody EmployeeDTO dto) {
+  public void employeeUpdateTest(@RequestBody EmployeeTestDTO dto) {
     System.out.println("등록 예제 컨트롤러");
     System.out.println(dto);
     employeeService.employeeUpdateTest(dto);

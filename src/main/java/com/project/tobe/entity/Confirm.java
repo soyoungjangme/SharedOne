@@ -46,7 +46,7 @@ public class Confirm {
 
     @ManyToOne
     @JoinColumn (name = "employee_id")
-    private Customer Customer;
+    private Employee employee;
 
     private Integer customPrice;
     private LocalDate delDate;
@@ -54,9 +54,8 @@ public class Confirm {
     private String productName;
     private String productType;
 
-    private String customerName;
     private Integer orderQty;
-    private String employeeName;
+
 
 
     @Transient

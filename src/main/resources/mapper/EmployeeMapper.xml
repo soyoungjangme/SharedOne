@@ -4,13 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.project.tobe.mapper.EmployeeMapper">
-    <select id="getAllList" resultType="Employee">
-        select * from Employee where empl_yn = 'y'
+    <select id="getAllList" resultType="com.project.tobe.dto.EmployeeDTO">
+        select * from employee where empl_yn = 'y'
     </select>
 
-    <select id="getPickList" resultType="Employee">
+    <select id="getPickList" resultType="com.project.tobe.dto.EmployeeDTO">
         SELECT *
-        FROM Employee
+        FROM employee
 <!--        WHERE employee_id LIKE CONCAT('%', #{employeeId}, '%')-->
         <where>
             <if test="employeeId != '' and employeeId != null">
@@ -44,7 +44,7 @@
 
     <insert id="employeeRegistTest" parameterType="java.util.List">
 
-        INSERT INTO Employee (
+        INSERT INTO employee (
         employee_id,
         employee_pw,
         employee_name,
@@ -59,16 +59,16 @@
         empl_yn
         )
         VALUES
-        <foreach collection="list" item="Employee" separator=",">
-            (#{Employee.employeeId}, #{Employee.employeePw}, #{Employee.employeeName},
-            #{Employee.employeeTel}, #{Employee.employeeEmail}, #{Employee.employeeAddr},
-            #{Employee.residentNum}, #{Employee.hireDate}, #{Employee.salary},
-            #{Employee.employeeManagerId}, #{Employee.authorityGrade},'y')
+        <foreach collection="list" item="employee" separator=",">
+            (#{employee.employeeId}, #{employee.employeePw}, #{employee.employeeName},
+            #{employee.employeeTel}, #{employee.employeeEmail}, #{employee.employeeAddr},
+            #{employee.residentNum}, #{employee.hireDate}, #{employee.salary},
+            #{employee.employeeManagerId}, #{employee.authorityGrade},'y')
         </foreach>
     </insert>
 
-    <update id="employeeUpdateTest" parameterType="Employee" >
-            UPDATE Employee
+    <update id="employeeUpdateTest" parameterType="com.project.tobe.dto.EmployeeDTO" >
+            UPDATE employee
             SET
             employee_pw = #{employeePw},
             employee_name = #{employeeName},
@@ -84,7 +84,7 @@
     </update>
 
     <update id="employeeDeleteTest" parameterType="java.util.List">
-        UPDATE Employee
+        UPDATE employee
         SET empl_yn = 'n'
         WHERE employee_id IN
         <foreach collection="list" item="employeeId" open="(" separator="," close=")">

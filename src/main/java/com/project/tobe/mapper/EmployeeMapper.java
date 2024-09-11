@@ -12,10 +12,10 @@ import java.util.List;
 @Mapper
 public interface EmployeeMapper {
 
-  public List<Employee> getAllList();
-  public List<Employee> getPickList(EmployeeSearchDTO dto);
-  public void employeeRegistTest( List<EmployeeDTO> dto);
-  public void employeeUpdateTest(EmployeeDTO dto);
+  public List<EmployeeDTO> getAllList();
+  public List<EmployeeDTO> getPickList(EmployeeSearchDTO dto);
+  public void employeeRegistTest( List<EmployeeTestDTO> dto);
+  public void employeeUpdateTest(EmployeeTestDTO dto);
   public void employeeDeleteTest(List<String> employeeIds);
 }
 
