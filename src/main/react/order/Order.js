@@ -31,12 +31,11 @@ function Order() {
 
                 const transfomData = data.map(item => ({
                     orderNo: item.orderNo,
-                    title: item.confirmTitle,
-                    details: item.confirmContent,
-                    manager: item.employee.employeeName,
-                    status: item.confirmStatus,
-                    date: item.confirmConfirmDate,
-                    prodName:  item.orderH.orderBList.map(orderB => orderB.product.productName)
+                    title: item.confirmList.map(confirm => confirm.confirmTitle),
+                    details: item.confirmList.map(confirm => confirm.confirmContent),
+                    manager: item.confirmList.map(confirm => confirm.employee.employeeName),
+                    status: item.confirmList.map(confirm => confirm.confirmStatus),
+                    date: item.confirmList.map(confirm => confirm.confirmConfirmDate)
                 }));
 
                 setOrder(transfomData);
@@ -79,6 +78,7 @@ function Order() {
 
     /*조건 검색*/
     const [prod, setProd] = useState([]);
+    const [mycustomer, setMycustomer] = useState([]);
 
     //상품명 목록 Data
     useEffect ( () => {
@@ -89,7 +89,14 @@ function Order() {
         effectProd();
     },[]);
 
-
+    //고객명 목록 data
+    useEffect ( () => {
+        let effectCustomer = async() => {
+            let getCustomer = await fetch('/customer/customerList').then(res => res.json());
+            setMycustomer(getCustomer);
+        }
+        effectCustomer();
+    },[]);
 
 
 
@@ -98,6 +105,7 @@ function Order() {
     const handleChange = (e) => {
         let copy = {...form, [e.target.id]: e.target.value};
         setForm(copy);
+        console.log(copy);
     }
 
 
@@ -106,10 +114,11 @@ function Order() {
         const date = form.date || null;
         const orderNo = form.orderNo|| null;
         const prod = form.prod || null;
+        const mycustomer = form.mycustomer || null;
         const manager = form.manager || null;
 
         const res = await axios.post('/order/searchSelect', {
-            inputDate: date, inputOrderNo: orderNo, inputProdNo: prod, inputManager: manager
+            inputDate: date, inputOrderNo: orderNo, inputProdNo: prod, inputCustomerNo: mycustomer, inputManager: manager
         }); //{매개변수 : 전달 값}
 
         const searchOrderData = res.data; //이렇게 먼저 묶고 반복 돌려야함.
@@ -117,12 +126,13 @@ function Order() {
         if(Array.isArray(searchOrderData)){
             const getSearchOrder = searchOrderData.map(item => ({ //res.data.map안된다는 소리
                 orderNo: item.orderNo,
-                title: item.confirmTitle,
-                details: item.confirmContent,
-                manager: item.employee.employeeName,
-                status: item.confirmStatus,
-                date: item.confirmConfirmDate,
-                prodName:  item.orderH.orderBList.map(orderB => orderB.product.productName)
+                title: item.confirmList.map(confirm => confirm.confirmTitle),
+                details: item.confirmList.map(confirm => confirm.confirmContent),
+                manager: item.confirmList.map(confirm => confirm.employee.employeeName),
+                status: item.confirmList.map(confirm => confirm.confirmStatus),
+                date: item.confirmList.map(confirm => confirm.confirmConfirmDate),
+                prodName:  item.orderBList.map(orderB => orderB.product.productName),
+                mycustomer: item.customer.customerName
             }))
 
             setOrder(getSearchOrder);
@@ -212,16 +222,17 @@ function Order() {
                             </div>
 
                             <div className="filter-item">
-                                <label className="filter-label" htmlFor="prod">고객사명</label>
-                                <select id="customers" className="filter-input">
+                                <label className="filter-label" htmlFor="mycustomer">고객사명</label>
+                                <select id="mycustomer" className="filter-input" value={form.mycustomer || ''} onChange={handleChange} ref={selectRef}>
                                     <option value="">선택</option>
-                                    {/*{customers.map((customer) => (
+                                    {mycustomer.map((customer) => (
                                         <option key={customer.customerNo} value={customer.customerNo}>
-                                            {customer.customertName}
+                                            {customer.customerName}
                                         </option>
-                                    ))}*/}
+                                    ))}
                                 </select>
                             </div>
+
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="prod">상품명</label>
@@ -295,19 +306,15 @@ function Order() {
                         </button>
                         </th>
 
-                        {/*<th>
-                        상품명
-                        <button className="sortBtn" onClick={() => sortData('prodName')}>
-                        {sortConfig.key === 'prodName' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                        </button>
-                        </th>*/}
-
                     </tr>
                     </thead>
                     <tbody>
                     {order.length > 0 ? (
                         order.map((item, index) => (
-                                <tr key={`${item.orderNo}-${index}`} className={checkItem[index+1] ? 'selected-row' : ''}>
+
+                                <tr key={`${item.orderNo}-${index}`} className={checkItem[index+1] ? 'selected-row' : ''} onDoubleClick={() => {
+                                handleModify(item)
+                                }}>
                                 <td>
                                     <input
                                     type="checkbox"
@@ -339,7 +346,7 @@ function Order() {
                 </table>
             </div>
 
-        {/*{*//* 여기 아래는 모달이다. *//*}
+{/* 여기 아래는 모달이다. */}
 
 
             {isVisible && (
@@ -349,7 +356,7 @@ function Order() {
                             <button className="close-btn" onClick={handleCloseClick}> &times;
                             </button>
                             <div class="form-header">
-                                <h1>직원 등록</h1>
+                                <h1>주문 등록</h1>
 
                                 <div class="btns">
                                     <div class="btn-add2">
@@ -361,60 +368,33 @@ function Order() {
                                 </div>
                             </div>
 
-
+                            {/*주문정보-헤더*/}
                             <div class="RegistForm">
                                 <table class="formTable">
 
                                     <tr>
 
-                                        <th colspan="1"><label for="">직원 ID</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
-
-                                        <th colspan="1"><label for="">직원 PW</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
-
-                                    </tr>
-
-
-                                    <tr>
-                                        <th><label for="">연락처</label></th>
-                                        <td><input type="text" placeholder="필드 입력"/></td>
-
-
-                                        <th><label for="">연락처</label></th>
-                                        <td><input type="text" placeholder="필드 입력"/></td>
-
-
-                                        <th><label for="">연락처</label></th>
-                                        <td><input type="text" placeholder="필드 입력"/></td>
-                                        <th><label for="">직원 ID</label></th>
-                                        <td><input type="text" placeholder="필드 입력"/></td>
-
-                                    </tr>
-
-
-                                    <tr>
-                                        <th colspan="1"><label for="">연락처</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
-
-                                        <th colspan="1"><label for="">연락처</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
-                                    </tr>
-
-
-                                    <tr>
-
-                                        <th colspan="1"><label for="">연락처</label></th>
-                                        <td colspan="3"><select>
-                                            <option>담당 직원</option>
+                                        <th colspan="1"><label for="">고객사 명</label></th>
+                                        <td colspan="3">
+                                        <select>
+                                        <option>선택</option>
                                         </select></td>
 
-                                        <th colspan="1"><label for="">연락처</label></th>
-                                        <td colspan="3"><select>
-                                            <option>담당 직원</option>
-                                        </select></td>
+                                        <th colspan="1"><label for="">납품 요청일</label></th>
+                                        <td colspan="3"><input type="date" placeholder="필드 입력"/></td>
+
                                     </tr>
 
+
+                                    <tr>
+                                        <th colspan="1"><label for="">담당자명</label></th>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
+
+
+                                        <th colspan="1"><label for="">결재자</label></th>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
+
+                                    </tr>
 
                                 </table>
 
@@ -427,54 +407,55 @@ function Order() {
                                 <div className="btn-add">
                                     <button> 추가</button>
                                 </div>
-
-
                             </div>
+
+                            <div>
+                                <input type="text" />
+                                <button type="button" >추가</button>
+
+                                <ul>
+                                <li>신서유기</li>
+                                <li>신라면</li>
+                                <li>신봉선</li>
+                                <li>신발장</li>
+                                <li>신동엽</li>
+                                </ul>
+                            </div>
+
+
 
                             <div class="RegistFormList">
                                 <div style={{fontWeight: 'bold'}}> 총 N 건</div>
                                 <table class="formTableList">
                                     <thead>
-                                    <tr>
-                                        <th><input type="checkbox"/></th>
-                                        <th>no</th>
-                                        <th>품목명</th>
-                                        <th>규격</th>
-                                        <th>단위</th>
-                                        <th>창고</th>
-                                        <th>LOT</th>
-                                        <th>현재고</th>
-                                        <th>실사수량</th>
-                                        <th>조정수량</th>
-                                        <th>단가</th>
-                                        <th>공급가액</th>
-                                        <th>부가세</th>
-                                        <th>총금액</th>
-                                    </tr>
+                                        <tr>
+                                            <th><input type="checkbox"/></th>
+                                            <th>no</th>
+                                            <th>상품 종류</th>
+                                            <th>상품 명</th>
+                                            <th>상품 수량</th>
+                                            <th>총 액</th>
+                                            <th>판매시작날짜</th>
+                                            <th>판매종료날짜</th>
+
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <td><input type="checkbox"/></td>
-                                        <td>1</td>
-                                        <td>제품공고1</td>
-                                        <td>EA</td>
-                                        <td>EA</td>
-                                        <td>재품창고1</td>
-                                        <td>L2017-11-260001</td>
-                                        <td>4,900</td>
-                                        <td>5,000</td>
-                                        <td>100</td>
-                                        <td>3,000</td>
-                                        <td>300,000</td>
-                                        <td>30,000</td>
-                                        <td>330,000</td>
-                                    </tr>
+                                        <tr>
+                                            <td><input type="checkbox"/></td>
+                                            <td>1</td>
+                                            <td>제품공고1</td>
+                                            <td>EA</td>
+                                            <td>EA</td>
+                                            <td>재품창고1</td>
+                                            <td>L2017-11-260001</td>
+                                            <td>4,900</td>
+                                        </tr>
 
-                                    <tr style={{fontWeight: 'bold'}}>
-                                        <td colspan="12"> 합계</td>
-                                        <td colspan="2"> 13,000,000</td>
-                                    </tr>
-
+                                        <tr style={{fontWeight: 'bold'}}>
+                                            <td colspan="6"> 합계</td>
+                                            <td colspan="2"> 13,000,000</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -483,95 +464,16 @@ function Order() {
                 </div>
 
             )}
-            {*//* 모달창의 끝  *//*}
-
-            {*//* 수정 모달창 *//* }
-            {isModifyModalVisible && (
-                <div class="confirmRegist">
-                    <div class="fullBody">
-                        <div class="form-container">
-                            <button className="close-btn" onClick={handleModifyCloseClick}> &times;
-                            </button>
-                            <div class="form-header">
-                                <h1>주문 등록</h1>
-                                <div class="btns">
-                                    <div class="btn-add2">
-                                        <button> 등록하기</button>
-                                    </div>
-                                    <div class="btn-close">
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="RegistForm">
-                                <table class="formTable">
-                                    <tr>
-                                        <th colspan="1"><label for="">직원 ID</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.productNo}/></td>
-
-                                        <th colspan="1"><label for="">직원 PW</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.productNo}/></td>
-                                    </tr>
-                                    <tr>
-                                        <th><label for="">연락처</label></th>
-                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.productNo}/></td>
-                                        <th><label for="">연락처</label></th>
-                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.productNo}/></td>
-                                        <th><label for="">연락처</label></th>
-                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.productNo}/></td>
-                                        <th><label for="">직원 ID</label></th>
-                                        <td><input type="text" placeholder="필드 입력" value={modifyItem.productNo}/></td>
-                                    </tr>
-                                    <tr>
-                                        <th colspan="1"><label for="">연락처</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.productNo}/></td>
-                                        <th colspan="1"><label for="">연락처</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력" value={modifyItem.productNo}/></td>
-                                    </tr>
-                                    <tr>
-                                        <th colspan="1"><label for="">연락처</label></th>
-                                        <td colspan="3"><select>
-                                            <option>담당 직원</option>
-                                        </select></td>
-                                        <th colspan="1"><label for="">연락처</label></th>
-                                        <td colspan="3"><select>
-                                            <option>담당 직원</option>
-                                        </select></td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            )}
-            {*//* 모달창의 끝  *//*}
-
-            {*//* 새로운 모달창 *//*}
-            {isVisibleDetail && (
-
-                <div class="confirmRegist">
-                    <div class="fullBody">
-                        <div class="form-container-Detail">
-                            <div>
-                                <button className="" onClick={handleCloseClickDetail}> &times; </button>
-                            </div>
-
-                            내용 상세페이지 넣을 예정입니다. ㅎㅎ!
-
-                        </div>
-                    </div>
-                </div>
+            {/* 모달창의 끝  */}
 
 
-            )}*/}
 
 
-        </div>
-    );
-}
+            </div>
+                );
+            }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <Order/>
+<Order />
 );

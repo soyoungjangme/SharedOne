@@ -32,7 +32,6 @@ public class Confirm {
     private String employeeId;//fk
     private Long orderNo; //fk
 
-    private OrderH orderH;
     private Employee employee;
 
 }
