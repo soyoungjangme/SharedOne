@@ -127,7 +127,7 @@ function Order() {
                 orderNo: item.orderNo,
                 title: item.confirmList.map(confirm => confirm.confirmTitle),
                 details: item.confirmList.map(confirm => confirm.confirmContent),
-                manager: item.confirmList.map(confirm => confirm.employee.employeeName),
+                manager: item.confirmList.map(confirm => confirm.Customer.employeeName),
                 status: item.confirmList.map(confirm => confirm.confirmStatus),
                 date: item.confirmList.map(confirm => confirm.confirmConfirmDate),
                 prodName:  item.orderBList.map(orderB => orderB.product.productName),
