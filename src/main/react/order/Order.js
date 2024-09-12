@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import ReactDOM from "react-dom/client";
 import './Order.css'
 import './OrderRegist.css'
@@ -357,6 +357,9 @@ function Order() {
                         </th>
                         <th>
                         주문 상세
+                        <button className="sortBtn" onClick={() => sortData('details')}>
+                        {sortConfig.key === 'details' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                        </button>
                         </th>
 
 
