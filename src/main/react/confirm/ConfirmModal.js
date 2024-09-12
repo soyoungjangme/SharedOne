@@ -3,6 +3,9 @@ import './Confirm.css';
 import './modal_confirm1.css';
 import useCheckboxManager from '../js/CheckboxManager';
 
+import '../confirm/modal_confirm1.css';
+
+
 const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem}) => {
     const initialFormData = {
         confirmNo: '',
