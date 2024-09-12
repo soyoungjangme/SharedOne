@@ -31,6 +31,15 @@ ChartJS.register(
 );
 
 
+
+  const truncate = (str, maxLength) => {
+    return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+  };
+
+
+
+
+
 function Employee() {
 
     const options = {
@@ -370,7 +379,9 @@ function Employee() {
     }
 
 
-
+  const truncateText = (str, maxLength) => {
+    return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+  };
 
 
 
@@ -523,8 +534,9 @@ function Employee() {
                                         onChange={handleCheckboxChange} /></td>
                                     <td style={{ display: 'none' }}>{index}</td>
                                     <td>{index + 1}</td>
+
                                     <td>{item.employeeId}</td>
-                                    <td>{item.employeePw}</td>
+                                    <td>{truncateText(item.employeePw, 10)}</td>
                                     <td>{item.employeeName}</td>
                                     <td>{item.employeeTel}</td>
                                     <td>{item.employeeEmail}</td>
