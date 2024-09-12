@@ -30,10 +30,10 @@
         ) list on list.orderNo = ob.order_no
         where list.confirmStatus = '승인'
         <if test="inputProdNo != null">
-            AND prod.productNo = #{inputProdNo}
+            AND prod.product_no = #{inputProdNo}
         </if>
         <if test="inputDate != null">
-            AND list.confirm_confirm_date = #{inputDate}
+            AND list.confirmConfirmDate = #{inputDate}
         </if>
         <if test="inputOrderNo != null">
             AND list.orderNo = #{inputOrderNo}
