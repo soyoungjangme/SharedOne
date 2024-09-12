@@ -13,13 +13,15 @@ import java.util.Map;
 @Service("orderservice")
 public class OrderServiceImpl implements OrderService {
 
-    @Autowired
-    private OrderMapper orderMapper;
+//    @Autowired
+//    private OrderMapper orderMapper;
 
     @Override
     public List<OrderH> getOrder(OrderSearchDTO criteria) {
-        return orderMapper.getOrder(criteria);
+//        return orderMapper.getOrder(criteria);
+        return null;
     }
+
 
 
 }

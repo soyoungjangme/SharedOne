@@ -24,6 +24,6 @@ public class OrderH {
 
     private Customer customer;
     private List<OrderB> orderBList;
-    private List<Confirm> confirmList;
+//    private List<Confirm> confirmList;
 
 }
