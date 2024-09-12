@@ -16,7 +16,7 @@ import java.util.List;
 @SequenceGenerator(
         name = "seqProduct",
         sequenceName = "seq_product",
-        initialValue = 1000,
+        initialValue = 1,
         allocationSize = 1
 )
 public class Product {

@@ -26,9 +26,9 @@ public class PriceTest {
 
     @Test
     public void test1() {
-        Optional<Product> product1 = productRepository.findById(1L);
-        Optional<Product> product2 = productRepository.findById(3L);
-        Optional<Product> product3 = productRepository.findById(5L);
+        Optional<Product> product1 = productRepository.findById(1001L);
+        Optional<Product> product2 = productRepository.findById(1003L);
+        Optional<Product> product3 = productRepository.findById(1005L);
         Optional<Product> product4 = productRepository.findById(1001L);
         Optional<Product> product5 = productRepository.findById(1002L);
         Optional<Product> product6 = productRepository.findById(1004L);

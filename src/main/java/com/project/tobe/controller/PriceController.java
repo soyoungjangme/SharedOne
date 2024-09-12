@@ -45,6 +45,8 @@ public class PriceController {
         map.put("productList", productList);
         map.put("customerList", customerList);
 
+        System.out.println(customerList);
+
         return map;
     }
 
