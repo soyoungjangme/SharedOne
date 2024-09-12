@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import ReactDOM from "react-dom/client";
 import './Order.css'
 import './OrderRegist.css'
@@ -8,7 +8,6 @@ import axios from 'axios';
 
 function Order() {
 
-    const selectRef = useRef(null); //해당 값에 직접 접근
 
     const {
         allCheck,
@@ -31,11 +30,11 @@ function Order() {
 
                 const transfomData = data.map(item => ({
                     orderNo: item.orderNo,
-                    title: item.confirmList.map(confirm => confirm.confirmTitle),
-                    details: item.confirmList.map(confirm => confirm.confirmContent),
-                    manager: item.confirmList.map(confirm => confirm.employee.employeeName),
-                    status: item.confirmList.map(confirm => confirm.confirmStatus),
-                    date: item.confirmList.map(confirm => confirm.confirmConfirmDate)
+                    /*상품명은 상세보기 만들면 그거랑 연결 할 예정*/
+                    customerN: item.customer.customerName,
+                    manager:item.employee.employeeName,
+                    status:item.confirmStatus,
+                    date:item.regDate
                 }));
 
                 setOrder(transfomData);
@@ -76,9 +75,12 @@ function Order() {
 
 // --- 테이블 정렬 기능
 
-    /*조건 검색*/
+    /*---------------jsy조건 검색---------------*/
     const [prod, setProd] = useState([]);
     const [mycustomer, setMycustomer] = useState([]);
+
+    const [confirmState] = useState(['임시저장', '대기', '승인', '반려']);//결재상태배열
+    const [selectedConfirm, setSelectedConfrim] = useState('');
 
     //상품명 목록 Data
     useEffect ( () => {
@@ -99,7 +101,7 @@ function Order() {
     },[]);
 
 
-
+    //입력된 조건 데이터 보내기
     const [form, setForm] = useState({});
 
     const handleChange = (e) => {
@@ -115,9 +117,15 @@ function Order() {
         const prod = form.prod || null;
         const mycustomer = form.mycustomer || null;
         const manager = form.manager || null;
+        const status = form.selectedConfirm || null;
 
         const res = await axios.post('/order/searchSelect', {
-            inputDate: date, inputOrderNo: orderNo, inputProdNo: prod, inputCustomerNo: mycustomer, inputManager: manager
+            inputDate: date,
+            inputOrderNo: orderNo,
+            inputProdNo: prod,
+            inputCustomerNo: mycustomer,
+            inputManager: manager,
+            inputState: status
         }); //{매개변수 : 전달 값}
 
         const searchOrderData = res.data; //이렇게 먼저 묶고 반복 돌려야함.
@@ -125,13 +133,11 @@ function Order() {
         if(Array.isArray(searchOrderData)){
             const getSearchOrder = searchOrderData.map(item => ({ //res.data.map안된다는 소리
                 orderNo: item.orderNo,
-                title: item.confirmList.map(confirm => confirm.confirmTitle),
-                details: item.confirmList.map(confirm => confirm.confirmContent),
-                manager: item.confirmList.map(confirm => confirm.employee.employeeName),
-                status: item.confirmList.map(confirm => confirm.confirmStatus),
-                date: item.confirmList.map(confirm => confirm.confirmConfirmDate),
-                prodName:  item.orderBList.map(orderB => orderB.product.productName),
-                mycustomer: item.customer.customerName
+                /*상품명은 상세보기 만들면 그거랑 연결 할 예정*/
+                customerN: item.customer.customerName,
+                manager:item.employee.employeeName,
+                status:item.confirmStatus,
+                date:item.regDate
             }))
 
             setOrder(getSearchOrder);
@@ -141,7 +147,7 @@ function Order() {
     };
 
 
-    /*-----조건검색-----*/
+    /*---------------jsy조건 끝---------------*/
 
 
 
@@ -212,17 +218,17 @@ function Order() {
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="date">등록 일자</label>
-                                <input className="filter-input" type="date" id="date" value={form.date || ''} onChange={handleChange} ref={selectRef} required />
+                                <input className="filter-input" type="date" id="date" value={form.date || ''} onChange={handleChange} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="orderNo">주문 번호</label>
-                                <input className="filter-input" type="text" id="orderNo" value={form.orderNo || ''} onChange={handleChange} ref={selectRef} placeholder="주문 번호" required/>
+                                <input className="filter-input" type="text" id="orderNo" value={form.orderNo || ''} onChange={handleChange} placeholder="주문 번호" required/>
                             </div>
 
                             <div className="filter-item">
-                                <label className="filter-label" htmlFor="mycustomer">고객사명</label>
-                                <select id="mycustomer" className="filter-input" value={form.mycustomer || ''} onChange={handleChange} ref={selectRef}>
+                                <label className="filter-label" htmlFor="mycustomer">고객 명</label>
+                                <select id="mycustomer" className="filter-input" value={form.mycustomer || ''} onChange={handleChange} >
                                     <option value="">선택</option>
                                     {mycustomer.map((customer) => (
                                         <option key={customer.customerNo} value={customer.customerNo}>
@@ -232,10 +238,14 @@ function Order() {
                                 </select>
                             </div>
 
+                            <div className="filter-item">
+                                <label className="filter-label" htmlFor="manager">담당자명</label>
+                                <input className="filter-input" type="text" id="manager" value={form.manager || ''} onChange={handleChange}  placeholder="담당자명" required/>
+                            </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="prod">상품명</label>
-                                <select id="prod" className="filter-input" value={form.prod || ''} onChange={handleChange} ref={selectRef}>
+                                <select id="prod" className="filter-input" value={form.prod || ''} onChange={handleChange} >
                                     <option value="">선택</option>
                                         {prod.map((product) => (
                                             <option key={product.productNo} value={product.productNo}>
@@ -246,9 +256,18 @@ function Order() {
                             </div>
 
                             <div className="filter-item">
-                                <label className="filter-label" htmlFor="transaction">담당자명</label>
-                                <input className="filter-input" type="text" id="manager" value={form.manager || ''} onChange={handleChange} ref={selectRef} placeholder="담당자명" required/>
+                                <label className="filter-label" htmlFor="selectedConfirm">결재 여부</label>
+                                <select className="filter-select" id="selectedConfirm" value={form.selectedConfirm || ''} onChange={handleChange}>
+                                    <option value="">전체</option>
+                                    {confirmState.map( state => (
+                                        <option key={state} value={state}>
+                                            {state}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
+
+
                         </div>
                     </div>
                     <div className="button-container">
@@ -269,40 +288,37 @@ function Order() {
                         <th><input type="checkbox" /></th>
                         <th>No.</th>
                         <th>
-                        주문 번호
-                        <button className="sortBtn" onClick={() => sortData('orderNo')}>
-                        {sortConfig.key === 'orderNo' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                        </button>
+                            주문 번호
+                            <button className="sortBtn" onClick={() => sortData('orderNo')}>
+                                {sortConfig.key === 'orderNo' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                            </button>
                         </th>
                         <th>
-                        담당자명
-                        <button className="sortBtn" onClick={() => sortData('manager')}>
-                        {sortConfig.key === 'manager' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                        </button>
+                            담당자명
+                            <button className="sortBtn" onClick={() => sortData('manager')}>
+                                {sortConfig.key === 'manager' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                            </button>
                         </th>
                         <th>
-                        고객명
-                        <button className="sortBtn" onClick={() => sortData('customer')}>
-                        {sortConfig.key === 'customer' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                        </button>
+                            고객명
+                            <button className="sortBtn" onClick={() => sortData('customerN')}>
+                                {sortConfig.key === 'customerN' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                            </button>
                         </th>
                         <th>
-                        결재 상태
-                        <button className="sortBtn" onClick={() => sortData('status')}>
-                        {sortConfig.key === 'status' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                        </button>
+                            결재 상태
+                            <button className="sortBtn" onClick={() => sortData('status')}>
+                                {sortConfig.key === 'status' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                            </button>
                         </th>
                         <th>
-                        등록 일자
-                        <button className="sortBtn" onClick={() => sortData('date')}>
-                        {sortConfig.key === 'date' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                        </button>
+                            주문 등록 일자
+                            <button className="sortBtn" onClick={() => sortData('date')}>
+                                {sortConfig.key === 'date' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                            </button>
                         </th>
                         <th>
                         주문 상세
-                        <button className="sortBtn" onClick={() => sortData('details')}>
-                        {sortConfig.key === 'details' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                        </button>
                         </th>
 
 
@@ -312,7 +328,7 @@ function Order() {
                     {order.length > 0 ? (
                         order.map((item, index) => (
 
-                                <tr key={`${item.orderNo}-${index}`} className={checkItem[index+1] ? 'selected-row' : ''} onDoubleClick={() => {
+                                <tr key={`${item.orderNo}`} className={checkItem[index+1] ? 'selected-row' : ''} onDoubleClick={() => {
                                 handleModify(item)
                                 }}>
                                 <td>
@@ -324,10 +340,10 @@ function Order() {
                                 </td>
                                 <td>{index + 1}</td>
                                 <td>{item.orderNo}</td>
-                                <td className="ellipsis">{item.title}</td>
-                                <td className="ellipsis">{item.details}</td>
-                                <td>{item.manager}</td>
+                                <td className="ellipsis">{item.manager}</td>
+                                <td className="ellipsis">{item.customerN}</td>
                                 <td>{item.status}</td>
+                                <td>{item.date}</td>
                                 <td><button className="btn-common"> 상세보기 </button> </td>
                                 {/*<td>{item.prodName}</td>*/}
                                 </tr>

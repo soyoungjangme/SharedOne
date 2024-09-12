@@ -1,7 +1,7 @@
 package com.project.tobe.controller;
 
+import com.project.tobe.dto.OrderH;
 import com.project.tobe.dto.OrderSearchDTO;
-import com.project.tobe.entity.OrderH;
 import com.project.tobe.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,6 +22,7 @@ public class OrderController {
     //초기 목록 호출
     @GetMapping("/orderList")
     public List<OrderH> orderList (){
+        System.out.println("orderList실행됨.");
         return orderService.getOrder(null);
     }
 
