@@ -640,7 +640,7 @@ function Price() {
                                                     onChange={(e) => {
                                                         handleInsertPrice(e.target)
                                                     }}>
-                                                {customerDataList}
+                                                {customerOptions}
                                             </select>
                                         </td>
                                     </tr>
@@ -685,12 +685,12 @@ function Price() {
 
 
                                 <div className="btn-add">
-                                    <button id="downloadCsv" className="btn-CSV">CSV 샘플 양식</button>
-                                    <button id="uploadCsv" className="btn-CSV" onClick={handleAddClickCSV}>CSV 파일 업로드
-                                    </button>
-                                    {isVisibleCSV && (
-                                        <input type="file" id="uploadCsvInput" accept=".csv"
-                                               onChange={handleFileChange}/>)}
+                                    {/*<button id="downloadCsv" className="btn-CSV">CSV 샘플 양식</button>*/}
+                                    {/*<button id="uploadCsv" className="btn-CSV" onClick={handleAddClickCSV}>CSV 파일 업로드*/}
+                                    {/*</button>*/}
+                                    {/*{isVisibleCSV && (*/}
+                                    {/*    <input type="file" id="uploadCsvInput" accept=".csv"*/}
+                                    {/*           onChange={handleFileChange}/>)}*/}
 
                                     <button className="btn-common btn-add-p" onClick={handleInsertPriceList}> 추가
                                     </button>

@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom/client'; // Ensure you have the correct import p
 import axios from 'axios';
 import useSort from '../js/useSort';
 import useCheckboxManager from '../js/CheckboxManager';
-
 import './Customer.css';
 import './modalAdd.css';
 import './modalDetail.css';
 
+import AddressInput from './AddressInput'; // AddressInput 컴포넌트
 
 function Customer() {
 
@@ -45,31 +45,32 @@ function Customer() {
         handleMasterCheckboxChange,
         handleCheckboxChange,
         handleDelete
-    } = useCheckboxManager();
+    } = useCheckboxManager(setCustomer);
 
-    // 고객 리스트
-    let [customer, setCustomer] = useState([
-        {
-            customerNo: 0, //고객번호
-            customerName: "", //고객명
-            customerAddr: "", //고객주소
-            customerTel: "", //고객 연락처
-            postNum: "", //우편번호
-            businessRegistrationNo: "", //사업자 등록 번호
-            nation: "", //국가
-            dealType: "", //거래 유형
-            picName: "", //담당자명
-            picEmail: "", //담당자 이메일
-            picTel: "", //담당자 연락처
-            activated: "" //활성화
-        }
-    ]);
+    const {
+        zonecode,
+        address,
+        detailedAddress,
+        isOpen
+    } = AddressInput();
 
+    const [customer, setCustomer] = useState([]);     // 리스트 데이터를 저장할 state
+
+    // 서버에서 데이터 가져오기
     useEffect(() => {
-        axios.get('/customer/customerALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
-            .then(response => setCustomer(response.data))  // 응답 데이터를 상태로 설정
-            .catch(error => console.error('Error fetching customer data:', error));
-    }, []);
+        const fetchData = async () => {
+            try {
+                let data = await fetch('/customer/customerList').then(res => res.json());
+                setCustomer(data); // 데이터를 state에 저장
+                setOrder(data);
+                console.log(data)
+            } catch (error) {
+                console.error("데이터를 가져오는 중 오류 발생:", error);
+            }
+        };
+
+        fetchData();
+    }, []); // 컴포넌트가 처음 마운트될 때만 실행
 
     // 메인 리스트 가져오기 axios
     // useEffect(() => {
@@ -136,6 +137,7 @@ function Customer() {
     // 직원 추가 리스트
     const [list, setList] = useState([]);
     const [customerRegist, setCustomerRegist] = useState([]);
+    ]); // 리스트 데이터를 저장할 state
 
     // 입력값 변경 핸들러
     const handleInputChange = (e) => {
@@ -151,16 +153,17 @@ function Customer() {
     const handleInputRegistAdd = (e) => {
         const { id, value } = e.target;
         console.log(e.target);
-        setCustomerRegist(prev => ({
+        // 변경된 필드의 값을 업데이트합니다.
+        setcustomerRegist((prev) => ({
             ...prev,
             [id]: value,
         }));
-        console.log('추가 핸들', customerRegist);
+        console.log(customerRegist);
     };
 
     // 리스트에 입력값 추가 핸들러
     const onClickListAdd = () => {
-        setList(prevList => [...prevList, test]);
+        setList((prevList) => [...prevList, test]);
         setTest({
             customerNo: '',
             customerName: '',
@@ -172,31 +175,35 @@ function Customer() {
             dealType: '',
             picName: '',
             picEmail: '',
-            picTel: ''
+            picTel: '',
         }); // 입력값 초기화
 
         console.log('리스트:', JSON.stringify(list));
     };
 
-// 등록 버튼 클릭 핸들러
-const onClickRegister = () => {
-    if (list.length > 0) {
-        axios.post('/customer/customerRegist', list, {
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then(response => {
-            console.log('등록 성공:', response.data);
-        })
-        .catch(error => console.error('서버 요청 중 오류 발생', error))
-        .finally(() => {
-            setIsVisible(false); // 요청 완료 후 모달 닫기
+    const onClickRegistBtn = () => {
+        if (list.length > 0) {
+            setcustomerRegist(list); // 등록할 항목이 있는 경우에만 상태 업데이트
+
+            // 서버에 등록 요청 보내기
+            axios
+                .post('/customer/customerRegist', list, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then((response) => {
+                    setCustomer(response.data); // 서버 응답 데이터로 customer 상태 업데이트
+                    console.log('등록 성공:', response.data);
+                })
+                .catch((error) => console.error('서버 요청 중 오류 발생', error))
+                .finally(() => setIsVisible(false)); // 요청 완료 후 항상 실행되는 블록
+            window.location.reload();
             setList([]); // 기존 목록 초기화
-        });
-        window.location.reload(); // 페이지 새로고침
-    } else {
-        console.error('등록할 항목이 없습니다');
-    }
-};
+        } else {
+            console.error('등록할 항목이 없습니다');
+        }
+    };
 
 
 
@@ -316,27 +323,24 @@ const onClickRegister = () => {
 
 
     const handleDeleteClick = () => {
-        const numericCheckedIds = checkedIds.map(id => Number(id)); // 문자열을 숫자로 변환
-        axios.post('/customer/customerDelete', numericCheckedIds, {
+        axios.post('/customer/customerDelete', checkedIds, {
             headers: {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => {
-            console.log('삭제 요청 성공', response.data);
-            window.location.reload();
-        })
-        .catch(error => {
-            console.error('서버 요청 중 오류 발생', error);
-        });
+            .then(response => {
+                console.log('삭제 요청 성공', response.data);
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('서버 요청 중 오류 발생', error);
+            });
     }
-    
+
 
     return (
 
         <div className='fade_effect'>
-
-
             <h1><i class="bi bi-person-lines-fill"></i> 고객 관리 </h1>
             <div className="main-container">
 
@@ -394,7 +398,7 @@ const onClickRegister = () => {
                             <option value="C2C">C2C</option>
                         </select>
                     </div>
-                    <button className="filter-button" onClick={handleSearchcustomer}>조회</button>
+                    <button className="filter-button">조회</button>
                 </div>
 
                 <button className="filter-button" id="add" type="button" onClick={handleAddClick}>
@@ -402,7 +406,7 @@ const onClickRegister = () => {
                 </button>
                 {/* 테이블 표 부분 */}
                 <table className="seacrh-table">
-                    {showDelete && <button className='delete-btn' onClick={handleDeleteClick}>삭제</button>}
+                    {showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}
                     <thead>
                         <tr>
                             <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange} /></th>
@@ -473,7 +477,7 @@ const onClickRegister = () => {
 
                     <tbody>
 
-
+                    
                         {sortedData.length > 0 ? (
                             sortedData.map((item, index) => (
                                 <tr key={index} className={checkItem[index] ? 'selected-row' : ''} onDoubleClick={() => {
@@ -493,7 +497,6 @@ const onClickRegister = () => {
                                     <td>{item.dealType}</td>
                                     <td>{item.picName}</td>
                                     <td>{item.picEmail}</td>
-                                    <td>{item.picTel}</td>
                                     <td>{item.activated}</td>
                                 </tr>
                             ))
@@ -503,11 +506,14 @@ const onClickRegister = () => {
                             </tr>
                         )}
                         <tr>
-                            <td colSpan="13"></td>
+                            <td colSpan="12"></td>
                             <td colSpan="2"> {customer.length} 건</td>
                         </tr>
 
+
+
                     </tbody>
+
                 </table>
             </div>
 
