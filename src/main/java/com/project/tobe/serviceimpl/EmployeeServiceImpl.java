@@ -1,6 +1,7 @@
 package com.project.tobe.serviceimpl;
 
 
+import com.project.tobe.dto.EmployeeDTO;
 import com.project.tobe.dto.EmployeeSearchDTO;
 import com.project.tobe.dto.EmployeeTestDTO;
 import com.project.tobe.entity.Employee;
@@ -17,13 +18,13 @@ public class EmployeeServiceImpl implements EmployeeService {
   EmployeeMapper employeeMapper;
 
   @Override
-  public List<Employee> getAllList() {
+  public List<EmployeeDTO> getAllList() {
     return employeeMapper.getAllList();
 
   }
 
   @Override
-  public List<Employee> getPickList(EmployeeSearchDTO dto) {
+  public List<EmployeeDTO> getPickList(EmployeeSearchDTO dto) {
     System.out.println("서비스");
     System.out.println("작동됨 picList" + employeeMapper.getPickList(dto));
     return employeeMapper.getPickList(dto);

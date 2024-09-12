@@ -127,6 +127,7 @@ function Price() {
     const productOptions = product.map((item) => {
         return <option value={item.productNo} key={item.productNo}>{item.productName}</option>
     });
+    const productDataList = <datalist id="productDataList">{productOptions}</datalist>
 
     const [customer, setCustomer] = useState([
         {
@@ -147,6 +148,7 @@ function Price() {
     const customerOptions = customer.map((item) => {
         return <option value={item.customerNo} key={item.customerNo}>{item.customerName}</option>
     });
+    const customerDataList = <datalist id="customerDataList">{customerOptions}</datalist>
 
     // 서버에서 데이터 가져오기
     const fetchData = async () => {
@@ -204,8 +206,7 @@ function Price() {
         setIsVisibleCSV((prevState) => !prevState);
     };
 
-    const [selectedFiles, setSelectedFiles] = useState([]);
-    const fileInputRef = useRef(null);
+    const [selectedFiles, setSelectedFiles] = useState();
 
     const handleFileChange = async (e) => {
         setSelectedFiles(e.target.files);
@@ -342,25 +343,81 @@ function Price() {
     }
 
     const handleRegisterAddBtn = async () => {
+        console.log(selectedFiles);
         if (insertPriceList.length === 0 && selectedFiles.length === 0) {
             alert('값을 추가해 주세요');
             return;
         }
 
-        await axios.post('/price/register', JSON.stringify(insertPriceList), {
-            headers: {
-                'content-type': 'application/json',
-                'Accept': 'application/json'
-            }
-        }).then(r => {
-            console.log(r);
-            setIsVisible(false);
-            fetchData();
-        }) ;
+        if (insertPriceList.length > 0 ) {
+            await axios.post('/price/register', JSON.stringify(insertPriceList), {
+                headers: {
+                    'content-type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            }).then(r => {
+                console.log(r);
+                setIsVisible(false);
+                fetchData();
+            });
+        }
+
+        if (selectedFiles !== null) {
+            const formData = new FormData();
+
+            Array.from(selectedFiles).forEach((item) => {
+                formData.append('file', item);
+            });
+
+            console.log(typeof formData);
+
+            await axios.post('/price/register/csv', formData, {
+                headers : {
+                    'content-type': 'multipart/form-data',
+                    'Accept': 'application/json'
+                }
+            }).then(r => {
+                console.log(r);
+                setIsVisible(false);
+                fetchData();
+            });
+        }
     }
+//-------------------------------------------------------------------
+
+    //키 (상품코드) : 값 (상품이름)
+    // console.log(product);
+    //
+    //
+    // const [inputValue, setInputValue] = useState('');
+    // const [filteredOptions, setFilteredOptions] = useState([]);
+    // const browsers = ['아기돼지삼형제', '데미안', '위대한 개츠비', '어린 왕자', '부리부리대마왕의 지구정복이야기', '해리포터'];
+    //
+    // const handleInputChange = (event) => {
+    //     const value = event.target.value;
+    //     setInputValue(value);
+    //
+    //     if (value) {
+    //         const filtered = browsers.filter((browser) =>
+    //             browser.toLowerCase().includes(value.toLowerCase())
+    //         );
+    //         setFilteredOptions(filtered);
+    //     } else {
+    //         setFilteredOptions([]);
+    //     }
+    // };
+    //
+    // const handleOptionClick = (option) => {
+    //     setInputValue(option);
+    //     setFilteredOptions([]);
+    // };
 
     return (
+
         <div>
+
+
+
             <h1><i className="bi bi-currency-dollar"></i> 판매가 리스트 </h1>
             <div className="main-container">
                 <div className="filter-containers">
@@ -368,24 +425,26 @@ function Price() {
                         <div className="filter-items">
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="product">상품</label>
-                                <select name="productNo" className="filter-input" id="product"
+                                <input name="productNo" className="filter-label" type="text" list="productDataList"
+                                       id="product"
                                        placeholder="상품"
                                        onChange={(e) => {
                                            handleSearchPriceChange(e.target)
-                                       }}>
-                                    {productOptions}
-                                </select>
+                                       }}/>
+                                {productDataList}
+
+
                             </div>
 
                             <div className="filter-item">
-                                <label className="filter-label" htmlFor="customer">업체</label>
-                                <select name="customerNo" className="filter-input" id="customer"
+                            <label className="filter-label" htmlFor="customer">업체</label>
+                                <input name="customerNo" className="filter-label" type="text" list="customerDataList"
+                                       id="customer"
                                        placeholder="고객"
                                        onChange={(e) => {
                                            handleSearchPriceChange(e.target)
-                                       }}>
-                                    {customerOptions}
-                                </select>
+                                       }}/>
+                                {customerDataList}
                             </div>
 
                             <div className="filter-item">
@@ -425,16 +484,16 @@ function Price() {
                     </div>
                 </div>
 
-                {isChartVisible && <div
-                    style={{width: "100%", alignItems: "center", backgroundColor: "#fcfcfc", marginBottom: "50px"}}>
-                    <div className="chart-container">
-                        <div className="chart-header">
-                            <h3>분기별 매출 예측</h3>
-                        </div>
-                        {/*<div className="canvas"><Bar data={data} options={options} /></div>*/}
-                        <Bar data={chartData} options={options} className="canvas"/>
-                    </div>
-                </div>}
+                {/*{isChartVisible && <div*/}
+                {/*    style={{width: "100%", alignItems: "center", backgroundColor: "#fcfcfc", marginBottom: "50px"}}>*/}
+                {/*    <div className="chart-container">*/}
+                {/*        <div className="chart-header">*/}
+                {/*            <h3>분기별 매출 예측</h3>*/}
+                {/*        </div>*/}
+                {/*        /!*<div className="canvas"><Bar data={data} options={options} /></div>*!/*/}
+                {/*        <Bar data={chartData} options={options} className="canvas"/>*/}
+                {/*    </div>*/}
+                {/*</div>}*/}
 
                 <button className="btn-common add" type="button" onClick={handleAddClick}>
                     판매가 등록
@@ -508,7 +567,9 @@ function Price() {
                                 <td>
                                     {item.customerName}
                                     <i className="bi bi-search details"
-                                       onClick={() => {handleAddClickDetail('customer', item.customerNo)}} />
+                                       onClick={() => {
+                                           handleAddClickDetail('customer', item.customerNo)
+                                       }}/>
                                 </td>
                                 <td>{item.customPrice}</td>
                                 <td>{item.currency}</td>
@@ -564,10 +625,10 @@ function Price() {
                                         <th colSpan="1"><label htmlFor="registProductNo">상품</label></th>
                                         <td colSpan="3">
                                             <select name="productNo" className="filter-input" id="registProductNo"
-                                                                placeholder="상품"
-                                                                onChange={(e) => {
-                                                                    handleInsertPrice(e.target)
-                                                                }}>
+                                                    placeholder="상품"
+                                                    onChange={(e) => {
+                                                        handleInsertPrice(e.target)
+                                                    }}>
                                                 {productOptions}
                                             </select>
                                         </td>
@@ -575,17 +636,18 @@ function Price() {
                                         <th colSpan="1"><label htmlFor="registCustomerNo">고객</label></th>
                                         <td colSpan="3">
                                             <select name="customerNo" className="filter-input" id="registCustomerNo"
-                                                                placeholder="고객"
-                                                                onChange={(e) => {
-                                                                    handleInsertPrice(e.target)
-                                                                }}>
-                                                {customerOptions}
+                                                    placeholder="고객"
+                                                    onChange={(e) => {
+                                                        handleInsertPrice(e.target)
+                                                    }}>
+                                                {customerDataList}
                                             </select>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th><label htmlFor="registCustomPrice">가격</label></th>
-                                        <td><input name="customPrice" type="number" placeholder="필드 입력" id="registCustomPrice"
+                                        <td><input name="customPrice" type="number" placeholder="필드 입력"
+                                                   id="registCustomPrice"
                                                    value={insertPrice.customPrice} onChange={(e) => {
                                             handleInsertPrice(e.target)
                                         }}/></td>
@@ -604,14 +666,16 @@ function Price() {
                                     </tr>
                                     <tr>
                                         <th colSpan="1"><label htmlFor="registStartDate">시작일</label></th>
-                                        <td colSpan="3"><input name="startDate" type="date" placeholder="필드 입력" id="registStartDate"
+                                        <td colSpan="3"><input name="startDate" type="date" placeholder="필드 입력"
+                                                               id="registStartDate"
                                                                value={insertPrice.startDate} onChange={(e) => {
                                             handleInsertPrice(e.target)
                                         }}/>
                                         </td>
 
                                         <th colSpan="1"><label htmlFor="registEndDate">종료일</label></th>
-                                        <td colSpan="3"><input name="endDate" type="date" placeholder="필드 입력" id="registEndDate"
+                                        <td colSpan="3"><input name="endDate" type="date" placeholder="필드 입력"
+                                                               id="registEndDate"
                                                                value={insertPrice.endDate} onChange={(e) => {
                                             handleInsertPrice(e.target)
                                         }}/></td>
@@ -625,7 +689,8 @@ function Price() {
                                     <button id="uploadCsv" className="btn-CSV" onClick={handleAddClickCSV}>CSV 파일 업로드
                                     </button>
                                     {isVisibleCSV && (
-                                        <input type="file" id="uploadCsvInput" accept=".csv" onChange={handleFileChange}/>)}
+                                        <input type="file" id="uploadCsvInput" accept=".csv"
+                                               onChange={handleFileChange}/>)}
 
                                     <button className="btn-common btn-add-p" onClick={handleInsertPriceList}> 추가
                                     </button>
@@ -719,18 +784,18 @@ function Price() {
                                         <th colSpan="1"><label htmlFor="modifyProductNo">상품</label></th>
                                         <td colSpan="3">
                                             <input name="productNo" className="filter-input" id="modifyProductNo"
-                                                    placeholder="상품"
-                                                    value={modifyItem.productName}
-                                                    readOnly={true}/>
+                                                   placeholder="상품"
+                                                   value={modifyItem.productName}
+                                                   readOnly={true}/>
                                         </td>
 
                                         <th colSpan="1"><label htmlFor="modifyCustomerNo">고객</label></th>
                                         <td colSpan="3">
                                             <input name="customerNo" className="filter-input" id="modifyCustomerNo"
-                                                    placeholder="고객"
+                                                   placeholder="고객"
                                                    value={modifyItem.customerName}
                                                    readOnly={true}
-                                                    />
+                                            />
                                         </td>
                                     </tr>
                                     <tr>
@@ -755,14 +820,16 @@ function Price() {
                                     </tr>
                                     <tr>
                                         <th colSpan="1"><label htmlFor="registStartDate">시작일</label></th>
-                                        <td colSpan="3"><input name="startDate" type="date" placeholder="필드 입력" id="modifyStartDate"
+                                        <td colSpan="3"><input name="startDate" type="date" placeholder="필드 입력"
+                                                               id="modifyStartDate"
                                                                value={modifyItem.startDate} onChange={(e) => {
                                             handleModifyItemChange(e.target)
                                         }}/>
                                         </td>
 
                                         <th colSpan="1"><label htmlFor="registStartDate">종료일</label></th>
-                                        <td colSpan="3"><input name="startDate" type="date" placeholder="필드 입력" id="modifyEndDate"
+                                        <td colSpan="3"><input name="startDate" type="date" placeholder="필드 입력"
+                                                               id="modifyEndDate"
                                                                value={modifyItem.endDate} onChange={(e) => {
                                             handleModifyItemChange(e.target)
                                         }}/></td>
@@ -785,7 +852,7 @@ function Price() {
                             </button>
 
 
-                            <ModalDetail title={modalDetailTitle} data={modalDetailData} />
+                            <ModalDetail title={modalDetailTitle} data={modalDetailData}/>
                         </div>
                     </div>
                 </div>

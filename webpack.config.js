@@ -7,7 +7,7 @@ module.exports = {
     entry: {
 
         login: './login/Login.js', // 로그인
-        employee: './employee/employee.js', // 직원
+        employee: './employee/Employee.js', // 직원
         order: './order/Order.js', //주문
         customer: './customer/Customer.js',// 고객
         product: './product/Product.js', // 직원

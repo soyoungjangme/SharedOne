@@ -1,19 +1,16 @@
-package com.project.tobe.entity;
+package com.project.tobe.dto;
 
 import lombok.*;
 
-import javax.persistence.*;
 
-@Entity
-@Table(name = "customer")
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Setter
+@NoArgsConstructor
 @Getter
+@Setter
 @ToString
-public class Customer {
-    @Id
+@Builder
+public class CustomerDTO {
+
     private Long customerNo;
     private String customerName;
     private String customerAddr;
@@ -26,9 +23,5 @@ public class Customer {
     private String picEmail;
     private String picTel; // 수정된 타입
     private String activated;
-
-//    @OneToOne
-//    @JoinColumn("employee_id")
-//    private Employee employee;
 
 }

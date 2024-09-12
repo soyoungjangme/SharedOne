@@ -16,7 +16,7 @@ import java.util.List;
 @SequenceGenerator(
         name = "seqProduct",
         sequenceName = "seq_product",
-        initialValue = 1,
+        initialValue = 1000,
         allocationSize = 1
 )
 public class Product {
@@ -28,6 +28,7 @@ public class Product {
     private String productCategory;
     private String productType;
     private Long productPrice;
+    @Column(name = "product_yn")
     private Character productYn;
 
 }
