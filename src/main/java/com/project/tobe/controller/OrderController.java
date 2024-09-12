@@ -32,4 +32,11 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
+    @PostMapping("/getPrice")
+    public double getPrice(@RequestParam int formcustomer){
+        double pickCustomer = (double)orderService.getPrice(formcustomer);
+        System.out.println(pickCustomer);
+        return pickCustomer;
+    }
+
 }

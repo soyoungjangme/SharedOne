@@ -9,5 +9,6 @@ import java.util.List;
 @Mapper
 public interface OrderMapper {
     List<OrderH> getOrder(OrderSearchDTO criteria); //조건조회
+    double getPrice(int formcustomer); //주문등록 판매가 가져오기
 
 }

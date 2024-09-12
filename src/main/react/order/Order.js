@@ -75,7 +75,7 @@ function Order() {
 
 // --- 테이블 정렬 기능
 
-    /*---------------jsy조건 검색---------------*/
+    /*==============jsy조건 검색==============*/
     const [prod, setProd] = useState([]);
     const [mycustomer, setMycustomer] = useState([]);
 
@@ -95,7 +95,8 @@ function Order() {
     useEffect ( () => {
         let effectCustomer = async() => {
             let getCustomer = await fetch('/customer/customerALL').then(res => res.json());
-            setMycustomer(getCustomer);
+            setMycustomer(getCustomer);//주문필터
+            setOrderCustomer(getCustomer);//주문등록폼
         }
         effectCustomer();
     },[]);
@@ -107,6 +108,7 @@ function Order() {
     const handleChange = (e) => {
         let copy = {...form, [e.target.id]: e.target.value};
         setForm(copy);
+        console.log(copy);
     }
 
 
@@ -144,13 +146,49 @@ function Order() {
         } else {
             console.log('서버로부터 받은 데이터가 배열이 아닙니다.', searchOrderData);
         }
+
+
+
+
     };
 
 
     /*---------------jsy조건 끝---------------*/
 
+    /*==============주문 등록 폼==============*/
+
+    const [orderCustomer, setOrderCustomer] = useState('');
+
+    const handleCustomer = () => {
+
+        //상품코드와 고객코드에 맞는 판매가 select
+        let effectPrice = async() => {
+            const orderCustomer = form.orderCustomer || null;
+
+            //주문등록폼 고객사명 서버로 보내기
+            const resp = await axios.post('/order/getPrice',{
+                inputOrderCustomerNo: orderCustomer
+            })
+
+            const OrderCustomerData = resp.data;
+            if(Array.isArray(OrderCustomerData)){
+                const getOrderCustomer = OrderCustomerData.map(item => ({
+                    orderCustomer: item.customerName
+                }))
+                setOrderCustomer(getOrderCustomer);
+            } else {
+                console.log('등록폼 에러', OrderCustomerData);
+            }
+        }
+    }
 
 
+
+
+
+
+
+    /*---------------주문 등록 끝---------------*/
 
 
 // ---  모달창 띄우는 스크립트
@@ -364,7 +402,7 @@ function Order() {
 
 {/* 여기 아래는 모달이다. */}
 
-
+{/*jsy 주문등록 모달창 시작*/}
             {isVisible && (
                 <div class="confirmRegist">
                     <div class="fullBody">
@@ -391,32 +429,34 @@ function Order() {
 
                                     <tr>
 
-                                        <th colspan="1"><label for="">고객사 명</label></th>
+                                        <th colspan="1"><label htmlFor="orderCustomer">고객사 명</label></th>
                                         <td colspan="3">
-                                        <select>
-                                        <option>선택</option>
+                                        <select id="orderCustomer" value={form.orderCustomer || ''} onChange={handleChange}>
+                                            <option>선택</option>
+                                            {orderCustomer.map(customer => (
+                                                <option key={customer.customerNo} value={customer.customerNo}>
+                                                    {customer.customerName}
+                                                </option>
+                                            ))
+                                            }
                                         </select></td>
 
-                                        <th colspan="1"><label for="">납품 요청일</label></th>
+                                        <th colspan="1"><label htmlFor="">납품 요청일</label></th>
                                         <td colspan="3"><input type="date" placeholder="필드 입력"/></td>
 
                                     </tr>
 
 
                                     <tr>
-                                        <th colspan="1"><label for="">담당자명</label></th>
+                                        <th colspan="1"><label htmlFor="">담당자명</label></th>
                                         <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
 
 
-                                        <th colspan="1"><label for="">결재자</label></th>
+                                        <th colspan="1"><label htmlFor="">결재자</label></th>
                                         <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
 
                                     </tr>
-
                                 </table>
-
-
-
                             </div>
 
                             <div className="bookSearchBox">
@@ -426,7 +466,7 @@ function Order() {
                             </div>
                             <div className="bookResultList">
                                 <ul>
-                                {mycustomer.map((customer) => (
+                                {orderCustomer.map((customer) => (
                                     <li key={customer.customerNo}>
                                     {customer.customerName}
                                     </li>
@@ -446,29 +486,25 @@ function Order() {
                                             <th>no</th>
                                             <th>상품 종류</th>
                                             <th>상품 명</th>
-                                            <th>상품 수량</th>
-                                            <th>총 액</th>
-                                            <th>판매시작날짜</th>
-                                            <th>판매종료날짜</th>
-
+                                            <th>저자</th>
+                                            <th>판매가</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="checkbox"/></td>
-                                            <td>1</td>
-                                            <td>제품공고1</td>
-                                            <td>EA</td>
-                                            <td>EA</td>
-                                            <td>재품창고1</td>
-                                            <td>L2017-11-260001</td>
-                                            <td>4,900</td>
+                                <tbody>
+                                    {prod.map((product, index) => (
+                                        <tr key={index}>
+                                            <td><input type="checkbox" /></td>
+                                            <td>{index + 1}</td>
+                                            <td>{product.productCategory}</td>
+                                            <td>{product.productName}</td>
+                                            <td>{product.productWriter}</td>
+                                            {/*<td>{판매가}</td>*/}
                                         </tr>
-
-                                        <tr style={{fontWeight: 'bold'}}>
-                                            <td colspan="6"> 합계</td>
-                                            <td colspan="2"> 13,000,000</td>
-                                        </tr>
+                                    ))}
+                                    <tr style={{fontWeight: 'bold'}}>
+                                        <td colspan="6"> 합계</td>
+                                        <td colspan="2"> 13,000,000</td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -486,7 +522,6 @@ function Order() {
                                                 <th>2총 액</th>
                                                 <th>2판매시작날짜</th>
                                                 <th>2판매종료날짜</th>
-
                                             </tr>
                                         </thead>
                                         <tbody>

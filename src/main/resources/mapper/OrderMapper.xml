@@ -31,6 +31,22 @@
         </where>
     </select>
 
+    <select id="getPrice" resultMap="PriceDTO">
+        SELECT
+            p.custom_price,
+            p.start_date,
+            p.end_date
+        FROM price p
+        JOIN customer cu ON cu.customer_no = p.customer_no
+        JOIN product prod ON prod.product_no = p.product_no
+        <where>
+            <if test="inputCustomer != null">
+                and cu.customer_no = #{inputCustomer}
+            </if>
+        </where>
+    </select>
+
+
     <resultMap id="OrderH" type="OrderH">
         <result column="order_no" property="orderNo"/> <!-- 주문번호 -->
         <result column="reg_date" property="regDate"/> <!-- 작성일 -->
@@ -41,6 +57,12 @@
         <association property="customer" javaType="CustomerDTO">
             <result column="customer_name" property="customerName"/> <!-- 고객명 -->
         </association>
+    </resultMap>
+
+    <resultMap id="PriceDTO" type="PriceDTO">
+        <result column="custom_price" property="customPrice"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
     </resultMap>
 
 </mapper>

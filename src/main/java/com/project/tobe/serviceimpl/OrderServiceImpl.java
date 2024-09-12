@@ -21,5 +21,10 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.getOrder(criteria);
     }
 
+    @Override
+    public double getPrice(int formcustomer) {
+        return orderMapper.getPrice(formcustomer);
+    }
+
 
 }

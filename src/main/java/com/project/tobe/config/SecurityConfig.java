@@ -48,8 +48,8 @@ public class SecurityConfig {
 
     //all페지이는 인증만되면 들어갑니다. user페이지에 대해서 user권한이 필요합니다. admin페이지에 대해서 admin권한이 필요합니다.
     //나머지 모든 요청은 요청을 허용합니다.
-		http.authorizeRequests( (authorize) -> authorize.antMatchers("/*.do").authenticated()
-														.anyRequest().permitAll() );
+//		http.authorizeRequests( (authorize) -> authorize.antMatchers("/*.do").authenticated()
+//														.anyRequest().permitAll() );
 
     //all페지이는 인증만되면 들어갑니다.
     //user페이지에 대해서 user권한 or ADMIN 이필요합니다.
