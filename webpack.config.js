@@ -15,6 +15,7 @@ module.exports = {
         price: './price/price.js', // 판매가
         myPage: './myPage/myPage.js', // 마이페이지
         main: './main/Main.js',
+
     },
     devtool: 'sourcemaps',
     cache: true,
