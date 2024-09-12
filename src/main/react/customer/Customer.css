@@ -315,7 +315,7 @@ tr:nth-child(0){
 
 
 
-/* 화면 애니메이션 해보기*/
+/* 화면 애니메이션*/
 .fade_effect {
     background: white;
     /* animation: name duration timing-function delay iteration-count direction fill-mode; */

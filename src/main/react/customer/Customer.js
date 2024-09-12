@@ -7,28 +7,7 @@ import useCheckboxManager from '../js/CheckboxManager';
 import './Customer.css';
 import './modalAdd.css';
 import './modalDetail.css';
-import {
-    Chart as ChartJS,
-    BarElement,
-    CategoryScale,
-    LinearScale,
-    Title,
-    Tooltip,
-    Legend,
-    LineElement,
-    PointElement
-} from 'chart.js';
 
-ChartJS.register(
-    BarElement,
-    LineElement,
-    PointElement,  // Register PointElement
-    CategoryScale,
-    LinearScale,
-    Title,
-    Tooltip,
-    Legend
-);
 
 function Customer() {
 
@@ -86,32 +65,16 @@ function Customer() {
         }
     ]);
 
-    // const fetchData = async () => {
-    //     try {
-    //         await axios.get('/customer/customerALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
-    //             .then(response => setCustomer(response.data))  // 응답 데이터를 상태로 설정
-    //             .catch(error => console.error('Error fetching customer data:', error));
-    //     } catch (error) {
-    //         console.error("데이터를 가져오는 중 오류 발생:", error);
-    //     }
-
-    // };
-    // console.log(customer);
-
-
-
     useEffect(() => {
         axios.get('/customer/customerALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
             .then(response => setCustomer(response.data))  // 응답 데이터를 상태로 설정
             .catch(error => console.error('Error fetching customer data:', error));
     }, []);
 
-
     // 메인 리스트 가져오기 axios
     // useEffect(() => {
     //     fetchData();
     // }, []);
-
 
     // 검색,필터 기능
     const [filters, setFilters] = useState({
@@ -155,7 +118,7 @@ function Customer() {
         console.log(321321)
     };
 
-    // 직원 추가  리스트
+    // 직원 추가 정보를 저장할 상태
     const [test, setTest] = useState({
         customerNo: 0,
         customerName: '',
@@ -167,14 +130,17 @@ function Customer() {
         dealType: '',
         picName: '',
         picEmail: '',
-        picTel: '',
+        picTel: ''
     });
-    const [list, setList] = useState([]);
-    const [customerRegist, setcustomerRegist] = useState([]);
 
-    const handleInputAddChange = (e) => {
+    // 직원 추가 리스트
+    const [list, setList] = useState([]);
+    const [customerRegist, setCustomerRegist] = useState([]);
+
+    // 입력값 변경 핸들러
+    const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setTest((prevTest) => ({
+        setTest(prevTest => ({
             ...prevTest,
             [name]: value,
         }));
@@ -185,17 +151,16 @@ function Customer() {
     const handleInputRegistAdd = (e) => {
         const { id, value } = e.target;
         console.log(e.target);
-        // 변경된 필드의 값을 업데이트합니다.
-        setcustomerRegist((prev) => ({
+        setCustomerRegist(prev => ({
             ...prev,
             [id]: value,
         }));
-        console.log(customerRegist);
+        console.log('추가 핸들', customerRegist);
     };
 
     // 리스트에 입력값 추가 핸들러
     const onClickListAdd = () => {
-        setList((prevList) => [...prevList, test]);
+        setList(prevList => [...prevList, test]);
         setTest({
             customerNo: '',
             customerName: '',
@@ -207,38 +172,31 @@ function Customer() {
             dealType: '',
             picName: '',
             picEmail: '',
-            picTel: '',
+            picTel: ''
         }); // 입력값 초기화
 
         console.log('리스트:', JSON.stringify(list));
     };
 
-    const onClickRegistBtn = () => {
-        if (list.length > 0) {
-            setcustomerRegist(list); // 등록할 항목이 있는 경우에만 상태 업데이트
-
-            console.log("클릭이벤트")
-
-            // 서버에 등록 요청 보내기
-            axios
-                .post('/customer/customerRegist', list, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then((response) => {
-                    setCustomer(response.data); // 서버 응답 데이터로 customer 상태 업데이트
-                    console.log('등록 성공:', response.data);
-                })
-                .catch((error) => console.error('서버 요청 중 오류 발생', error))
-                .finally(() => setIsVisible(false)); // 요청 완료 후 항상 실행되는 블록
-            window.location.reload();
+// 등록 버튼 클릭 핸들러
+const onClickRegister = () => {
+    if (list.length > 0) {
+        axios.post('/customer/customerRegist', list, {
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => {
+            console.log('등록 성공:', response.data);
+        })
+        .catch(error => console.error('서버 요청 중 오류 발생', error))
+        .finally(() => {
+            setIsVisible(false); // 요청 완료 후 모달 닫기
             setList([]); // 기존 목록 초기화
-        } else {
-            console.error('등록할 항목이 없습니다');
-        }
-
-    };
+        });
+        window.location.reload(); // 페이지 새로고침
+    } else {
+        console.error('등록할 항목이 없습니다');
+    }
+};
 
 
 
@@ -358,24 +316,27 @@ function Customer() {
 
 
     const handleDeleteClick = () => {
-        axios.post('/customer/customerDelete', checkedIds, {
+        const numericCheckedIds = checkedIds.map(id => Number(id)); // 문자열을 숫자로 변환
+        axios.post('/customer/customerDelete', numericCheckedIds, {
             headers: {
                 'Content-Type': 'application/json'
             }
         })
-            .then(response => {
-                console.log('삭제 요청 성공', response.data);
-                window.location.reload();
-            })
-            .catch(error => {
-                console.error('서버 요청 중 오류 발생', error);
-            });
+        .then(response => {
+            console.log('삭제 요청 성공', response.data);
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('서버 요청 중 오류 발생', error);
+        });
     }
-
+    
 
     return (
 
         <div className='fade_effect'>
+
+
             <h1><i class="bi bi-person-lines-fill"></i> 고객 관리 </h1>
             <div className="main-container">
 
@@ -441,7 +402,7 @@ function Customer() {
                 </button>
                 {/* 테이블 표 부분 */}
                 <table className="seacrh-table">
-                    {showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}
+                    {showDelete && <button className='delete-btn' onClick={handleDeleteClick}>삭제</button>}
                     <thead>
                         <tr>
                             <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange} /></th>
@@ -512,7 +473,7 @@ function Customer() {
 
                     <tbody>
 
-                    
+
                         {sortedData.length > 0 ? (
                             sortedData.map((item, index) => (
                                 <tr key={index} className={checkItem[index] ? 'selected-row' : ''} onDoubleClick={() => {
@@ -546,159 +507,124 @@ function Customer() {
                             <td colSpan="2"> {customer.length} 건</td>
                         </tr>
 
-
-
                     </tbody>
-
                 </table>
             </div>
 
 
             {/* 여기 아래는 모달이다. */}
-            {
-                isVisible && (
-                    <div class="confirmRegist">
-                        <div class="fullBody">
-                            <div class="form-container">
-                                <button className="close-btn" onClick={handleCloseClick}> &times;
-                                </button>
-                                <div class="form-header">
-                                    <h1>직원 등록</h1>
-
-                                    <div className="btns">
-                                        <div className="btn-add2">
-                                            <button type="button" onClick={onClickRegistBtn}> 등록하기</button>
-                                        </div>
-
-                                        <div className="btn-close">
-
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="RegistForm">
-                                    <table class="formTable">
-
-                                        <tr>
-
-                                            <th colspan="1"><label for="">직원 ID</label></th>
-                                            <td colspan="3"><input type="text" placeholder="필드 입력" /></td>
-
-                                            <th colspan="1"><label for="">직원 PW</label></th>
-                                            <td colspan="3"><input type="text" placeholder="필드 입력" /></td>
-
-                                        </tr>
-
-
-                                        <tr>
-                                            <th><label for="">연락처</label></th>
-                                            <td><input type="text" placeholder="필드 입력" /></td>
-
-
-                                            <th><label for="">연락처</label></th>
-                                            <td><input type="text" placeholder="필드 입력" /></td>
-
-
-                                            <th><label for="">연락처</label></th>
-                                            <td><input type="text" placeholder="필드 입력" /></td>
-                                            <th><label for="">직원 ID</label></th>
-                                            <td><input type="text" placeholder="필드 입력" /></td>
-
-                                        </tr>
-
-
-                                        <tr>
-                                            <th colspan="1"><label for="">연락처</label></th>
-                                            <td colspan="3"><input type="text" placeholder="필드 입력" /></td>
-
-                                            <th colspan="1"><label for="">연락처</label></th>
-                                            <td colspan="3"><input type="text" placeholder="필드 입력" /></td>
-                                        </tr>
-
-
-                                        <tr>
-
-                                            <th colspan="1"><label for="">연락처</label></th>
-                                            <td colspan="3"><select>
-                                                <option>담당 직원</option>
-                                            </select></td>
-
-                                            <th colspan="1"><label for="">연락처</label></th>
-                                            <td colspan="3"><select>
-                                                <option>담당 직원</option>
-                                            </select></td>
-                                        </tr>
-
-
-                                    </table>
-
-
-                                    <button id="downloadCsv">CSV 샘플 양식</button>
-                                    <button id="uploadCsv" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
-                                    {isVisibleCSV && (
-                                        <input type="file" id="uploadCsvInput" accept=".csv" />)}
-
-                                    <div className="btn-add">
-                                        <button> 추가</button>
-                                    </div>
-
-
-                                </div>
-
-                                <div class="RegistFormList">
-                                    <div style={{ fontWeight: 'bold' }}> 총 N 건</div>
-                                    <table class="formTableList">
-                                        <thead>
-                                            <tr>
-                                                <th><input type="checkbox" /></th>
-                                                <th>no</th>
-                                                <th>품목명</th>
-                                                <th>규격</th>
-                                                <th>단위</th>
-                                                <th>창고</th>
-                                                <th>LOT</th>
-                                                <th>현재고</th>
-                                                <th>실사수량</th>
-                                                <th>조정수량</th>
-                                                <th>단가</th>
-                                                <th>공급가액</th>
-                                                <th>부가세</th>
-                                                <th>총금액</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td><input type="checkbox" /></td>
-                                                <td>1</td>
-                                                <td>제품공고1</td>
-                                                <td>EA</td>
-                                                <td>EA</td>
-                                                <td>재품창고1</td>
-                                                <td>L2017-11-260001</td>
-                                                <td>4,900</td>
-                                                <td>5,000</td>
-                                                <td>100</td>
-                                                <td>3,000</td>
-                                                <td>300,000</td>
-                                                <td>30,000</td>
-                                                <td>330,000</td>
-                                            </tr>
-
-                                            <tr style={{ fontWeight: 'bold' }}>
-                                                <td colspan="12"> 합계</td>
-                                                <td colspan="2"> 13,000,000</td>
-                                            </tr>
-
-                                        </tbody>
-                                    </table>
+            {isVisible && (
+            <div className="confirmRegist">
+                <div className="fullBody">
+                    <div className="form-container">
+                        <button className="close-btn" onClick={handleCloseClick}> &times; </button>
+                        <div className="form-header">
+                            <h1>직원 등록</h1>
+                            <div className="btns">
+                                <div className="btn-add2">
+                                    <button onClick={onClickRegister} disabled={list.length === 0}>등록하기</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                )
-            }
+                        <div className="RegistForm">
+                            <table className="formTable">
+                                <tbody>
+                                    <tr>
+                                        <th><label htmlFor="customerName">고객명</label></th>
+                                        <td><input type="text" name="customerName" value={customer.customerName} onChange={handleInputChange} placeholder="고객명" /></td>
+
+                                        <th><label htmlFor="customerNo">고객 번호</label></th>
+                                        <td><input type="number" name="customerNo" value={customer.customerNo} onChange={handleInputChange} placeholder="고객 번호" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th><label htmlFor="customerTel">전화번호</label></th>
+                                        <td><input type="text" name="customerTel" value={customer.customerTel} onChange={handleInputChange} placeholder="전화번호" /></td>
+
+                                        <th><label htmlFor="customerAddr">주소</label></th>
+                                        <td><input type="text" name="customerAddr" value={customer.customerAddr} onChange={handleInputChange} placeholder="주소" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th><label htmlFor="postNum">우편번호</label></th>
+                                        <td><input type="text" name="postNum" value={customer.postNum} onChange={handleInputChange} placeholder="우편번호" /></td>
+
+                                        <th><label htmlFor="businessRegistrationNo">사업자 등록번호</label></th>
+                                        <td><input type="text" name="businessRegistrationNo" value={customer.businessRegistrationNo} onChange={handleInputChange} placeholder="사업자 등록번호" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th><label htmlFor="nation">국가</label></th>
+                                        <td><input type="text" name="nation" value={customer.nation} onChange={handleInputChange} placeholder="국가" /></td>
+
+                                        <th><label htmlFor="dealType">거래 유형</label></th>
+                                        <td><input type="text" name="dealType" value={customer.dealType} onChange={handleInputChange} placeholder="거래 유형" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th><label htmlFor="picName">담당자 이름</label></th>
+                                        <td><input type="text" name="picName" value={customer.picName} onChange={handleInputChange} placeholder="담당자 이름" /></td>
+
+                                        <th><label htmlFor="picEmail">담당자 이메일</label></th>
+                                        <td><input type="email" name="picEmail" value={customer.picEmail} onChange={handleInputChange} placeholder="담당자 이메일" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th><label htmlFor="picTel">담당자 전화번호</label></th>
+                                        <td><input type="text" name="picTel" value={customer.picTel} onChange={handleInputChange} placeholder="담당자 전화번호" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div className="btn-add">
+                                <button onClick={onClickAddToList}>추가</button>
+                            </div>
+                        </div>
+
+                        <div className="RegistFormList">
+                            <div style={{ fontWeight: 'bold' }}>총 {list.length} 건</div>
+                            <table className="formTableList">
+                                <thead>
+                                    <tr>
+                                        <th>번호</th>
+                                        <th>고객명</th>
+                                        <th>고객 번호</th>
+                                        <th>전화번호</th>
+                                        <th>주소</th>
+                                        <th>우편번호</th>
+                                        <th>사업자 등록번호</th>
+                                        <th>국가</th>
+                                        <th>거래 유형</th>
+                                        <th>담당자 이름</th>
+                                        <th>담당자 이메일</th>
+                                        <th>담당자 전화번호</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {list.map((item, index) => (
+                                        <tr key={index}>
+                                            <td>{index + 1}</td>
+                                            <td>{item.customerName}</td>
+                                            <td>{item.customerNo}</td>
+                                            <td>{item.customerTel}</td>
+                                            <td>{item.customerAddress}</td>
+                                            <td>{item.postNum}</td>
+                                            <td>{item.businessRegistrationNo}</td>
+                                            <td>{item.nation}</td>
+                                            <td>{item.dealType}</td>
+                                            <td>{item.picName}</td>
+                                            <td>{item.picEmail}</td>
+                                            <td>{item.picTel}</td>
+                                        </tr>
+                                    ))}
+                                    <tr style={{ fontWeight: 'bold' }}>
+                                        <td colSpan="11">합계</td>
+                                        <td>{list.length} 건</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )}
+
             {/* 모달창의 끝  */}
 
             {/* 수정 모달창 */}
@@ -708,7 +634,7 @@ function Customer() {
                         <div className="form-container">
                             <button className="close-btn" onClick={handleModifyCloseClick}> &times; </button>
                             <div className="form-header">
-                                <h1>직원 수정</h1>
+                                <h1>고객 수정</h1>
                                 <div className="btns">
                                     <div className="btn-add2">
                                         <button type="button" onClick={handleUpdateClick}>수정하기</button>
@@ -722,38 +648,38 @@ function Customer() {
                                 <table className="formTable">
                                     <tbody>
                                         <tr>
-                                            <th><label htmlFor="employeeName">직원명</label></th>
-                                            <td><input type="text" id="employeeName" name="employeeName" value={modifyItem.employeeName} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <th><label htmlFor="customerName">고객명</label></th>
+                                            <td><input type="text" id="customerName" name="customerName" value={modifyItem.customerName} onChange={(e) => handleModifyItemChange(e.target)} /></td>
 
-                                            <th><label htmlFor="employeeId">아이디</label></th>
-                                            <td><input type="text" id="employeeId" name="employeeId" value={modifyItem.employeeId} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <th><label htmlFor="customerNo">고객 연락처</label></th>
+                                            <td><input type="text" id="customerNo" name="customerNo" value={modifyItem.customerNo} onChange={(e) => handleModifyItemChange(e.target)} /></td>
 
-                                            <th><label htmlFor="employeePw">비밀번호</label></th>
-                                            <td><input type="text" id="employeePw" name="employeePw" value={modifyItem.employeePw} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <th><label htmlFor="businessRegistrationNo">사업자 등록 번호</label></th>
+                                            <td><input type="text" id="businessRegistrationNo" name="businessRegistrationNo" value={modifyItem.businessRegistrationNo} onChange={(e) => handleModifyItemChange(e.target)} /></td>
                                         </tr>
                                         <tr>
-                                            <th><label htmlFor="employeeTel">연락처</label></th>
-                                            <td><input type="text" id="employeeTel" name="employeeTel" value={modifyItem.employeeTel} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <th><label htmlFor="customerAddr">고객 주소</label></th>
+                                            <td><input type="text" id="customerAddr" name="customerAddr" value={modifyItem.customerAddr} onChange={(e) => handleModifyItemChange(e.target)} /></td>
 
-                                            <th><label htmlFor="employeeEmail">이메일</label></th>
-                                            <td><input type="text" id="employeeEmail" name="employeeEmail" value={modifyItem.employeeEmail} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <th><label htmlFor="postNum">우편번호</label></th>
+                                            <td><input type="text" id="postNum" name="postNum" value={modifyItem.postNum} onChange={(e) => handleModifyItemChange(e.target)} /></td>
 
-                                            <th><label htmlFor="employeeAddr">주소</label></th>
-                                            <td><input type="text" id="employeeAddr" name="employeeAddr" value={modifyItem.employeeAddr} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <th><label htmlFor="nation">국가</label></th>
+                                            <td><input type="text" id="nation" name="nation" value={modifyItem.nation} onChange={(e) => handleModifyItemChange(e.target)} /></td>
                                         </tr>
                                         <tr>
-                                            <th><label htmlFor="residentNum">주민번호</label></th>
-                                            <td><input type="text" id="residentNum" name="residentNum" value={modifyItem.residentNum} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <th><label htmlFor="picName">담당자명</label></th>
+                                            <td><input type="text" id="picName" name="picName" value={modifyItem.picName} onChange={(e) => handleModifyItemChange(e.target)} /></td>
 
-                                            <th><label htmlFor="hireDate">입사일</label></th>
-                                            <td><input type="date" id="hireDate" name="hireDate" value={modifyItem.hireDate} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <th><label htmlFor="picEmail">담당자 이메일</label></th>
+                                            <td><input type="date" id="picEmail" name="picEmail" value={modifyItem.picEmail} onChange={(e) => handleModifyItemChange(e.target)} /></td>
 
-                                            <th><label htmlFor="salary">급여</label></th>
-                                            <td><input type="text" id="salary" name="salary" value={modifyItem.salary} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <th><label htmlFor="picTel">담당자 연락처</label></th>
+                                            <td><input type="text" id="picTel" name="picTel" value={modifyItem.picTel} onChange={(e) => handleModifyItemChange(e.target)} /></td>
                                         </tr>
                                         <tr>
-                                            <th><label htmlFor="employeeManagerId">직속상사</label></th>
-                                            <td><input type="text" id="employeeManagerId" name="employeeManagerId" value={modifyItem.employeeManagerId} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <th><label htmlFor="dealType">거래 유형</label></th>
+                                            <td><input type="text" id="dealType" name="dealType" value={modifyItem.dealType} onChange={(e) => handleModifyItemChange(e.target)} /></td>
 
                                             <th><label htmlFor="authorityGrade">권한</label></th>
                                             <td>
