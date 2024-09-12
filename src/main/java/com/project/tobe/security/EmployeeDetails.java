@@ -38,6 +38,19 @@ public class EmployeeDetails implements UserDetails {
     return employee.getEmployeeId();
   }
 
+
+  public String getNickname() {
+    System.out.println(employee.toString());
+    System.out.println(employee.getEmployeeName());
+    return employee.getEmployeeName();
+  }
+
+
+  public String getUserAuthorityGrade() {
+    return employee.getAuthorityGrade();
+  }
+
+
   // 계정이 만료 되었는지 (true: 만료X)
   @Override
   public boolean isAccountNonExpired() {
