@@ -24,7 +24,8 @@ function Product() {
             handleCheckboxChange: handleCheckboxChangeModal,
             handleDelete: handleDeleteModal,
             setCheckItem: setCheckItemModal,
-            setAllCheck: setAllCheckModal
+            setAllCheck: setAllCheckModal,
+            setShowDelete: setShowDeleteModal
         } = useCheckboxManager();
 
     const [product, setProduct] = useState([]); // 리스트 데이터를 저장할 state
@@ -48,32 +49,49 @@ function Product() {
 
 
 
-    // ========================= 테이블 정렬 부분 =========================
-    // 상품 데이터를 저장하는 상태
-    const [order, setOrder] = useState([]); // 리스트 데이터를 저장할 state
+  // ========================= 테이블 정렬 부분 =========================
+const [order, setOrder] = useState([]); // 메인 리스트 데이터를 저장할 state
+const [modalOrder, setModalOrder] = useState([]); // 모달 리스트 데이터를 저장할 state
+const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
+const [modalSortConfig, setModalSortConfig] = useState({ key: '', direction: 'ascending' }); // 모달 정렬 상태와 방향을 저장하는 상태
 
-
-    // 정렬 상태와 방향을 저장하는 상태
-    const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
-
-    // 정렬 함수
-    const sortData = (key) => {
-        let direction = 'ascending';
-        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-            direction = 'descending';
+// 메인 테이블 정렬 함수
+const sortData = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+        direction = 'descending';
+    }
+    const sortOrder = [...order].sort((a, b) => {
+        if (a[key] < b[key]) {
+            return direction === 'ascending' ? -1 : 1;
         }
-        const sortOrder = [...order].sort((a, b) => { //order배열 정렬(매개변수 비교)
-            if (a[key] < b[key]) { // key는 변수명임 (ex. orderNo, manage, title ...)
-                return direction === 'ascending' ? -1 : 1; //
-            }
-            if (a[key] > b[key]) {
-                return direction === 'ascending' ? 1 : -1;
-            }
-            return 0;
-        });
-        setOrder(sortOrder);
-        setSortConfig({ key, direction });
-    };
+        if (a[key] > b[key]) {
+            return direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+    });
+    setOrder(sortOrder);
+    setSortConfig({ key, direction });
+};
+
+// 모달 테이블 정렬 함수
+const sortModalData = (key) => {
+    let direction = 'ascending';
+    if (modalSortConfig.key === key && modalSortConfig.direction === 'ascending') {
+        direction = 'descending';
+    }
+    const sortOrder = [...modalOrder].sort((a, b) => {
+        if (a[key] < b[key]) {
+            return direction === 'ascending' ? -1 : 1;
+        }
+        if (a[key] > b[key]) {
+            return direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+    });
+    setModalOrder(sortOrder);
+    setModalSortConfig({ key, direction });
+};
 
 
 
@@ -374,12 +392,6 @@ function Product() {
         alert(itemsToDelete.length + " 선택한 항목이 삭제되었습니다.");
     };
     
-    
-
-    
-    
-
-
 
     // ========================= 상품 수정 모달창 =========================
 
@@ -643,10 +655,26 @@ function Product() {
                                         <tr>
                                             <th><input type="checkbox" checked={allCheckModal} onChange={handleMasterCheckboxChangeModal}/></th>
                                             <th>no</th>
-                                            <th>상품명</th>
-                                            <th>상품저자</th>
-                                            <th>상품카테고리</th>
-                                            <th>상품원가</th>
+                                            <th>상품명
+                <button className="sortBtn" onClick={() => sortModalData('productName')}>
+                    {modalSortConfig.key === 'productName' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                </button>
+            </th>
+            <th>상품저자
+                <button className="sortBtn" onClick={() => sortModalData('productWriter')}>
+                    {modalSortConfig.key === 'productWriter' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                </button>
+            </th>
+            <th>상품카테고리
+                <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
+                    {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                </button>
+            </th>
+            <th>상품원가
+                <button className="sortBtn" onClick={() => sortModalData('productPrice')}>
+                    {modalSortConfig.key === 'productPrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                </button>
+            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
