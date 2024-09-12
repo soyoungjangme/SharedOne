@@ -13,6 +13,7 @@
         FROM employee
 <!--        WHERE employee_id LIKE CONCAT('%', #{employeeId}, '%')-->
         <where>
+           empl_yn = 'y'
             <if test="employeeId != '' and employeeId != null">
                 AND employee_id LIKE CONCAT('%', #{employeeId}, '%')
             </if>
