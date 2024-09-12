@@ -15,4 +15,5 @@ public class OrderSearchDTO {
     private Integer inputProdNo;
     private String inputManager;
     private Integer inputCustomerNo;
+    private String inputState;
 }

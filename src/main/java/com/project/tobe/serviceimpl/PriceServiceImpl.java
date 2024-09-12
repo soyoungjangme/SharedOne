@@ -1,6 +1,5 @@
 package com.project.tobe.serviceimpl;
 
-import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import com.project.tobe.dto.PriceProductCustomerDTO;
 import com.project.tobe.dto.PriceDTO;
@@ -18,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,7 +69,10 @@ public class PriceServiceImpl implements PriceService {
                     .activated(YesNo.Y)
                     .build();
 
+            System.out.println(price);
+
             priceRepository.save(price);
+            priceRepository.updateOldPrice(price);
         }
 
         return ResponseEntity.ok().build();

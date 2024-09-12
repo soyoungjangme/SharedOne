@@ -6,8 +6,11 @@ import com.project.tobe.entity.Price;
 import com.project.tobe.entity.QCustomer;
 import com.project.tobe.entity.QPrice;
 import com.project.tobe.entity.QProduct;
+import com.project.tobe.util.constants.YesNo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPADeleteClause;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 
@@ -72,7 +75,7 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
         customerNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customer.customerNo.eq(Long.parseLong(s))));
         startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
         endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
-//        builder.and(price.activated.eq(Y));
+        builder.and(price.activated.eq(Y));
 
         return jpaQueryFactory
                 .select(
@@ -129,5 +132,71 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
         );
 
         updateQuery.execute();
+    }
+
+    @Override
+    @Transactional
+    public void updateOldPrice(Price entity) {
+        QPrice price = QPrice.price;
+
+        // 1. 삭제: 엔티티의 시작일보다 큰 시작일, 엔티티의 종료일보다 작은 종료일 가진 데이터
+        deletePricesWithDateRange(price, entity);
+
+        // 2. 업데이트: 엔티티의 시작일과 종료일 사이에 있는 데이터들
+        updateStartDateInRange(price, entity);
+        updateEndDateInRange(price, entity);
+        deleteStartDateBiggerEndDate(price);
+    }
+
+    private void deletePricesWithDateRange(QPrice price, Price entity) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        builder.and(price.priceNo.ne(entity.getPriceNo()));
+        builder.and(price.customer.customerNo.eq(entity.getCustomer().getCustomerNo()));
+        builder.and(price.product.productNo.eq(entity.getProduct().getProductNo()));
+        builder.and(price.startDate.goe(entity.getStartDate()));
+        builder.and(price.endDate.loe(entity.getEndDate()));
+
+        new JPAUpdateClause(entityManager, price)
+                .where(builder)
+                .set(price.activated, N)
+                .execute();
+    }
+
+    private void updateStartDateInRange(QPrice price, Price entity) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        builder.and(price.priceNo.ne(entity.getPriceNo()));
+        builder.and(price.customer.customerNo.eq(entity.getCustomer().getCustomerNo()));
+        builder.and(price.product.productNo.eq(entity.getProduct().getProductNo()));
+        builder.and(price.startDate.between(entity.getStartDate(), entity.getEndDate()));
+
+        new JPAUpdateClause(entityManager, price)
+                .where(builder)
+                .set(price.startDate, entity.getEndDate().plusDays(1))
+                .execute();
+    }
+
+    private void updateEndDateInRange(QPrice price, Price entity) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        builder.and(price.priceNo.ne(entity.getPriceNo()));
+        builder.and(price.customer.customerNo.eq(entity.getCustomer().getCustomerNo()));
+        builder.and(price.product.productNo.eq(entity.getProduct().getProductNo()));
+        builder.and(price.endDate.between(entity.getStartDate(), entity.getEndDate()));
+
+        new JPAUpdateClause(entityManager, price)
+                .where(builder)
+                .set(price.endDate, entity.getStartDate().minusDays(1))
+                .execute();
+    }
+
+    private void deleteStartDateBiggerEndDate(QPrice price) {
+        BooleanExpression deleteCondition = price.startDate.goe(price.endDate);
+
+        new JPAUpdateClause(entityManager, price)
+                .where(deleteCondition)
+                .set(price.activated, N)
+                .execute();
     }
 }

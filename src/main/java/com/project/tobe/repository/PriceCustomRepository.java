@@ -11,4 +11,5 @@ public interface PriceCustomRepository {
     List<PriceProductCustomerDTO> getPriceJoinByDTO(PriceDTO dto);
 
     void updatePrice(PriceDTO dto);
+    void updateOldPrice(Price price);
 }

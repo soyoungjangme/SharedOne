@@ -2,7 +2,6 @@ package com.project.tobe.customer;
 
 import com.project.tobe.dto.CustomerSearchDTO;
 import com.project.tobe.dto.CustomerDTO;
-import com.project.tobe.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

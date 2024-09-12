@@ -59,45 +59,56 @@ public class EmployeeServiceImpl implements EmployeeService {
     return new EmployeeDetails(employee.orElse(null));
   }
 
+
+  // 전부 조회
   @Override
   public List<EmployeeDTO> getAllList() {
     return employeeMapper.getAllList();
 
   }
 
+  // 검색 조회
   @Override
   public List<EmployeeDTO> getPickList(EmployeeSearchDTO dto) {
-    System.out.println("서비스");
-    System.out.println("작동됨 picList" + employeeMapper.getPickList(dto));
     return employeeMapper.getPickList(dto);
   }
 
+
+  // 등록
   @Override
   public void employeeRegistTest( List<EmployeeTestDTO> dto) {
-    System.out.println("서비스");
-
-
 
     List<EmployeeTestDTO> list = new LinkedList<>();
 
     for (EmployeeTestDTO employee : dto) {
       employee.setEmployeePw(bCryptPasswordEncoder.encode(employee.getEmployeePw()));
+      if(employee.getAuthorityGrade().equals("S")){
+        employee.setEmployeeManagerId(null);
+      }
       list.add(employee);
     }
 
     employeeMapper.employeeRegistTest(list);
   }
 
+
+  // 수정
   @Override
   public void employeeUpdateTest(EmployeeTestDTO dto) {
-    System.out.println("서비스");
+
+
+    dto.setEmployeePw(bCryptPasswordEncoder.encode(dto.getEmployeePw()));
+    if (dto.getAuthorityGrade().equals("S")) {
+      dto.setEmployeeManagerId(null);
+    }
+
     employeeMapper.employeeUpdateTest(dto);
   }
 
-
+//삭제
   @Override
   public void employeeDeleteTest(List<String> employeeIds) {
-    System.out.println("서비스");
+
     employeeMapper.employeeDeleteTest(employeeIds);
   }
 
