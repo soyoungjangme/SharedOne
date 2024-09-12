@@ -1,10 +1,7 @@
-package com.project.tobe.entity;
+package com.project.tobe.dto;
 
+import com.project.tobe.entity.Product;
 import lombok.*;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
 
 
 @AllArgsConstructor

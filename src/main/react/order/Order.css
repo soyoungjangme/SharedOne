@@ -11,7 +11,7 @@ body {
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 3px;
-    background-color: #f9f9f9;
+    background: linear-gradient(0deg, rgb(246 246 246) 0%, rgba(255, 255, 255, 1) 100%);
     align-items: start; /* Align items at the start vertically */
     margin-bottom: 40px;
     margin-top: 30px;
@@ -232,7 +232,7 @@ h2 {
 }
 
 /*글씨 길면 ...*/
-.seacrh-table tbody td.ellipsis{
+.ellipsis{
     max-width: 100px;
     white-space: nowrap;
     overflow: hidden;
