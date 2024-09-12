@@ -5,6 +5,8 @@ import './modalAdd.css'
 import './modalDetail.css'
 import useCheckboxManager from "../js/CheckboxManager";
 
+import AddressInput from './AddressInput'; // AddressInput 컴포넌트
+
 function Customer() {
     const {
         allCheck,
@@ -12,8 +14,15 @@ function Customer() {
         showDelete,
         handleMasterCheckboxChange,
         handleCheckboxChange,
-        handleDelete
+        handleDelete,
     } = useCheckboxManager(setCustomer);
+
+    const {
+        zonecode,
+        address,
+        detailedAddress,
+        isOpen
+    } = AddressInput();
 
     const [customer, setCustomer] = useState([]);     // 리스트 데이터를 저장할 state
 
@@ -37,6 +46,8 @@ function Customer() {
 
 
     // --- 테이블 정렬 기능
+
+    console.log("진짜" + address + detailedAddress + zonecode);
 
     // 주문 데이터를 저장하는 상태
     const [order, setOrder] = useState([
@@ -130,8 +141,23 @@ function Customer() {
     
     console.log("값알아보기", customer[5]);
     console.log("값알아보기", customer[5]?.customerName);
-    
 
+
+    const [isAddressModalVisible, setIsAddressModalVisible] = useState(false); // 주소 모달 상태 추가
+    const [contactNumber, setContactNumber] = useState('');
+
+    const openAddressModal = () => setIsAddressModalVisible(true); // 주소 모달 열기
+    const closeAddressModal = () => setIsAddressModalVisible(false); // 주소 모달 닫기
+
+    const handleAddressConfirm = (fullAddress) => {
+        console.log('받아온 주소:', fullAddress); // 콘솔에 주소 값 출력
+        setContactNumber(fullAddress);
+        closeAddressModal(); // 주소 입력 모달 닫기
+      };
+
+
+   
+    
 
 
     return (
@@ -328,8 +354,10 @@ function Customer() {
             </div>
 
 
+            
             {/* 여기 아래는 모달이다. */}
             {
+                
                 isVisible && (
                     <div class="confirmRegist">
                         <div class="fullBody">
@@ -347,6 +375,9 @@ function Customer() {
 
                                         </div>
                                     </div>
+                                    <button className="btn-open-modal" onClick={openAddressModal}>
+          주소 찾기
+        </button>
                                 </div>
 
 
@@ -365,8 +396,13 @@ function Customer() {
 
 
                                         <tr>
-                                            <th><label for="">연락처</label></th>
-                                            <td><input type="text" placeholder="필드 입력" /></td>
+                                        <label htmlFor="contact-number">연락처:</label>
+          <input
+            id="contact-number"
+            type="text"
+            value={contactNumber}
+            placeholder="연락처 입력"
+          />
 
 
                                             <th><label for="">연락처</label></th>
@@ -468,10 +504,32 @@ function Customer() {
                                 </div>
                             </div>
                         </div>
+                         {/* 주소 모달 */}
+      {isAddressModalVisible && (
+        <div className="confirmRegist">
+          <div className="fullBody">
+            <div className="form-container">
+              <button className="close-btn" onClick={closeAddressModal}>
+                &times;
+              </button>
+              <div className="form-header">
+                <h1>주소 입력</h1>
+              </div>
+              <AddressInput onAddressConfirm={handleAddressConfirm} /> {/* 주소 입력 컴포넌트 */}
+                        </div>
                     </div>
+                </div>
+            )}
+                    </div>
+                    
 
                 )
             }
+           
+
+             
+
+
             {/* 모달창의 끝  */}
 
             {/* 수정 모달창 */}

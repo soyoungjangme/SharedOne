@@ -5,6 +5,7 @@ import './modalAdd.css'
 import './modalDetail.css'
 import useCheckboxManager from "../js/CheckboxManager";
 
+
 function Product() {
     const {
         allCheck,
@@ -36,7 +37,7 @@ function Product() {
 
 
 
-    // ---------------------- 테이블 정렬 부분 ----------------------
+    // ========================= 테이블 정렬 부분 =========================
     // 상품 데이터를 저장하는 상태
     const [order, setOrder] = useState([]); // 리스트 데이터를 저장할 state
 
@@ -66,7 +67,7 @@ function Product() {
 
 
 
-    // ---------------------- 상품 삭제 부분 ----------------------
+    // ========================= 상품 삭제 부분 =========================
     useEffect(() => {
         // 데이터가 로드된 이후에 삭제된 항목을 로컬 스토리지에서 필터링
         if (product.length > 0) {
@@ -141,14 +142,13 @@ function Product() {
 
 
 
-    // ---------------------- 상품 조회 부분 ----------------------
+    // ========================= 상품 조회 부분 =========================
 
     // 검색 필터의 상태 관리
     const [filters, setFilters] = useState({
         productName: '',
         productWriter: '',
         productCategory: '',
-        productType: '',
         productPrice: ''
     });
 
@@ -171,7 +171,6 @@ function Product() {
                 (!filters.productName || item.productName.includes(filters.productName)) &&
                 (!filters.productWriter || item.productWriter.includes(filters.productWriter)) &&
                 (!filters.productCategory || item.productCategory.includes(filters.productCategory)) &&
-                (!filters.productType || item.productType.toString().includes(filters.productType)) &&
                 (isNaN(filterPrice) || itemPrice >= filterPrice)
             );
 
@@ -180,16 +179,18 @@ function Product() {
         setOrder(filteredData);
     };
 
-    // ---------------------- 상품 등록 모달 ----------------------
+
+
+    // ========================= 상품 등록 모달 =========================
+
     const [isVisible, setIsVisible] = useState(false);
     const [isVisibleCSV, setIsVisibleCSV] = useState(false);
     const [productForm, setProductForm] = useState({
         productName: '',
         productWriter: '',
         productCategory: '',
-        productType: '',
         productPrice: '',
-        productYn: 'Y'
+        productYn: 'Y',
     });
     const [productList, setProductList] = useState([]);
 
@@ -231,11 +232,11 @@ function Product() {
     const handleAddProduct = () => {
         if (isFormValid()) {
             if (isProductNameOnScreen(productForm.productName)) {
-                alert('동일한 상품명이 이미 화면에 있습니다.');
+                alert('동일한 상품이 이미 등록되어 있습니다.');
                 return;
             }
             if (isProductNameDuplicate(productForm.productName)) {
-                alert('동일한 상품명이 이미 추가된 목록에 존재합니다.');
+                alert('동일한 상품이 이미 추가되어 있습니다.');
                 return;
             }
 
@@ -251,9 +252,8 @@ function Product() {
                 productName: '',
                 productWriter: '',
                 productCategory: '',
-                productType: '',
                 productPrice: '',
-                productYn: 'Y'
+                productYn: 'Y',
             });
         } else {
             alert('상품 정보를 모두 입력해야 합니다.');
@@ -296,13 +296,12 @@ function Product() {
 
 
 
+    // ========================= 상품 수정 모달창 =========================
 
-    // ---------------------- 상품 수정 모달창 ----------------------
     const [modifyItem, setModifyItem] = useState({
         productName: '',
         productWriter: '',
         productCategory: '',
-        productType: '',
         productPrice: '',
         productYn: 'Y'
     });
@@ -368,6 +367,12 @@ function Product() {
     };
 
 
+
+    
+   
+      
+
+
     return (
         <div>
 
@@ -400,10 +405,6 @@ function Product() {
                         <input className="filter-input" type="text" id="productCategory" placeholder="상품카테고리" value={filters.productCategory} onChange={handleFilterChange} />
                     </div>
                     <div className="filter-row">
-                        <label className="filter-label" htmlFor="productType">상품종류</label>
-                        <input className="filter-input" type="text" id="productType" placeholder="상품종류" value={filters.productType} onChange={handleFilterChange} />
-                    </div>
-                    <div className="filter-row">
                         <label className="filter-label" htmlFor="productPrice">상품원가</label>
                         <input className="filter-input" type="number" id="productPrice" placeholder="상품원가" value={filters.productPrice} onChange={handleFilterChange} />
                     </div>
@@ -433,11 +434,6 @@ function Product() {
                                     {sortConfig.key === 'productCategory' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                 </button>
                             </th>
-                            <th>상품종류
-                                <button className="sortBtn" onClick={() => sortData('productType')}>
-                                    {sortConfig.key === 'productType' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                </button>
-                            </th>
                             <th>상품원가
                                 <button className="sortBtn" onClick={() => sortData('productPrice')}>
                                     {sortConfig.key === 'productPrice' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
@@ -458,7 +454,6 @@ function Product() {
                                         <td>{item.productName}</td>
                                         <td>{item.productWriter}</td>
                                         <td>{item.productCategory}</td>
-                                        <td>{item.productType}</td>
                                         <td>{item.productPrice}</td>
                                     </tr>
                                 )
@@ -483,7 +478,7 @@ function Product() {
             </div>
 
 
-            {/* ---------------------- 등록 모달 ----------------------*/}
+            {/* ---------------------- 상품 등록 모달 ----------------------*/}
             {isVisible && (
                 <div className="confirmRegist">
                     <div className="fullBody">
@@ -514,18 +509,11 @@ function Product() {
                                         <tr>
                                             <th><label htmlFor="productCategory">상품카테고리</label></th>
                                             <td><input type="text" name="productCategory" value={productForm.productCategory} onChange={handleInputChange} placeholder="상품카테고리" /></td>
-                                            <th><label htmlFor="productType">상품종류</label></th>
-                                            <td><input type="text" name="productType" value={productForm.productType} onChange={handleInputChange} placeholder="상품종류" /></td>
-                                        </tr>
-
-                                        <tr>
 
                                             <th><label htmlFor="productPrice">상품원가</label></th>
                                             <td><input type="number" name="productPrice" value={productForm.productPrice} onChange={handleInputChange} placeholder="상품원가" /></td>
-
-                                            <th><label htmlFor="productYn">상품활성화</label></th>
-                                            <td><input type="text" name="productYn" value={productForm.productYn} readOnly /></td>
                                         </tr>
+
                                     </tbody>
                                 </table>
 
@@ -550,7 +538,6 @@ function Product() {
                                             <th>상품명</th>
                                             <th>상품저자</th>
                                             <th>상품카테고리</th>
-                                            <th>상품종류</th>
                                             <th>상품원가</th>
                                         </tr>
                                     </thead>
@@ -562,7 +549,6 @@ function Product() {
                                                 <td>{product.productName}</td>
                                                 <td>{product.productWriter}</td>
                                                 <td>{product.productCategory}</td>
-                                                <td>{product.productType}</td>
                                                 <td>{product.productPrice}</td>
                                             </tr>
                                         ))}
@@ -642,16 +628,7 @@ function Product() {
                                             </td>
 
 
-                                            <th colSpan="1"><label htmlFor="productType">상품종류</label></th>
-                                            <td colSpan="3">
-                                                <input
-                                                    type="text"
-                                                    name="productType"
-                                                    placeholder="상품종류"
-                                                    value={modifyItem.productType}
-                                                    onChange={handleModifyItemChange}
-                                                />
-                                            </td>
+                                            
                                         </tr>
 
                                         <tr>
