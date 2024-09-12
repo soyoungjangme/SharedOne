@@ -14,7 +14,7 @@ function Customer() {
         showDelete,
         handleMasterCheckboxChange,
         handleCheckboxChange,
-        handleDelete,
+        handleDelete
     } = useCheckboxManager(setCustomer);
 
     const {
@@ -46,8 +46,6 @@ function Customer() {
 
 
     // --- 테이블 정렬 기능
-
-    console.log("진짜" + address + detailedAddress + zonecode);
 
     // 주문 데이터를 저장하는 상태
     const [order, setOrder] = useState([
@@ -156,8 +154,8 @@ function Customer() {
       };
 
 
-   
-    
+
+
 
 
     return (
@@ -354,10 +352,10 @@ function Customer() {
             </div>
 
 
-            
+
             {/* 여기 아래는 모달이다. */}
             {
-                
+
                 isVisible && (
                     <div class="confirmRegist">
                         <div class="fullBody">
@@ -521,13 +519,13 @@ function Customer() {
                 </div>
             )}
                     </div>
-                    
+
 
                 )
             }
-           
 
-             
+
+
 
 
             {/* 모달창의 끝  */}

@@ -92,7 +92,7 @@ function Order() {
     //고객명 목록 data
     useEffect ( () => {
         let effectCustomer = async() => {
-            let getCustomer = await fetch('/customer/customerList').then(res => res.json());
+            let getCustomer = await fetch('/customer/customerALL').then(res => res.json());
             setMycustomer(getCustomer);
         }
         effectCustomer();
@@ -105,7 +105,6 @@ function Order() {
     const handleChange = (e) => {
         let copy = {...form, [e.target.id]: e.target.value};
         setForm(copy);
-        console.log(copy);
     }
 
 
@@ -276,21 +275,15 @@ function Order() {
                         </button>
                         </th>
                         <th>
-                        결재 제목
-                        <button className="sortBtn" onClick={() => sortData('title')}>
-                        {sortConfig.key === 'title' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                        </button>
-                        </th>
-                        <th>
-                        주문 내역
-                        <button className="sortBtn" onClick={() => sortData('details')}>
-                        {sortConfig.key === 'details' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                        </button>
-                        </th>
-                        <th>
                         담당자명
                         <button className="sortBtn" onClick={() => sortData('manager')}>
                         {sortConfig.key === 'manager' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                        </button>
+                        </th>
+                        <th>
+                        고객명
+                        <button className="sortBtn" onClick={() => sortData('customer')}>
+                        {sortConfig.key === 'customer' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                         </button>
                         </th>
                         <th>
@@ -305,6 +298,13 @@ function Order() {
                         {sortConfig.key === 'date' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                         </button>
                         </th>
+                        <th>
+                        주문 상세
+                        <button className="sortBtn" onClick={() => sortData('details')}>
+                        {sortConfig.key === 'details' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                        </button>
+                        </th>
+
 
                     </tr>
                     </thead>
@@ -328,7 +328,7 @@ function Order() {
                                 <td className="ellipsis">{item.details}</td>
                                 <td>{item.manager}</td>
                                 <td>{item.status}</td>
-                                <td>{item.date}</td>
+                                <td><button className="btn-common"> 상세보기 </button> </td>
                                 {/*<td>{item.prodName}</td>*/}
                                 </tr>
                         ))
@@ -360,10 +360,11 @@ function Order() {
 
                                 <div class="btns">
                                     <div class="btn-add2">
-                                        <button> 등록하기</button>
+                                            <button> 임시저장 </button>
+
                                     </div>
                                     <div class="btn-close">
-
+                                          <button> 등록하기</button>
                                     </div>
                                 </div>
                             </div>
@@ -399,14 +400,7 @@ function Order() {
                                 </table>
 
 
-                                 <div className="btn-add">
-                                                                  <button id="downloadCsv" className="btn-CSV">CSV 샘플 양식</button>
-                                                                  <button id="uploadCsv" className="btn-CSV" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
-                                                                  {isVisibleCSV && (
-                                                                      <input type="file" id="uploadCsvInput" accept=".csv"/>)}
 
-
-                                                              </div>
                             </div>
 
                             <div className="bookSearchBox">
@@ -414,17 +408,15 @@ function Order() {
                                 <input type="text" />
                                 <button type="button" className="btn-common">추가</button>
                             </div>
-                                <div className="bookResultList">
-                                    <ul>
-                                    <li> <p> 신서유기 </p> </li>
-                                    <li> <p> 신서유기 </p></li>
-                                    <li> <p> 신서유기 </p></li>
-                                    <li> <p> 신서유기 </p></li>
-                                    <li> <p> 신서유기 </p></li>
-
-
-                                    </ul>
-                                </div>
+                            <div className="bookResultList">
+                                <ul>
+                                {mycustomer.map((customer) => (
+                                    <li key={customer.customerNo}>
+                                    {customer.customerName}
+                                    </li>
+                                ))}
+                                </ul>
+                            </div>
                             </div>
 
 
@@ -464,86 +456,20 @@ function Order() {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                    </div>
-                </div>
 
-            )}
-            {/* 모달창의 끝  */}
-
- {isModifyModalVisible && (
-
-      <div class="confirmRegist">
-                        <div class="fullBody">
-                            <div class="form-container">
-                                <button className="close-btn" onClick={handleModifyCloseClick}> &times;
-                                </button>
-                                <div class="form-header">
-                                    <h1>주문 상세보기</h1>
-
-
-                                </div>
-
-                                {/*주문정보-헤더*/}
-                                <div class="RegistForm">
-                                    <table class="formTable">
-
-                                        <tr>
-
-                                            <th colspan="1"><label for="">고객사 명</label></th>
-                                            <td colspan="3">
-                                            <select>
-                                            <option>선택</option>
-                                            </select></td>
-
-                                            <th colspan="1"><label for="">납품 요청일</label></th>
-                                            <td colspan="3"><input type="date" placeholder="필드 입력"/></td>
-
-                                        </tr>
-
-
-                                        <tr>
-                                            <th colspan="1"><label for="">담당자명</label></th>
-                                            <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
-
-
-                                            <th colspan="1"><label for="">결재자</label></th>
-                                            <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
-
-                                        </tr>
-
-                                        <tr>
-                                            <th colspan="1"><label for="">결재상태</label></th>
-                                            <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
-
-
-                                            <th colspan="1"><label for="">결재일자</label></th>
-                                            <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
-
-                                        </tr>
-
-                                    </table>
-
-
-
-                                </div>
-
-
-
-
-                                <div class="RegistFormList">
+                        <div class="RegistFormList">
                                     <div style={{fontWeight: 'bold'}}> 총 N 건</div>
                                     <table class="formTableList">
                                         <thead>
                                             <tr>
                                                 <th><input type="checkbox"/></th>
                                                 <th>no</th>
-                                                <th>상품 종류</th>
-                                                <th>상품 명</th>
-                                                <th>상품 수량</th>
-                                                <th>총 액</th>
-                                                <th>판매시작날짜</th>
-                                                <th>판매종료날짜</th>
+                                                <th>2상품 종류</th>
+                                                <th>2상품 명</th>
+                                                <th>2상품 수량</th>
+                                                <th>2총 액</th>
+                                                <th>2판매시작날짜</th>
+                                                <th>2판매종료날짜</th>
 
                                             </tr>
                                         </thead>
@@ -566,9 +492,215 @@ function Order() {
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
+
+
                         </div>
+
+
+
                     </div>
+                </div>
+
+            )}
+            {/* 모달창의 끝  */}
+
+ {isModifyModalVisible && (
+
+
+        <div className="confirmRegist">
+                           <div className="fullBody">
+                               <div className="form-container">
+                                   <button className="close-btn" onClick={handleModifyCloseClick}> &times; </button>
+                                   <div className="form-header">
+                                       <h1>상세 조회</h1>
+                                       <div className="btns">
+                                           <div className="btn-add">
+                                               <button type="button">수정하기</button>
+                                               {/* Changed type to "button" */}
+                                           </div>
+                                       </div>
+                                   </div>
+                                   <form className="RegistForm">
+                                       <table className="formTable">
+                                           <tbody>
+                                           <tr>
+                                               <th colSpan=""><label htmlFor="confirmTitle">주문번호</label></th>
+                                               <td colSpan="">
+                                                   <input
+                                                       type="text"
+                                                   />
+                                               </td>
+                                                <th colSpan=""><label htmlFor="confirmTitle">작성일</label></th>
+                                              <td colSpan="">
+                                                  <input
+                                                      type="text"
+                                                  />
+                                              </td>
+                                               <th colSpan=""><label htmlFor="customerName">고객명</label></th>
+                                               <td colSpan="">
+                                                   <input
+
+                                                       placeholder="필드 입력"
+                                                   />
+                                               </td>
+                                               <th colSpan=""><label htmlFor="picName">담당자명</label></th>
+                                               <td colSpan="">
+                                                   <input
+                                                       type="text"
+                                                       name="employeeName"
+
+                                                       placeholder="필드입력"
+                                                   />
+                                               </td>
+
+
+
+                                           </tr>
+
+
+
+                                           <tr>
+
+
+
+                                               <th colSpan=""><label htmlFor="productType">상품종류</label></th>
+                                               <td  colSpan="">
+                                                   <select
+                                                       name="productType"
+
+                                                   >
+                                                       <option value="도서">도서</option>
+                                                       <option value="MD">MD</option>
+                                                       <option value="기타">기타</option>
+                                                   </select>
+                                               </td>
+                                               <th colSpan=""><label htmlFor="productName">상품명</label></th>
+                                               <td colSpan="">
+                                                   <input
+                                                       type="text"
+                                                       name="productName"
+
+                                                       placeholder="필드 입력"
+                                                   />
+                                               </td>
+                                               <th colSpan="" ><label htmlFor="qty">상품수량</label></th>
+                                               <td colSpan="" >
+                                                   <input
+                                                       type="text"
+                                                       name="orderQty"
+
+                                                       placeholder="필드 입력"
+                                                   />
+                                               </td>
+                                           </tr>
+                                           <tr>
+                                               <th colSpan=""><label htmlFor="customPrice">판매가</label></th>
+                                               <td colSpan="">
+                                                   <input
+                                                       type="text"
+                                                       name="customPrice"
+
+                                                       placeholder="필드 입력"
+                                                   />
+                                               </td>
+                                               <th colSpan=""><label htmlFor="totalAmount">총 금액</label></th>
+                                               <td colSpan="">
+                                                   <input
+                                                       type="text"
+                                                       name="totalAmount"
+
+                                                       placeholder="필드 입력"
+                                                   />
+                                               </td>
+                                               <th colSpan=""><label htmlFor="delDate">납품 요청일</label></th>
+                                               <td colSpan="">
+                                                   <input
+                                                       type="date"
+                                                       name="delDate"
+
+                                                   />
+                                               </td>
+                                           </tr>
+
+
+                                           </tbody>
+                                       </table>
+
+                                         <table className="formTable2">
+
+                                           <tr >
+                                               <th colSpan="1"><label htmlFor="approver">결재자</label></th>
+                                               <td colSpan="3">
+                                                   <input
+                                                       type="text"
+                                                       name="approver"
+
+                                                       placeholder="필드 입력"
+                                                   />
+                                               </td>
+                               <th colSpan="1"> <label htmlFor="approvalStatus">결재 여부</label> </th>
+
+                                  <td colSpan="3">
+                                     <select
+                                         name="confirmStatus">
+                                         <option value="pending">대기</option>
+                                         <option value="approved">승인</option>
+                                         <option value="rejected">반려</option>
+                                     </select>
+                                 </td>
+                                 </tr>
+
+                                           <tr>
+                                           <th colSpan="1"><label htmlFor="remarks">반려사유</label></th>
+                                              <td colSpan="8">
+                                                  <textarea>  </textarea>
+                                              </td>
+                                           </tr>
+
+
+                                         </table>
+
+
+
+
+
+                                   </form>
+
+                                   <div className="RegistFormList">
+                                       <div style={{fontWeight: 'bold'}}> 총  건</div>
+                                       <table className="formTableList">
+                                           <thead>
+                                           <tr>
+                                               <th><input type="checkbox"
+                                                          /></th>
+                                               <th>No</th>
+                                               <th>고객명</th>
+                                               <th>상품 종류</th>
+                                               <th>상품명</th>
+                                               <th>상품 수량</th>
+                                               <th>판매가</th>
+                                               <th>총 금액</th>
+                                               <th>납품 요청일</th>
+                                               <th>담당자</th>
+                                           </tr>
+                                           </thead>
+                                           <tbody>
+
+                                           <tr style={{fontWeight: 'bold'}}>
+                                               <td colSpan="8"> 합계</td>
+                                               <td colSpan="2">
+
+                                               </td>
+                                           </tr>
+                                           </tbody>
+                                       </table>
+                                       {showDelete && (
+                                           <button className='delete-btn' onClick={handleDelete}>삭제</button>
+                                       )}
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
 
             )}
 

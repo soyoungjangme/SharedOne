@@ -3,6 +3,9 @@ import './Confirm.css';
 import './modal_confirm1.css';
 import useCheckboxManager from '../js/CheckboxManager';
 
+import '../confirm/modal_confirm1.css';
+
+
 const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem}) => {
     const initialFormData = {
         confirmNo: '',
@@ -17,14 +20,12 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
         approver: '',
         confirmStatus: '대기',
         remarks: '',
+        confirmTitle: '',
         confirmRegDate: new Date().toISOString().split('T')[0]
     };
 
 
     const [formData, setFormData] = useState(initialFormData);
-    const [formList, setFormList] = useState([]);
-    const [isVisibleCSV, setIsVisibleCSV] = useState(false);
-
     const {
         allCheck,
         checkItem,
@@ -33,19 +34,16 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
         handleCheckboxChange,
         handleDelete: handleDeleteItems
     } = useCheckboxManager();
-    //
-    // const handleDelete = () => {
-    //     const newFormList = formList.filter((_, index) => !checkItem[index]);
-    //     setFormList(newFormList);
-    // };
 
+    const [formList, setFormList] = useState([]);
+    const [isVisibleCSV, setIsVisibleCSV] = useState(false);
 
     useEffect(() => {
         if (selectedItem) {
             setFormData(selectedItem);
             setFormList([selectedItem]);
         } else {
-            setFormData(initialFormData);
+            setFormData(formData);
             setFormList([]);
         }
     }, [selectedItem]);
@@ -109,13 +107,22 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                                     </div>
                                 </div>
                             </div>
-
                             <form onSubmit={(e) => e.preventDefault()} className="RegistForm">
                                 <table className="formTable">
                                     <tbody>
                                     <tr>
+                                        <th colSpan="1"><label htmlFor="confirmTitle">제목</label></th>
+                                        <td colSpan="2">
+                                            <input
+                                                type="text"
+                                                name="confirmTitle"
+                                                value={formData.confirmTitle}
+                                                onChange={handleInputChange}
+                                                placeholder="필드 입력"
+                                            />
+                                        </td>
                                         <th colSpan="1"><label htmlFor="customerName">고객명</label></th>
-                                        <td colSpan="3">
+                                        <td colSpan="2">
                                             <input
                                                 type="text"
                                                 name="customerName"
@@ -125,11 +132,11 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                                             />
                                         </td>
                                         <th colSpan="1"><label htmlFor="picName">담당자명</label></th>
-                                        <td colSpan="3">
+                                        <td colSpan="2">
                                             <input
                                                 type="text"
-                                                name="picName"
-                                                value={formData.picName}
+                                                name="employeeName"
+                                                value={formData.employeeName}
                                                 onChange={handleInputChange}
                                                 placeholder="필드입력"
                                             />
@@ -162,8 +169,8 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                                         <td>
                                             <input
                                                 type="text"
-                                                name="qty"
-                                                value={formData.qty}
+                                                name="orderQty"
+                                                value={formData.orderQty}
                                                 onChange={handleInputChange}
                                                 placeholder="필드 입력"
                                             />
@@ -214,8 +221,8 @@ const ConfirmModal = ({openModal, handleCloseClick, selectedItem, onUpdateItem})
                                         <th><label htmlFor="approvalStatus">결재 여부</label></th>
                                         <td>
                                             <select
-                                                name="approvalStatus"
-                                                value={formData.approvalStatus}
+                                                name="confirmStatus"
+                                                value={formData.confirmStatus}
                                                 onChange={handleInputChange}
                                             >
                                                 <option value="pending">대기</option>
