@@ -73,7 +73,10 @@ function useCheckboxManager() {
         showDelete,
         handleMasterCheckboxChange,
         handleCheckboxChange,
-        handleDelete
+        handleDelete,
+        setCheckItem,
+        setAllCheck,
+        setShowDelete
     };
 }
 
