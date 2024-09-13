@@ -16,4 +16,5 @@ public interface EmployeeService {
   public void employeeRegistTest( List<EmployeeTestDTO> dto);
   public void employeeUpdateTest(EmployeeTestDTO dto);
   public void employeeDeleteTest(List<String> employeeIds);
+  public boolean employeeIdCheck(EmployeeDTO dto);
 }
