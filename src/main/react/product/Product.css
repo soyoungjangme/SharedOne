@@ -347,7 +347,7 @@ select {
     width: 55px; /* 셀렉트 박스의 너비 설정 */
     height: 25px;
 }
-
+/* 
 .filter-input-group {
     display: flex;
     flex-direction: column; 
@@ -362,7 +362,7 @@ select {
 .filter-input-wrapper {
     display: flex;
     align-items: center;
-}
+} */
 
 
 .product-register-btn:hover,
