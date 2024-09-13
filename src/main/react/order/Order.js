@@ -190,7 +190,6 @@ function Order() {
 
     /*---------------주문 등록 끝---------------*/
 
-
 // ---  모달창 띄우는 스크립트
     const [isVisibleDetail, setIsVisibleDetail] = useState(false);
 
@@ -219,28 +218,48 @@ function Order() {
         setIsVisible(false);
     };
 
-    const [modifyItem, setModifyItem] = useState([
-        {
-            orderNo: 0,
-            title: '',
-            details: '',
-            manager: '',
-            status: '',
-            date: ''
-        }
-    ]);
 
+
+/* 아래부터는 상세보기 관련된 모든 것 */
+    const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
 
+    /*상세보기 창 열기*/
     const handleModify = (item) => {
+        setSelectedOrder(item);
         setIsModifyModalVisible(true);
+    };
 
-    }
+    /*창 닫기*/
     const handleModifyCloseClick = () => {
         setIsModifyModalVisible(false);
     }
 
-// --- 모달창 띄우는 스크립트
+    /*입력값 변동사항 있을 시*/
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setSelectedOrder(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    /*변동사항 update 처리*/
+    const handleSaveChange = async () => {
+        try {
+            // API 호출로 수정된 정보 저장
+            const response = await axios.put(`/order-detail/${selectedOrder.orderNo}`, selectedOrder);
+            if (response.status === 200) {
+                alert('주문 정보가 성공적으로 수정되었습니다.');
+                setIsModifyModalVisible(false);
+                // 주문 목록 새로고침
+                effectOrder();
+            }
+        } catch (error) {
+            console.error('주문 수정 중 오류 발생:', error);
+            alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
+        }
+    };
 
 
 
@@ -385,7 +404,8 @@ function Order() {
                                 <td className="ellipsis">{item.customerN}</td>
                                 <td>{item.status}</td>
                                 <td>{item.date}</td>
-                                <td><button className="btn-common"> 상세보기 </button> </td>
+                                    {/*버튼도 더블 클릭해야 상세보기 창이 열려서 수정함 - ysh*/}
+                                <td><button className="btn-common" onClick={() => handleModify(item)}> 상세보기 </button> </td>
                                 {/*<td>{item.prodName}</td>*/}
                                 </tr>
                         ))
@@ -558,8 +578,8 @@ function Order() {
             )}
             {/* 모달창의 끝  */}
 
+{/* 상세 보기 모달창 - 선화*/}
  {isModifyModalVisible && (
-
 
         <div className="confirmRegist">
                            <div className="fullBody">
@@ -578,55 +598,49 @@ function Order() {
                                        <table className="formTable">
                                            <tbody>
                                            <tr>
+                                               {/*상품 종류 없애고 배치 살짝 바꿈 1 - ysh*/}
                                                <th colSpan=""><label htmlFor="confirmTitle">주문번호</label></th>
                                                <td colSpan="">
                                                    <input
                                                        type="text"
+                                                       name="orderNo"
+                                                       value={selectedOrder.orderNo}
+                                                       readOnly  // 주문번호는 수정 불가능하게 유지
                                                    />
                                                </td>
-                                                <th colSpan=""><label htmlFor="confirmTitle">작성일</label></th>
-                                              <td colSpan="">
-                                                  <input
-                                                      type="text"
-                                                  />
-                                              </td>
-                                               <th colSpan=""><label htmlFor="customerName">고객명</label></th>
+                                               <th colSpan=""><label htmlFor="confirmTitle">주문 등록일</label></th>
                                                <td colSpan="">
                                                    <input
-
-                                                       placeholder="필드 입력"
+                                                       type="date"
+                                                       name="date"
+                                                       value={selectedOrder.date}
+                                                       onChange={handleInputChange}
                                                    />
                                                </td>
                                                <th colSpan=""><label htmlFor="picName">담당자명</label></th>
                                                <td colSpan="">
                                                    <input
                                                        type="text"
-                                                       name="employeeName"
-
-                                                       placeholder="필드입력"
+                                                       name="manager"
+                                                       value={selectedOrder.manager}
+                                                       onChange={handleInputChange}
                                                    />
                                                </td>
-
 
 
                                            </tr>
 
 
-
                                            <tr>
-
-
-
-                                               <th colSpan=""><label htmlFor="productType">상품종류</label></th>
-                                               <td  colSpan="">
-                                                   <select
-                                                       name="productType"
-
-                                                   >
-                                                       <option value="도서">도서</option>
-                                                       <option value="MD">MD</option>
-                                                       <option value="기타">기타</option>
-                                                   </select>
+                                               {/*상품 종류 없애고 배치 살짝 바꿈2 - ysh*/}
+                                               <th colSpan=""><label htmlFor="customerName">고객명</label></th>
+                                               <td colSpan="">
+                                                   <input
+                                                       type="text"
+                                                       name="customerN"
+                                                       value={selectedOrder.customerN}
+                                                       onChange={handleInputChange}
+                                                   />
                                                </td>
                                                <th colSpan=""><label htmlFor="productName">상품명</label></th>
                                                <td colSpan="">
@@ -637,8 +651,8 @@ function Order() {
                                                        placeholder="필드 입력"
                                                    />
                                                </td>
-                                               <th colSpan="" ><label htmlFor="qty">상품수량</label></th>
-                                               <td colSpan="" >
+                                               <th colSpan=""><label htmlFor="qty">상품수량</label></th>
+                                               <td colSpan="">
                                                    <input
                                                        type="text"
                                                        name="orderQty"
@@ -682,46 +696,46 @@ function Order() {
 
                                          <table className="formTable2">
 
-                                           <tr >
-                                               <th colSpan="1"><label htmlFor="approver">결재자</label></th>
-                                               <td colSpan="3">
-                                                   <input
-                                                       type="text"
-                                                       name="approver"
+                                             <tr>
+                                                 <th colSpan="1"><label htmlFor="approver">결재자</label></th>
+                                                 <td colSpan="3">
+                                                     <input
+                                                         type="text"
+                                                         name="approver"
 
-                                                       placeholder="필드 입력"
-                                                   />
-                                               </td>
-                               <th colSpan="1"> <label htmlFor="approvalStatus">결재 여부</label> </th>
+                                                         placeholder="필드 입력"
+                                                     />
+                                                 </td>
+                                                 <th colSpan="1"><label htmlFor="approvalStatus">결재 여부</label></th>
+                                                 <td colSpan="">
+                                                     <select
+                                                         name="status"
+                                                         value={selectedOrder.status}
+                                                         onChange={handleInputChange}
+                                                     >
+                                                         <option value="임시저장">임시저장</option>
+                                                         <option value="대기">대기</option>
+                                                         <option value="승인">승인</option>
+                                                         <option value="반려">반려</option>
+                                                     </select>
+                                                 </td>
+                                             </tr>
 
-                                  <td colSpan="3">
-                                     <select
-                                         name="confirmStatus">
-                                         <option value="pending">대기</option>
-                                         <option value="approved">승인</option>
-                                         <option value="rejected">반려</option>
-                                     </select>
-                                 </td>
-                                 </tr>
-
-                                           <tr>
-                                           <th colSpan="1"><label htmlFor="remarks">반려사유</label></th>
-                                              <td colSpan="8">
-                                                  <textarea>  </textarea>
-                                              </td>
-                                           </tr>
+                                             <tr>
+                                                 <th colSpan="1"><label htmlFor="remarks">비고</label></th>
+                                                 <td colSpan="8">
+                                                     <textarea>  </textarea>
+                                                 </td>
+                                             </tr>
 
 
                                          </table>
 
 
-
-
-
                                    </form>
 
                                    <div className="RegistFormList">
-                                       <div style={{fontWeight: 'bold'}}> 총  건</div>
+                                       <div style={{fontWeight: 'bold'}}> 총 건</div>
                                        <table className="formTableList">
                                            <thead>
                                            <tr>
@@ -729,7 +743,6 @@ function Order() {
                                                           /></th>
                                                <th>No</th>
                                                <th>고객명</th>
-                                               <th>상품 종류</th>
                                                <th>상품명</th>
                                                <th>상품 수량</th>
                                                <th>판매가</th>
