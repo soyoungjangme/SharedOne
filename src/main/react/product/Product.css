@@ -347,3 +347,27 @@ select {
     width: 55px; /* 셀렉트 박스의 너비 설정 */
     height: 25px;
 }
+
+.filter-input-group {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 5px;
+}
+
+.filter-input-group select {
+    height: 25px;
+}
+
+.filter-input-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+
+.product-register-btn:hover,
+.product-add-btn:hover,
+.delete-btn-main:hover,
+.delete-btn-modal:hover {
+    background-color: #0056b3;
+}
