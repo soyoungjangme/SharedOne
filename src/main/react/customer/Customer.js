@@ -69,7 +69,6 @@ function Customer() {
         }));
     };
 
-
     // 검색 리스트
     const handleSearchCustomer = () => {
         if (customerSearch) {
@@ -170,6 +169,8 @@ function Customer() {
         }
     };
 
+
+    // 참고용 코드
     //    const onClickRegistBtn = () => {
     //           setCustomerRegist(list);
     //           setList([]);
@@ -244,6 +245,7 @@ function Customer() {
         }
     );
 
+    //업데이트 기능
     const handleUpdateClick = () => {
         console.log(modifyItem);
         axios.post('/customer/customerUpdate', modifyItem, {
@@ -294,6 +296,8 @@ function Customer() {
         setCheckedIds(ids);
     }, [checkItem]);
 
+
+    //삭제 기능
     const handleDeleteClick = () => {
         axios.post('/customer/customerDelete', checkedIds, {
             headers: {
@@ -309,9 +313,7 @@ function Customer() {
             });
     }
 
-
     return (
-
         <div className='fade_effect'>
             <h1><i class="bi bi-person-lines-fill"></i> 직원 관리 </h1>
             <div className="main-container">
@@ -353,7 +355,7 @@ function Customer() {
                                 <label className="filter-label" htmlFor="picName">담당자명</label>
                                 <input className="filter-input" type="text" id="picName" placeholder="" onChange={handleInputChange} value={customerSearch.picName} required />
                             </div>
-                            
+
                             <div className="filter-row">
                                 <label className="filter-label" htmlFor="picEmail">담당자 이메일</label>
                                 <input className="filter-input" type="text" id="picEmail" placeholder="담당자 이메일" onChange={handleInputChange} value={customerSearch.picName} required />
@@ -392,10 +394,7 @@ function Customer() {
 
                         </div>
                     </div>
-
-
                 </div>
-
 
                 <button className="btn-common add" type="button" onClick={handleAddClick}>
                     고객 등록
@@ -721,8 +720,6 @@ function Customer() {
             {isVisibleDetail && (
                 <div> 추가 모달창  </div>
             )}
-
-
         </div>
 
     );
