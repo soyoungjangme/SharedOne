@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
-//  @Query("select e from Customer e order by e.employeeId desc")
-//  List<Customer> getListDesc();
+
+
 
 }

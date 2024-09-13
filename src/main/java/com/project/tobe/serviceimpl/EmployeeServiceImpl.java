@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -92,12 +93,24 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
 
 
+  // 아이디 중복 검사
+  @Override
+  public boolean employeeIdCheck(EmployeeDTO dto) {
+    int result = employeeMapper.employeeIdCheck(dto);
+    System.out.println(result);
+    return result > 0 ;
+  }
+
+
+
   // 수정
   @Override
   public void employeeUpdateTest(EmployeeTestDTO dto) {
 
+    if (dto.getEmployeePw() != null) {
+      dto.setEmployeePw(bCryptPasswordEncoder.encode(dto.getEmployeePw()));
+    }
 
-    dto.setEmployeePw(bCryptPasswordEncoder.encode(dto.getEmployeePw()));
     if (dto.getAuthorityGrade().equals("S")) {
       dto.setEmployeeManagerId(null);
     }
@@ -111,6 +124,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     employeeMapper.employeeDeleteTest(employeeIds);
   }
+
+
 
 
 }

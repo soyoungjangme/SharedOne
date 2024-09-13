@@ -68,13 +68,25 @@ function Employee() {
     };
 
     const {
-        allCheck,
-        checkItem,
-        showDelete,
-        handleMasterCheckboxChange,
-        handleCheckboxChange,
-        handleDelete
-    } = useCheckboxManager();
+          allCheck: allCheckMain,
+          checkItem: checkItemMain,
+          showDelete: showDeleteMain,
+          handleMasterCheckboxChange: handleMasterCheckboxChangeMain,
+          handleCheckboxChange: handleCheckboxChangeMain,
+          handleDelete: handleDeleteMain
+      } = useCheckboxManager();
+
+      const {
+          allCheck: allCheckModal,
+          checkItem: checkItemModal,
+          showDelete: showDeleteModal,
+          handleMasterCheckboxChange: handleMasterCheckboxChangeModal,
+          handleCheckboxChange: handleCheckboxChangeModal,
+          handleDelete: handleDeleteModal,
+          setCheckItem: setCheckItemModal,
+          setAllCheck: setAllCheckModal,
+          setShowDelete: setShowDeleteModal
+      } = useCheckboxManager();
 
     // 메인 리스트
     let [employee, setEmployee] = useState([{
@@ -140,6 +152,13 @@ function Employee() {
         }
     };
 
+        const handleKeyDown = (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // 기본 Enter 동작 방지 (예: 폼 제출)
+                handleSearchEmployee();
+            }
+        };
+
     // 직원 추가  리스트
     const [test, setTest] = useState({
         employeeId: '',
@@ -150,10 +169,12 @@ function Employee() {
         employeeAddr: '',
         residentNum: '',
         hireDate: null,
-        salary: 0,
+        salary: null,
         employeeManagerId: '',
         authorityGrade: ''
     });
+
+
     const [list, setList] = useState([]);
     const [emregist, setEmRegist] = useState([]);
 
@@ -163,40 +184,157 @@ function Employee() {
             ...prevTest,
             [name]: value,
         }));
+
+   if (name === 'employeeId' && value !== test.employeeId) {
+                 setIdResult(false);
+                 setButtonColor('#939393');
+        }
+
         console.log(test);
     };
 
-    // 추가 핸들러
-    const handleInputRegistAdd = (e) => {
-        const { id, value } = e.target;
-        console.log(e.target);
-        // 변경된 필드의 값을 업데이트합니다.
-        setEmRegist((prev) => ({
-            ...prev,
-            [id]: value,
-        }));
-        console.log(emregist);
-    };
+//    // 추가 핸들러
+//    const handleInputRegistAdd = (e) => {
+//        const { id, value } = e.target;
+//        console.log(e.target);
+//        // 변경된 필드의 값을 업데이트합니다.
+//        setEmRegist((prev) => ({
+//            ...prev,
+//            [id]: value,
+//        }));
+//
+//        console.log(emregist);
+//    };
+
+
+
+
+const validateInputs = () => {
+  const { employeeId, residentNum, salary, employeeTel ,authorityGrade, employeeManagerId, employeePw , employeeEmail} = test; // 상태에서 값을 가져옵니다
+
+  if (isObjectEmpty(test)) {
+    alert('모든 값을 입력하세요.');
+    return false;
+  }
+
+  // 아이디 유효성 검사
+  if (employeeId.length < 5) {
+    alert('아이디는 5자 이상 입력해주세요.');
+    return false;
+  }
+
+  // 비밀번호 유효성 검사
+  if (employeePw.length < 5) {
+    alert('비밀번호는 5자 이상 입력해주세요.');
+    return false;
+  }
+
+  // 전화번호 유효성 검사
+  const koreanPhoneRegex = /^(01[016789])-([0-9]{4})-([0-9]{4})$|^(02|0[3-9][0-9])-[0-9]{3,4}-[0-9]{4}$/;
+  if (!koreanPhoneRegex.test(employeeTel)) {
+    alert('전화번호 형식에 맞게 입력하세요. 000-0000-0000');
+    return false;
+  }
+
+  // 아이디 및 비밀번호 문자 검증
+  const validPattern = /^[a-zA-Z0-9!@#$%^&*()_+{}[\]:;"'<>,.?/~`|-]+$/;
+  if (!validPattern.test(employeeId)) {
+    alert('아이디는 대소문자, 숫자, 특수문자만 가능합니다.');
+    return false;
+  }
+  if (!validPattern.test(employeePw)) {
+    alert('비밀번호는 대소문자, 숫자, 특수문자만 가능합니다.');
+    return false;
+  }
+
+  // 주민번호 유효성 검사
+  const residentNumRegex = /^\d{6}-\d{7}$/;
+  if (residentNum.length < 14 || !residentNumRegex.test(residentNum)) {
+    alert('주민번호는 형식에 맞게 입력하세요 000000-0000000');
+    return false;
+  }
+
+  // 이메일 유효성 검사
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(employeeEmail)) {
+    alert('유효한 이메일 주소를 입력해 주세요.');
+    return false;
+  }
+
+
+
+  // 급여 입력값 검사
+  if (!/^[0-9]*$/.test(salary)) {
+    alert('급여란에는 숫자만 입력하세요.');
+    return false;
+  }
+
+  // 중복 확인 검사
+  if (idResult === false) {
+    alert('중복확인을 해주세요.');
+    return false;
+  }
+
+  // 모든 검증 통과 시
+  return true;
+};
+
 
     // 리스트에 입력값 추가 핸들러
     const onClickListAdd = () => {
-        setList((prevList) => [...prevList, test]);
-        setTest({
-            employeeId: '',
-            employeePw: '',
-            employeeName: '',
-            employeeTel: '',
-            employeeEmail: '',
-            employeeAddr: '',
-            residentNum: '',
-            hireDate: null,
-            salary: 0,
-            employeeManagerId: '',
-            authorityGrade: ''
-        }); // 입력값 초기화
-
-        console.log('리스트:', JSON.stringify(list));
+    if (validateInputs()) {
+      setList((prevList) => [...prevList, test]);
+      setTest({
+        employeeId: '',
+        employeePw: '',
+        employeeName: '',
+        employeeTel: '',
+        employeeEmail: '',
+        employeeAddr: '',
+        residentNum: '',
+        hireDate: '',
+        salary: '',
+        employeeManagerId: '',
+        authorityGrade: ''
+      }); // 입력값 초기화
+    }
     };
+
+
+// 아이디 중복 체크
+ const [idResult, setIdResult] = useState(); // 중복 여부 상태
+ const [buttonColor, setButtonColor] = useState('#939393');
+
+  const IdCheck = async () => {
+    try {
+      const response = await axios.post('/employee/employeeIdCheck',test, {
+       headers: { 'Content-Type': 'application/json' }
+      });
+      // 아이디가 사용 가능한지 여부를 서버 응답에서 확인
+        const isAvailable = !response.data;
+         // 서버가 `true` 반환 시 사용 불가, `false` 반환 시 사용 가능
+        console.log(isAvailable);
+        if (isAvailable) {
+        setIdResult(true);
+        alert('사용 가능한 아이디입니다.');
+        setButtonColor('#004e90');
+      } else {
+        setIdResult(false);
+        alert('중복된 아이디입니다.');
+        setButtonColor('#939393');
+      }
+    } catch (error) {
+    }
+  };
+
+
+ const isObjectEmpty = (obj) => {
+    return Object.values(obj).some(value => value === '' || value === null || value === undefined);
+  };
+
+
+
+
 
     const onClickRegistBtn = () => {
         if (list.length > 0) {
@@ -211,44 +349,15 @@ function Employee() {
                 })
                 .then((response) => {
                     setEmployee(response.data); // 서버 응답 데이터로 Customer 상태 업데이트
-                    console.log('등록 성공:', response.data);
                 })
                 .catch((error) => console.error('서버 요청 중 오류 발생', error))
                 .finally(() => setIsVisible(false)); // 요청 완료 후 항상 실행되는 블록
             window.location.reload();
             setList([]); // 기존 목록 초기화
         } else {
-            console.error('등록할 항목이 없습니다');
+            alert('등록할 항목이 없습니다');
         }
     };
-
-    //    const onClickRegistBtn = () => {
-    //           setEmRegist(list);
-    //           setList([]);
-    //       };
-    //
-    //            useEffect(() => {
-    //                                 if (emregist.length > 0) {
-    //                                     axios.post('/Customer/employeeRegist', emregist, {
-    //                                         headers: {
-    //                                             'Content-Type': 'application/json'
-    //                                         }
-    //                                     })
-    //                                     .then(response => setEmployee(response.data))
-    //                                     .catch(error => console.error('서버 요청 중 오류 발생', error));
-    //                                 } else if (emregist.length === 0) {
-    //                                     console.error('등록할 항목이 없습니다');
-    //                                 }
-    //                                 setIsVisible(false);
-    //                             }, [emregist]);
-
-
-
-    // 상태가 업데이트된 후 로그를 출력하기 위한 useEffect
-    //    useEffect(() => {
-    //        console.log('업데이트된 emregist:', JSON.stringify(emregist));
-    //    }, [emregist]);
-
 
 
 
@@ -279,9 +388,11 @@ function Employee() {
     };
     const handleCloseClick = () => {
         setList([]); // 기존 목록 초기화
+        setTest([]);
+            setIdResult(false);
+                setButtonColor('#939393');
         setIsVisible(false);
     };
-
 
 
     // --- 수정 기능
@@ -302,8 +413,6 @@ function Employee() {
     );
 
     const handleUpdateClick = () => {
-        console.log(modifyItem);
-
         axios.post('/employee/employeeUpdate', modifyItem, {
             headers: {
                 'Content-Type': 'application/json'
@@ -324,11 +433,23 @@ function Employee() {
     // 수정 창 모달
     const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
 
-    const handleModify = (item) => {
-        setModifyItem(item);
-        setIsModifyModalVisible(true);
+   const handleModify = (item) => {
+       setModifyItem(prevState => ({
+           employeeId: item.employeeId,
+           employeePw: item.employeePw === prevState.employeePw ? null : item.employeePw, // item.employeePw가 null이 아닌 경우에만 업데이트
+           employeeName: item.employeeName,
+           employeeTel: item.employeeTel,
+           employeeEmail: item.employeeEmail,
+           employeeAddr: item.employeeAddr,
+           residentNum: item.residentNum,
+           hireDate: item.hireDate,
+           salary: item.salary,
+           employeeManagerId: item.employeeManagerId,
+           authorityGrade: item.authorityGrade
+       }));
+       setIsModifyModalVisible(true);
+   };
 
-    }
 
     const handleModifyCloseClick = () => {
         setIsModifyModalVisible(false);
@@ -336,7 +457,6 @@ function Employee() {
 
     const handleModifyItemChange = (e) => {
         let copy = { ...modifyItem, [e.name]: e.value };
-        console.log(modifyItem);
         setModifyItem(copy);
     }
 
@@ -344,24 +464,41 @@ function Employee() {
 
 
     // 삭제 기능
-
-
-
     const [checkedIds, setCheckedIds] = useState([]);
 
     useEffect(() => {
         // 모든 체크된 체크박스를 선택합니다.
         const checkedCheckboxes = Array.from(document.querySelectorAll('input.mainCheckbox:checked'));
-
         // 체크된 체크박스의 ID 값을 배열로 저장합니다.
         const ids = checkedCheckboxes.map(checkbox => checkbox.id);
-
         // 상태를 업데이트하여 배열에 저장합니다.
         console.log(checkedIds);
         setCheckedIds(ids);
-    }, [checkItem]);
+
+    }, [checkItemMain]);
+
+   const [checkedIds2, setCheckedIds2] = useState([]);
+
+useEffect(() => {
+    const checkedCheckboxes = Array.from(document.querySelectorAll('input.mainCheckboxModal:checked'));
+    const ids = checkedCheckboxes.map(checkbox => checkbox.id);
+    setCheckedIds2(ids);
+}, [checkItemModal]);
 
 
+useEffect(() => {
+    console.log("Updated list:", list);
+    console.log("Item IDs:", list.map(item => item.id));
+}, [list]);
+useEffect(() => {
+
+   console.log("Checked IDs:", checkedIds2);
+}, [checkedIds2]);
+
+const handleDeleteClick2 = () => {
+    const updatedList = list.filter(item => checkedIds2.includes(item.id));
+    setList(updatedList);
+};
 
     const handleDeleteClick = () => {
         axios.post('/employee/employeeDelete', checkedIds, {
@@ -376,15 +513,22 @@ function Employee() {
             .catch(error => {
                 console.error('서버 요청 중 오류 발생', error);
             });
+
     }
 
 
+// 긴 글씨 줄이기
   const truncateText = (str, maxLength) => {
     return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
   };
 
+// 비밀번호 변경 버튼
+    const [isVisibleDeleteInput, setIsVisibleDeleteInput] = useState(false);
 
-
+    // Toggle function to show or hide the input field
+    const toggleInput = () => {
+        setIsVisibleDeleteInput(prevIsVisible => !prevIsVisible);
+    };
 
     return (
 
@@ -397,48 +541,49 @@ function Employee() {
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeId" >직원아이디</label>
-                                <input className="filter-input" type="text" id="employeeId" placeholder="" onChange={handleInputChange} value={emSearch.employeeId} required />
+                                <input  onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeId" placeholder="" onChange={handleInputChange} value={emSearch.employeeId} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeName">직원이름</label>
-                                <input className="filter-input" type="text" id="employeeName" placeholder="" onChange={handleInputChange} value={emSearch.employeeName} r required />
+                                <input onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeName" placeholder="" onChange={handleInputChange} value={emSearch.employeeName} r required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeTel">직원전화번호</label>
-                                <input className="filter-input" type="text" id="employeeTel" placeholder="" onChange={handleInputChange} value={emSearch.employeeTel} required />
+                                <input     onKeyDown={handleKeyDown}className="filter-input" type="text" id="employeeTel" placeholder="" onChange={handleInputChange} value={emSearch.employeeTel} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeEmail">직원이메일</label>
-                                <input className="filter-input" type="text" id="employeeEmail" placeholder="" onChange={handleInputChange} value={emSearch.employeeEmail} required />
+                                <input    onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeEmail" placeholder="" onChange={handleInputChange} value={emSearch.employeeEmail} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeAddr">주소</label>
-                                <input className="filter-input" type="text" id="employeeAddr" placeholder="" onChange={handleInputChange} value={emSearch.employeeAddr} required />
+                                <input     onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeAddr" placeholder="" onChange={handleInputChange} value={emSearch.employeeAddr} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="hireDate">입사일</label>
-                                <input className="filter-input" type="text" id="hireDate" placeholder="" onChange={handleInputChange} value={emSearch.hireDate} required />
+                                <input     onKeyDown={handleKeyDown}  className="filter-input" type="date" id="hireDate" placeholder="" onChange={handleInputChange} value={emSearch.hireDate} required />
                             </div>
 
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeManagerId">직속 상사</label>
-                                <input className="filter-input" type="text" id="employeeManagerId" placeholder="" onChange={handleInputChange} value={emSearch.employeeManagerId} required />
+                                <input     onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeManagerId" placeholder="" onChange={handleInputChange} value={emSearch.employeeManagerId} required />
                             </div>
 
                             <div className="filter-item">
                                 <label htmlFor="authorityGrade">권한</label>
                                 <select id="authorityGrade" onChange={handleInputChange} value={emSearch.authorityGrade}>
                                     <option value="">선택하세요</option>
-                                    <option value="S">S</option>
-                                    <option value="A">A</option>
-                                    <option value="B">B</option>
-                                    <option value="C">C</option>
+                                         <option value="S">S</option>
+                                       <option value="A">A</option>
+                                       <option value="B">B</option>
+                                       <option value="C">C</option>
+                                       <option value="D">D</option>
 
                                 </select>
                             </div>
@@ -461,10 +606,10 @@ function Employee() {
                 </button>
 
                 <table className="search-table" style={{ marginTop: "50px" }}>
-                    {showDelete && <button className='delete-btn btn-common' onClick={handleDeleteClick}>삭제</button>}
+                    {showDeleteMain && <button className='delete-btn btn-common' onClick={handleDeleteClick}>삭제</button>}
                     <thead>
                         <tr>
-                            <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange} /></th>
+                            <th><input type="checkbox" checked={allCheckMain} onChange={handleMasterCheckboxChangeMain} /></th>
                             <th> No.</th>
                             <th>직원ID
                                 <button className="sortBtn" onClick={() => sortData('employeeId')}>
@@ -527,11 +672,11 @@ function Employee() {
                     <tbody>
                         {sortedData.length > 0 ? (
                             sortedData.map((item, index) => (
-                                <tr key={index} className={checkItem[index] ? 'selected-row' : ''} onDoubleClick={() => {
+                                <tr key={index} className={checkItemMain[index] ? 'selected-row' : ''} onDoubleClick={() => {
                                     handleModify(item)
                                 }}>
-                                    <td><input className="mainCheckbox" type="checkbox" id={item.employeeId} checked={checkItem[index] || false}
-                                        onChange={handleCheckboxChange} /></td>
+                                    <td><input className="mainCheckbox" type="checkbox" id={item.employeeId} checked={checkItemMain[index] || false}
+                                        onChange={handleCheckboxChangeMain} /></td>
                                     <td style={{ display: 'none' }}>{index}</td>
                                     <td>{index + 1}</td>
 
@@ -591,7 +736,11 @@ function Employee() {
                                         <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeeName" name="employeeName" value={test.employeeName} onChange={handleInputAddChange} /></td>
 
                                         <th colSpan="1"><label htmlFor="customerNo">아이디</label></th>
-                                        <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeeId" name="employeeId" value={test.employeeId} onChange={handleInputAddChange} /></td>
+
+                                        <td colSpan="2"><input style={{  width:'68%'}} type="text" placeholder="필드 입력" id="employeeId" name="employeeId" value={test.employeeId} onChange={handleInputAddChange} />
+                                        <button type="button" onClick={IdCheck} className="checkId"  style={{ backgroundColor: buttonColor }}>  ✔ </button>
+                                        </td>
+
 
                                         <th colSpan="1"><label htmlFor="customerNo">비밀번호</label></th>
                                         <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeePw" name="employeePw" value={test.employeePw} onChange={handleInputAddChange} /></td>
@@ -625,10 +774,11 @@ function Employee() {
                                         <th colSpan="1"><label htmlFor="registEndDate">권한</label></th>
                                         <td colSpan="2">        <select id="authorityGrade" name="authorityGrade" value={test.authorityGrade} onChange={handleInputAddChange}>
                                             <option value="">선택하세요</option>
-                                            <option value="S">S</option>
+                                              <option value="S">S</option>
                                             <option value="A">A</option>
                                             <option value="B">B</option>
                                             <option value="C">C</option>
+                                            <option value="D">D</option>
                                         </select>
 
                                         </td>
@@ -651,11 +801,12 @@ function Employee() {
 
                             <div className="RegistFormList">
                                 <div style={{ fontWeight: 'bold' }}> 총 N 건</div>
+                                  {showDeleteModal && <button className='delete-btn2 btn-common' onClick={handleDeleteClick2}>삭제</button>}
                                 <table className="formTableList">
-                                    <thead>
 
-                                        <tr>
-                                            <th><input type="checkbox" /></th>
+                                        <thead>
+                                            <tr>
+                                            <th><input type="checkbox" checked={allCheckModal} onChange={handleMasterCheckboxChangeModal} /></th>
                                             <th>No.</th>
                                             <th>직원ID</th>
                                             <th>직원PW</th>
@@ -671,10 +822,16 @@ function Employee() {
                                         </tr>
                                     </thead>
                                     <tbody>
+
+
                                         {list.map((item, index) => (
-                                            <tr>
-                                                <td><input type="checkbox" /></td>
-                                                <td key={index}> {index + 1} </td>
+                                            <tr key={index} className={checkItemModal[index] ? 'selected-row' : ''}>
+                                                <td>
+                                                <input className="mainCheckboxModal" type="checkbox" id={item.employeeId} checked={checkItemModal[index] || false}
+                                                                                                                                onChange={handleCheckboxChangeModal} />
+                                                </td>
+                                                <td style={{display : 'none'}}> {index} </td>
+                                                <td> {index + 1} </td>
                                                 <td>{item.employeeId}</td>
                                                 <td>{item.employeePw}</td>
                                                 <td>{item.employeeName}</td>
@@ -726,7 +883,7 @@ function Employee() {
                                             <td><input type="text" id="employeeId" name="employeeId" value={modifyItem.employeeId} onChange={(e) => handleModifyItemChange(e.target)} /></td>
 
                                             <th><label htmlFor="employeePw">비밀번호</label></th>
-                                            <td><input type="text" id="employeePw" name="employeePw" value={modifyItem.employeePw} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <td>  <input  type="text" id="employeePw" name="employeePw" onChange={(e) => handleModifyItemChange(e.target)}/>{/* <button type="button" className="btn-common" onClick={toggleInput}> 비밀번호 변경 </button> */ }</td>
                                         </tr>
                                         <tr>
                                             <th><label htmlFor="employeeTel">연락처</label></th>
@@ -760,6 +917,7 @@ function Employee() {
                                                     <option value="A">A</option>
                                                     <option value="B">B</option>
                                                     <option value="C">C</option>
+                                                    <option value="D">D</option>
                                                 </select>
                                             </td>
                                         </tr>
