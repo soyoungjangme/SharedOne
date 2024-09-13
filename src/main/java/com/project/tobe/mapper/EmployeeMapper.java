@@ -17,5 +17,6 @@ public interface EmployeeMapper {
   public void employeeRegistTest( List<EmployeeTestDTO> dto);
   public void employeeUpdateTest(EmployeeTestDTO dto);
   public void employeeDeleteTest(List<String> employeeIds);
+  public int employeeIdCheck(EmployeeDTO dto);
 }
 
