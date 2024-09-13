@@ -6,6 +6,8 @@ import useCheckboxManager from "../js/CheckboxManager";
 import useSort from '../js/useSort';
 import '../js/modalAdd.css';
 import ModalDetail from '../js/ModalDetail';
+import '../js/Page.css'
+import Pagination from '../js/Pagination';
 
 import {Bar} from 'react-chartjs-2';
 import {
@@ -19,8 +21,7 @@ import {
     LineElement,
     PointElement
 } from 'chart.js';
-import e from "babel-loader/lib/Error";
-import modalDetail from "../js/ModalDetail";
+// import e from "babel-loader/lib/Error";
 
 ChartJS.register(
     BarElement,
@@ -95,6 +96,8 @@ function Price() {
         handleDelete
     } = useCheckboxManager();
 
+    const [pageNation, setPageNation] = useState({pageCount:1, onPageChange: false, currentPage: 0});
+
     const [price, setPrice] = useState([
         {
             priceNo: '',
@@ -150,33 +153,33 @@ function Price() {
     });
     const customerDataList = <datalist id="customerDataList">{customerOptions}</datalist>
 
+    useEffect(() => {
+
+        fetchData();
+        handleSearchBtn();
+
+    }, []); // 컴포넌트가 처음 마운트될 때만 실행
+
     // 서버에서 데이터 가져오기
     const fetchData = async () => {
         try {
             let {data} = await axios('/price/all');
 
-            setPrice(data.priceList); // 데이터를 state에 저장
             setProduct(data.productList);
             setCustomer(data.customerList);
-
-            console.log(data.customerList);
         } catch (error) {
             console.error("데이터를 가져오는 중 오류 발생:", error);
         }
     };
-
-    useEffect(() => {
-
-        fetchData();
-
-    }, []); // 컴포넌트가 처음 마운트될 때만 실행
 
     let [searchPrice, setSearchPrice] = useState({
         registerDate: '',
         productNo: '',
         customerNo: '',
         startDate: '',
-        endDate: ''
+        endDate: '',
+        page: 1,
+        amount: 10
     });
 
     let handleSearchPriceChange = (e) => {
@@ -184,21 +187,36 @@ function Price() {
         setSearchPrice(copy);
     }
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalItems, setTotalItems] = useState(100); // 총 아이템 수
+    const [itemsPerPage, setItemsPerPage] = useState(10); // 페이지당 아이템 수
+    const [pageCount, setPageCount] = useState(10); // 총 페이지 수 계산
+
     const handleSearchBtn = async () => {
-        console.log(JSON.stringify(searchPrice));
         let {data} = await axios.post('/price/search', JSON.stringify(searchPrice), {
             headers: {
                 'content-type': 'application/json',
                 'Accept': 'application/json'
             }
         });
-        console.log(JSON.stringify(data));
-        setPrice(data);
+        setPrice(data.pageData);
+        setCurrentPage(data.page);
+        setTotalItems(data.total);
+        setItemsPerPage(data.pageData.length);
+        setPageCount(data.realEnd);
+
+        console.log(data);
+
 
         if (searchPrice.productNo !== '' && searchPrice.customerNo !== '') {
             setIsChartVisible(true);
         }
     }
+
+    // 페이지 변경 시 호출될 함수
+    const handlePageChange = (selectedPage) => {
+        setCurrentPage(selectedPage.selected + 1); // ReactPaginate는 0부터 시작하므로 +1
+    };
 
     const [isVisibleCSV, setIsVisibleCSV] = useState(false);
 
@@ -289,7 +307,6 @@ function Price() {
                 'Accept': 'application/json'
             }
         }).then(r => {
-            console.log(r);
             setIsModifyModalVisible(false);
             fetchData();
         }) ;
@@ -343,7 +360,6 @@ function Price() {
     }
 
     const handleRegisterAddBtn = async () => {
-        console.log(selectedFiles);
         if (insertPriceList.length === 0 && selectedFiles.length === 0) {
             alert('값을 추가해 주세요');
             return;
@@ -356,7 +372,6 @@ function Price() {
                     'Accept': 'application/json'
                 }
             }).then(r => {
-                console.log(r);
                 setIsVisible(false);
                 fetchData();
             });
@@ -369,15 +384,12 @@ function Price() {
                 formData.append('file', item);
             });
 
-            console.log(typeof formData);
-
             await axios.post('/price/register/csv', formData, {
                 headers : {
                     'content-type': 'multipart/form-data',
                     'Accept': 'application/json'
                 }
             }).then(r => {
-                console.log(r);
                 setIsVisible(false);
                 fetchData();
             });
@@ -596,7 +608,21 @@ function Price() {
                     </tr>
                     </tbody>
                 </table>
+
+                <div className="pageNation">
+                    {/*{pageBody}*/}
+
+                    <Pagination
+                        pageCount={pageCount} // 총 페이지 수
+                        onPageChange={handlePageChange} // 페이지 변경 이벤트 핸들러
+                        currentPage={currentPage} // 현재 페이지
+                        total={totalItems} // 총 아이템 수
+                    />
+                </div>
+
             </div>
+
+
 
             {isVisible && (
                 <div className="confirmRegist">

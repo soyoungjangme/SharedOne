@@ -9,9 +9,13 @@ import com.project.tobe.entity.Customer;
 import com.project.tobe.entity.Product;
 import com.project.tobe.service.PriceService;
 import com.project.tobe.service.ProductService;
+import com.project.tobe.util.PageVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,12 +40,12 @@ public class PriceController {
 
     @GetMapping(PRICE_ALL)
     public Map<String, List<?>> getAllPrice() {
-        List<PriceProductCustomerDTO> priceList = priceService.getPriceProductCustomerDTO(new PriceDTO());
+//        List<PriceProductCustomerDTO> priceList = priceService.getPriceProductCustomerDTO(new PriceDTO());
         List<Product> productList = productService.getProductList();
         List<CustomerDTO> customerList = customerService.getAllList();
 
         Map<String, List<?>> map = new HashMap<>();
-        map.put("priceList", priceList);
+//        map.put("priceList", priceList);
         map.put("productList", productList);
         map.put("customerList", customerList);
 
@@ -51,9 +55,20 @@ public class PriceController {
     }
 
     @PostMapping(value=SEARCH_PRICE , produces = "application/json", consumes = "application/json")
-    public List<PriceProductCustomerDTO> searchPrice(@RequestBody PriceDTO dto) {
-        return priceService.getPriceProductCustomerDTO(dto);
+    public PageVO<PriceProductCustomerDTO> searchPrice(@RequestBody PriceDTO dto) {
+        System.out.println(dto.toString());
+
+        Pageable pageable = PageRequest.of(dto.getPage() - 1, dto.getAmount());
+
+        Page<PriceProductCustomerDTO> page = priceService.getPriceProductCustomerDTO(dto, pageable);
+
+        return new PageVO<>(page);
     }
+
+//    @PostMapping(value=SEARCH_PRICE , produces = "application/json", consumes = "application/json")
+//    public List<PriceProductCustomerDTO> searchPrice(@RequestBody PriceDTO dto) {
+//        return priceService.getPriceProductCustomerDTO(dto);
+//    }
 
 
     @PostMapping(value=REGISTER_PRICE, produces = "application/json", consumes = "application/json")
