@@ -51,6 +51,12 @@ public class EmployeeController {
     employeeService.employeeRegistTest(dto);
   }
 
+
+  @PostMapping("/employeeIdCheck")
+  public boolean employeeIdCheck(@RequestBody EmployeeDTO dto) {
+    return employeeService.employeeIdCheck(dto);
+  }
+
   @PostMapping("/employeeUpdate")
   public void employeeUpdateTest(@RequestBody EmployeeTestDTO dto) {
     System.out.println("등록 예제 컨트롤러");
