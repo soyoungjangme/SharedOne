@@ -29,8 +29,8 @@
             <if test="employeeAddr != '' and employeeAddr != null">
                 AND employee_addr LIKE CONCAT('%', #{employeeAddr}, '%')
             </if>
-            <if test="hireDate != '' and hireDate != null">
-                AND hire_date LIKE CONCAT('%', #{hireDate}, '%')
+            <if test="hireDate != null">
+                AND hire_date = #{hireDate}
             </if>
             <if test="employeeManagerId != '' and employeeManagerId != null">
                 AND employee_manager_id LIKE CONCAT('%', #{employeeManagerId}, '%')
@@ -41,6 +41,11 @@
         </where>
     </select>
 
+    <select id="employeeIdCheck" resultType="int">
+        SELECT COUNT(*)
+        FROM employee
+        WHERE employee_id = #{employeeId}
+    </select>
 
 
     <insert id="employeeRegistTest" parameterType="java.util.List">
@@ -71,7 +76,7 @@
     <update id="employeeUpdateTest" parameterType="com.project.tobe.dto.EmployeeDTO" >
             UPDATE employee
             SET
-            employee_pw = #{employeePw},
+        employee_pw = #{employeePw},
             employee_name = #{employeeName},
             employee_tel = #{employeeTel},
             employee_email = #{employeeEmail},
@@ -86,11 +91,14 @@
 
     <update id="employeeDeleteTest" parameterType="java.util.List">
         UPDATE employee
-        SET empl_yn = 'n'
+        SET empl_yn = 'n',
+            employee_id = CONCAT('del-', employee_id)
         WHERE employee_id IN
         <foreach collection="list" item="employeeId" open="(" separator="," close=")">
             #{employeeId}
         </foreach>
     </update>
+
+
 
 </mapper>
