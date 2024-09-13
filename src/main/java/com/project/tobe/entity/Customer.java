@@ -12,8 +12,15 @@ import javax.persistence.*;
 @Setter
 @Getter
 @ToString
+@SequenceGenerator(
+        name = "seqCustomer",
+        sequenceName = "seq_customer",
+        initialValue = 1,
+        allocationSize = 1
+)
 public class Customer {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqCustomer")
     private Long customerNo;
     private String customerName;
     private String customerAddr;

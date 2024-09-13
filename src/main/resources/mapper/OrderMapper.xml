@@ -7,71 +7,64 @@
 
     <!-- 주문 데이터 조회 -->
     <select id="getOrder" resultMap="OrderH">
-        select list.*, prod.product_no as productNo, prod.product_name as productName
-        from order_body ob
-        join product prod on prod.product_no = ob.product_no
-        join (
-        select
-        cus.customer_name as customerName,
-        cus.customer_no as customerNo,
-        confinfo.*
+        select oh.order_no, c.customer_name, emp.employee_name,
+        oh.confirm_status, oh.reg_date
         from order_header oh
-        join (
-        select emp.employee_name as employeeName,
-        conf.confirm_title as confirmTitle,
-        conf.confirm_content as confirmContent,
-        conf.confirm_status as confirmStatus,
-        conf.confirm_confirm_date as confirmConfirmDate,
-        conf.order_no as orderNo
-        from employee emp
-        join confirm conf on conf.employee_id = emp.employee_id
-        ) confinfo on confinfo.orderNo = oh.order_no
-        join customer cus on cus.customer_no = oh.customer_no
-        ) list on list.orderNo = ob.order_no
-        where list.confirmStatus = '승인'
-        <if test="inputProdNo != null">
-            AND prod.productNo = #{inputProdNo}
-        </if>
-        <if test="inputDate != null">
-            AND list.confirm_confirm_date = #{inputDate}
-        </if>
-        <if test="inputOrderNo != null">
-            AND list.orderNo = #{inputOrderNo}
-        </if>
-        <if test="inputManager != null">
-            AND list.employeeName = #{inputManager}
-        </if>
-        <if test="inputCustomerNo != null">
-            AND list.customerNo = #{inputCustomerNo}
-        </if>
+        join employee emp on emp.employee_id = oh.employee_id
+        join customer c on c.customer_no = oh.customer_no
+        <where>
+            <if test="inputDate != null">
+                and oh.reg_date = #{inputDate}
+            </if>
+            <if test="inputOrderNo != null">
+                and oh.order_no = #{inputOrderNo}
+            </if>
+            <if test="inputState != null">
+                and oh.confirm_status = #{inputState}
+            </if>
+            <if test="inputCustomerNo != null">
+                and c.customer_no = #{inputCustomerNo}
+            </if>
+            <if test="inputManager != null">
+                and emp.employee_name = #{inputManager}
+            </if>
+        </where>
     </select>
 
     <resultMap id="OrderH" type="OrderH">
-        <result column="orderNo" property="orderNo"/>
-        <association property="customer" javaType="Customer">
-            <result column="customerName" property="customerName"/>
+        <result column="order_no" property="orderNo"/> <!-- 주문번호 -->
+        <result column="reg_date" property="regDate"/> <!-- 작성일 -->
+        <result column="confirm_status" property="confirmStatus"/> <!-- 결재상태 -->
+        <association property="employee" javaType="EmployeeDTO">
+            <result column="employee_name" property="employeeName"/> <!-- 담당자명 -->
         </association>
-        <collection property="confirmList" resultMap="Confirm"/>
-        <collection property="orderBList" resultMap="OrderB"/>
-    </resultMap>
-
-    <resultMap id="Confirm" type="Confirm">
-        <result column="confirmTitle" property="confirmTitle"/>
-        <result column="confirmContent" property="confirmContent"/>
-        <result column="confirmStatus" property="confirmStatus"/>
-        <result column="confirmConfirmDate" property="confirmConfirmDate"/>
-        <association property="employee" javaType="Employee">
-            <result column="employeeName" property="employeeName"/>
+        <association property="customer" javaType="CustomerDTO">
+            <result column="customer_name" property="customerName"/> <!-- 고객명 -->
         </association>
     </resultMap>
 
-    <resultMap id="OrderB" type="OrderB">
-        <result column="orderNo" property="orderNo"/>
-        <association property="product" javaType="Product">
-            <result column="productNo" property="productNo"/>
-            <result column="productName" property="productName"/>
+    <!--  주문등록 상품 조회  -->
+    <select id="getPrice" resultMap="PriceDTO">
+        select p.product_no, p.product_name, p.product_writer, p.product_category,
+                price.custom_price, price.start_date, price.end_date
+        from price
+        join product p
+        on p.product_no=price.product_no
+        join customer c
+        on c.customer_no=price.customer_no
+        where c.customer_no = #{iocn}
+    </select>
+
+    <resultMap id="PriceDTO" type="PriceDTO">
+        <result column="custom_price" property="customPrice"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <association property="product" javaType="com.project.tobe.entity.Product">
+            <result column="product_no" property="productNo"/>
+            <result column="product_category" property="productCategory"/>
+            <result column="product_name" property="productName"/>
+            <result column="product_writer" property="productWriter"/>
         </association>
     </resultMap>
 
 </mapper>
-

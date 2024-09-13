@@ -7,14 +7,26 @@ import useCheckboxManager from "../js/CheckboxManager";
 
 
 function Product() {
-    const {
-        allCheck,
-        checkItem,
-        showDelete,
-        handleMasterCheckboxChange,
-        handleCheckboxChange,
-        handleDelete
-    } = useCheckboxManager(setProduct);
+        const {
+            allCheck: allCheckMain,
+            checkItem: checkItemMain,
+            showDelete: showDeleteMain,
+            handleMasterCheckboxChange: handleMasterCheckboxChangeMain,
+            handleCheckboxChange: handleCheckboxChangeMain,
+            handleDelete: handleDeleteMain
+        } = useCheckboxManager();
+    
+        const {
+            allCheck: allCheckModal,
+            checkItem: checkItemModal,
+            showDelete: showDeleteModal,
+            handleMasterCheckboxChange: handleMasterCheckboxChangeModal,
+            handleCheckboxChange: handleCheckboxChangeModal,
+            handleDelete: handleDeleteModal,
+            setCheckItem: setCheckItemModal,
+            setAllCheck: setAllCheckModal,
+            setShowDelete: setShowDeleteModal
+        } = useCheckboxManager();
 
     const [product, setProduct] = useState([]); // 리스트 데이터를 저장할 state
 
@@ -37,32 +49,49 @@ function Product() {
 
 
 
-    // ========================= 테이블 정렬 부분 =========================
-    // 상품 데이터를 저장하는 상태
-    const [order, setOrder] = useState([]); // 리스트 데이터를 저장할 state
+  // ========================= 테이블 정렬 부분 =========================
+const [order, setOrder] = useState([]); // 메인 리스트 데이터를 저장할 state
+const [modalOrder, setModalOrder] = useState([]); // 모달 리스트 데이터를 저장할 state
+const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
+const [modalSortConfig, setModalSortConfig] = useState({ key: '', direction: 'ascending' }); // 모달 정렬 상태와 방향을 저장하는 상태
 
-
-    // 정렬 상태와 방향을 저장하는 상태
-    const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
-
-    // 정렬 함수
-    const sortData = (key) => {
-        let direction = 'ascending';
-        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-            direction = 'descending';
+// 메인 테이블 정렬 함수
+const sortData = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+        direction = 'descending';
+    }
+    const sortOrder = [...order].sort((a, b) => {
+        if (a[key] < b[key]) {
+            return direction === 'ascending' ? -1 : 1;
         }
-        const sortOrder = [...order].sort((a, b) => { //order배열 정렬(매개변수 비교)
-            if (a[key] < b[key]) { // key는 변수명임 (ex. orderNo, manage, title ...)
-                return direction === 'ascending' ? -1 : 1; //
-            }
-            if (a[key] > b[key]) {
-                return direction === 'ascending' ? 1 : -1;
-            }
-            return 0;
-        });
-        setOrder(sortOrder);
-        setSortConfig({ key, direction });
-    };
+        if (a[key] > b[key]) {
+            return direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+    });
+    setOrder(sortOrder);
+    setSortConfig({ key, direction });
+};
+
+// 모달 테이블 정렬 함수
+const sortModalData = (key) => {
+    let direction = 'ascending';
+    if (modalSortConfig.key === key && modalSortConfig.direction === 'ascending') {
+        direction = 'descending';
+    }
+    const sortOrder = [...modalOrder].sort((a, b) => {
+        if (a[key] < b[key]) {
+            return direction === 'ascending' ? -1 : 1;
+        }
+        if (a[key] > b[key]) {
+            return direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+    });
+    setModalOrder(sortOrder);
+    setModalSortConfig({ key, direction });
+};
 
 
 
@@ -96,15 +125,15 @@ function Product() {
         setVisibleCount(count);
     }, [order]);
 
-    const handleDeleteClick = async () => {
+    const handleDeleteClickMain = async () => {
         if (!confirm('선택한 상품을 삭제하시겠습니까?')) {
             return;
         }
 
         try {
             // 체크된 항목의 인덱스를 추출하여 삭제할 인덱스 배열로 변환
-            const itemsToDelete = Object.keys(checkItem)
-                .filter(id => checkItem[id])
+            const itemsToDelete = Object.keys(checkItemMain)
+                .filter(id => checkItemMain[id])
                 .map(id => parseInt(id) - 1);
 
             console.log("삭제할 항목 인덱스:", itemsToDelete);
@@ -144,40 +173,64 @@ function Product() {
 
     // ========================= 상품 조회 부분 =========================
 
+
     // 검색 필터의 상태 관리
     const [filters, setFilters] = useState({
         productName: '',
         productWriter: '',
         productCategory: '',
-        productPrice: ''
+        productPrice: '',
     });
 
-    // 검색 필터 핸들러
     const handleFilterChange = (e) => {
         const { id, value } = e.target;
-        setFilters(prevFilters => ({
-            ...prevFilters,
-            [id]: value
-        }));
+
+        // 상품원가 입력값이 음수일 경우 처리
+        if (id === 'productPrice' && value < 0) {
+            setFilters(prevFilters => ({
+                ...prevFilters,
+                [id]: 0 // 음수를 입력하면 0으로 변경
+            }));
+        } else {
+            setFilters(prevFilters => ({
+                ...prevFilters,
+                [id]: value
+            }));
+        }
     };
+
+    // 모든 공백 제거
+    const normalizeString = (str) => str.replace(/\s+/g, ''); 
 
     // 조회 버튼 클릭 시 필터링
     const handleSearch = () => {
+        const normalizedProductName = normalizeString(filters.productName);
+        const normalizedProductWriter = normalizeString(filters.productWriter);
+        const normalizedProductCategory = normalizeString(filters.productCategory);
+        const filterPrice = parseFloat(filters.productPrice);
+
         const filteredData = product.filter(item => {
+            const normalizedItemName = normalizeString(item.productName);
+            const normalizedItemWriter = normalizeString(item.productWriter);
+            const normalizedItemCategory = normalizeString(item.productCategory);
             const itemPrice = parseFloat(item.productPrice);
-            const filterPrice = parseFloat(filters.productPrice);
+
+            const isPriceMatch = isNaN(filterPrice) ||
+                (filters.priceComparison === 'gte' && itemPrice >= filterPrice) ||
+                (filters.priceComparison === 'lte' && itemPrice <= filterPrice);
 
             return (
-                (!filters.productName || item.productName.includes(filters.productName)) &&
-                (!filters.productWriter || item.productWriter.includes(filters.productWriter)) &&
-                (!filters.productCategory || item.productCategory.includes(filters.productCategory)) &&
-                (isNaN(filterPrice) || itemPrice >= filterPrice)
+                (!normalizedProductName || normalizedItemName.includes(normalizedProductName)) &&
+                (!normalizedProductWriter || normalizedItemWriter.includes(normalizedProductWriter)) &&
+                (!normalizedProductCategory || normalizedItemCategory.includes(normalizedProductCategory)) &&
+                isPriceMatch
             );
-
-
         });
+
+        //if(filteredData.length === 0) alert("등록된 상품이 없습니다.");
         setOrder(filteredData);
     };
+
 
 
 
@@ -196,10 +249,20 @@ function Product() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setProductForm({
-            ...productForm,
-            [name]: value
-        });
+
+        // 상품원가 입력값이 음수일 경우처리
+        if(name === 'productPrice' && value < 0) {
+            setProductForm({
+                ...productForm,
+                [name]: 0 //음수 입력하면 0으로 바뀜
+            });
+        } else {
+            setProductForm({
+                ...productForm,
+                [name]: value
+            });
+        }
+       
     };
 
     const handleAddClick = () => {
@@ -219,24 +282,27 @@ function Product() {
         return Object.values(otherFields).every(value => value.trim() !== '');
     };
 
-    // 상품명 중복 체크
+    // 추가한 상품 중복 체크 (상품명으로)
     const isProductNameDuplicate = (name) => {
-        return productList.some(product => product.productName === name);
+        return productList.some(product => normalizeString(product.productName) === normalizeString(name));
     };
 
-    // 화면에 띄워진 상품명과 중복되는지 체크
+    // 등록되어있는 상품과 중복되는지 체크 (상품명으로)
     const isProductNameOnScreen = (name) => {
-        return product.some(product => product.productName === name);
+        return product.some(product =>
+            normalizeString(product.productName) === normalizeString(name) &&
+            product.productYn === 'Y'
+        );
     };
 
     const handleAddProduct = () => {
         if (isFormValid()) {
             if (isProductNameOnScreen(productForm.productName)) {
-                alert('동일한 상품이 이미 등록되어 있습니다.');
+                alert('상품이 이미 등록되어 있습니다.');
                 return;
             }
             if (isProductNameDuplicate(productForm.productName)) {
-                alert('동일한 상품이 이미 추가되어 있습니다.');
+                alert('상품이 이미 추가되어 있습니다.');
                 return;
             }
 
@@ -294,7 +360,38 @@ function Product() {
         }
     };
 
+      //추가한 상품 삭제
+      const handleDeleteClickModal = () => {
+        const itemsToDelete = productList
+            .map((item, index) => ({
+                index: index + 1, // 인덱스는 1부터 시작
+                checked: checkItemModal[index + 1] || false
+            }))
+            .filter(item => item.checked)
+            .map(item => item.index); // 삭제할 인덱스만 추출
+    
+        // 선택된 항목이 없으면 함수 종료
+        if (itemsToDelete.length === 0) {
+            alert('삭제할 항목이 선택되지 않았습니다.');
+            return;
+        }
+    
+        // 확인 대화 상자 표시
+        if (!window.confirm(`${itemsToDelete.length} 개의 항목을 삭제하시겠습니까?`)) {
+            return;
+        }
+    
+        // 화면에서 삭제 처리
+        setProductList(prevList => prevList.filter((_, index) => !itemsToDelete.includes(index + 1)));
+    
+        // 상태 초기화
+        setCheckItemModal({});
+        setAllCheckModal(false);
+        setShowDeleteModal(false);
 
+        alert(itemsToDelete.length + " 선택한 항목이 삭제되었습니다.");
+    };
+    
 
     // ========================= 상품 수정 모달창 =========================
 
@@ -303,7 +400,6 @@ function Product() {
         productWriter: '',
         productCategory: '',
         productPrice: '',
-        productYn: 'Y'
     });
 
     const [originalItem, setOriginalItem] = useState(null);
@@ -321,10 +417,20 @@ function Product() {
 
     const handleModifyItemChange = (e) => {
         const { name, value } = e.target;
-        setModifyItem((prevItem) => ({
-            ...prevItem,
-            [name]: value,
-        }));
+
+        //상품원가 입력값이 음수일 경우
+        if(name === 'productPrice' && value < 0) {
+            setModifyItem((prevItem) => ({
+                ...prevItem,
+                [name]: 0, //음수 입력시 0으로 바뀜
+            }));
+        } else {
+            setModifyItem((prevItem) => ({
+                ...prevItem,
+                [name]: value,
+            }));
+        }
+       
     };
 
     const handleModifySubmit = async () => {
@@ -367,10 +473,15 @@ function Product() {
     };
 
 
-
+  
     
-   
-      
+    
+
+
+    // 문자열 길면 ... 처리
+    // const truncateText = (str, maxLength) => {
+    //     return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+    // }
 
 
     return (
@@ -406,18 +517,27 @@ function Product() {
                     </div>
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="productPrice">상품원가</label>
-                        <input className="filter-input" type="number" id="productPrice" placeholder="상품원가" value={filters.productPrice} onChange={handleFilterChange} />
+                        <div className="filter-input-group">
+                            <input className="filter-input" type="number" id="productPrice" placeholder="상품원가" min={0} value={filters.productPrice} onChange={handleFilterChange} />
+                            <select id="priceComparison" value={filters.priceComparison} onChange={handleFilterChange}>
+                                <option value="">선택</option>
+                                <option value="gte">이상</option>
+                                <option value="lte">이하</option>
+                            </select>
+                        </div>
                     </div>
+
+
 
                     <button className="filter-button" onClick={handleSearch}>조회</button>
                 </div>
                 <button className="filter-button" id="add" type="button" onClick={handleAddClick}>상품 등록</button>
 
-                {showDelete && <button className='delete-btn' onClick={() => { handleDeleteClick(); handleDelete(); }}>삭제</button>}
+                {showDeleteMain && <button className='delete-btn-main' onClick={() => { handleDeleteClickMain(); handleDeleteMain(); }}>삭제</button>}
                 <table className="search-table">
                     <thead>
                         <tr>
-                            <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange} /></th>
+                            <th><input type="checkbox" checked={allCheckMain} onChange={handleMasterCheckboxChangeMain} /></th>
                             <th> No.</th>
                             <th>상품명
                                 <button className="sortBtn" onClick={() => sortData('productName')}>
@@ -439,17 +559,16 @@ function Product() {
                                     {sortConfig.key === 'productPrice' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                 </button>
                             </th>
-
                         </tr>
                     </thead>
                     <tbody>
                         {order.length > 0 ? (
                             order.map((item, index) => (
                                 !item.deleted && (
-                                    <tr key={index} className={checkItem[index + 1] ? 'selected-row' : ''} onDoubleClick={() => {
+                                    <tr key={index} className={checkItemMain[index + 1] ? 'selected-row' : ''} onDoubleClick={() => {
                                         handleModify(item)
                                     }}>
-                                        <td><input type="checkbox" checked={checkItem[index + 1] || false} onChange={handleCheckboxChange} /></td>
+                                        <td><input type="checkbox" checked={checkItemMain[index + 1] || false} onChange={handleCheckboxChangeMain} /></td>
                                         <td>{index + 1}</td>
                                         <td>{item.productName}</td>
                                         <td>{item.productWriter}</td>
@@ -460,7 +579,7 @@ function Product() {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="7" style={{ textAlign: 'center', verticalAlign: 'middle' }}>등록된 상품이 없습니다
+                                <td colSpan="6" style={{ textAlign: 'center', verticalAlign: 'middle' }}>등록된 상품이 없습니다
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-emoji-tear" viewBox="0 0 16 16" style={{ verticalAlign: 'middle' }}>
                                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
                                         <path d="M6.831 11.43A3.1 3.1 0 0 1 8 11.196c.916 0 1.607.408 2.25.826.212.138.424-.069.282-.277-.564-.83-1.558-2.049-2.532-2.049-.53 0-1.066.361-1.536.824q.126.27.232.535.069.174.135.373ZM6 11.333C6 12.253 5.328 13 4.5 13S3 12.254 3 11.333c0-.706.882-2.29 1.294-2.99a.238.238 0 0 1 .412 0c.412.7 1.294 2.284 1.294 2.99M7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5m4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5m-1.5-3A.5.5 0 0 1 10 3c1.162 0 2.35.584 2.947 1.776a.5.5 0 1 1-.894.448C11.649 4.416 10.838 4 10 4a.5.5 0 0 1-.5-.5M7 3.5a.5.5 0 0 0-.5-.5c-1.162 0-2.35.584-2.947 1.776a.5.5 0 1 0 .894.448C4.851 4.416 5.662 4 6.5 4a.5.5 0 0 0 .5-.5" />
@@ -471,7 +590,7 @@ function Product() {
                         )}
                         <tr>
                             <td colSpan="5">합계</td>
-                            <td colSpan="2">{visibleCount}건</td>
+                            <td colSpan="1">{visibleCount}건</td>
                         </tr>
                     </tbody>
                 </table>
@@ -494,6 +613,7 @@ function Product() {
                             </div>
 
                             <div className="RegistForm">
+                                {showDeleteModal && <button className='delete-btn-modal' onClick={() => { handleDeleteClickModal(); handleDeleteModal(); }}>삭제</button>}
                                 <table className="formTable">
                                     <tbody>
 
@@ -533,28 +653,46 @@ function Product() {
                                 <table className="formTableList">
                                     <thead>
                                         <tr>
-                                            <th><input type="checkbox" /></th>
+                                            <th><input type="checkbox" checked={allCheckModal} onChange={handleMasterCheckboxChangeModal}/></th>
                                             <th>no</th>
-                                            <th>상품명</th>
-                                            <th>상품저자</th>
-                                            <th>상품카테고리</th>
-                                            <th>상품원가</th>
+                                            <th>상품명
+                <button className="sortBtn" onClick={() => sortModalData('productName')}>
+                    {modalSortConfig.key === 'productName' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                </button>
+            </th>
+            <th>상품저자
+                <button className="sortBtn" onClick={() => sortModalData('productWriter')}>
+                    {modalSortConfig.key === 'productWriter' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                </button>
+            </th>
+            <th>상품카테고리
+                <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
+                    {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                </button>
+            </th>
+            <th>상품원가
+                <button className="sortBtn" onClick={() => sortModalData('productPrice')}>
+                    {modalSortConfig.key === 'productPrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                </button>
+            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {productList.map((product, index) => (
-                                            <tr key={index}>
-                                                <td><input type="checkbox" /></td>
+                                        {productList.map((item, index) => (
+                                            !item.deleted && (
+                                            <tr key={index} className={checkItemModal[index + 1] ? 'selected-row' : ''}>
+                                                <td><input type="checkbox" checked={checkItemModal[index + 1] || false} onChange={handleCheckboxChangeModal}/></td>
                                                 <td>{index + 1}</td>
-                                                <td>{product.productName}</td>
-                                                <td>{product.productWriter}</td>
-                                                <td>{product.productCategory}</td>
-                                                <td>{product.productPrice}</td>
+                                                <td>{item.productName}</td>
+                                                <td>{item.productWriter}</td>
+                                                <td>{item.productCategory}</td>
+                                                <td>{item.productPrice}</td>
                                             </tr>
+                                            )
                                         ))}
                                         <tr style={{ fontWeight: 'bold' }}>
                                             <td colSpan="5">합계</td>
-                                            <td colSpan="2">
+                                            <td colSpan="1">
                                                 {productList.length}건
                                             </td>
                                         </tr>
@@ -612,10 +750,7 @@ function Product() {
                                             </td>
                                         </tr>
 
-
-
                                         <tr>
-
                                             <th colSpan="1"><label htmlFor="productCategory">상품카테고리</label></th>
                                             <td colSpan="3">
                                                 <input
@@ -627,11 +762,6 @@ function Product() {
                                                 />
                                             </td>
 
-
-                                            
-                                        </tr>
-
-                                        <tr>
                                             <th colSpan="1"><label htmlFor="productPrice">상품원가</label></th>
                                             <td colSpan="3">
                                                 <input
@@ -642,18 +772,8 @@ function Product() {
                                                     onChange={handleModifyItemChange}
                                                 />
                                             </td>
-
-                                            <th colSpan="1"><label htmlFor="productYn">상품활성화</label></th>
-                                            <td colSpan="3">
-                                                <input
-                                                    type="text"
-                                                    name="productYn"
-                                                    readOnly
-                                                    placeholder="상품활성화"
-                                                    value={modifyItem.productYn}
-                                                />
-                                            </td>
                                         </tr>
+
                                     </table>
                                 </div>
                             </div>
@@ -663,7 +783,6 @@ function Product() {
                 )
             }
             {/* 모달창의 끝  */}
-
 
         </div>
     );

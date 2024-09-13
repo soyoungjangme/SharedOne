@@ -293,15 +293,31 @@ tr:nth-child(0){
     position: relative;
 }
 
-.delete-btn {
+.delete-btn-main {
     width: 65px;
     height: 25px;
     position: absolute;
     top: 170px;
-    border: 1px solid #004e90;
+    border: 1px solid #ddd;
     background-color: #004e90;
     color: white;
-    border-radius: 3px;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.RegistForm {
+    position: relative;
+}
+
+.delete-btn-modal {
+    width: 65px;
+    height: 25px;
+    position: absolute;
+    top: 222px;
+    border: 1px solid #ddd;
+    background-color: #004e90;
+    color: white;
+    border-radius: 2px;
     cursor: pointer;
 }
 
@@ -319,4 +335,15 @@ tr:nth-child(0){
 
 .bi-emoji-tear {
     margin: 0 0 2px 2px;
+}
+
+
+.filter-input-group {
+    display: flex;
+    align-items: center;
+}
+
+select {
+    width: 55px; /* 셀렉트 박스의 너비 설정 */
+    height: 25px;
 }

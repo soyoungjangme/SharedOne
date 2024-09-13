@@ -1,5 +1,6 @@
 package com.project.tobe.dto;
 
+import com.project.tobe.entity.Product;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -30,4 +31,6 @@ public class PriceDTO {
         this.startDate = startDate;
         this.endDate = endDate;
     }
+    /*jsy*/
+    private Product product;
 }
