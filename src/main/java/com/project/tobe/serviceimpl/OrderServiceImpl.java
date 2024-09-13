@@ -2,6 +2,7 @@ package com.project.tobe.serviceimpl;
 
 import com.project.tobe.dto.OrderH;
 import com.project.tobe.dto.OrderSearchDTO;
+import com.project.tobe.dto.PriceDTO;
 import com.project.tobe.mapper.OrderMapper;
 import com.project.tobe.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public double getPrice(int formcustomer) {
-        return orderMapper.getPrice(formcustomer);
+    public List<PriceDTO> getPrice(Integer iocn) {
+        System.out.println("getPrice서비스 실행됨");
+        return orderMapper.getPrice(iocn);
     }
 
 

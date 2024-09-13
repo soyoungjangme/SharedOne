@@ -40,7 +40,7 @@ public class CustomerController {
     }
 
     //등록
-    @PostMapping("/customerRegist")
+    @PostMapping("/addCustomer")
     public void customerRegistTest(@RequestBody List<CustomerDTO> dto) {
         System.out.println("등록 예제 컨트롤러");
         System.out.println(dto);

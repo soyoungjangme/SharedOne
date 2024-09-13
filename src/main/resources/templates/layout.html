@@ -19,7 +19,10 @@
         <a href="./product.do"> 상품 관리 </a>
         <a href="./order.do"> 주문 관리 </a>
         <a href="./price.do"> 판매가 관리 </a>
-        <a href="./employee.do"> *직원/권한 관리 </a>
+        <div th:switch="${auth}">
+        <a th:case="'S'" href="./employee.do"> 직원/권한 관리 </a>
+        </div>
+
     </div>
 
     <div class="main-content">
@@ -38,7 +41,7 @@
                     <div class="user-profile-box">
                         <p sec:authorize="isAuthenticated()">
 
-                            <p><span th:text="${nickName}"></span></p>
+                            <p><span th:text="${nickName}">  </span> 님</p>
 
 
                         </p>

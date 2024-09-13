@@ -99,10 +99,10 @@
 
     <update id="customerDeleteTest" parameterType="java.util.List">
         UPDATE customer
-        SET activate = 'n'
+        SET activated = 'n'
         WHERE customer_no IN
         <foreach collection="list" item="customerNo" open="(" separator="," close=")">
-            #{customerNo}
+            CAST(#{customerNo} AS bigint)
         </foreach>
     </update>
 </mapper>

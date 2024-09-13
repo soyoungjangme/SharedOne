@@ -536,6 +536,7 @@ function Customer() {
                                         <th colSpan="1"><label htmlFor="customerNo">고객 주소</label></th>
                                         <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeePw" name="employeePw" value={regist.employeePw} onChange={handleInputAddChange} /></td>
 
+                                    
                                     </tr>
                                     <tr>
                                         <th colSpan="1"><label htmlFor="customPrice">고객 연락처</label></th>
