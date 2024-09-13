@@ -88,10 +88,6 @@ function Employee() {
           setShowDelete: setShowDeleteModal
       } = useCheckboxManager();
 
-        console.log(checkItemModal);
-
-
-
     // 메인 리스트
     let [employee, setEmployee] = useState([{
         employeeId: '',
@@ -173,7 +169,7 @@ function Employee() {
         employeeAddr: '',
         residentNum: '',
         hireDate: null,
-        salary: 0,
+        salary: null,
         employeeManagerId: '',
         authorityGrade: ''
     });
@@ -188,10 +184,12 @@ function Employee() {
             ...prevTest,
             [name]: value,
         }));
-           if (name === 'employeeId' && value !== test.employeeId) {
-                         setIdResult(false);
-                         setButtonColor('#939393');
-                }
+
+   if (name === 'employeeId' && value !== test.employeeId) {
+                 setIdResult(false);
+                 setButtonColor('#939393');
+        }
+
         console.log(test);
     };
 
@@ -207,6 +205,100 @@ function Employee() {
 //
 //        console.log(emregist);
 //    };
+
+
+
+
+const validateInputs = () => {
+  const { employeeId, residentNum, salary, employeeTel ,authorityGrade, employeeManagerId, employeePw , employeeEmail} = test; // 상태에서 값을 가져옵니다
+
+  if (isObjectEmpty(test)) {
+    alert('모든 값을 입력하세요.');
+    return false;
+  }
+
+  // 아이디 유효성 검사
+  if (employeeId.length < 5) {
+    alert('아이디는 5자 이상 입력해주세요.');
+    return false;
+  }
+
+  // 비밀번호 유효성 검사
+  if (employeePw.length < 5) {
+    alert('비밀번호는 5자 이상 입력해주세요.');
+    return false;
+  }
+
+  // 전화번호 유효성 검사
+  const koreanPhoneRegex = /^(01[016789])-([0-9]{4})-([0-9]{4})$|^(02|0[3-9][0-9])-[0-9]{3,4}-[0-9]{4}$/;
+  if (!koreanPhoneRegex.test(employeeTel)) {
+    alert('전화번호 형식에 맞게 입력하세요. 000-0000-0000');
+    return false;
+  }
+
+  // 아이디 및 비밀번호 문자 검증
+  const validPattern = /^[a-zA-Z0-9!@#$%^&*()_+{}[\]:;"'<>,.?/~`|-]+$/;
+  if (!validPattern.test(employeeId)) {
+    alert('아이디는 대소문자, 숫자, 특수문자만 가능합니다.');
+    return false;
+  }
+  if (!validPattern.test(employeePw)) {
+    alert('비밀번호는 대소문자, 숫자, 특수문자만 가능합니다.');
+    return false;
+  }
+
+  // 주민번호 유효성 검사
+  const residentNumRegex = /^\d{6}-\d{7}$/;
+  if (residentNum.length < 14 || !residentNumRegex.test(residentNum)) {
+    alert('주민번호는 형식에 맞게 입력하세요 000000-0000000');
+    return false;
+  }
+
+  // 이메일 유효성 검사
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(employeeEmail)) {
+    alert('유효한 이메일 주소를 입력해 주세요.');
+    return false;
+  }
+
+
+
+  // 급여 입력값 검사
+  if (!/^[0-9]*$/.test(salary)) {
+    alert('급여란에는 숫자만 입력하세요.');
+    return false;
+  }
+
+  // 중복 확인 검사
+  if (idResult === false) {
+    alert('중복확인을 해주세요.');
+    return false;
+  }
+
+  // 모든 검증 통과 시
+  return true;
+};
+
+
+    // 리스트에 입력값 추가 핸들러
+    const onClickListAdd = () => {
+    if (validateInputs()) {
+      setList((prevList) => [...prevList, test]);
+      setTest({
+        employeeId: '',
+        employeePw: '',
+        employeeName: '',
+        employeeTel: '',
+        employeeEmail: '',
+        employeeAddr: '',
+        residentNum: '',
+        hireDate: '',
+        salary: '',
+        employeeManagerId: '',
+        authorityGrade: ''
+      }); // 입력값 초기화
+    }
+    };
 
 
 // 아이디 중복 체크
@@ -239,34 +331,8 @@ function Employee() {
  const isObjectEmpty = (obj) => {
     return Object.values(obj).some(value => value === '' || value === null || value === undefined);
   };
-    // 리스트에 입력값 추가 핸들러
-    const onClickListAdd = () => {
 
-     if (isObjectEmpty(test)) {
-          alert('모든 값을 입력하세요.');
-          return; // 함수 종료
-        }
-     if(idResult === false){
-        alert('중복확인을 해주세요.');
-        return;
-        }else{
-            setList((prevList) => [...prevList, test]);
-                setTest({
-                    employeeId: '',
-                    employeePw: '',
-                    employeeName: '',
-                    employeeTel: '',
-                    employeeEmail: '',
-                    employeeAddr: '',
-                    residentNum: '',
-                    hireDate: null,
-                    salary: 0,
-                    employeeManagerId: '',
-                    authorityGrade: ''
-                }); // 입력값 초기화
-        }
 
-    };
 
 
 
@@ -289,7 +355,7 @@ function Employee() {
             window.location.reload();
             setList([]); // 기존 목록 초기화
         } else {
-            console.error('등록할 항목이 없습니다');
+            alert('등록할 항목이 없습니다');
         }
     };
 
@@ -411,23 +477,28 @@ function Employee() {
 
     }, [checkItemMain]);
 
-
    const [checkedIds2, setCheckedIds2] = useState([]);
-    useEffect(() => {
-        // 모든 체크된 체크박스를 선택합니다.
-        const checkedCheckboxes = Array.from(document.querySelectorAll('input.mainCheckboxModal:checked'));
-        // 체크된 체크박스의 ID 값을 배열로 저장합니다.
-        const ids = checkedCheckboxes.map(checkbox => checkbox.id);
-        // 상태를 업데이트하여 배열에 저장합니다.
-        console.log(checkedIds2);
-        setCheckedIds2(ids);
-    }, [checkItemModal]);
 
-    const handleDeleteClick2 = () => {
-        // 선택된 ID가 있는 항목만 필터링하여 목록에서 제거합니다.
-        const updatedList = list.filter(item => !checkedIds2.includes(item.id));
-        setList(updatedList);
-    };
+useEffect(() => {
+    const checkedCheckboxes = Array.from(document.querySelectorAll('input.mainCheckboxModal:checked'));
+    const ids = checkedCheckboxes.map(checkbox => checkbox.id);
+    setCheckedIds2(ids);
+}, [checkItemModal]);
+
+
+useEffect(() => {
+    console.log("Updated list:", list);
+    console.log("Item IDs:", list.map(item => item.id));
+}, [list]);
+useEffect(() => {
+
+   console.log("Checked IDs:", checkedIds2);
+}, [checkedIds2]);
+
+const handleDeleteClick2 = () => {
+    const updatedList = list.filter(item => checkedIds2.includes(item.id));
+    setList(updatedList);
+};
 
     const handleDeleteClick = () => {
         axios.post('/employee/employeeDelete', checkedIds, {
