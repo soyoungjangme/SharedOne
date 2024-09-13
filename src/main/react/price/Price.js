@@ -7,6 +7,7 @@ import useSort from '../js/useSort';
 import '../js/modalAdd.css';
 import ModalDetail from '../js/ModalDetail';
 import '../js/Page.css'
+import '../js/Pagination.css';
 import Pagination from '../js/Pagination';
 
 import {Bar} from 'react-chartjs-2';
@@ -21,6 +22,7 @@ import {
     LineElement,
     PointElement
 } from 'chart.js';
+import ReactPaginate from "react-paginate";
 // import e from "babel-loader/lib/Error";
 
 ChartJS.register(
@@ -95,8 +97,6 @@ function Price() {
         handleCheckboxChange,
         handleDelete
     } = useCheckboxManager();
-
-    const [pageNation, setPageNation] = useState({pageCount:1, onPageChange: false, currentPage: 0});
 
     const [price, setPrice] = useState([
         {
@@ -193,6 +193,7 @@ function Price() {
     const [pageCount, setPageCount] = useState(10); // 총 페이지 수 계산
 
     const handleSearchBtn = async () => {
+        console.log(searchPrice);
         let {data} = await axios.post('/price/search', JSON.stringify(searchPrice), {
             headers: {
                 'content-type': 'application/json',
@@ -215,7 +216,11 @@ function Price() {
 
     // 페이지 변경 시 호출될 함수
     const handlePageChange = (selectedPage) => {
-        setCurrentPage(selectedPage.selected + 1); // ReactPaginate는 0부터 시작하므로 +1
+        console.log(selectedPage);
+
+        let copy = {...searchPrice, page: (selectedPage.selected + 1)};
+        setSearchPrice(copy);
+        handleSearchBtn().then(r => console.log(r));
     };
 
     const [isVisibleCSV, setIsVisibleCSV] = useState(false);
@@ -612,11 +617,23 @@ function Price() {
                 <div className="pageNation">
                     {/*{pageBody}*/}
 
-                    <Pagination
-                        pageCount={pageCount} // 총 페이지 수
-                        onPageChange={handlePageChange} // 페이지 변경 이벤트 핸들러
+                    {/*<Pagination*/}
+                    {/*    pageCount={pageCount} // 총 페이지 수*/}
+                    {/*    onPageChange={handlePageChange} // 페이지 변경 이벤트 핸들러*/}
                         currentPage={currentPage} // 현재 페이지
-                        total={totalItems} // 총 아이템 수
+                    {/*    total={totalItems} // 총 아이템 수*/}
+                    {/*/>*/}
+                    <ReactPaginate
+                        breakLabel="..."
+                        nextLabel="next >"
+                        onPageChange={handlePageChange}
+                        pageRangeDisplayed={5}
+                        pageCount={pageCount}
+                        previousLabel="< previous"
+                        renderOnZeroPageCount={null}
+                        containerClassName={"pagination"}
+                        pageLinkClassName={"pagination__link"}
+                        activeLinkClassName={"pagination__link__active"}
                     />
                 </div>
 
