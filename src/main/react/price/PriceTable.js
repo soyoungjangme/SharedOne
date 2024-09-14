@@ -104,7 +104,7 @@ const PriceTable = ({
                 </tr>
             )}
             <tr>
-                <td colSpan="9"></td>
+                <td colSpan="8"></td>
                 <td colSpan="1"> {price.length} 건</td>
             </tr>
             </tbody>

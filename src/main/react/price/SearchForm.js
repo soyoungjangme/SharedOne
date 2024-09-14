@@ -6,6 +6,12 @@ const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSear
         setSearchPrice((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleKeyUp = (e) => {
+        if (e.key === 'Enter') {
+            handleSearchBtn();
+        }
+    }
+
     return (
         <div className="main-container">
             <div className="filter-containers">
@@ -21,6 +27,7 @@ const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSear
                                 list="productDataList"
                                 id="product"
                                 placeholder="상품"
+                                onKeyUp={handleKeyUp}
                                 onChange={handleInputChange}
                             />
                             <datalist id="productDataList">
