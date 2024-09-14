@@ -3,10 +3,12 @@ package com.project.tobe.controller;
 import com.opencsv.exceptions.CsvValidationException;
 import com.project.tobe.customer.CustomerService;
 import com.project.tobe.dto.CustomerDTO;
+import com.project.tobe.dto.EmailDTO;
 import com.project.tobe.dto.PriceProductCustomerDTO;
 import com.project.tobe.dto.PriceDTO;
 import com.project.tobe.entity.Customer;
 import com.project.tobe.entity.Product;
+import com.project.tobe.service.EmailService;
 import com.project.tobe.service.PriceService;
 import com.project.tobe.service.ProductService;
 import com.project.tobe.util.PageVO;
@@ -38,6 +40,9 @@ public class PriceController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private EmailService emailService;
+
     @GetMapping(PRICE_ALL)
     public Map<String, List<?>> getAllPrice() {
 //        List<PriceProductCustomerDTO> priceList = priceService.getPriceProductCustomerDTO(new PriceDTO());
@@ -50,6 +55,12 @@ public class PriceController {
         map.put("customerList", customerList);
 
         System.out.println(customerList);
+
+        try {
+            emailService.sendMailReject(new EmailDTO());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         return map;
     }
