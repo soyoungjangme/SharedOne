@@ -62,11 +62,6 @@ public class EmployeeController {
   }
 
 
-  @GetMapping("/JoinTest")
-  public AuthorityDto JoinTest(){
-    System.out.println("컨트롤러");
-    return employeeService.JoinTest();
-  }
 
 
 

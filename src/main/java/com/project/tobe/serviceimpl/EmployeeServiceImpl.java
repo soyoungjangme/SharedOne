@@ -104,9 +104,9 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
 
   @Override
-  public AuthorityDto JoinTest() {
-    System.out.println(employeeMapper.JoinTest().toString());
-    return employeeMapper.JoinTest();
+  public AuthorityDto mypageAll(String employeeId) {
+    System.out.println(employeeMapper.mypageAll(employeeId).toString());
+    return employeeMapper.mypageAll(employeeId);
   }
 
 
