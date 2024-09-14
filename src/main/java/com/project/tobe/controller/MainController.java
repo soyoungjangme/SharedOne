@@ -38,6 +38,7 @@ public class MainController {
             model.addAttribute("authName", user.getUsername());
             model.addAttribute("nickName", user.getNickname());
             model.addAttribute("auth", user.getUserAuthorityGrade());
+//            model.addAttribute("authGradeName", user.getUserAuthorityName());
 
         }
 

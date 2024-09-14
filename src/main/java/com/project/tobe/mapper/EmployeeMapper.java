@@ -1,5 +1,6 @@
 package com.project.tobe.mapper;
 
+import com.project.tobe.dto.AuthorityDto;
 import com.project.tobe.dto.EmployeeDTO;
 import com.project.tobe.dto.EmployeeSearchDTO;
 import com.project.tobe.dto.EmployeeTestDTO;
@@ -18,5 +19,7 @@ public interface EmployeeMapper {
   public void employeeUpdateTest(EmployeeTestDTO dto);
   public void employeeDeleteTest(List<String> employeeIds);
   public int employeeIdCheck(EmployeeDTO dto);
+  public AuthorityDto mypageAll(String employeeId);
+  public AuthorityDto sessionAuth(String id);
 }
 

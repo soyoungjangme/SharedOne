@@ -100,5 +100,27 @@
     </update>
 
 
+    <select id="mypageAll" parameterType="String" resultType="com.project.tobe.dto.AuthorityDto">
+
+        select *
+        from employee e
+        join authority a
+        on a.authority_grade = e.authority_grade
+        where e.employee_id = #{employeeId}
+
+    </select>
+
+
+    <select id="sessionAuth" parameterType="String" resultType="AuthorityDto">
+
+        select *
+        from employee e
+        join authority a
+        on a.authority_grade = e.authority_grade
+        where e.employee_id = #{session};
+
+    </select>
+
+
 
 </mapper>

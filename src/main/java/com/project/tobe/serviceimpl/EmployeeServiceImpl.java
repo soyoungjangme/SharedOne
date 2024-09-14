@@ -1,6 +1,7 @@
 package com.project.tobe.serviceimpl;
 
 
+import com.project.tobe.dto.AuthorityDto;
 import com.project.tobe.dto.EmployeeDTO;
 import com.project.tobe.dto.EmployeeSearchDTO;
 import com.project.tobe.dto.EmployeeTestDTO;
@@ -30,6 +31,7 @@ public class EmployeeServiceImpl implements EmployeeService {
   @Autowired
   BCryptPasswordEncoder bCryptPasswordEncoder;
 
+
   @Override
   public Employee getUserById(String id) {
     if (id == null) {
@@ -40,6 +42,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     return employee.orElse(null);
   }
+
 
   @Override
   public EmployeeDetails login(EmployeeDTO dto) {
@@ -59,7 +62,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     return new EmployeeDetails(employee.orElse(null));
   }
-
 
   // 전부 조회
   @Override
@@ -101,6 +103,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     return result > 0 ;
   }
 
+  @Override
+  public AuthorityDto mypageAll(String employeeId) {
+    System.out.println(employeeMapper.mypageAll(employeeId).toString());
+    return employeeMapper.mypageAll(employeeId);
+  }
 
 
   // 수정
