@@ -6,6 +6,7 @@ import com.project.tobe.dto.CustomerDTO;
 import com.project.tobe.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,12 +41,14 @@ public class CustomerController {
     }
 
     //등록
-    @PostMapping("/addCustomer")
-    public void customerRegistTest(@RequestBody List<CustomerDTO> dto) {
+    @PostMapping("/customerRegist")
+    public ResponseEntity<String> customerRegistTest(@RequestBody List<CustomerDTO> dto) {
         System.out.println("등록 예제 컨트롤러");
         System.out.println(dto);
         customerService.customerRegistTest(dto);
+        return ResponseEntity.ok("등록 성공");
     }
+
 
     //업데이트
     @PostMapping("/customerUpdate")
