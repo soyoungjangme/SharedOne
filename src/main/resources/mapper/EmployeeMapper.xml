@@ -100,5 +100,27 @@
     </update>
 
 
+    <select id="JoinTest" resultType="com.project.tobe.dto.AuthorityDto">
+
+        select *
+        from employee e
+        join authority a
+        on a.authority_grade = e.authority_grade
+        where e.employee_id = 'beak7';
+
+    </select>
+
+
+    <select id="sessionAuth" parameterType="String" resultType="AuthorityDto">
+
+        select *
+        from employee e
+        join authority a
+        on a.authority_grade = e.authority_grade
+        where e.employee_id = #{id};
+
+    </select>
+
+
 
 </mapper>

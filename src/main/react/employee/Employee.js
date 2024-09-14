@@ -525,14 +525,75 @@ const handleDeleteClick2 = () => {
 // 비밀번호 변경 버튼
     const [isVisibleDeleteInput, setIsVisibleDeleteInput] = useState(false);
 
-    // Toggle function to show or hide the input field
     const toggleInput = () => {
         setIsVisibleDeleteInput(prevIsVisible => !prevIsVisible);
     };
 
+
+
+  const getOriginalIndex = (item) => {
+      // sortedData가 배열인지 확인
+      if (!Array.isArray(sortedData)) {
+          console.error("sortedData가 배열이 아닙니다.");
+          return -1; // 배열이 아닌 경우 -1을 반환하여 오류 처리
+      }
+
+      // item.id와 일치하는 originalItem을 찾고, 그 인덱스를 반환
+      const index = sortedData.findIndex(originalItem => originalItem.id === item.id);
+
+      // 인덱스가 -1인 경우는 일치하는 항목이 없다는 뜻이므로 +1 하지 않음
+      return index !== -1 ? index + 1 : -1;
+  };
+
+// 페이지 네이션
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(30); // 페이지당 항목 수
+
+    // 전체 페이지 수 계산
+    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+    // 현재 페이지에 맞는 데이터 필터링
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    // 페이지네이션 버튼 렌더링
+    const renderPageNumbers = () => {
+        let pageNumbers = [];
+        for (let i = 1; i <= totalPages; i++) {
+            pageNumbers.push(
+                <button
+                    key={i}
+                    onClick={() => handlePageChange(i)}
+                    disabled={i === currentPage}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return pageNumbers;
+    };
+
+
+    const [joinTest, setJoinTest] = useState('');
+    const JoinTest = () => {
+    axios.get('/employee/JoinTest')  // Spring Boot 엔드포인트와 동일한 URL로 요청
+        .then(response => setJoinTest(response.data))  // 응답 데이터를 상태로 설정
+        .catch(error => console.error('Error', error));
+    }
+
+    console.log(joinTest);
+
     return (
 
         <div>
+        <button type="button" onClick={JoinTest}> 조인 연습 </button>
             <h1><i class="bi bi-person-lines-fill"></i> 직원 관리 </h1>
             <div className="main-container">
                 <div className="filter-containers">
@@ -670,16 +731,15 @@ const handleDeleteClick2 = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {sortedData.length > 0 ? (
-                            sortedData.map((item, index) => (
+                        {currentItems.length > 0 ? (
+                            currentItems.map((item, index) => (
                                 <tr key={index} className={checkItemMain[index] ? 'selected-row' : ''} onDoubleClick={() => {
                                     handleModify(item)
                                 }}>
                                     <td><input className="mainCheckbox" type="checkbox" id={item.employeeId} checked={checkItemMain[index] || false}
                                         onChange={handleCheckboxChangeMain} /></td>
                                     <td style={{ display: 'none' }}>{index}</td>
-                                    <td>{index + 1}</td>
-
+                                     <td>{index + 1}</td>
                                     <td>{item.employeeId}</td>
                                     <td>{truncateText(item.employeePw, 10)}</td>
                                     <td>{item.employeeName}</td>
@@ -704,6 +764,9 @@ const handleDeleteClick2 = () => {
                         </tr>
                     </tbody>
                 </table>
+                   <div>
+                    {renderPageNumbers()}
+                </div>
             </div>
 
 
