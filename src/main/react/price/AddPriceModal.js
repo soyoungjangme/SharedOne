@@ -22,14 +22,9 @@ const AddPriceModal = ({
         endDate: ''
     });
 
-    const handleInputChange = (e) => {
-        const {name, value} = e.target;
-        setInsertPrice((prev) => ({...prev, [name]: value}));
-    };
-
     const handleInsertPrice = (e) => {
-        let copy = {...insertPrice, [e.name]: e.value};
-        setInsertPrice(copy);
+        const {name, value} = e;
+        setInsertPrice((prev) => ({...prev, [name]: value}));
     }
 
     let [insertPriceList, setInsertPriceList] = useState([]);
@@ -203,8 +198,8 @@ const AddPriceModal = ({
                                     <td>{item.productNo}</td>
                                     <td>
                                         {item.customerNo}
-                                        <i className="bi bi-search details"
-                                           onClick={handleAddClickDetail}/>
+                                        {/*<i className="bi bi-search details"*/}
+                                        {/*   onClick={handleAddClickDetail}/>*/}
                                     </td>
                                     <td>{item.customPrice}</td>
                                     <td>{item.currency}</td>
