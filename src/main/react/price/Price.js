@@ -187,14 +187,8 @@ function Price() {
         setSearchPrice(copy);
     }
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalItems, setTotalItems] = useState(100); // 총 아이템 수
-    const [itemsPerPage, setItemsPerPage] = useState(10); // 페이지당 아이템 수
-    const [pageCount, setPageCount] = useState(10); // 총 페이지 수 계산
-
-    const handleSearchBtn = async () => {
-        console.log(searchPrice);
-        let {data} = await axios.post('/price/search', JSON.stringify(searchPrice), {
+    async function getSearchItems (item) {
+        let {data} = await axios.post('/price/search', JSON.stringify(item), {
             headers: {
                 'content-type': 'application/json',
                 'Accept': 'application/json'
@@ -205,8 +199,15 @@ function Price() {
         setTotalItems(data.total);
         setItemsPerPage(data.pageData.length);
         setPageCount(data.realEnd);
+    }
 
-        console.log(data);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalItems, setTotalItems] = useState(100); // 총 아이템 수
+    const [itemsPerPage, setItemsPerPage] = useState(10); // 페이지당 아이템 수
+    const [pageCount, setPageCount] = useState(10); // 총 페이지 수 계산
+
+    const handleSearchBtn = async () => {
+        await getSearchItems(searchPrice);
 
 
         if (searchPrice.productNo !== '' && searchPrice.customerNo !== '') {
@@ -215,12 +216,16 @@ function Price() {
     }
 
     // 페이지 변경 시 호출될 함수
-    const handlePageChange = (selectedPage) => {
-        console.log(selectedPage);
+    const handlePageChange = async(selectedPage) => {
+        console.log(selectedPage.selectedIndex);
+        console.log(selectedPage.selectedItem);
+        console.log(selectedPage.selected);
+        console.log(selectedPage.selected+1);
 
-        let copy = {...searchPrice, page: (selectedPage.selected + 1)};
-        setSearchPrice(copy);
-        handleSearchBtn().then(r => console.log(r));
+        let copy = {...searchPrice, page: selectedPage.selected+1};
+        console.log(copy);
+
+        await getSearchItems(copy).then(r => console.log(r));
     };
 
     const [isVisibleCSV, setIsVisibleCSV] = useState(false);
@@ -573,7 +578,7 @@ function Price() {
                                 <td><input type="checkbox" checked={checkItem[index] || false}
                                            onChange={handleCheckboxChange}/></td>
                                 <td style={{display: 'none'}}>{index}</td>
-                                <td>{index + 1}</td>
+                                <td>{((currentPage-1)*10) + index + 1}</td>
                                 <td>{item.registerDate} </td>
                                 <td>{item.productName}
                                     <i className="bi bi-search details"
@@ -613,30 +618,12 @@ function Price() {
                     </tr>
                     </tbody>
                 </table>
-
-                <div className="pageNation">
-                    {/*{pageBody}*/}
-
-                    {/*<Pagination*/}
-                    {/*    pageCount={pageCount} // 총 페이지 수*/}
-                    {/*    onPageChange={handlePageChange} // 페이지 변경 이벤트 핸들러*/}
+                    <Pagination
+                        pageCount={pageCount} // 총 페이지 수
+                        onPageChange={handlePageChange} // 페이지 변경 이벤트 핸들러
                         currentPage={currentPage} // 현재 페이지
-                    {/*    total={totalItems} // 총 아이템 수*/}
-                    {/*/>*/}
-                    <ReactPaginate
-                        breakLabel="..."
-                        nextLabel="next >"
-                        onPageChange={handlePageChange}
-                        pageRangeDisplayed={5}
-                        pageCount={pageCount}
-                        previousLabel="< previous"
-                        renderOnZeroPageCount={null}
-                        containerClassName={"pagination"}
-                        pageLinkClassName={"pagination__link"}
-                        activeLinkClassName={"pagination__link__active"}
+                        total={totalItems} // 총 아이템 수
                     />
-                </div>
-
             </div>
 
 

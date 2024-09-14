@@ -7,15 +7,17 @@ import './Pagination.css';
 const Pagination = ({ pageCount, onPageChange, currentPage, total }) => {
     return (
         <ReactPaginate
+            breakLabel="..."
             previousLabel={<FiChevronLeft />}
             nextLabel={<FiChevronRight />}
             activePage={currentPage}
+            pageRangeDisplayed={1}
             pageCount={pageCount}
             onPageChange={onPageChange}
             totalItemsCount={total}
             containerClassName={"pagination"}
-            pageLinkClassName={"pagination__link"}
-            activeLinkClassName={"pagination__link__active"}
+            pageLinkClassName={"pagination_link"}
+            activeLinkClassName={"pagination_link_active"}
         />
     );
 };
