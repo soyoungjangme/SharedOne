@@ -52,7 +52,7 @@ function Product() {
 
 
     // ========================= 테이블 정렬 부분 =========================
-    
+
     const [order, setOrder] = useState([]); // 메인 리스트 데이터를 저장할 state
     const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
 
@@ -524,69 +524,69 @@ function Product() {
             {/* <i class="bi bi-chat-square-text-fill"></i> 주문관리 아이콘*/}
 
             <div className="main-container">
-            <div className="filter-container">
-            <div className="filter-row">
-                <label className="filter-label" htmlFor="productName">상품명</label>
-                <input 
-                    className="filter-input" 
-                    type="text" 
-                    id="productName" 
-                    placeholder="상품명" 
-                    value={filters.productName} 
-                    onChange={handleFilterChange} 
-                    onKeyDown={handleKeyDown}
-                />
-            </div>
-            <div className="filter-row">
-                <label className="filter-label" htmlFor="productWriter">상품저자</label>
-                <input 
-                    className="filter-input" 
-                    type="text" 
-                    id="productWriter" 
-                    placeholder="상품저자" 
-                    value={filters.productWriter} 
-                    onChange={handleFilterChange} 
-                    onKeyDown={handleKeyDown}
-                />
-            </div>
-            <div className="filter-row">
-                <label className="filter-label" htmlFor="productCategory">상품카테고리</label>
-                <input 
-                    className="filter-input" 
-                    type="text" 
-                    id="productCategory" 
-                    placeholder="상품카테고리" 
-                    value={filters.productCategory} 
-                    onChange={handleFilterChange} 
-                    onKeyDown={handleKeyDown} 
-                />
-            </div>
-            <div className="filter-row">
-                <label className="filter-label" htmlFor="productPrice">상품원가</label>
-                <div className="filter-input-group">
-                    <input 
-                        className="filter-input" 
-                        type="number" 
-                        id="productPrice" 
-                        placeholder="상품원가" 
-                        min={0} 
-                        value={filters.productPrice} 
-                        onChange={handleFilterChange} 
-                        onKeyDown={handleKeyDown} 
-                    />
-                    <select 
-                        id="priceComparison" 
-                        value={filters.priceComparison} 
-                        onChange={handleFilterChange}
-                    >
-                        <option value="">선택</option>
-                        <option value="gte">이상</option>
-                        <option value="lte">이하</option>
-                    </select>
+                <div className="filter-container">
+                    <div className="filter-row">
+                        <label className="filter-label" htmlFor="productName">상품명</label>
+                        <input
+                            className="filter-input"
+                            type="text"
+                            id="productName"
+                            placeholder="상품명"
+                            value={filters.productName}
+                            onChange={handleFilterChange}
+                            onKeyDown={handleKeyDown}
+                        />
+                    </div>
+                    <div className="filter-row">
+                        <label className="filter-label" htmlFor="productWriter">상품저자</label>
+                        <input
+                            className="filter-input"
+                            type="text"
+                            id="productWriter"
+                            placeholder="상품저자"
+                            value={filters.productWriter}
+                            onChange={handleFilterChange}
+                            onKeyDown={handleKeyDown}
+                        />
+                    </div>
+                    <div className="filter-row">
+                        <label className="filter-label" htmlFor="productCategory">상품카테고리</label>
+                        <input
+                            className="filter-input"
+                            type="text"
+                            id="productCategory"
+                            placeholder="상품카테고리"
+                            value={filters.productCategory}
+                            onChange={handleFilterChange}
+                            onKeyDown={handleKeyDown}
+                        />
+                    </div>
+                    <div className="filter-row">
+                        <label className="filter-label" htmlFor="productPrice">상품원가</label>
+                        <div className="filter-input-group">
+                            <input
+                                className="filter-input"
+                                type="number"
+                                id="productPrice"
+                                placeholder="상품원가"
+                                min={0}
+                                value={filters.productPrice}
+                                onChange={handleFilterChange}
+                                onKeyDown={handleKeyDown}
+                            />
+                            <select
+                                id="priceComparison"
+                                value={filters.priceComparison}
+                                onChange={handleFilterChange}
+                            >
+                                <option value="">선택</option>
+                                <option value="gte">이상</option>
+                                <option value="lte">이하</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button className="filter-button" onClick={handleSearch}>조회</button>
                 </div>
-            </div>
-            <button className="filter-button" onClick={handleSearch}>조회</button>
-        </div>
 
                 <button className="filter-button" id="add" type="button" onClick={handleAddClick}>상품 등록</button>
 
