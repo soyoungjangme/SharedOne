@@ -19,5 +19,5 @@ public interface EmployeeService {
   public void employeeDeleteTest(List<String> employeeIds);
   public boolean employeeIdCheck(EmployeeDTO dto);
 
-  public AuthorityDto JoinTest();
+  public AuthorityDto mypageAll(String employeeId);
 }
