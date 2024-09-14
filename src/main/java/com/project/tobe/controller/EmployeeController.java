@@ -52,8 +52,8 @@ public class EmployeeController {
   }
 
   @PostMapping("/employeeUpdate")
-  public void employeeUpdateTest(@RequestBody EmployeeTestDTO dto) {
-    employeeService.employeeUpdateTest(dto);
+  public void employeeUpdateMaster(@RequestBody EmployeeTestDTO dto) {
+    employeeService.employeeUpdateMaster(dto);
   }
 
   @PostMapping("/employeeDelete")
@@ -61,7 +61,10 @@ public class EmployeeController {
     employeeService.employeeDeleteTest(employeeIds);
   }
 
-
+  @PostMapping("/employeePwChange")
+  public void employeePwChange(@RequestBody EmployeeDTO dto) {
+    employeeService.employeePwChange(dto);
+  }
 
 
 
