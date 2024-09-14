@@ -88,10 +88,6 @@ function Employee() {
           setShowDelete: setShowDeleteModal
       } = useCheckboxManager();
 
-        console.log(checkItemModal);
-
-
-
     // 메인 리스트
     let [employee, setEmployee] = useState([{
         employeeId: '',
@@ -173,7 +169,7 @@ function Employee() {
         employeeAddr: '',
         residentNum: '',
         hireDate: null,
-        salary: 0,
+        salary: null,
         employeeManagerId: '',
         authorityGrade: ''
     });
@@ -188,10 +184,12 @@ function Employee() {
             ...prevTest,
             [name]: value,
         }));
-           if (name === 'employeeId' && value !== test.employeeId) {
-                         setIdResult(false);
-                         setButtonColor('#939393');
-                }
+
+   if (name === 'employeeId' && value !== test.employeeId) {
+                 setIdResult(false);
+                 setButtonColor('#939393');
+        }
+
         console.log(test);
     };
 
@@ -207,6 +205,100 @@ function Employee() {
 //
 //        console.log(emregist);
 //    };
+
+
+
+
+const validateInputs = () => {
+  const { employeeId, residentNum, salary, employeeTel ,authorityGrade, employeeManagerId, employeePw , employeeEmail} = test; // 상태에서 값을 가져옵니다
+
+  if (isObjectEmpty(test)) {
+    alert('모든 값을 입력하세요.');
+    return false;
+  }
+
+  // 아이디 유효성 검사
+  if (employeeId.length < 5) {
+    alert('아이디는 5자 이상 입력해주세요.');
+    return false;
+  }
+
+  // 비밀번호 유효성 검사
+  if (employeePw.length < 5) {
+    alert('비밀번호는 5자 이상 입력해주세요.');
+    return false;
+  }
+
+  // 전화번호 유효성 검사
+  const koreanPhoneRegex = /^(01[016789])-([0-9]{4})-([0-9]{4})$|^(02|0[3-9][0-9])-[0-9]{3,4}-[0-9]{4}$/;
+  if (!koreanPhoneRegex.test(employeeTel)) {
+    alert('전화번호 형식에 맞게 입력하세요. 000-0000-0000');
+    return false;
+  }
+
+  // 아이디 및 비밀번호 문자 검증
+  const validPattern = /^[a-zA-Z0-9!@#$%^&*()_+{}[\]:;"'<>,.?/~`|-]+$/;
+  if (!validPattern.test(employeeId)) {
+    alert('아이디는 대소문자, 숫자, 특수문자만 가능합니다.');
+    return false;
+  }
+  if (!validPattern.test(employeePw)) {
+    alert('비밀번호는 대소문자, 숫자, 특수문자만 가능합니다.');
+    return false;
+  }
+
+  // 주민번호 유효성 검사
+  const residentNumRegex = /^\d{6}-\d{7}$/;
+  if (residentNum.length < 14 || !residentNumRegex.test(residentNum)) {
+    alert('주민번호는 형식에 맞게 입력하세요 000000-0000000');
+    return false;
+  }
+
+  // 이메일 유효성 검사
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(employeeEmail)) {
+    alert('유효한 이메일 주소를 입력해 주세요.');
+    return false;
+  }
+
+
+
+  // 급여 입력값 검사
+  if (!/^[0-9]*$/.test(salary)) {
+    alert('급여란에는 숫자만 입력하세요.');
+    return false;
+  }
+
+  // 중복 확인 검사
+  if (idResult === false) {
+    alert('중복확인을 해주세요.');
+    return false;
+  }
+
+  // 모든 검증 통과 시
+  return true;
+};
+
+
+    // 리스트에 입력값 추가 핸들러
+    const onClickListAdd = () => {
+    if (validateInputs()) {
+      setList((prevList) => [...prevList, test]);
+      setTest({
+        employeeId: '',
+        employeePw: '',
+        employeeName: '',
+        employeeTel: '',
+        employeeEmail: '',
+        employeeAddr: '',
+        residentNum: '',
+        hireDate: '',
+        salary: '',
+        employeeManagerId: '',
+        authorityGrade: ''
+      }); // 입력값 초기화
+    }
+    };
 
 
 // 아이디 중복 체크
@@ -239,34 +331,8 @@ function Employee() {
  const isObjectEmpty = (obj) => {
     return Object.values(obj).some(value => value === '' || value === null || value === undefined);
   };
-    // 리스트에 입력값 추가 핸들러
-    const onClickListAdd = () => {
 
-     if (isObjectEmpty(test)) {
-          alert('모든 값을 입력하세요.');
-          return; // 함수 종료
-        }
-     if(idResult === false){
-        alert('중복확인을 해주세요.');
-        return;
-        }else{
-            setList((prevList) => [...prevList, test]);
-                setTest({
-                    employeeId: '',
-                    employeePw: '',
-                    employeeName: '',
-                    employeeTel: '',
-                    employeeEmail: '',
-                    employeeAddr: '',
-                    residentNum: '',
-                    hireDate: null,
-                    salary: 0,
-                    employeeManagerId: '',
-                    authorityGrade: ''
-                }); // 입력값 초기화
-        }
 
-    };
 
 
 
@@ -289,7 +355,7 @@ function Employee() {
             window.location.reload();
             setList([]); // 기존 목록 초기화
         } else {
-            console.error('등록할 항목이 없습니다');
+            alert('등록할 항목이 없습니다');
         }
     };
 
@@ -411,23 +477,28 @@ function Employee() {
 
     }, [checkItemMain]);
 
-
    const [checkedIds2, setCheckedIds2] = useState([]);
-    useEffect(() => {
-        // 모든 체크된 체크박스를 선택합니다.
-        const checkedCheckboxes = Array.from(document.querySelectorAll('input.mainCheckboxModal:checked'));
-        // 체크된 체크박스의 ID 값을 배열로 저장합니다.
-        const ids = checkedCheckboxes.map(checkbox => checkbox.id);
-        // 상태를 업데이트하여 배열에 저장합니다.
-        console.log(checkedIds2);
-        setCheckedIds2(ids);
-    }, [checkItemModal]);
 
-    const handleDeleteClick2 = () => {
-        // 선택된 ID가 있는 항목만 필터링하여 목록에서 제거합니다.
-        const updatedList = list.filter(item => !checkedIds2.includes(item.id));
-        setList(updatedList);
-    };
+useEffect(() => {
+    const checkedCheckboxes = Array.from(document.querySelectorAll('input.mainCheckboxModal:checked'));
+    const ids = checkedCheckboxes.map(checkbox => checkbox.id);
+    setCheckedIds2(ids);
+}, [checkItemModal]);
+
+
+useEffect(() => {
+    console.log("Updated list:", list);
+    console.log("Item IDs:", list.map(item => item.id));
+}, [list]);
+useEffect(() => {
+
+   console.log("Checked IDs:", checkedIds2);
+}, [checkedIds2]);
+
+const handleDeleteClick2 = () => {
+    const updatedList = list.filter(item => checkedIds2.includes(item.id));
+    setList(updatedList);
+};
 
     const handleDeleteClick = () => {
         axios.post('/employee/employeeDelete', checkedIds, {
@@ -454,14 +525,75 @@ function Employee() {
 // 비밀번호 변경 버튼
     const [isVisibleDeleteInput, setIsVisibleDeleteInput] = useState(false);
 
-    // Toggle function to show or hide the input field
     const toggleInput = () => {
         setIsVisibleDeleteInput(prevIsVisible => !prevIsVisible);
     };
 
+
+
+  const getOriginalIndex = (item) => {
+      // sortedData가 배열인지 확인
+      if (!Array.isArray(sortedData)) {
+          console.error("sortedData가 배열이 아닙니다.");
+          return -1; // 배열이 아닌 경우 -1을 반환하여 오류 처리
+      }
+
+      // item.id와 일치하는 originalItem을 찾고, 그 인덱스를 반환
+      const index = sortedData.findIndex(originalItem => originalItem.id === item.id);
+
+      // 인덱스가 -1인 경우는 일치하는 항목이 없다는 뜻이므로 +1 하지 않음
+      return index !== -1 ? index + 1 : -1;
+  };
+
+// 페이지 네이션
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(30); // 페이지당 항목 수
+
+    // 전체 페이지 수 계산
+    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+    // 현재 페이지에 맞는 데이터 필터링
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    // 페이지네이션 버튼 렌더링
+    const renderPageNumbers = () => {
+        let pageNumbers = [];
+        for (let i = 1; i <= totalPages; i++) {
+            pageNumbers.push(
+                <button
+                    key={i}
+                    onClick={() => handlePageChange(i)}
+                    disabled={i === currentPage}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return pageNumbers;
+    };
+
+
+    const [joinTest, setJoinTest] = useState('');
+    const JoinTest = () => {
+    axios.get('/employee/JoinTest')  // Spring Boot 엔드포인트와 동일한 URL로 요청
+        .then(response => setJoinTest(response.data))  // 응답 데이터를 상태로 설정
+        .catch(error => console.error('Error', error));
+    }
+
+    console.log(joinTest);
+
     return (
 
         <div>
+        <button type="button" onClick={JoinTest}> 조인 연습 </button>
             <h1><i class="bi bi-person-lines-fill"></i> 직원 관리 </h1>
             <div className="main-container">
                 <div className="filter-containers">
@@ -599,16 +731,15 @@ function Employee() {
                         </tr>
                     </thead>
                     <tbody>
-                        {sortedData.length > 0 ? (
-                            sortedData.map((item, index) => (
+                        {currentItems.length > 0 ? (
+                            currentItems.map((item, index) => (
                                 <tr key={index} className={checkItemMain[index] ? 'selected-row' : ''} onDoubleClick={() => {
                                     handleModify(item)
                                 }}>
                                     <td><input className="mainCheckbox" type="checkbox" id={item.employeeId} checked={checkItemMain[index] || false}
                                         onChange={handleCheckboxChangeMain} /></td>
                                     <td style={{ display: 'none' }}>{index}</td>
-                                    <td>{index + 1}</td>
-
+                                     <td>{index + 1}</td>
                                     <td>{item.employeeId}</td>
                                     <td>{truncateText(item.employeePw, 10)}</td>
                                     <td>{item.employeeName}</td>
@@ -633,6 +764,9 @@ function Employee() {
                         </tr>
                     </tbody>
                 </table>
+                   <div>
+                    {renderPageNumbers()}
+                </div>
             </div>
 
 

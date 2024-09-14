@@ -535,6 +535,7 @@ function Customer() {
 
                                         <th colSpan="1"><label htmlFor="customerNo">고객 주소</label></th>
                                         <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeePw" name="employeePw" value={regist.employeePw} onChange={handleInputAddChange} /></td>
+
                                     
                                     </tr>
                                     <tr>
@@ -565,7 +566,7 @@ function Customer() {
 
                                         <th colSpan="1"><label htmlFor="registEndDate">담당자 이메일</label></th>
                                         <td colSpan="2"><input type="text" placeholder="필드 입력" id="picName" name="picName" value={regist.picName} onChange={handleInputAddChange} /></td>
-                                   
+
                                         <th colSpan="1"><label htmlFor="registEndDate">활성화</label></th>
                                         <td colSpan="2">
                                             <select id="authorityGrade" name="authorityGrade" value={regist.authorityGrade} onChange={handleInputAddChange}>

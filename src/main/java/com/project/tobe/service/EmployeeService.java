@@ -1,5 +1,6 @@
 package com.project.tobe.service;
 
+import com.project.tobe.dto.AuthorityDto;
 import com.project.tobe.dto.EmployeeDTO;
 import com.project.tobe.dto.EmployeeSearchDTO;
 import com.project.tobe.dto.EmployeeTestDTO;
@@ -17,4 +18,6 @@ public interface EmployeeService {
   public void employeeUpdateTest(EmployeeTestDTO dto);
   public void employeeDeleteTest(List<String> employeeIds);
   public boolean employeeIdCheck(EmployeeDTO dto);
+
+  public AuthorityDto JoinTest();
 }

@@ -1,5 +1,6 @@
 package com.project.tobe.security;
 
+import com.project.tobe.dto.AuthorityDto;
 import com.project.tobe.entity.Employee;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,6 +50,12 @@ public class EmployeeDetails implements UserDetails {
   public String getUserAuthorityGrade() {
     return employee.getAuthorityGrade();
   }
+
+//  public String getUserAuthorityName() {
+//    System.out.println(authorityDto.toString());
+//    System.out.println(authorityDto.getEmployeeName());
+//    return authorityDto.getAuthorityName();
+//  }
 
 
   // 계정이 만료 되었는지 (true: 만료X)
