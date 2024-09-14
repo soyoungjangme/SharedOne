@@ -19,7 +19,7 @@ public interface EmployeeMapper {
   public void employeeUpdateTest(EmployeeTestDTO dto);
   public void employeeDeleteTest(List<String> employeeIds);
   public int employeeIdCheck(EmployeeDTO dto);
-  public AuthorityDto JoinTest();
+  public AuthorityDto mypageAll(String employeeId);
   public AuthorityDto sessionAuth(String id);
 }
 

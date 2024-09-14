@@ -581,19 +581,10 @@ const handleDeleteClick2 = () => {
     };
 
 
-    const [joinTest, setJoinTest] = useState('');
-    const JoinTest = () => {
-    axios.get('/employee/JoinTest')  // Spring Boot 엔드포인트와 동일한 URL로 요청
-        .then(response => setJoinTest(response.data))  // 응답 데이터를 상태로 설정
-        .catch(error => console.error('Error', error));
-    }
-
-    console.log(joinTest);
 
     return (
 
         <div>
-        <button type="button" onClick={JoinTest}> 조인 연습 </button>
             <h1><i class="bi bi-person-lines-fill"></i> 직원 관리 </h1>
             <div className="main-container">
                 <div className="filter-containers">
