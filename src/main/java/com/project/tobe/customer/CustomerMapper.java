@@ -10,7 +10,7 @@ import java.util.List;
 public interface CustomerMapper {
     public List<CustomerDTO> getAllList();
     public List<CustomerDTO> getPickList(CustomerSearchDTO dto);
-    public void customerRegistTest( List<CustomerDTO> dto);
+    void customerRegistTest(List<CustomerDTO> dto);
     public void customerUpdateTest(CustomerDTO dto);
     public void customerDeleteTest(List<String> customerIds);
 

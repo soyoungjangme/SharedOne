@@ -28,10 +28,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void customerRegistTest( List<CustomerDTO> dto) {
+    public void customerRegistTest(List<CustomerDTO> dto) {
         System.out.println("서비스");
         customerMapper.customerRegistTest(dto);
     }
+
 
     @Override
     public void customerUpdateTest(CustomerDTO dto) {
