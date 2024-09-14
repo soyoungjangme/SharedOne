@@ -181,8 +181,8 @@ function Product() {
         }
     };
 
-    // 모든 공백 제거
-    const normalizeString = (str) => str.replace(/\s+/g, '');
+    //공백 제거, 대소문자 통일
+    const normalizeString = (str) => str.replace(/\s+/g, '').toLowerCase();
 
     // 조회 버튼 클릭 시 필터링
     const handleSearch = () => {
@@ -219,9 +219,6 @@ function Product() {
             handleSearch(); // 엔터키를 누르면 검색 실행
         }
     };
-
-
-
 
 
 
@@ -468,35 +465,58 @@ function Product() {
     };
 
     const handleModifySubmit = async () => {
+        // 입력값이 비어있는지 확인
+        const isInputEmpty = Object.values(modifyItem).some(value => !value);
+    
+        if (isInputEmpty) {
+            alert('상품 정보를 모두 입력해야 합니다.');
+            return;
+        }
+    
+        // 공백 제거 및 대소문자 통일 후 중복 확인
+        const normalizedProductName = normalizeString(modifyItem.productName);
+        
+        // 등록된 상품 중 productYn = 'Y'인 데이터와 중복 확인
+        const isDuplicate = product.some(item => 
+            normalizeString(item.productName) === normalizedProductName && // 공백 제거 및 대소문자 통일 후 비교
+            item.productYn === 'Y' &&
+            normalizeString(item.productName) !== normalizeString(originalItem.productName) // 자기 자신과는 비교하지 않음
+        );
+    
+        if (isDuplicate) {
+            alert('이미 존재하는 상품명입니다.');
+            return;
+        }
+    
         if (!confirm('상품을 수정하시겠습니까?')) {
             return;
         }
-
+    
         // 수정된 내용이 있는지 확인
         const hasChanges = Object.keys(modifyItem).some(
             key => modifyItem[key] !== originalItem[key]
         );
-
+    
         if (!hasChanges) {
             alert('수정한 내용이 없습니다.');
             return;
         }
-
+    
         try {
             const response = await fetch('/product/updateProduct', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(modifyItem),
+                body: JSON.stringify({ ...modifyItem, productName: normalizedProductName }), // 공백 제거 및 대소문자 통일된 값 전송
             });
-
+    
             if (response.ok) {
                 const result = await response.json();
                 alert('상품이 수정되었습니다.');
                 setIsModifyModalVisible(false);
-                setProductList([]);
-                await fetchData(); // 원래 화면 데이터 갱신
+                setProductList([]); // 리스트 초기화
+                await fetchData(); // 기존 데이터 갱신
             } else {
                 alert('상품 수정에 실패하였습니다.');
             }
@@ -505,7 +525,10 @@ function Product() {
             alert('서버 오류가 발생했습니다.');
         }
     };
-
+    
+    
+    
+    
 
 
     // 문자열 길면 ... 처리
@@ -736,7 +759,7 @@ function Product() {
                                     <tbody>
                                         {modalOrder.filter(item => !item.deleted).map((item, index) => (
                                             <tr key={index} className={checkItemModal[index + 1] ? 'selected-row' : ''}>
-                                                <td><input type="checkbox" checked={checkItemModal[index + 1] || false} onChange={() => handleCheckboxChangeModal(index + 1)} /></td>
+                                                <td ><input type="checkbox" checked={checkItemModal[index + 1] || false} onChange={() => handleCheckboxChangeModal(index + 1)} /></td>
                                                 <td>{index + 1}</td>
                                                 <td>{item.productName}</td>
                                                 <td>{item.productWriter}</td>
