@@ -54,13 +54,13 @@ public class PriceController {
         map.put("productList", productList);
         map.put("customerList", customerList);
 
-        System.out.println(customerList);
-
-        try {
-            emailService.sendMailReject(new EmailDTO());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//        System.out.println(customerList);
+//
+//        try {
+//            emailService.sendMailReject(new EmailDTO());
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
 
         return map;
     }
