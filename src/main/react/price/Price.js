@@ -50,12 +50,12 @@ const Price = () => {
     } = useCheckboxManager();
 
     const productOptions = product.map((item) => {
-        return <option value={item.productNo} key={item.productNo}>{item.productName}</option>
+        return <option name={item.productName} value={item.productNo} key={item.productNo}>{item.productName}</option>
     });
     const productDataList = <datalist id="productDataList">{productOptions}</datalist>
 
     const customerOptions = customer.map((item) => {
-        return <option value={item.customerNo} key={item.customerNo}>{item.customerName}</option>
+        return <option name={item.customerName} value={item.customerNo} key={item.customerNo}>{item.customerName}</option>
     });
     const customerDataList = <datalist id="customerDataList">{customerOptions}</datalist>
 
@@ -164,17 +164,17 @@ const Price = () => {
                 fetchData={fetchData}
                 handleCloseClick={handleCloseClick}
             />
-            {isModifyModalVisible && <ModifyPriceModal
+            <ModifyPriceModal
                 isVisible={isModifyModalVisible}
                 setIsVisible={setIsModifyModalVisible}
                 modifyItem={modifyItem}
                 fetchData={fetchData}
-            />}
-            {isVisibleDetail && <DetailModal
+            />
+            <DetailModal
                 title={modalDetailTitle}
                 data={modalDetailData}
                 setIsVisibleDetail={setIsVisibleDetail}
-            />}
+            />
         </div>
     );
 }
