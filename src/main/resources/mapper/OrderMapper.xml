@@ -46,12 +46,12 @@
     <!--  주문등록 상품 조회  -->
     <select id="getPrice" resultMap="PriceDTO">
         select p.product_no, p.product_name, p.product_writer, p.product_category,
-                price.custom_price, price.start_date, price.end_date
+               price.custom_price, price.start_date, price.end_date
         from price
-        join product p
-        on p.product_no=price.product_no
-        join customer c
-        on c.customer_no=price.customer_no
+                 join product p
+                      on p.product_no=price.product_no
+                 join customer c
+                      on c.customer_no=price.customer_no
         where c.customer_no = #{iocn}
     </select>
 
@@ -67,45 +67,37 @@
         </association>
     </resultMap>
 
-
-    <!--상세 보기 - 유선화 START-->
-    <!--
-    SELECT
-        oh.order_no, oh.reg_date, oh.del_date, oh.confirm_status, oh.confirm_change_date, oh.remarks,
-        c.customer_no, c.customer_name,
-        e.employee_id, e.employee_name,
-        ob.product_no, ob.order_product_qty,
-        p.product_name, p.product_category, p.product_writer,
-        COALESCE(pr.custom_price, 0) AS custom_price -- NULL일 경우 기본값 0으로 처리
-    FROM
-        order_header oh
-    JOIN
-        customer c ON oh.customer_no = c.customer_no
-    JOIN
-        employee e ON oh.employee_id = e.employee_id
-    JOIN
-        order_body ob ON oh.order_no = ob.order_no
-    JOIN
-        product p ON ob.product_no = p.product_no
-    LEFT JOIN
-        price pr ON p.product_no = pr.product_no AND c.customer_no = pr.customer_no
-    WHERE
-        oh.order_no = #{orderNo};
-
-    -->
-
+    <!--유선화 START-->
+    <!--상세 조회-->
     <select id="getOrderDetail" resultMap="OrderDetailResultMap">
-        SELECT oh.order_no, oh.reg_date, oh.del_date, oh.confirm_status,
-               c.customer_no, c.customer_name,
-               e.employee_id, e.employee_name,
-               ob.product_no, ob.order_product_qty,
-               p.product_name, p.product_price
-        FROM order_header oh
-                 JOIN customer c ON oh.customer_no = c.customer_no
-                 JOIN employee e ON oh.employee_id = e.employee_id
-                 JOIN order_body ob ON oh.order_no = ob.order_no
-                 JOIN product p ON ob.product_no = p.product_no
-        WHERE oh.order_no = #{orderNo}
+        select
+            oh.order_no,
+            oh.reg_date,
+            oh.del_date,
+            oh.confirm_status,
+            oh.confirm_change_date,
+            oh.remarks,
+            c.customer_no,
+            c.customer_name,
+            e.employee_id,
+            e.employee_name,
+            ob.product_no,
+            ob.order_product_qty,
+            p.product_name,
+            p.product_category,
+            p.product_writer,
+            coalesce(pr.custom_price, 0) as custom_price,
+            pr.start_date,
+            pr.end_date
+        from
+            order_header oh
+                join customer c on oh.customer_no = c.customer_no
+                join employee e on oh.employee_id = e.employee_id
+                join order_body ob on oh.order_no = ob.order_no
+                join product p on ob.product_no = p.product_no
+                left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no
+        where
+            oh.order_no = #{orderNo};
     </select>
 
     <resultMap id="OrderDetailResultMap" type="OrderH">
@@ -113,25 +105,56 @@
         <result property="regDate" column="reg_date"/>
         <result property="delDate" column="del_date"/>
         <result property="confirmStatus" column="confirm_status"/>
+        <result property="confirmChangeDate" column="confirm_change_date"/>
+        <result property="remarks" column="remarks"/>
+
         <association property="customer" javaType="CustomerDTO">
             <id property="customerNo" column="customer_no"/>
             <result property="customerName" column="customer_name"/>
         </association>
+
         <association property="employee" javaType="EmployeeDTO">
             <id property="employeeId" column="employee_id"/>
             <result property="employeeName" column="employee_name"/>
         </association>
+
         <collection property="orderBList" ofType="OrderB">
-            <id property="orderNo" column="order_no"/>
-            <id property="productNo" column="product_no"/>
             <result property="orderProductQty" column="order_product_qty"/>
+
             <association property="product" javaType="Product">
                 <id property="productNo" column="product_no"/>
                 <result property="productName" column="product_name"/>
-                <result property="productPrice" column="product_price"/>
+                <result property="productCategory" column="product_category"/>
+                <result property="productWriter" column="product_writer"/>
+            </association>
+
+            <association property="price" javaType="PriceDTO">
+                <result property="customPrice" column="custom_price"/>
+                <result property="startDate" column="start_date"/>
+                <result property="endDate" column="end_date"/>
             </association>
         </collection>
     </resultMap>
-    <!--상세 보기 - 유선화 END-->
+
+    <!-- 주문 헤더 업데이트 -->
+    <update id="updateOrderHeader">
+        UPDATE order_header
+        SET reg_date = #{regDate},
+            del_date = #{delDate},
+            confirm_status = #{confirmStatus},
+            confirm_change_date = #{confirmChangeDate},
+            remarks = #{remarks}
+        WHERE order_no = #{orderNo}
+    </update>
+
+    <!-- 주문 바디 업데이트 -->
+    <update id="updateOrderBody">
+        UPDATE order_body
+        SET order_product_qty = #{orderB.orderProductQty}
+        WHERE order_no = #{orderNo}
+          AND product_no = #{orderB.productNo}
+    </update>
+
+    <!--유선화 END-->
 
 </mapper>
