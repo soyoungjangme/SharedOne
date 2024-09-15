@@ -104,6 +104,14 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
 
   @Override
+  public void employeePwChange(EmployeeDTO dto) {
+    if (dto.getEmployeePw() != null) {
+      dto.setEmployeePw(bCryptPasswordEncoder.encode(dto.getEmployeePw()));
+    }
+    employeeMapper.employeePwChange(dto);
+  }
+
+  @Override
   public AuthorityDto mypageAll(String employeeId) {
     System.out.println(employeeMapper.mypageAll(employeeId).toString());
     return employeeMapper.mypageAll(employeeId);
@@ -112,17 +120,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
   // 수정
   @Override
-  public void employeeUpdateTest(EmployeeTestDTO dto) {
-
-    if (dto.getEmployeePw() != null) {
-      dto.setEmployeePw(bCryptPasswordEncoder.encode(dto.getEmployeePw()));
-    }
-
+  public void employeeUpdateMaster(EmployeeTestDTO dto) {
+    System.out.println(dto.toString() + "야야야ㅑㅇ");
     if (dto.getAuthorityGrade().equals("S")) {
       dto.setEmployeeManagerId(null);
     }
 
-    employeeMapper.employeeUpdateTest(dto);
+    employeeMapper.employeeUpdateMaster(dto);
   }
 
 //삭제

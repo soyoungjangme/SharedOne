@@ -28,4 +28,7 @@ public class EmployeeDTO {
     private String employeeManagerId;
     private String authorityGrade;
     private String emplYn;
+
+    private String authorityName;
+
 }
