@@ -43,7 +43,9 @@ const Price = () => {
     const [pageCount, setPageCount] = useState(10); // 총 페이지 수 계산
     const {
         allCheck,
+        setAllCheck,
         checkItem,
+        setCheckItem,
         showDelete,
         handleMasterCheckboxChange,
         handleCheckboxChange,
@@ -107,6 +109,8 @@ const Price = () => {
     };
 
     const handlePageChange = async (selectedPage) => {
+        setCheckItem(new Array(checkItem.length).fill(false));
+        setAllCheck(false);
         let copy = {...searchPrice, page: selectedPage.selected+1};
         await getSearchItems(copy).then(r => console.log(r));
     };
@@ -146,6 +150,8 @@ const Price = () => {
             <PriceTable
                 price={sortedData}
                 checkItem={checkItem}
+                setCheckItem={setCheckItem}
+                allCheck={allCheck}
                 handleCheckboxChange={handleCheckboxChange}
                 handleMasterCheckboxChange={handleMasterCheckboxChange}
                 handleModify={handleModify}
