@@ -5,38 +5,44 @@
 
 <mapper namespace="com.project.tobe.mapper.EmployeeMapper">
     <select id="getAllList" resultType="com.project.tobe.dto.EmployeeDTO">
-        select * from employee where empl_yn = 'y'
+        select *
+        from employee e
+        join authority a
+        on e.authority_grade = a.authority_grade
+        where e.empl_yn = 'y'
     </select>
 
     <select id="getPickList" resultType="com.project.tobe.dto.EmployeeDTO">
         SELECT *
-        FROM employee
+        FROM employee e
+        join authority a
+        on e.authority_grade = a.authority_grade
 <!--        WHERE employee_id LIKE CONCAT('%', #{employeeId}, '%')-->
         <where>
-           empl_yn = 'y'
+           e.empl_yn = 'y'
             <if test="employeeId != '' and employeeId != null">
-                AND employee_id LIKE CONCAT('%', #{employeeId}, '%')
+                AND e.employee_id LIKE CONCAT('%', #{employeeId}, '%')
             </if>
             <if test="employeeName != '' and employeeName != null">
-                AND employee_name LIKE CONCAT('%', #{employeeName}, '%')
+                AND e.employee_name LIKE CONCAT('%', #{employeeName}, '%')
             </if>
             <if test="employeeTel != '' and employeeTel != null">
-                AND employee_tel LIKE CONCAT('%', #{employeeTel}, '%')
+                AND e.employee_tel LIKE CONCAT('%', #{employeeTel}, '%')
             </if>
             <if test="employeeEmail != '' and employeeEmail != null">
-                AND employee_email LIKE CONCAT('%', #{employeeEmail}, '%')
+                AND e.employee_email LIKE CONCAT('%', #{employeeEmail}, '%')
             </if>
             <if test="employeeAddr != '' and employeeAddr != null">
-                AND employee_addr LIKE CONCAT('%', #{employeeAddr}, '%')
+                ANDe.employee_addr LIKE CONCAT('%', #{employeeAddr}, '%')
             </if>
             <if test="hireDate != null">
-                AND hire_date = #{hireDate}
+                AND e.hire_date = #{hireDate}
             </if>
             <if test="employeeManagerId != '' and employeeManagerId != null">
-                AND employee_manager_id LIKE CONCAT('%', #{employeeManagerId}, '%')
+                AND e.employee_manager_id LIKE CONCAT('%', #{employeeManagerId}, '%')
             </if>
             <if test="authorityGrade != '' and authorityGrade != null">
-                AND authority_grade LIKE CONCAT('%', #{authorityGrade}, '%')
+                AND e.authority_grade LIKE CONCAT('%', #{authorityGrade}, '%')
             </if>
         </where>
     </select>
@@ -73,21 +79,34 @@
         </foreach>
     </insert>
 
-    <update id="employeeUpdateTest" parameterType="com.project.tobe.dto.EmployeeDTO" >
+    <update id="employeeUpdateUser" parameterType="com.project.tobe.dto.EmployeeDTO" >
+        UPDATE employee
+        SET
+        employee_name = #{employeeName},
+        employee_tel = #{employeeTel},
+        employee_email = #{employeeEmail},
+        employee_addr = #{employeeAddr},
+        WHERE employee_id = #{employeeId}
+    </update>
+
+
+    <update id="employeeUpdateMaster" parameterType="com.project.tobe.dto.EmployeeDTO" >
             UPDATE employee
             SET
-        employee_pw = #{employeePw},
-            employee_name = #{employeeName},
-            employee_tel = #{employeeTel},
-            employee_email = #{employeeEmail},
-            employee_addr = #{employeeAddr},
-            resident_num = #{residentNum},
-            hire_date = #{hireDate},
             salary = #{salary},
             employee_manager_id = #{employeeManagerId},
             authority_grade = #{authorityGrade}
             WHERE employee_id = #{employeeId}
     </update>
+
+    <update id="employeePwChange" parameterType="com.project.tobe.dto.EmployeeDTO" >
+        UPDATE employee
+        SET
+        employee_pw = #{employeePw}
+        WHERE employee_id = #{employeeId}
+    </update>
+
+
 
     <update id="employeeDeleteTest" parameterType="java.util.List">
         UPDATE employee
@@ -98,6 +117,9 @@
             #{employeeId}
         </foreach>
     </update>
+
+
+
 
 
     <select id="mypageAll" parameterType="String" resultType="com.project.tobe.dto.AuthorityDto">

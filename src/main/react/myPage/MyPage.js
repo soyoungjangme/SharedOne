@@ -73,18 +73,18 @@ function MyPage() {
                 <td><label for="address">주소</label></td>
                 <td><input type="text" id="address" name="address" value={mypageAll.employeeAddr || ''} disabled/></td>
             </tr>
-            <tr>
+       {/*     <tr>
               <td><label for="ssn">주민번호</label></td>
               <td>
-                  <input 
-                      type="text" 
-                      id="ssn" 
+                  <input
+                      type="text"
+                      id="ssn"
                       name="ssn"
                       value={maskSSN(mypageAll.residentNum) || ''}
                       disabled
                       />
               </td>
-            </tr>
+            </tr>*/}
             <tr>
                 <td><label for="hireDate">입사일</label></td>
                 <td><input type="date" id="hireDate" name="hireDate" value={mypageAll.hireDate || ''} disabled/></td>

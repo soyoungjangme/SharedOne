@@ -6,9 +6,12 @@
 <mapper namespace="com.project.tobe.customer.CustomerMapper">
 
     <!-- 고객 목록 조회 쿼리 -->
+    <!-- 모든 활성 고객 조회 -->
     <select id="getAllList" resultType="com.project.tobe.dto.CustomerDTO">
-        SELECT * FROM customer where activated='Y'
+        SELECT * FROM customer WHERE activated='Y'
     </select>
+
+    <!-- 필터에 따라 고객 조회 -->
     <select id="getPickList" resultType="com.project.tobe.dto.CustomerDTO">
         SELECT *
         FROM customer
@@ -23,13 +26,13 @@
                 AND customer_addr LIKE CONCAT('%', #{customerAddr}, '%')
             </if>
             <if test="customerTel != '' and customerTel != null">
-                AND customer_tel LIKE CONCAT('%', #{customerTel}, '%')
+                AND REPLACE(customer_tel, '-', '') LIKE CONCAT('%', REPLACE(#{customerTel}, '-', ''), '%')
             </if>
             <if test="postNum != '' and postNum != null">
                 AND post_num LIKE CONCAT('%', #{postNum}, '%')
             </if>
             <if test="businessRegistrationNo != '' and businessRegistrationNo != null">
-                AND business_registration_no LIKE CONCAT('%', #{businessRegistrationNo}, '%')
+                AND REPLACE(business_registration_no, '-', '') LIKE CONCAT('%', REPLACE(#{businessRegistrationNo}, '-', ''), '%')
             </if>
             <if test="nation != '' and nation != null">
                 AND nation LIKE CONCAT('%', #{nation}, '%')
@@ -49,9 +52,9 @@
             <if test="activated != '' and activated != null">
                 AND activated LIKE CONCAT('%', #{activated}, '%')
             </if>
-
         </where>
     </select>
+
 
 
     <insert id="customerRegistTest" parameterType="java.util.List">
