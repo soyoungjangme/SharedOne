@@ -14,6 +14,7 @@ import ReactDOM from "react-dom/client";
 import './Price.css';
 import '../js/modalAdd.css';
 import '../js/Pagination.css';
+import ModalDetail from "../js/ModalDetail";
 
 const Price = () => {
     const [price, setPrice] = useState([]);
@@ -124,6 +125,10 @@ const Price = () => {
         setIsVisibleDetail(true);
     };
 
+    const handleCloseClickDetail = () => {
+        setIsVisibleDetail(false);
+    };
+
     return (
         <div>
             <h1><i className="bi bi-currency-dollar"></i> 판매가 리스트 </h1>
@@ -164,17 +169,24 @@ const Price = () => {
                 fetchData={fetchData}
                 handleCloseClick={handleCloseClick}
             />
-            <ModifyPriceModal
-                isVisible={isModifyModalVisible}
-                setIsVisible={setIsModifyModalVisible}
-                modifyItem={modifyItem}
-                fetchData={fetchData}
-            />
-            <DetailModal
-                title={modalDetailTitle}
-                data={modalDetailData}
-                setIsVisibleDetail={setIsVisibleDetail}
-            />
+            {/*<ModifyPriceModal*/}
+            {/*    isVisible={isModifyModalVisible}*/}
+            {/*    setIsVisible={setIsModifyModalVisible}*/}
+            {/*    modifyItem={modifyItem}*/}
+            {/*    fetchData={fetchData}*/}
+            {/*/>*/}
+            {isVisibleDetail && (
+
+                <div className="confirmRegist">
+                    <div className="fullBody">
+                        <div className="form-container">
+                            <button className="close-btn" onClick={handleCloseClickDetail}> &times;
+                            </button>
+                            <ModalDetail title={modalDetailTitle} data={modalDetailData}/>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
