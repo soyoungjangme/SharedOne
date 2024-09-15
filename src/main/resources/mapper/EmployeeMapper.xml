@@ -151,5 +151,15 @@
     </select>
 
 
+    <update id="employeeUpdateMypage" parameterType="com.project.tobe.dto.EmployeeDTO">
+        UPDATE employee
+        SET
+        employee_tel = #{employeeTel},
+        employee_email = #{employeeEmail},
+        employee_addr = #{employeeAddr}
+        WHERE employee_id = #{employeeId}
+    </update>
+
+
 
 </mapper>

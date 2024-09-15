@@ -24,5 +24,6 @@ public interface EmployeeMapper {
   public void employeePwChange(EmployeeDTO dto);
   public AuthorityDto sessionAuth(String id);
   public void employeeDeletePick(String employeeId);
+  public void employeeUpdateMypage(EmployeeDTO dto);
 }
 

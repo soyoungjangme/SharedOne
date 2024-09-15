@@ -143,6 +143,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     employeeMapper.employeeDeletePick(employeeId);
   }
 
+  @Override
+  public void employeeUpdateMypage(EmployeeDTO dto) {
+    employeeMapper.employeeUpdateMypage(dto);
+  }
 
 
 }

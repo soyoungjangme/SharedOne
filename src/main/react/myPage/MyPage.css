@@ -58,8 +58,19 @@ body {
         .mypage-table .form-actions {
             text-align: center;
             padding-top: 10px;
+            display: flex;
+                gap: 3%;
+                flex-direction: row-reverse;
 
         }
+
+
+/* .form-actions{
+   display: flex;
+ gap: 5%;
+ flex-direction: row-reverse;
+ }*/
+
 
         .mypage-table  select {
           text-align: center;
