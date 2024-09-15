@@ -50,4 +50,16 @@ public class OrderController {
         return ResponseEntity.ok(customPrice);
     }
 
+    /*상세 보기 - 유선화 START*/
+    @GetMapping("/detail/{orderNo}")
+    public ResponseEntity<OrderH> getOrderDetail(@PathVariable Long orderNo) {
+        OrderH orderDetail = orderService.getOrderDetail(orderNo);
+        if (orderDetail != null) {
+            return ResponseEntity.ok(orderDetail);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    /*상세 보기 - 유선화 END*/
+
 }

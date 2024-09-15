@@ -11,4 +11,7 @@ public interface OrderService {
     List<OrderH> getOrder(OrderSearchDTO criteria); //조건조회
     List<PriceDTO> getPrice(Integer iocn); //주문등록 판매가 가져오기
 
+    /*상세보기 - 유선화 START*/
+    OrderH getOrderDetail(Long orderNo);
+    /*상세보기 - 유선화 END*/
 }
