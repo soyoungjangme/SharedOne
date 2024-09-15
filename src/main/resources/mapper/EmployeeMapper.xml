@@ -118,6 +118,13 @@
         </foreach>
     </update>
 
+    <update id="employeeDeletePick" parameterType="String">
+        UPDATE employee
+        SET empl_yn = 'n',
+        employee_id = CONCAT('del-', employee_id)
+        WHERE employee_id = #{employeeId}
+    </update>
+
 
 
 

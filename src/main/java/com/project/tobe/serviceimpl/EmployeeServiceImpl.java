@@ -118,6 +118,8 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
 
 
+
+
   // 수정
   @Override
   public void employeeUpdateMaster(EmployeeTestDTO dto) {
@@ -135,7 +137,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     employeeMapper.employeeDeleteTest(employeeIds);
   }
-
+  @Override
+  public void employeeDeletePick(String employeeId) {
+    System.out.println("서");
+    employeeMapper.employeeDeletePick(employeeId);
+  }
 
 
 

@@ -20,4 +20,5 @@ public interface EmployeeService {
   public boolean employeeIdCheck(EmployeeDTO dto);
   public void employeePwChange(EmployeeDTO dto);
   public AuthorityDto mypageAll(String employeeId);
+  public void employeeDeletePick(String employeeId);
 }

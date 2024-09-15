@@ -61,6 +61,13 @@ public class EmployeeController {
     employeeService.employeeDeleteTest(employeeIds);
   }
 
+  @PostMapping("/employeeDeletePick")
+  public void employeeDeletePick(@RequestBody String employeeId) {
+    System.out.println("컨");
+    employeeService.employeeDeletePick(employeeId);
+  }
+
+
   @PostMapping("/employeePwChange")
   public void employeePwChange(@RequestBody EmployeeDTO dto) {
     employeeService.employeePwChange(dto);
