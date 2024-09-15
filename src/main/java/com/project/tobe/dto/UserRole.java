@@ -1,4 +1,4 @@
-package com.project.tobe.entity;
+package com.project.tobe.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
