@@ -14,6 +14,7 @@ import ReactDOM from "react-dom/client";
 import './Price.css';
 import '../js/modalAdd.css';
 import '../js/Pagination.css';
+import ModalDetail from "../js/ModalDetail";
 
 const Price = () => {
     const [price, setPrice] = useState([]);
@@ -42,7 +43,9 @@ const Price = () => {
     const [pageCount, setPageCount] = useState(10); // 총 페이지 수 계산
     const {
         allCheck,
+        setAllCheck,
         checkItem,
+        setCheckItem,
         showDelete,
         handleMasterCheckboxChange,
         handleCheckboxChange,
@@ -106,6 +109,8 @@ const Price = () => {
     };
 
     const handlePageChange = async (selectedPage) => {
+        setCheckItem(new Array(checkItem.length).fill(false));
+        setAllCheck(false);
         let copy = {...searchPrice, page: selectedPage.selected+1};
         await getSearchItems(copy).then(r => console.log(r));
     };
@@ -122,6 +127,10 @@ const Price = () => {
         setModalDetailData(data);
         setModalDetailTitle(title);
         setIsVisibleDetail(true);
+    };
+
+    const handleCloseClickDetail = () => {
+        setIsVisibleDetail(false);
     };
 
     return (
@@ -141,6 +150,8 @@ const Price = () => {
             <PriceTable
                 price={sortedData}
                 checkItem={checkItem}
+                setCheckItem={setCheckItem}
+                allCheck={allCheck}
                 handleCheckboxChange={handleCheckboxChange}
                 handleMasterCheckboxChange={handleMasterCheckboxChange}
                 handleModify={handleModify}
@@ -164,17 +175,24 @@ const Price = () => {
                 fetchData={fetchData}
                 handleCloseClick={handleCloseClick}
             />
-            <ModifyPriceModal
-                isVisible={isModifyModalVisible}
-                setIsVisible={setIsModifyModalVisible}
-                modifyItem={modifyItem}
-                fetchData={fetchData}
-            />
-            <DetailModal
-                title={modalDetailTitle}
-                data={modalDetailData}
-                setIsVisibleDetail={setIsVisibleDetail}
-            />
+            {/*<ModifyPriceModal*/}
+            {/*    isVisible={isModifyModalVisible}*/}
+            {/*    setIsVisible={setIsModifyModalVisible}*/}
+            {/*    modifyItem={modifyItem}*/}
+            {/*    fetchData={fetchData}*/}
+            {/*/>*/}
+            {isVisibleDetail && (
+
+                <div className="confirmRegist">
+                    <div className="fullBody">
+                        <div className="form-container">
+                            <button className="close-btn" onClick={handleCloseClickDetail}> &times;
+                            </button>
+                            <ModalDetail title={modalDetailTitle} data={modalDetailData}/>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
