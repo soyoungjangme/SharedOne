@@ -1,6 +1,7 @@
 package com.project.tobe.controller;
 
 import com.project.tobe.dto.AuthorityDto;
+import com.project.tobe.dto.EmployeeDTO;
 import com.project.tobe.security.EmployeeDetails;
 import com.project.tobe.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,11 @@ public class MypageController {
     System.out.println("마이페이지 컨트롤러" + employeeId);
     System.out.println(employeeService.mypageAll(employeeId));
     return employeeService.mypageAll(employeeId);
+  }
+
+  @PostMapping("/employeeUpdateMypage")
+  public void employeeUpdateMypage(@RequestBody EmployeeDTO dto){
+   employeeService.employeeUpdateMypage(dto);
   }
 
   @GetMapping("/mypageSession")

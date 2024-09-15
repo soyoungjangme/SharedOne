@@ -23,5 +23,7 @@ public interface EmployeeMapper {
   public AuthorityDto mypageAll(String employeeId);
   public void employeePwChange(EmployeeDTO dto);
   public AuthorityDto sessionAuth(String id);
+  public void employeeDeletePick(String employeeId);
+  public void employeeUpdateMypage(EmployeeDTO dto);
 }
 

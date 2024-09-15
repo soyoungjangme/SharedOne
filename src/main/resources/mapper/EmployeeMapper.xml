@@ -118,6 +118,13 @@
         </foreach>
     </update>
 
+    <update id="employeeDeletePick" parameterType="String">
+        UPDATE employee
+        SET empl_yn = 'n',
+        employee_id = CONCAT('del-', employee_id)
+        WHERE employee_id = #{employeeId}
+    </update>
+
 
 
 
@@ -142,6 +149,16 @@
         where e.employee_id = #{session};
 
     </select>
+
+
+    <update id="employeeUpdateMypage" parameterType="com.project.tobe.dto.EmployeeDTO">
+        UPDATE employee
+        SET
+        employee_tel = #{employeeTel},
+        employee_email = #{employeeEmail},
+        employee_addr = #{employeeAddr}
+        WHERE employee_id = #{employeeId}
+    </update>
 
 
 
