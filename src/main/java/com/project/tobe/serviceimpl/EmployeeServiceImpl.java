@@ -139,13 +139,22 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
   @Override
   public void employeeDeletePick(String employeeId) {
-    System.out.println("서");
     employeeMapper.employeeDeletePick(employeeId);
   }
 
   @Override
   public void employeeUpdateMypage(EmployeeDTO dto) {
     employeeMapper.employeeUpdateMypage(dto);
+  }
+
+  @Override
+  public void employeeUpdateMypagePw(EmployeeDTO dto) {
+    System.out.println("pw " + dto.getEmployeePw());
+    if (dto.getEmployeePw() != null) {
+      dto.setEmployeePw(bCryptPasswordEncoder.encode(dto.getEmployeePw()));
+    }
+
+    employeeMapper.employeeUpdateMypagePw(dto);
   }
 
 

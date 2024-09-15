@@ -5,15 +5,102 @@ import MonthlySalesChart from '../main/MonthlySalesChart';
 import axios from 'axios';
 
 function MyPage() {
-  const [mypageAll, setMypageAll] = useState('');
-  const [session, setSession] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState({
-    employeeId : '',
-    employeeTel: '',
-    employeeEmail: '',
-    employeeAddr: '',
-  }); // 수정용 데이터 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [error, setError] = useState('');
+
+    const [mypageAll, setMypageAll] = useState('');
+    const [session, setSession] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
+    const [editData, setEditData] = useState({
+      employeeId : '',
+      employeeTel: '',
+      employeeEmail: '',
+      employeeAddr: '',
+      employeePw: ''
+    }); // 수정용 데이터 상태
+
+  // Handle modal open/close
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  console.log(currentPassword);
+
+  console.log(newPassword);
+ console.log(mypageAll.employeePw);
+
+
+
+const verifyCurrentPassword = async (currentPassword) => {
+    console.log(currentPassword);
+  try {
+    // 현재 비밀번호를 서버에 요청
+       const response = await axios.post('/mypage/mypagePwTest', currentPassword, {
+         headers: {
+           'Content-Type': 'application/json',
+         },
+       });
+
+
+    // 서버로부터 받은 응답이 true(비밀번호 일치)인 경우
+    if (response.data) {
+      console.log('비밀번호가 일치합니다.');
+      return true;
+    } else {
+      console.error('비밀번호가 일치하지 않습니다.');
+      return false;
+    }
+  } catch (error) {
+    console.error('비밀번호 검증 중 오류 발생:', error);
+    return false;
+  }
+};
+
+
+const handleSubmit = async () => {
+  // 1. 모든 입력 필드가 채워졌는지 확인
+  if (currentPassword === '' || newPassword === '' || confirmNewPassword === '') {
+    setError('모든 입력 필드를 채워주세요.');
+    return;
+  }
+
+  // 2. 기존 비밀번호가 일치하는지 확인
+  const isPasswordValid = await verifyCurrentPassword(currentPassword);
+
+  if (!isPasswordValid) {
+    setError('기존 비밀번호가 일치하지 않습니다.');
+    return;
+  }
+
+  // 3. 새로운 비밀번호와 확인 비밀번호가 일치하는지 확인
+  if (newPassword !== confirmNewPassword) {
+    setError('새로운 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+    return;
+  }
+
+  // 비밀번호 변경 처리
+  try {
+    // editData 업데이트
+
+    // 서버에 비밀번호 변경 요청
+    await axios.post('/mypage/employeeUpdateMypagePw', {employeePw: newPassword , employeeId : session}, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    alert('비밀번호가 성공적으로 변경되었습니다.');
+    setNewPassword('');
+    setCurrentPassword('');
+    setConfirmNewPassword('');
+    closeModal(); // 모달 닫기
+  } catch (err) {
+    console.error('Error changing password:', err);
+    setError('비밀번호 변경에 실패했습니다.');
+  }
+};
 
   // 메인 리스트 가져오기 axios
   useEffect(() => {
@@ -115,7 +202,10 @@ const employeeUpdateMypage = () => {
             </tr>
             <tr>
               <td><label htmlFor="employeePw">비밀번호</label></td>
-              <td><input type="password" id="employeePw" name="employeePw" value={mypageAll.employeePw || ''} disabled /></td>
+
+              <td>
+                <button class="pw-btn" onClick={openModal}>비밀번호 변경</button>
+              </td>
             </tr>
             <tr>
               <td><label htmlFor="employeeName">이름</label></td>
@@ -132,6 +222,16 @@ const employeeUpdateMypage = () => {
             <tr>
               <td><label htmlFor="address">주소</label></td>
               <td><input type="text" id="address" name="employeeAddr" value={editData.employeeAddr || ''} disabled={!isEditing} onChange={handleInputChange} /></td>
+            </tr>
+            <tr>
+              <td><label htmlFor="residentNum">주민번호</label></td>
+              <td>  <input
+                      type="text"
+                      id="residentNum"
+                      name="residentNum"
+                      value={maskSSN(mypageAll.residentNum) || ''}
+                      disabled
+                    /></td>
             </tr>
             <tr>
               <td><label htmlFor="hireDate">입사일</label></td>
@@ -168,6 +268,90 @@ const employeeUpdateMypage = () => {
           <MonthlySalesChart />
         </div>
       </div>
+
+
+
+        {isModalOpen && (
+              <div className="modal">
+                <div className="modal-content">
+                  <span className="close" onClick={closeModal}>&times;</span>
+                  <h2>비밀번호 변경</h2>
+                  <form>
+                    <div>
+                      <label>현재 비밀번호:</label>
+                      <input
+                        type="password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label>새로운 비밀번호:</label>
+                      <input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label>새로운 비밀번호 확인:</label>
+                      <input
+                        type="password"
+                        value={confirmNewPassword}
+                        onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      />
+                    </div>
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                    <button type="button" onClick={handleSubmit}>변경</button>
+                    <button type="button" onClick={closeModal}>취소</button>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {/* Add CSS styles for modal */}
+            <style jsx>{`
+              .modal {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+              }
+              .modal-content {
+                background: white;
+                padding: 20px;
+                border-radius: 5px;
+                width: 300px;
+                text-align: center;
+              }
+              .close {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                font-size: 20px;
+                cursor: pointer;
+              }
+              form div {
+                margin-bottom: 15px;
+              }
+              input {
+                width: 100%;
+                padding: 8px;
+                box-sizing: border-box;
+              }
+              button {
+                margin: 5px;
+              }
+            `}</style>
+
+
+
+
     </div>
   );
 }

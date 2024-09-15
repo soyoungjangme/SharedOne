@@ -106,6 +106,14 @@
         WHERE employee_id = #{employeeId}
     </update>
 
+    <update id="employeeUpdateMypagePw" parameterType="com.project.tobe.dto.EmployeeDTO" >
+        UPDATE employee
+        SET
+        employee_pw = #{employeePw}
+        WHERE employee_id = #{employeeId}
+    </update>
+
+
 
 
     <update id="employeeDeleteTest" parameterType="java.util.List">

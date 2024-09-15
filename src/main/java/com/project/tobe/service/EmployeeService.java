@@ -22,4 +22,6 @@ public interface EmployeeService {
   public AuthorityDto mypageAll(String employeeId);
   public void employeeDeletePick(String employeeId);
   public void employeeUpdateMypage(EmployeeDTO dto);
+  public void employeeUpdateMypagePw(EmployeeDTO dto);
+
 }
