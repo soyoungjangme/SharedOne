@@ -163,12 +163,11 @@ function Product() {
         productCategory: '',
         productPrice: '',
     });
-
     const handleFilterChange = (e) => {
         const { id, value } = e.target;
 
-        // 상품원가 입력값이 음수일 경우 처리
-        if (id === 'productPrice' && value < 0) {
+        // 상품원가, 최소가격, 최대가격 입력값이 음수일 경우 처리
+        if ((id === 'productPrice' || id === 'minPrice' || id === 'maxPrice') && value < 0) {
             setFilters(prevFilters => ({
                 ...prevFilters,
                 [id]: 0 // 음수를 입력하면 0으로 변경
@@ -180,6 +179,7 @@ function Product() {
             }));
         }
     };
+
 
     //공백 제거, 대소문자 통일
     const normalizeString = (str) => str.replace(/\s+/g, '').toLowerCase();
@@ -197,9 +197,14 @@ function Product() {
             const normalizedItemCategory = normalizeString(item.productCategory);
             const itemPrice = parseFloat(item.productPrice);
 
-            const isPriceMatch = isNaN(filterPrice) ||
+            // 가격 필터 조건이 구간일 경우에 최소 가격과 최대 가격이 일치하는지 확인
+            const isPriceMatch =
+                isNaN(filterPrice) ||
                 (filters.priceComparison === 'gte' && itemPrice >= filterPrice) ||
-                (filters.priceComparison === 'lte' && itemPrice <= filterPrice);
+                (filters.priceComparison === 'lte' && itemPrice <= filterPrice) ||
+                (filters.priceComparison === 'range' &&
+                    itemPrice >= filters.minPrice &&
+                    itemPrice <= filters.maxPrice);
 
             return (
                 (!normalizedProductName || normalizedItemName.includes(normalizedProductName)) &&
@@ -467,41 +472,41 @@ function Product() {
     const handleModifySubmit = async () => {
         // 입력값이 비어있는지 확인
         const isInputEmpty = Object.values(modifyItem).some(value => !value);
-    
+
         if (isInputEmpty) {
             alert('상품 정보를 모두 입력해야 합니다.');
             return;
         }
-    
+
         // 공백 제거 및 대소문자 통일 후 중복 확인
         const normalizedProductName = normalizeString(modifyItem.productName);
-        
+
         // 등록된 상품 중 productYn = 'Y'인 데이터와 중복 확인
-        const isDuplicate = product.some(item => 
+        const isDuplicate = product.some(item =>
             normalizeString(item.productName) === normalizedProductName && // 공백 제거 및 대소문자 통일 후 비교
             item.productYn === 'Y' &&
             normalizeString(item.productName) !== normalizeString(originalItem.productName) // 자기 자신과는 비교하지 않음
         );
-    
+
         if (isDuplicate) {
             alert('이미 존재하는 상품명입니다.');
             return;
         }
-    
+
         if (!confirm('상품을 수정하시겠습니까?')) {
             return;
         }
-    
+
         // 수정된 내용이 있는지 확인
         const hasChanges = Object.keys(modifyItem).some(
             key => modifyItem[key] !== originalItem[key]
         );
-    
+
         if (!hasChanges) {
             alert('수정한 내용이 없습니다.');
             return;
         }
-    
+
         try {
             const response = await fetch('/product/updateProduct', {
                 method: 'POST',
@@ -510,7 +515,7 @@ function Product() {
                 },
                 body: JSON.stringify({ ...modifyItem, productName: normalizedProductName }), // 공백 제거 및 대소문자 통일된 값 전송
             });
-    
+
             if (response.ok) {
                 const result = await response.json();
                 alert('상품이 수정되었습니다.');
@@ -525,10 +530,10 @@ function Product() {
             alert('서버 오류가 발생했습니다.');
         }
     };
-    
-    
-    
-    
+
+
+
+
 
 
     // 문자열 길면 ... 처리
@@ -587,16 +592,44 @@ function Product() {
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="productPrice">상품원가</label>
                         <div className="filter-input-group">
-                            <input
-                                className="filter-input"
-                                type="number"
-                                id="productPrice"
-                                placeholder="상품원가"
-                                min={0}
-                                value={filters.productPrice}
-                                onChange={handleFilterChange}
-                                onKeyDown={handleKeyDown}
-                            />
+                            {/* 가격 비교 조건에 따라 인풋 필드를 다르게 표시 */}
+                            {filters.priceComparison === 'range' ? (
+                                <>
+                                    <input
+                                        className="filter-input"
+                                        type="number"
+                                        id="minPrice"
+                                        placeholder="최소가격"
+                                        min={0}
+                                        value={filters.minPrice}
+                                        onChange={handleFilterChange}
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                    <input
+                                        className="filter-input"
+                                        type="number"
+                                        id="maxPrice"
+                                        placeholder="최대가격"
+                                        min={0}
+                                        value={filters.maxPrice}
+                                        onChange={handleFilterChange}
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                </>
+                            ) : (
+                                // 구간 이외의 조건에서는 기본 상품원가 필드만 표시
+                                <input
+                                    className="filter-input"
+                                    type="number"
+                                    id="productPrice"
+                                    placeholder="상품원가"
+                                    min={0}
+                                    value={filters.productPrice}
+                                    onChange={handleFilterChange}
+                                    onKeyDown={handleKeyDown}
+                                />
+                            )}
+
                             <select
                                 id="priceComparison"
                                 value={filters.priceComparison}
@@ -605,10 +638,16 @@ function Product() {
                                 <option value="">선택</option>
                                 <option value="gte">이상</option>
                                 <option value="lte">이하</option>
+                                <option value="range">범위</option>
                             </select>
                         </div>
                     </div>
-                    <button className="filter-button" onClick={handleSearch}>조회</button>
+
+                    <div className="button-container">
+                        <button type="button" className="search-btn" onClick={handleSearch}>
+                            <i className="bi bi-search search-icon"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <button className="filter-button" id="add" type="button" onClick={handleAddClick}>상품 등록</button>

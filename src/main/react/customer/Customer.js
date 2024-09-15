@@ -115,8 +115,75 @@ function Customer() {
 
     // =============================== 고객 등록 부분 ===============================
 
-    // 고객 등록 리스트 상태
-    const [regist, setRegist] = useState({
+// 고객 등록 리스트 상태
+const [regist, setRegist] = useState({
+    customerName: '',
+    customerTel: '',
+    customerAddr: '',
+    postNum: '',
+    businessRegistrationNo: '',
+    nation: '',
+    dealType: '',
+    picName: '',
+    picEmail: '',
+    picTel: '',
+    activated: 'Y' // 기본값
+});
+
+// 고객 등록 리스트
+const [list, setList] = useState([]);
+
+// 입력 핸들러
+const handleInputAddChange = (e) => {
+    const { name, value } = e.target;
+    setRegist((prevRegist) => ({
+        ...prevRegist,
+        [name]: value,
+    }));
+};
+
+// 리스트에 등록된 고객 데이터 추가 핸들러
+const onClickListAdd = () => {
+    // 필수 입력값 확인
+    if (!regist.customerName || !regist.customerTel || !regist.customerAddr || 
+        !regist.postNum || !regist.businessRegistrationNo || !regist.nation ||
+        !regist.dealType || !regist.picName || !regist.picEmail || !regist.picTel) {
+        alert('고객 정보를 모두 입력해야 합니다.');
+        return;
+    }
+
+    // 중복 검사
+    if (checkDuplicateName(regist.customerName)) {
+        alert('고객명이 이미 존재합니다.');
+        return;
+    }
+
+    if (checkDuplicateBusinessRegistrationNo(regist.businessRegistrationNo)) {
+        alert('사업자 등록번호가 이미 존재합니다.');
+        return;
+    }
+
+    // 유효성 검사
+    if (!validatePhoneNumber(regist.customerTel) || !validatePhoneNumber(regist.picTel)) {
+        alert('전화번호 형식으로 입력해주세요.( - 포함)');
+        return;
+    }
+
+    if (!isValidBusinessRegistrationNo(regist.businessRegistrationNo)) {
+        alert('사업자등록번호는 XXX-XX-XXXXX 형식입니다.');
+        return;
+    }
+
+    if (!validateEmail(regist.picEmail)) {
+        alert('이메일 형식으로 입력해야 합니다.');
+        return;
+    }
+
+    // 유효성 검사 및 중복 확인 후 리스트에 추가
+    setList((prevList) => [...prevList, regist]);
+
+    // 입력값 초기화
+    setRegist({
         customerName: '',
         customerTel: '',
         customerAddr: '',
@@ -127,60 +194,39 @@ function Customer() {
         picName: '',
         picEmail: '',
         picTel: '',
-        activated: 'Y' // 기본값
+        activated: 'Y'
     });
+};
 
-    // 고객 등록 리스트
-    const [list, setList] = useState([]);
+// 서버로 고객 등록 요청
+const onClickRegistBtn = () => {
+    if (list.length === 0) {
+        console.error('등록할 고객이 없습니다.');
+        return;
+    }
 
-    // 입력 핸들러
-    const handleInputAddChange = (e) => {
-        const { name, value } = e.target;
-        setRegist((prevRegist) => ({
-            ...prevRegist,
-            [name]: value,
-        }));
-    };
+    // 고객 등록 컨펌창
+    if (!window.confirm(`고객을 등록하시겠습니까?`)) {
+        return; // 취소하면 등록 진행 안 함
+    }
 
-    // 리스트에 등록된 고객 데이터 추가 핸들러
-    const onClickListAdd = () => {
-        setList((prevList) => [...prevList, regist]); // 기존 리스트에 새 고객 데이터 추가
-        setRegist({
-            customerName: '',
-            customerTel: '',
-            customerAddr: '',
-            postNum: '',
-            businessRegistrationNo: '',
-            nation: '',
-            dealType: '',
-            picName: '',
-            picEmail: '',
-            picTel: '',
-            activated: 'Y'
-        }); // 입력값 초기화
-    };
+    axios
+        .post('/customer/customerRegist', list, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then((response) => {
+            console.log('등록 성공:', response.data);
+            setList([]); // 등록 후 리스트 초기화
+            alert(`${list.length}명의 고객이 성공적으로 등록되었습니다.`);
+            window.location.reload(); // 페이지 새로고침
+        })
+        .catch((error) => {
+            console.error('등록 중 오류 발생:', error.response.data);
+        });
+};
 
-    // 서버로 고객 등록 요청
-    const onClickRegistBtn = () => {
-        if (list.length > 0) {
-            axios
-                .post('/customer/customerRegist', list, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then((response) => {
-                    console.log('등록 성공:', response.data);
-                    setList([]); // 등록 후 리스트 초기화
-                    window.location.reload(); // 페이지 새로고침
-                })
-                .catch((error) => {
-                    console.error('등록 중 오류 발생:', error.response.data);
-                });
-        } else {
-            console.error('등록할 항목이 없습니다.');
-        }
-    };
 
 
     // --- 테이블 정렬 기능
@@ -270,13 +316,21 @@ function Customer() {
 
     // 수정 클릭 시 호출
     const handleUpdateClick = () => {
+        // 필수 입력값 확인
+        if (!modifyItem.customerName || !modifyItem.customerTel || !modifyItem.customerAddr ||
+            !modifyItem.postNum || !modifyItem.businessRegistrationNo || !modifyItem.nation ||
+            !modifyItem.dealType || !modifyItem.picName || !modifyItem.picEmail || !modifyItem.picTel) {
+            alert('고객 정보를 모두 입력해야 합니다.');
+            return;
+        }
+
         if (checkDuplicateName(modifyItem.customerName)) {
             alert('고객명이 이미 존재합니다.');
             return;
         }
 
-        if (!validatePhoneNumber(modifyItem.customerTel)) {
-            alert('전화번호 형식으로 입력해주세요(-포함).');
+        if (!validatePhoneNumber(modifyItem.customerTel) || !validatePhoneNumber(modifyItem.picTel)) {
+            alert('전화번호 형식으로 입력해주세요.( - 포함)');
             return;
         }
 
@@ -291,10 +345,9 @@ function Customer() {
         }
 
         if (!validateEmail(modifyItem.picEmail)) {
-            alert('이메일 형식으로 입력해주세요.');
+            alert('이메일 형식으로 입력해야 합니다.');
             return;
         }
-
 
         if (!window.confirm('수정하시겠습니까?')) {
             return;
@@ -721,14 +774,56 @@ function Customer() {
                                             <th><label htmlFor="picTel">담당자연락처</label></th>
                                             <td><input type="text" placeholder="담당자연락처" id="picTel" name="picTel" value={regist.picTel} onChange={handleInputAddChange} /></td>
                                         </tr>
-
                                     </tbody>
-
                                 </table>
+
                             </div>
 
                             <div className="btn-add">
                                 <button className="btn-common btn-add-p" onClick={onClickListAdd}> 추가</button>
+                            </div>
+
+                            <div className="RegistFormList">
+                                <div style={{ fontWeight: 'bold' }}> 총 N 건</div>
+                                <table className="formTableList">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>고객명</th>
+                                            <th>고객연락처</th>
+                                            <th>사업자등록번호</th>
+                                            <th>고객주소</th>
+                                            <th>우편번호</th>
+                                            <th>국가</th>
+                                            <th>거래유형</th>
+                                            <th>담당자명</th>
+                                            <th>담장자이메일</th>
+                                            <th>담당자연락처</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {list.length > 0 ? list.map((item, index) => (
+                                            <tr key={index}>
+                                                <td>{index + 1}</td>
+                                                <td>{item.customerName}</td>
+                                                <td>{item.customerTel}</td>
+                                                <td>{item.businessRegistrationNo}</td>
+                                                <td>{item.customerAddr}</td>
+                                                <td>{item.postNum}</td>
+                                                <td>{item.nation}</td>
+                                                <td>{item.dealType}</td>
+                                                <td>{item.picName}</td>
+                                                <td>{item.picEmail}</td>
+                                                <td>{item.picTel}</td>
+                                            </tr>
+                                        )) : (
+                                            <tr>
+                                                <td colSpan="11">추가된 고객이 없습니다.</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+
                             </div>
 
                             {/* 주소 모달 */}
