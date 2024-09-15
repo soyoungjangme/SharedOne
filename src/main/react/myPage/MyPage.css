@@ -70,7 +70,15 @@ body {
  gap: 5%;
  flex-direction: row-reverse;
  }*/
-
+.pw-btn {
+    padding: 6px 12px;
+        border: 1px solid #004e90;
+        background-color: #004e90;
+        color: white;
+        font-size: 14px;
+        border-radius: 3px;
+        cursor: pointer;
+}
 
         .mypage-table  select {
           text-align: center;

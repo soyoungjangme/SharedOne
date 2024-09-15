@@ -6,13 +6,19 @@ import com.project.tobe.security.EmployeeDetails;
 import com.project.tobe.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/mypage")
 public class MypageController {
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
 
   @Autowired
   @Qualifier("employeeService")
@@ -30,6 +36,12 @@ public class MypageController {
    employeeService.employeeUpdateMypage(dto);
   }
 
+  @PostMapping("/employeeUpdateMypagePw")
+  public void employeeUpdateMypagePw(@RequestBody EmployeeDTO dto){
+    System.out.println(dto);
+    employeeService.employeeUpdateMypagePw(dto);
+  }
+
   @GetMapping("/mypageSession")
   public String mypageSession(Authentication authentication){
     String userId = "";
@@ -43,6 +55,21 @@ public class MypageController {
     return userId;
 
   }
+
+
+  @PostMapping("/mypagePwTest")
+  public boolean mypagePwTest(Authentication authentication, @RequestBody String pw) {
+    boolean isMatch = false;
+
+    if (authentication != null) {
+      EmployeeDetails user = (EmployeeDetails) authentication.getPrincipal(); // Get the authenticated user
+      isMatch = passwordEncoder.matches(pw.replace("\"", ""),user.getPassword());
+    }
+
+    return isMatch;
+  }
+
+
 
 
 
