@@ -38,7 +38,8 @@ public class MainController {
             model.addAttribute("authName", user.getUsername());
             model.addAttribute("nickName", user.getNickname());
             model.addAttribute("auth", user.getUserAuthorityGrade());
-//            model.addAttribute("authGradeName", user.getUserAuthorityName());
+//            System.out.println("권한명" + user.getUserAuthorityName());
+//            model.addAttribute("authName", user.getUserAuthorityName());
 
         }
 
@@ -53,6 +54,12 @@ public class MainController {
         }
         return "login";
     }
+
+    @GetMapping("/accessDenied")
+    public String accessDenied() {
+        return "accessDenied";
+    }
+
 
 //    @GetMapping("/login.user")
 //    public ResponseEntity<Map<String, String>> login(@RequestParam(value = "err", required = false) String err) {
