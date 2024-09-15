@@ -4,6 +4,7 @@ import './Order.css'
 import './OrderRegist.css'
 import './OrderModalDetail.css'
 import useCheckboxManager from "../js/CheckboxManager";
+import ModifyOrderModal from './ModifyOrderModal';
 import axios from 'axios';
 
 function Order() {
@@ -224,10 +225,10 @@ function Order() {
     };
 
     // 값 확인
-   /* useEffect(() => {
-        console.log('checkProd:', checkProd);
-        console.log('addCheckProd:', addCheckProd);
-    }, [checkProd, addCheckProd]);*/
+    /* useEffect(() => {
+         console.log('checkProd:', checkProd);
+         console.log('addCheckProd:', addCheckProd);
+     }, [checkProd, addCheckProd]);*/
 
     //상품 수량
     const [quantities, setQuantities] = useState(0);
@@ -242,16 +243,6 @@ function Order() {
     /*---------------jsy주문 등록 끝---------------*/
 
 // ---  모달창 띄우는 스크립트
-    const [isVisibleDetail, setIsVisibleDetail] = useState(false);
-
-    const handleAddClickDetail = () => {
-        setIsVisibleDetail(true);
-    };
-
-    const handleCloseClickDetail = () => {
-        setIsVisibleDetail(false);
-    };
-
     const [isVisibleCSV, setIsVisibleCSV] = useState(false);
 
     const handleAddClickCSV = () => {
@@ -270,49 +261,25 @@ function Order() {
     };
 
 
-
-/* 아래부터는 상세보기 관련된 모든 것 */
+// 유선화 시작 -업데이트 처리용 props 전달-
+    /* 아래부터는 상세보기 관련된 모든 것 */
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
-
-    /*상세보기 창 열기*/
-    const handleModify = (item) => {
-        setSelectedOrder(item);
-        setIsModifyModalVisible(true);
-    };
 
     /*창 닫기*/
     const handleModifyCloseClick = () => {
         setIsModifyModalVisible(false);
+        setSelectedOrderNo(null);
     }
 
-    /*입력값 변동사항 있을 시*/
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setSelectedOrder(prev => ({
-            ...prev,
-            [name]: value
-        }));
+    const handleOrderUpdate = (updatedOrder) => {
+        setOrder(prevOrders =>
+            prevOrders.map(order =>
+                order.orderNo === updatedOrder.orderNo ? updatedOrder : order
+            )
+        );
     };
-
-    /*변동사항 update 처리*/
-    const handleSaveChange = async () => {
-        try {
-            // API 호출로 수정된 정보 저장
-            const response = await axios.put(`/order-detail/${selectedOrder.orderNo}`, selectedOrder);
-            if (response.status === 200) {
-                alert('주문 정보가 성공적으로 수정되었습니다.');
-                setIsModifyModalVisible(false);
-                // 주문 목록 새로고침
-                effectOrder();
-            }
-        } catch (error) {
-            console.error('주문 수정 중 오류 발생:', error);
-            alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
-        }
-    };
-
-
+// 유선화 끝
 
     return (
         <div>
@@ -355,11 +322,11 @@ function Order() {
                                 <label className="filter-label" htmlFor="prod">상품명</label>
                                 <select id="prod" className="filter-input" value={form.prod || ''} onChange={handleChange} >
                                     <option value="">선택</option>
-                                        {prod.map((product) => (
-                                            <option key={product.productNo} value={product.productNo}>
-                                                {product.productName}
-                                            </option>
-                                        ))}
+                                    {prod.map((product) => (
+                                        <option key={product.productNo} value={product.productNo}>
+                                            {product.productName}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
@@ -380,7 +347,7 @@ function Order() {
                     </div>
                     <div className="button-container">
                         <button type="button" className="search-btn" id="searchOrder" onClick={handleSearchBtn}><i
-                        className="b    i bi-search search-icon"></i>
+                            className="b    i bi-search search-icon"></i>
                         </button>
                     </div>
                 </div>
@@ -426,10 +393,10 @@ function Order() {
                             </button>
                         </th>
                         <th>
-                        주문 상세
-                        <button className="sortBtn" onClick={() => sortData('details')}>
-                        {sortConfig.key === 'details' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                        </button>
+                            주문 상세
+                            <button className="sortBtn" onClick={() => sortData('details')}>
+                                {sortConfig.key === 'details' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                            </button>
                         </th>
 
 
@@ -437,15 +404,14 @@ function Order() {
                     </thead>
                     <tbody>
                     {order.length > 0 ? (
-                        order.map((item, index) => (
-                                <tr key={`${item.orderNo}`} className={checkItem[index+1] ? 'selected-row' : ''} onDoubleClick={() => {
-                                handleModify(item)
-                                }}>
+                        order.map((item, index) => (/*더블 클릭 시 상세 보기 창 - 유선화*/
+                            <tr key={`${item.orderNo}`} className={checkItem[index+1] ? 'selected-row' : ''}
+                                onDoubleClick={() => handleDetailView(item.orderNo)}>
                                 <td>
                                     <input
-                                    type="checkbox"
-                                    checked={checkItem[index + 1] || false}
-                                    onChange={handleCheckboxChange}
+                                        type="checkbox"
+                                        checked={checkItem[index + 1] || false}
+                                        onChange={handleCheckboxChange}
                                     />
                                 </td>
                                 <td>{index + 1}</td>
@@ -454,10 +420,17 @@ function Order() {
                                 <td className="ellipsis">{item.customerN}</td>
                                 <td>{item.status}</td>
                                 <td>{item.date}</td>
-                                    {/*버튼도 더블 클릭해야 상세보기 창이 열려서 수정함 - ysh*/}
-                                <td><button className="btn-common" onClick={() => handleModify(item)}> 상세보기 </button> </td>
+                                {/*상세 보기 버튼에 이벤트 연결 - 유선화*/}
+                                <td>
+                                    <button className="btn-common"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // 클릭 이벤트 행 전체 방지
+                                                handleDetailView(item.orderNo);
+                                            }}> 상세보기
+                                    </button>
+                                </td>
                                 {/*<td>{item.prodName}</td>*/}
-                                </tr>
+                            </tr>
                         ))
                     ) : (
                         <tr>
@@ -473,9 +446,9 @@ function Order() {
                 </table>
             </div>
 
-{/* 여기 아래는 모달이다. */}
+            {/* 여기 아래는 모달이다. */}
 
-{/*jsy 주문등록 모달창 시작*/}
+            {/*jsy 주문등록 모달창 시작*/}
             {isVisible && (
                 <div class="confirmRegist">
                     <div class="fullBody">
@@ -487,11 +460,11 @@ function Order() {
 
                                 <div class="btns">
                                     <div class="btn-add2">
-                                            <button> 임시저장 </button>
+                                        <button> 임시저장 </button>
 
                                     </div>
                                     <div class="btn-close">
-                                          <button> 등록하기</button>
+                                        <button> 등록하기</button>
                                     </div>
                                 </div>
                             </div>
@@ -504,15 +477,15 @@ function Order() {
 
                                         <th colspan="1"><label htmlFor="orderCustomer">고객사 명</label></th>
                                         <td colspan="3">
-                                        <select id="orderCustomer" value={registCustomer || ''} onChange={handleCustomer}>
-                                            <option value="">선택</option>
-                                            {orderCustomer.map(customer => (
-                                                <option key={customer.customerNo} value={customer.customerNo}>
-                                                    {customer.customerName}
-                                                </option>
-                                            ))
-                                            }
-                                        </select></td>
+                                            <select id="orderCustomer" value={registCustomer || ''} onChange={handleCustomer}>
+                                                <option value="">선택</option>
+                                                {orderCustomer.map(customer => (
+                                                    <option key={customer.customerNo} value={customer.customerNo}>
+                                                        {customer.customerName}
+                                                    </option>
+                                                ))
+                                                }
+                                            </select></td>
 
                                         <th colspan="1"><label htmlFor="">납품 요청일</label></th>
                                         <td colspan="3"><input type="date"/></td>
@@ -554,78 +527,78 @@ function Order() {
                                 <div style={{fontWeight: 'bold'}}> 총 N 건</div>
                                 <table className="formTableList">
                                     <thead>
-                                        <tr>
-                                            <th><input type="checkbox"/></th>
-                                            <th>no</th>
-                                            <th>상품 코드</th>
-                                            <th>상품 명</th>
-                                            <th>저자</th>
-                                            <th>판매가</th>
-                                            <th>판매 기간</th>
-                                        </tr>
+                                    <tr>
+                                        <th><input type="checkbox"/></th>
+                                        <th>no</th>
+                                        <th>상품 코드</th>
+                                        <th>상품 명</th>
+                                        <th>저자</th>
+                                        <th>판매가</th>
+                                        <th>판매 기간</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        {customPrice.map((prodList, index) => (
-                                            <tr key={index}>
-                                                <td><input type="checkbox" id="checkProdList"
-                                                        onChange={handleCheck(prodList.prodNo,
-                                                                                prodList.prodCat,
-                                                                                prodList.prodName,
-                                                                                prodList.salePrice,
-                                                                                prodList.saleStart,
-                                                                                prodList.saleEnd)}/></td>
-                                                <td>{index + 1}</td>
-                                                <td>{prodList.prodNo}</td>
-                                                <td>{prodList.prodName}</td>
-                                                <td>{prodList.prodWriter}</td>
-                                                <td>{prodList.salePrice}</td>
-                                                <td>{prodList.saleStart} ~ {prodList.saleEnd}</td>
-                                            </tr>
-                                        ))}
+                                    {customPrice.map((prodList, index) => (
+                                        <tr key={index}>
+                                            <td><input type="checkbox" id="checkProdList"
+                                                       onChange={handleCheck(prodList.prodNo,
+                                                           prodList.prodCat,
+                                                           prodList.prodName,
+                                                           prodList.salePrice,
+                                                           prodList.saleStart,
+                                                           prodList.saleEnd)}/></td>
+                                            <td>{index + 1}</td>
+                                            <td>{prodList.prodNo}</td>
+                                            <td>{prodList.prodName}</td>
+                                            <td>{prodList.prodWriter}</td>
+                                            <td>{prodList.salePrice}</td>
+                                            <td>{prodList.saleStart} ~ {prodList.saleEnd}</td>
+                                        </tr>
+                                    ))}
                                     </tbody>
                                 </table>
                             </div>
 
-                        <div className="RegistFormList">
-                                    <div style={{fontWeight: 'bold'}}> 총 N 건</div>
-                                    <table className="formTableList">
-                                        <thead>
-                                            <tr>
-                                                <th><input type="checkbox"/></th>
-                                                <th>no</th>
-                                                <th>상품 종류</th>
-                                                <th>상품 명</th>
-                                                <th>상품 수량</th>
-                                                <th>총 액</th>
-                                                <th>판매시작날짜</th>
-                                                <th>판매종료날짜</th>
+                            <div className="RegistFormList">
+                                <div style={{fontWeight: 'bold'}}> 총 N 건</div>
+                                <table className="formTableList">
+                                    <thead>
+                                    <tr>
+                                        <th><input type="checkbox"/></th>
+                                        <th>no</th>
+                                        <th>상품 종류</th>
+                                        <th>상품 명</th>
+                                        <th>상품 수량</th>
+                                        <th>총 액</th>
+                                        <th>판매시작날짜</th>
+                                        <th>판매종료날짜</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {addCheckProd.map((addProd, index) => {
+                                        const qty = quantities[index] || 0; // 상태에서 수량을 가져옵니다.
+                                        return (
+                                            <tr key={index}>
+                                                <td><input type="checkbox"/></td>
+                                                <td>{index + 1}</td>
+                                                <td>{addProd.prodCat}</td>
+                                                <td>{addProd.prodName}</td>
+                                                <td>
+                                                    <input type="number" id={`prodQty_${index}`} onChange={handleQuantityChange(index)} placeholder="수량"/>
+                                                </td>
+                                                <td>{addProd.salePrice * qty}</td> {/* 총액 계산 */}
+                                                <td>{addProd.saleStart}</td>
+                                                <td>{addProd.saleEnd}</td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            {addCheckProd.map((addProd, index) => {
-                                                const qty = quantities[index] || 0; // 상태에서 수량을 가져옵니다.
-                                                return (
-                                                    <tr key={index}>
-                                                        <td><input type="checkbox"/></td>
-                                                        <td>{index + 1}</td>
-                                                        <td>{addProd.prodCat}</td>
-                                                        <td>{addProd.prodName}</td>
-                                                        <td>
-                                                        <input type="number" id={`prodQty_${index}`} onChange={handleQuantityChange(index)} placeholder="수량"/>
-                                                        </td>
-                                                        <td>{addProd.salePrice * qty}</td> {/* 총액 계산 */}
-                                                        <td>{addProd.saleStart}</td>
-                                                        <td>{addProd.saleEnd}</td>
-                                                    </tr>
-                                                );
-                                            })}
-                                            <tr style={{fontWeight: 'bold'}}>
-                                                <td colspan="6"> 합계</td>
-                                                <td colspan="2"> 13,000,000</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        );
+                                    })}
+                                    <tr style={{fontWeight: 'bold'}}>
+                                        <td colspan="6"> 합계</td>
+                                        <td colspan="2"> 13,000,000</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
 
 
                         </div>
@@ -638,205 +611,23 @@ function Order() {
             )}
             {/* 모달창의 끝  */}
 
-{/* 상세 보기 모달창 - 선화*/}
- {isModifyModalVisible && (
-
-        <div className="confirmRegist">
-                           <div className="fullBody">
-                               <div className="form-container">
-                                   <button className="close-btn" onClick={handleModifyCloseClick}> &times; </button>
-                                   <div className="form-header">
-                                       <h1>상세 조회</h1>
-                                       <div className="btns">
-                                           <div className="btn-add">
-                                               <button type="button">수정하기</button>
-                                               {/* Changed type to "button" */}
-                                           </div>
-                                       </div>
-                                   </div>
-                                   <form className="RegistForm">
-                                       <table className="formTable">
-                                           <tbody>
-                                           <tr>
-                                               {/*상품 종류 없애고 배치 살짝 바꿈 1 - ysh*/}
-                                               <th colSpan=""><label htmlFor="confirmTitle">주문번호</label></th>
-                                               <td colSpan="">
-                                                   <input
-                                                       type="text"
-                                                       name="orderNo"
-                                                       value={selectedOrder.orderNo}
-                                                       readOnly  // 주문번호는 수정 불가능하게 유지
-                                                   />
-                                               </td>
-                                               <th colSpan=""><label htmlFor="confirmTitle">주문 등록일</label></th>
-                                               <td colSpan="">
-                                                   <input
-                                                       type="date"
-                                                       name="date"
-                                                       value={selectedOrder.date}
-                                                       onChange={handleInputChange}
-                                                   />
-                                               </td>
-                                               <th colSpan=""><label htmlFor="picName">담당자명</label></th>
-                                               <td colSpan="">
-                                                   <input
-                                                       type="text"
-                                                       name="manager"
-                                                       value={selectedOrder.manager}
-                                                       onChange={handleInputChange}
-                                                   />
-                                               </td>
+            {/* 상세 보기 모달창 - 선화*/}
+            {/* 코드 너무 길어져서 이사 가요! */}
+            <ModifyOrderModal
+                orderNo={selectedOrderNo}
+                isOpen={isModifyModalVisible}
+                onClose={handleModifyCloseClick}
+                onUpdate={handleOrderUpdate}
+                customers={mycustomer}
+                products={customPrice}
+            />
 
 
-                                           </tr>
-
-
-                                           <tr>
-                                               {/*상품 종류 없애고 배치 살짝 바꿈2 - ysh*/}
-                                               <th colSpan=""><label htmlFor="customerName">고객명</label></th>
-                                               <td colSpan="">
-                                                   <input
-                                                       type="text"
-                                                       name="customerN"
-                                                       value={selectedOrder.customerN}
-                                                       onChange={handleInputChange}
-                                                   />
-                                               </td>
-                                               <th colSpan=""><label htmlFor="productName">상품명</label></th>
-                                               <td colSpan="">
-                                                   <input
-                                                       type="text"
-                                                       name="productName"
-
-                                                       placeholder="필드 입력"
-                                                   />
-                                               </td>
-                                               <th colSpan=""><label htmlFor="qty">상품수량</label></th>
-                                               <td colSpan="">
-                                                   <input
-                                                       type="text"
-                                                       name="orderQty"
-
-                                                       placeholder="필드 입력"
-                                                   />
-                                               </td>
-                                           </tr>
-                                           <tr>
-                                               <th colSpan=""><label htmlFor="customPrice">판매가</label></th>
-                                               <td colSpan="">
-                                                   <input
-                                                       type="text"
-                                                       name="customPrice"
-
-                                                       placeholder="필드 입력"
-                                                   />
-                                               </td>
-                                               <th colSpan=""><label htmlFor="totalAmount">총 금액</label></th>
-                                               <td colSpan="">
-                                                   <input
-                                                       type="text"
-                                                       name="totalAmount"
-
-                                                       placeholder="필드 입력"
-                                                   />
-                                               </td>
-                                               <th colSpan=""><label htmlFor="delDate">납품 요청일</label></th>
-                                               <td colSpan="">
-                                                   <input
-                                                       type="date"
-                                                       name="delDate"
-
-                                                   />
-                                               </td>
-                                           </tr>
-
-
-                                           </tbody>
-                                       </table>
-
-                                         <table className="formTable2">
-
-                                             <tr>
-                                                 <th colSpan="1"><label htmlFor="approver">결재자</label></th>
-                                                 <td colSpan="3">
-                                                     <input
-                                                         type="text"
-                                                         name="approver"
-
-                                                         placeholder="필드 입력"
-                                                     />
-                                                 </td>
-                                                 <th colSpan="1"><label htmlFor="approvalStatus">결재 여부</label></th>
-                                                 <td colSpan="">
-                                                     <select
-                                                         name="status"
-                                                         value={selectedOrder.status}
-                                                         onChange={handleInputChange}
-                                                     >
-                                                         <option value="임시저장">임시저장</option>
-                                                         <option value="대기">대기</option>
-                                                         <option value="승인">승인</option>
-                                                         <option value="반려">반려</option>
-                                                     </select>
-                                                 </td>
-                                             </tr>
-
-                                             <tr>
-                                                 <th colSpan="1"><label htmlFor="remarks">비고</label></th>
-                                                 <td colSpan="8">
-                                                     <textarea>  </textarea>
-                                                 </td>
-                                             </tr>
-
-
-                                         </table>
-
-
-                                   </form>
-
-                                   <div className="RegistFormList">
-                                       <div style={{fontWeight: 'bold'}}> 총 건</div>
-                                       <table className="formTableList">
-                                           <thead>
-                                           <tr>
-                                               <th><input type="checkbox"
-                                                          /></th>
-                                               <th>No</th>
-                                               <th>고객명</th>
-                                               <th>상품명</th>
-                                               <th>상품 수량</th>
-                                               <th>판매가</th>
-                                               <th>총 금액</th>
-                                               <th>납품 요청일</th>
-                                               <th>담당자</th>
-                                           </tr>
-                                           </thead>
-                                           <tbody>
-
-                                           <tr style={{fontWeight: 'bold'}}>
-                                               <td colSpan="8"> 합계</td>
-                                               <td colSpan="2">
-
-                                               </td>
-                                           </tr>
-                                           </tbody>
-                                       </table>
-                                       {showDelete && (
-                                           <button className='delete-btn' onClick={handleDelete}>삭제</button>
-                                       )}
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-
-            )}
-
-
-            </div>
-                );
-            }
+        </div>
+    );
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-<Order />
+    <Order/>
 );

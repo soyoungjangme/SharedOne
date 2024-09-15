@@ -67,4 +67,71 @@
         </association>
     </resultMap>
 
+
+    <!--상세 보기 - 유선화 START-->
+    <!--
+    SELECT
+        oh.order_no, oh.reg_date, oh.del_date, oh.confirm_status, oh.confirm_change_date, oh.remarks,
+        c.customer_no, c.customer_name,
+        e.employee_id, e.employee_name,
+        ob.product_no, ob.order_product_qty,
+        p.product_name, p.product_category, p.product_writer,
+        COALESCE(pr.custom_price, 0) AS custom_price -- NULL일 경우 기본값 0으로 처리
+    FROM
+        order_header oh
+    JOIN
+        customer c ON oh.customer_no = c.customer_no
+    JOIN
+        employee e ON oh.employee_id = e.employee_id
+    JOIN
+        order_body ob ON oh.order_no = ob.order_no
+    JOIN
+        product p ON ob.product_no = p.product_no
+    LEFT JOIN
+        price pr ON p.product_no = pr.product_no AND c.customer_no = pr.customer_no
+    WHERE
+        oh.order_no = #{orderNo};
+
+    -->
+
+    <select id="getOrderDetail" resultMap="OrderDetailResultMap">
+        SELECT oh.order_no, oh.reg_date, oh.del_date, oh.confirm_status,
+               c.customer_no, c.customer_name,
+               e.employee_id, e.employee_name,
+               ob.product_no, ob.order_product_qty,
+               p.product_name, p.product_price
+        FROM order_header oh
+                 JOIN customer c ON oh.customer_no = c.customer_no
+                 JOIN employee e ON oh.employee_id = e.employee_id
+                 JOIN order_body ob ON oh.order_no = ob.order_no
+                 JOIN product p ON ob.product_no = p.product_no
+        WHERE oh.order_no = #{orderNo}
+    </select>
+
+    <resultMap id="OrderDetailResultMap" type="OrderH">
+        <id property="orderNo" column="order_no"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="delDate" column="del_date"/>
+        <result property="confirmStatus" column="confirm_status"/>
+        <association property="customer" javaType="CustomerDTO">
+            <id property="customerNo" column="customer_no"/>
+            <result property="customerName" column="customer_name"/>
+        </association>
+        <association property="employee" javaType="EmployeeDTO">
+            <id property="employeeId" column="employee_id"/>
+            <result property="employeeName" column="employee_name"/>
+        </association>
+        <collection property="orderBList" ofType="OrderB">
+            <id property="orderNo" column="order_no"/>
+            <id property="productNo" column="product_no"/>
+            <result property="orderProductQty" column="order_product_qty"/>
+            <association property="product" javaType="Product">
+                <id property="productNo" column="product_no"/>
+                <result property="productName" column="product_name"/>
+                <result property="productPrice" column="product_price"/>
+            </association>
+        </collection>
+    </resultMap>
+    <!--상세 보기 - 유선화 END-->
+
 </mapper>
