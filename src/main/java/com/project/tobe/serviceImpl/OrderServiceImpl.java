@@ -1,6 +1,6 @@
-package com.project.tobe.serviceimpl;
+package com.project.tobe.serviceImpl;
 
-import com.project.tobe.dto.OrderH;
+import com.project.tobe.dto.OrderHDTO;
 import com.project.tobe.dto.OrderSearchDTO;
 import com.project.tobe.dto.PriceDTO;
 import com.project.tobe.mapper.OrderMapper;
@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service("orderservice")
+@Service("orderService")
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderMapper orderMapper;
 
     @Override
-    public List<OrderH> getOrder(OrderSearchDTO criteria) {
+    public List<OrderHDTO> getOrder(OrderSearchDTO criteria) {
         System.out.println("orderList서비스 실행됨");
         return orderMapper.getOrder(criteria);
     }
@@ -30,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
 
     /*상세 보기 - 유선화 START*/
     @Override
-    public OrderH getOrderDetail(Long orderNo) {
+    public OrderHDTO getOrderDetail(Long orderNo) {
         return orderMapper.getOrderDetail(orderNo);
     }
     /*상세 보기 - 유선화 END*/

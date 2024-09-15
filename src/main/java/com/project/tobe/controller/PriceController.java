@@ -1,12 +1,10 @@
 package com.project.tobe.controller;
 
 import com.opencsv.exceptions.CsvValidationException;
-import com.project.tobe.customer.CustomerService;
+import com.project.tobe.service.CustomerService;
 import com.project.tobe.dto.CustomerDTO;
-import com.project.tobe.dto.EmailDTO;
 import com.project.tobe.dto.PriceProductCustomerDTO;
 import com.project.tobe.dto.PriceDTO;
-import com.project.tobe.entity.Customer;
 import com.project.tobe.entity.Product;
 import com.project.tobe.service.EmailService;
 import com.project.tobe.service.PriceService;

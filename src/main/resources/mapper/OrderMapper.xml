@@ -6,7 +6,7 @@
 <mapper namespace="com.project.tobe.mapper.OrderMapper">
 
     <!-- 주문 데이터 조회 -->
-    <select id="getOrder" resultMap="OrderH">
+    <select id="getOrder" resultMap="OrderHDTO">
         select oh.order_no, c.customer_name, emp.employee_name,
         oh.confirm_status, oh.reg_date
         from order_header oh
@@ -31,7 +31,7 @@
         </where>
     </select>
 
-    <resultMap id="OrderH" type="OrderH">
+    <resultMap id="OrderH" type="OrderHDTO">
         <result column="order_no" property="orderNo"/> <!-- 주문번호 -->
         <result column="reg_date" property="regDate"/> <!-- 작성일 -->
         <result column="confirm_status" property="confirmStatus"/> <!-- 결재상태 -->
@@ -69,30 +69,30 @@
 
 
     <!--상세 보기 - 유선화 START-->
-    <!--
-    SELECT
-        oh.order_no, oh.reg_date, oh.del_date, oh.confirm_status, oh.confirm_change_date, oh.remarks,
-        c.customer_no, c.customer_name,
-        e.employee_id, e.employee_name,
-        ob.product_no, ob.order_product_qty,
-        p.product_name, p.product_category, p.product_writer,
-        COALESCE(pr.custom_price, 0) AS custom_price -- NULL일 경우 기본값 0으로 처리
-    FROM
-        order_header oh
-    JOIN
-        customer c ON oh.customer_no = c.customer_no
-    JOIN
-        employee e ON oh.employee_id = e.employee_id
-    JOIN
-        order_body ob ON oh.order_no = ob.order_no
-    JOIN
-        product p ON ob.product_no = p.product_no
-    LEFT JOIN
-        price pr ON p.product_no = pr.product_no AND c.customer_no = pr.customer_no
-    WHERE
-        oh.order_no = #{orderNo};
+<!--    &lt;!&ndash;-->
+<!--    SELECT-->
+<!--        oh.order_no, oh.reg_date, oh.del_date, oh.confirm_status, oh.confirm_change_date, oh.remarks,-->
+<!--        c.customer_no, c.customer_name,-->
+<!--        e.employee_id, e.employee_name,-->
+<!--        ob.product_no, ob.order_product_qty,-->
+<!--        p.product_name, p.product_category, p.product_writer,-->
+<!--        COALESCE(pr.custom_price, 0) AS custom_price &#45;&#45; NULL일 경우 기본값 0으로 처리-->
+<!--    FROM-->
+<!--        order_header oh-->
+<!--    JOIN-->
+<!--        customer c ON oh.customer_no = c.customer_no-->
+<!--    JOIN-->
+<!--        employee e ON oh.employee_id = e.employee_id-->
+<!--    JOIN-->
+<!--        order_body ob ON oh.order_no = ob.order_no-->
+<!--    JOIN-->
+<!--        product p ON ob.product_no = p.product_no-->
+<!--    LEFT JOIN-->
+<!--        price pr ON p.product_no = pr.product_no AND c.customer_no = pr.customer_no-->
+<!--    WHERE-->
+<!--        oh.order_no = #{orderNo};-->
 
-    -->
+<!--    &ndash;&gt;-->
 
     <select id="getOrderDetail" resultMap="OrderDetailResultMap">
         SELECT oh.order_no, oh.reg_date, oh.del_date, oh.confirm_status,
@@ -108,7 +108,7 @@
         WHERE oh.order_no = #{orderNo}
     </select>
 
-    <resultMap id="OrderDetailResultMap" type="OrderH">
+    <resultMap id="OrderDetailResultMap" type="OrderHDTO">
         <id property="orderNo" column="order_no"/>
         <result property="regDate" column="reg_date"/>
         <result property="delDate" column="del_date"/>
@@ -121,11 +121,11 @@
             <id property="employeeId" column="employee_id"/>
             <result property="employeeName" column="employee_name"/>
         </association>
-        <collection property="orderBList" ofType="OrderB">
+        <collection property="orderBList" ofType="OrderBDTO">
             <id property="orderNo" column="order_no"/>
             <id property="productNo" column="product_no"/>
             <result property="orderProductQty" column="order_product_qty"/>
-            <association property="product" javaType="Product">
+            <association property="product" javaType="ProductDTO">
                 <id property="productNo" column="product_no"/>
                 <result property="productName" column="product_name"/>
                 <result property="productPrice" column="product_price"/>
