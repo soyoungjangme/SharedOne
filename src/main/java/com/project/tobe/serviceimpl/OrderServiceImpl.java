@@ -28,5 +28,10 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.getPrice(iocn);
     }
 
-
+    /*상세 보기 - 유선화 START*/
+    @Override
+    public OrderH getOrderDetail(Long orderNo) {
+        return orderMapper.getOrderDetail(orderNo);
+    }
+    /*상세 보기 - 유선화 END*/
 }
