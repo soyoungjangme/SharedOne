@@ -3,6 +3,7 @@ package com.project.tobe.customer;
 import com.project.tobe.dto.CustomerSearchDTO;
 import com.project.tobe.dto.CustomerDTO;
 import com.project.tobe.entity.Customer;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
