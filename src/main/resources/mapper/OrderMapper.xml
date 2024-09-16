@@ -6,7 +6,7 @@
 <mapper namespace="com.project.tobe.mapper.OrderMapper">
 
     <!-- 주문 데이터 조회 -->
-    <select id="getOrder" resultMap="OrderHDTO">
+    <select id="getOrder" resultMap="GetOrderResultMap">
         select oh.order_no, c.customer_name, emp.employee_name,
         oh.confirm_status, oh.reg_date
         from order_header oh
@@ -31,7 +31,7 @@
         </where>
     </select>
 
-    <resultMap id="OrderH" type="OrderHDTO">
+    <resultMap id="GetOrderResultMap" type="OrderHDTO">
         <result column="order_no" property="orderNo"/> <!-- 주문번호 -->
         <result column="reg_date" property="regDate"/> <!-- 작성일 -->
         <result column="confirm_status" property="confirmStatus"/> <!-- 결재상태 -->
@@ -44,9 +44,9 @@
     </resultMap>
 
     <!--  주문등록 상품 조회  -->
-    <select id="getPrice" resultMap="PriceDTO">
+    <select id="getPrice" resultMap="GetPriceResultMap">
         select p.product_no, p.product_name, p.product_writer, p.product_category,
-                price.custom_price, price.start_date, price.end_date
+        price.custom_price, price.start_date, price.end_date
         from price
         join product p
         on p.product_no=price.product_no
@@ -55,11 +55,11 @@
         where c.customer_no = #{iocn}
     </select>
 
-    <resultMap id="PriceDTO" type="PriceDTO">
+    <resultMap id="GetPriceResultMap" type="PriceDTO">
         <result column="custom_price" property="customPrice"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
-        <association property="product" javaType="com.project.tobe.entity.Product">
+        <association property="product" javaType="ProductDTO">
             <result column="product_no" property="productNo"/>
             <result column="product_category" property="productCategory"/>
             <result column="product_name" property="productName"/>
@@ -71,33 +71,33 @@
     <!--상세 조회-->
     <select id="getOrderDetail" resultMap="OrderDetailResultMap">
         select
-            oh.order_no,
-            oh.reg_date,
-            oh.del_date,
-            oh.confirm_status,
-            oh.confirm_change_date,
-            oh.remarks,
-            c.customer_no,
-            c.customer_name,
-            e.employee_id,
-            e.employee_name,
-            ob.product_no,
-            ob.order_product_qty,
-            p.product_name,
-            p.product_category,
-            p.product_writer,
-            coalesce(pr.custom_price, 0) as custom_price,
-            pr.start_date,
-            pr.end_date
+        oh.order_no,
+        oh.reg_date,
+        oh.del_date,
+        oh.confirm_status,
+        oh.confirm_change_date,
+        oh.remarks,
+        c.customer_no,
+        c.customer_name,
+        e.employee_id,
+        e.employee_name,
+        ob.product_no,
+        ob.order_product_qty,
+        p.product_name,
+        p.product_category,
+        p.product_writer,
+        coalesce(pr.custom_price, 0) as custom_price,
+        pr.start_date,
+        pr.end_date
         from
-            order_header oh
-                join customer c on oh.customer_no = c.customer_no
-                join employee e on oh.employee_id = e.employee_id
-                join order_body ob on oh.order_no = ob.order_no
-                join product p on ob.product_no = p.product_no
-                left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no
+        order_header oh
+        join customer c on oh.customer_no = c.customer_no
+        join employee e on oh.employee_id = e.employee_id
+        join order_body ob on oh.order_no = ob.order_no
+        join product p on ob.product_no = p.product_no
+        left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no
         where
-            oh.order_no = #{orderNo};
+        oh.order_no = #{orderNo};
     </select>
 
     <resultMap id="OrderDetailResultMap" type="OrderHDTO">
@@ -139,22 +139,22 @@
     </resultMap>
 
     <!-- 주문 헤더 업데이트 -->
-    <update id="updateOrderHeader">
+    <update id="updateOrderHeader" parameterType="OrderHDTO">
         UPDATE order_header
         SET reg_date = #{regDate},
-            del_date = #{delDate},
-            confirm_status = #{confirmStatus},
-            confirm_change_date = #{confirmChangeDate},
-            remarks = #{remarks}
+        del_date = #{delDate},
+        confirm_status = #{confirmStatus},
+        confirm_change_date = #{confirmChangeDate},
+        remarks = #{remarks}
         WHERE order_no = #{orderNo}
     </update>
 
     <!-- 주문 바디 업데이트 -->
-    <update id="updateOrderBody">
+    <update id="updateOrderBody" parameterType="OrderBDTO">
         UPDATE order_body
         SET order_product_qty = #{orderB.orderProductQty}
         WHERE order_no = #{orderNo}
-          AND product_no = #{orderB.productNo}
+        AND product_no = #{orderB.productNo}
     </update>
 
     <!--유선화 END-->
