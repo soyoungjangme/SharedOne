@@ -11,6 +11,7 @@ import lombok.*;
 @ToString
 @Builder
 public class OrderBDTO {
+
     private Long orderNo;
     private Long productNo;
     private int orderProductQty;
