@@ -6,7 +6,7 @@
 <mapper namespace="com.project.tobe.mapper.OrderMapper">
 
     <!-- 주문 데이터 조회 -->
-    <select id="getOrder" resultMap="OrderHDTO">
+    <select id="getOrder" resultMap="GetOrderResultMap">
         select oh.order_no, c.customer_name, emp.employee_name,
         oh.confirm_status, oh.reg_date
         from order_header oh
@@ -31,7 +31,7 @@
         </where>
     </select>
 
-    <resultMap id="OrderH" type="OrderHDTO">
+    <resultMap id="GetOrderResultMap" type="OrderHDTO">
         <result column="order_no" property="orderNo"/> <!-- 주문번호 -->
         <result column="reg_date" property="regDate"/> <!-- 작성일 -->
         <result column="confirm_status" property="confirmStatus"/> <!-- 결재상태 -->
@@ -44,7 +44,7 @@
     </resultMap>
 
     <!--  주문등록 상품 조회  -->
-    <select id="getPrice" resultMap="PriceDTO">
+    <select id="getPrice" resultMap="GetPriceResultMap">
         select p.product_no, p.product_name, p.product_writer, p.product_category,
                 price.custom_price, price.start_date, price.end_date
         from price
@@ -55,11 +55,11 @@
         where c.customer_no = #{iocn}
     </select>
 
-    <resultMap id="PriceDTO" type="PriceDTO">
+    <resultMap id="GetPriceResultMap" type="PriceDTO">
         <result column="custom_price" property="customPrice"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
-        <association property="product" javaType="com.project.tobe.entity.Product">
+        <association property="product" javaType="ProductDTO">
             <result column="product_no" property="productNo"/>
             <result column="product_category" property="productCategory"/>
             <result column="product_name" property="productName"/>
