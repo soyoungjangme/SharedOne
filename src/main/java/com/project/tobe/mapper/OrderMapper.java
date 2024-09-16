@@ -1,9 +1,8 @@
 package com.project.tobe.mapper;
-import com.project.tobe.dto.OrderBDTO;
-import com.project.tobe.dto.OrderHDTO;
-import com.project.tobe.dto.OrderSearchDTO;
-import com.project.tobe.dto.PriceDTO;
+import com.project.tobe.dto.*;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 @Mapper
@@ -13,7 +12,7 @@ public interface OrderMapper {
 
     /*유선화 START*/
     OrderHDTO getOrderDetail(Long orderNo); // 상세 조회
-    void updateOrderHeader(OrderHDTO orderH); // 헤더 업데이트
-    void updateOrderBody(Long orderNo, OrderBDTO orderB); // 바디 업데이트
+    void updateOrderHeader(OrderUp1DTO orderH); // 헤더 업데이트
+    void updateOrderBody(@Param("orderNo") Long orderNo, @Param("orderB")  List<OrderUp2DTO> orderB); // 바디 업데이트
     /*유선화 END*/
 }
