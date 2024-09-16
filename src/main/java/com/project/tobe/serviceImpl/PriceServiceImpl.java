@@ -1,4 +1,4 @@
-package com.project.tobe.serviceimpl;
+package com.project.tobe.serviceImpl;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.project.tobe.dto.PriceProductCustomerDTO;
@@ -12,6 +12,8 @@ import com.project.tobe.repository.ProductRepository;
 import com.project.tobe.service.PriceService;
 import com.project.tobe.util.constants.YesNo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +49,11 @@ public class PriceServiceImpl implements PriceService {
     @Override
     public List<PriceProductCustomerDTO> getPriceProductCustomerDTO(PriceDTO dto) {
         return priceRepository.getPriceJoinByDTO(dto);
+    }
+
+    @Override
+    public Page<PriceProductCustomerDTO> getPriceProductCustomerDTO(PriceDTO dto, Pageable pageable) {
+        return priceRepository.getPriceJoinByDTO(dto, pageable);
     }
 
 

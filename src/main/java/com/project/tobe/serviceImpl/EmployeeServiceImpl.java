@@ -1,6 +1,7 @@
-package com.project.tobe.serviceimpl;
+package com.project.tobe.serviceImpl;
 
 
+import com.project.tobe.dto.AuthorityDto;
 import com.project.tobe.dto.EmployeeDTO;
 import com.project.tobe.dto.EmployeeSearchDTO;
 import com.project.tobe.dto.EmployeeTestDTO;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +30,7 @@ public class EmployeeServiceImpl implements EmployeeService {
   @Autowired
   BCryptPasswordEncoder bCryptPasswordEncoder;
 
+
   @Override
   public Employee getUserById(String id) {
     if (id == null) {
@@ -40,6 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     return employee.orElse(null);
   }
+
 
   @Override
   public EmployeeDetails login(EmployeeDTO dto) {
@@ -59,7 +61,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     return new EmployeeDetails(employee.orElse(null));
   }
-
 
   // 전부 조회
   @Override
@@ -101,21 +102,32 @@ public class EmployeeServiceImpl implements EmployeeService {
     return result > 0 ;
   }
 
+  @Override
+  public void employeePwChange(EmployeeDTO dto) {
+    if (dto.getEmployeePw() != null) {
+      dto.setEmployeePw(bCryptPasswordEncoder.encode(dto.getEmployeePw()));
+    }
+    employeeMapper.employeePwChange(dto);
+  }
+
+  @Override
+  public AuthorityDto mypageAll(String employeeId) {
+    System.out.println(employeeMapper.mypageAll(employeeId).toString());
+    return employeeMapper.mypageAll(employeeId);
+  }
+
+
 
 
   // 수정
   @Override
-  public void employeeUpdateTest(EmployeeTestDTO dto) {
-
-    if (dto.getEmployeePw() != null) {
-      dto.setEmployeePw(bCryptPasswordEncoder.encode(dto.getEmployeePw()));
-    }
-
+  public void employeeUpdateMaster(EmployeeTestDTO dto) {
+    System.out.println(dto.toString() + "야야야ㅑㅇ");
     if (dto.getAuthorityGrade().equals("S")) {
       dto.setEmployeeManagerId(null);
     }
 
-    employeeMapper.employeeUpdateTest(dto);
+    employeeMapper.employeeUpdateMaster(dto);
   }
 
 //삭제
@@ -124,8 +136,25 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     employeeMapper.employeeDeleteTest(employeeIds);
   }
+  @Override
+  public void employeeDeletePick(String employeeId) {
+    employeeMapper.employeeDeletePick(employeeId);
+  }
 
+  @Override
+  public void employeeUpdateMypage(EmployeeDTO dto) {
+    employeeMapper.employeeUpdateMypage(dto);
+  }
 
+  @Override
+  public void employeeUpdateMypagePw(EmployeeDTO dto) {
+    System.out.println("pw " + dto.getEmployeePw());
+    if (dto.getEmployeePw() != null) {
+      dto.setEmployeePw(bCryptPasswordEncoder.encode(dto.getEmployeePw()));
+    }
+
+    employeeMapper.employeeUpdateMypagePw(dto);
+  }
 
 
 }

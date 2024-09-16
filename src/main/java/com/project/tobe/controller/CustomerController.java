@@ -1,11 +1,11 @@
 package com.project.tobe.controller;
 
-import com.project.tobe.customer.CustomerService;
+import com.project.tobe.service.CustomerService;
 import com.project.tobe.dto.CustomerSearchDTO;
 import com.project.tobe.dto.CustomerDTO;
-import com.project.tobe.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +13,6 @@ import java.util.List;
 @RestController //리액트용
 @RequestMapping("/customer")
 public class CustomerController {
-
     @Autowired
     @Qualifier("customerService") //주입받는 경로?
     private CustomerService customerService;
@@ -40,12 +39,14 @@ public class CustomerController {
     }
 
     //등록
-    @PostMapping("/addCustomer")
-    public void customerRegistTest(@RequestBody List<CustomerDTO> dto) {
+    @PostMapping("/customerRegist")
+    public ResponseEntity<String> customerRegistTest(@RequestBody List<CustomerDTO> dto) {
         System.out.println("등록 예제 컨트롤러");
         System.out.println(dto);
         customerService.customerRegistTest(dto);
+        return ResponseEntity.ok("등록 성공");
     }
+
 
     //업데이트
     @PostMapping("/customerUpdate")

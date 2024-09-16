@@ -4,7 +4,10 @@ import ReactDOM from "react-dom/client";
 import './Employee.css';
 import useCheckboxManager from "../js/CheckboxManager";
 import useSort from '../js/useSort';
+import './modalPw.css';
 import '../js/modalAdd.css';
+import '../js/Pagination.css';
+import Pagination from '../js/Pagination';
 
 import { Bar } from 'react-chartjs-2';
 import {
@@ -31,13 +34,9 @@ ChartJS.register(
 );
 
 
-
-  const truncate = (str, maxLength) => {
-    return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
-  };
-
-
-
+//  const truncate = (str, maxLength) => {
+//    return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+//  };
 
 
 function Employee() {
@@ -100,7 +99,8 @@ function Employee() {
         hireDate: null,
         salary: 0,
         employeeManagerId: '',
-        authorityGrade: ''
+        authorityGrade: '',
+        authorityName: ''
     }]);
 
     // 메인 리스트 가져오기 axios
@@ -122,7 +122,8 @@ function Employee() {
         hireDate: null,
         salary: 0,
         employeeManagerId: '',
-        authorityGrade: ''
+        authorityGrade: '',
+        authorityName: ''
     });
 
     // 필터 변경 핸들러
@@ -159,10 +160,13 @@ function Employee() {
             }
         };
 
+
+
+//----------------------------------------------------
     // 직원 추가  리스트
     const [test, setTest] = useState({
         employeeId: '',
-        employeePw: '',
+        employeePw: '1234*',
         employeeName: '',
         employeeTel: '',
         employeeEmail: '',
@@ -192,21 +196,6 @@ function Employee() {
 
         console.log(test);
     };
-
-//    // 추가 핸들러
-//    const handleInputRegistAdd = (e) => {
-//        const { id, value } = e.target;
-//        console.log(e.target);
-//        // 변경된 필드의 값을 업데이트합니다.
-//        setEmRegist((prev) => ({
-//            ...prev,
-//            [id]: value,
-//        }));
-//
-//        console.log(emregist);
-//    };
-
-
 
 
 const validateInputs = () => {
@@ -238,10 +227,7 @@ const validateInputs = () => {
 
   // 아이디 및 비밀번호 문자 검증
   const validPattern = /^[a-zA-Z0-9!@#$%^&*()_+{}[\]:;"'<>,.?/~`|-]+$/;
-  if (!validPattern.test(employeeId)) {
-    alert('아이디는 대소문자, 숫자, 특수문자만 가능합니다.');
-    return false;
-  }
+
   if (!validPattern.test(employeePw)) {
     alert('비밀번호는 대소문자, 숫자, 특수문자만 가능합니다.');
     return false;
@@ -264,7 +250,7 @@ const validateInputs = () => {
 
 
   // 급여 입력값 검사
-  if (!/^[0-9]*$/.test(salary)) {
+  if (!/^[0-9]*$/.test(salary) && salary >= 0 ) {
     alert('급여란에는 숫자만 입력하세요.');
     return false;
   }
@@ -280,25 +266,41 @@ const validateInputs = () => {
 };
 
 
-    // 리스트에 입력값 추가 핸들러
-    const onClickListAdd = () => {
-    if (validateInputs()) {
-      setList((prevList) => [...prevList, test]);
-      setTest({
-        employeeId: '',
-        employeePw: '',
-        employeeName: '',
-        employeeTel: '',
-        employeeEmail: '',
-        employeeAddr: '',
-        residentNum: '',
-        hireDate: '',
-        salary: '',
-        employeeManagerId: '',
-        authorityGrade: ''
-      }); // 입력값 초기화
-    }
+const onClickListAdd = () => {
+  if (validateInputs()) {
+    const trimmedTest = {
+      employeeId: test.employeeId,
+      employeePw: test.employeePw,
+      employeeName: test.employeeName.replace(/\s+/g, ''),
+      employeeTel: test.employeeTel,
+      employeeEmail: test.employeeEmail,
+      employeeAddr: test.employeeAddr.replace(/^\s+|\s+$/g, ''),
+      residentNum: test.residentNum,
+      hireDate: test.hireDate,
+      salary: test.salary.replace(/\s+/g, ''),
+      employeeManagerId: test.employeeManagerId.replace(/\s+/g, ''),
+      authorityGrade : test.authorityGrade
     };
+
+    setList((prevList) => [...prevList, trimmedTest]);
+
+    // 입력값 초기화
+    setTest({
+      employeeId: '',
+      employeePw: '1234*',
+      employeeName: '',
+      employeeTel: '',
+      employeeEmail: '',
+      employeeAddr: '',
+      residentNum: '',
+      hireDate: '',
+      salary: '',
+      employeeManagerId: '',
+      authorityGrade: '',
+    });
+  }
+};
+
 
 
 // 아이디 중복 체크
@@ -306,14 +308,21 @@ const validateInputs = () => {
  const [buttonColor, setButtonColor] = useState('#939393');
 
   const IdCheck = async () => {
+
+    const validPattern = /^[a-zA-Z0-9!@#$%^&*()_+{}[\]:;"'<>,.?/~`|-]+$/;
+    if (!validPattern.test(test.employeeId)) {
+      alert('아이디는 대소문자, 숫자, 특수문자만 가능합니다.');
+      return;
+    }
+
     try {
-      const response = await axios.post('/employee/employeeIdCheck',test, {
+      const response = await axios.post('/employee/employeeIdCheck',{employeeId : test.employeeId}, {
        headers: { 'Content-Type': 'application/json' }
       });
       // 아이디가 사용 가능한지 여부를 서버 응답에서 확인
         const isAvailable = !response.data;
          // 서버가 `true` 반환 시 사용 불가, `false` 반환 시 사용 가능
-        console.log(isAvailable);
+        console.log("아이디!!!!" + isAvailable);
         if (isAvailable) {
         setIdResult(true);
         alert('사용 가능한 아이디입니다.');
@@ -327,15 +336,18 @@ const validateInputs = () => {
     }
   };
 
-
+// 값이 비었는지 확인 하는 메서드
  const isObjectEmpty = (obj) => {
     return Object.values(obj).some(value => value === '' || value === null || value === undefined);
   };
 
+useEffect(() => {
+    console.log("Updated list:", list);
+    console.log("Item IDs:", list.map(item => item.id));
+}, [list]);
 
 
-
-
+// [등록] 요청
     const onClickRegistBtn = () => {
         if (list.length > 0) {
             setEmRegist(list); // 등록할 항목이 있는 경우에만 상태 업데이트
@@ -349,6 +361,7 @@ const validateInputs = () => {
                 })
                 .then((response) => {
                     setEmployee(response.data); // 서버 응답 데이터로 Customer 상태 업데이트
+                    alert("등록이 완료되었습니다");
                 })
                 .catch((error) => console.error('서버 요청 중 오류 발생', error))
                 .finally(() => setIsVisible(false)); // 요청 완료 후 항상 실행되는 블록
@@ -395,7 +408,7 @@ const validateInputs = () => {
     };
 
 
-    // --- 수정 기능
+//  [수정] 기능 초기값
     const [modifyItem, setModifyItem] = useState(
         {
             employeeId: '',
@@ -412,31 +425,41 @@ const validateInputs = () => {
         }
     );
 
-    const handleUpdateClick = () => {
-        axios.post('/employee/employeeUpdate', modifyItem, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => {
-                setEmployee(response.data);  // 서버 응답 데이터로 Customer 상태 업데이트
-                console.log('업데이트 성공:', response.data);
-            })
-            .catch(error => console.error('서버 요청 중 오류 발생', error))
-            .finally(() => {
-                setIsModifyModalVisible(false);
-                window.location.reload();// 모달 숨기기
-            });
-    };
+const handleUpdateClick = () => {
+    // 급여 유효성 검사
+    const trimmedSalary = modifyItem.salary.toString().trim(); // 급여값을 문자열로 변환하고 공백 제거
 
 
-    // 수정 창 모달
-    const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
+    if (!/^[0-9]+$/.test(trimmedSalary)) {
+        alert('급여란에는 숫자만 입력하세요.');
+        return;
+    }
 
+    // 유효성 검사를 통과한 후, 서버로 데이터 전송
+    axios.post('/employee/employeeUpdate', modifyItem, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        setEmployee(response.data);  // 서버 응답 데이터로 Customer 상태 업데이트
+        console.log('업데이트 성공:', response.data);
+        alert("수정이 완료되었습니다");
+    })
+    .catch(error => console.error('서버 요청 중 오류 발생', error))
+    .finally(() => {
+        setIsModifyModalVisible(false);
+        window.location.reload(); // 모달 숨기기
+    });
+};
+
+//  [수정] 모달
+const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
+
+//  [수정] 값 가져오기
    const handleModify = (item) => {
        setModifyItem(prevState => ({
            employeeId: item.employeeId,
-           employeePw: item.employeePw === prevState.employeePw ? null : item.employeePw, // item.employeePw가 null이 아닌 경우에만 업데이트
            employeeName: item.employeeName,
            employeeTel: item.employeeTel,
            employeeEmail: item.employeeEmail,
@@ -451,6 +474,10 @@ const validateInputs = () => {
    };
 
 
+
+   console.log(modifyItem);
+
+
     const handleModifyCloseClick = () => {
         setIsModifyModalVisible(false);
     }
@@ -461,9 +488,60 @@ const validateInputs = () => {
     }
 
 
+// [수정] 비밀번호 변경 버튼
+    const [isVisibleDeleteInput, setIsVisibleDeleteInput] = useState(false);
+
+    const handlePwOpenClick = () => {
+        setIsVisibleDeleteInput(true);
+    };
+  const handlePwCloseClick = () => {
+        setIsVisibleDeleteInput(false);
+    }
+
+// 비밀번호 변경 로직
+
+/*   const [emplPw, setEmplPw] = useState({''});*/
+
+/*
+  const handleemplPwChange = (e) => {
+    const { name, value } = e.target;
+
+    setEmplPw({
+      ...emplPw,
+      [name]: value,
+    });
+  };
+*/
+
+/*    console.log(emplPw);*/
+
+// [수정] 비밀번호 변경 기능
+     const pwChangeClick = () => {
+        axios.post('/employee/employeePwChange', {employeeId : modifyItem.employeeId, employeePw : '1234*' }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                console.log('삭제 요청 성공', response.data);
+                alert("비밀번호가 초기화 되었습니다.");
+            })
+            .catch(error => {
+                console.error('서버 요청 중 오류 발생', error);
+            });
 
 
-    // 삭제 기능
+
+        setIsVisibleDeleteInput(false);
+     }
+
+
+
+
+
+// ------------------------------------------------------
+
+    // [삭제] 기능
     const [checkedIds, setCheckedIds] = useState([]);
 
     useEffect(() => {
@@ -486,10 +564,7 @@ useEffect(() => {
 }, [checkItemModal]);
 
 
-useEffect(() => {
-    console.log("Updated list:", list);
-    console.log("Item IDs:", list.map(item => item.id));
-}, [list]);
+ // [리스트] 체크된 아이디 값 넘기기
 useEffect(() => {
 
    console.log("Checked IDs:", checkedIds2);
@@ -500,6 +575,9 @@ const handleDeleteClick2 = () => {
     setList(updatedList);
 };
 
+
+
+// [삭제] 체크된 아이템 삭제하기
     const handleDeleteClick = () => {
         axios.post('/employee/employeeDelete', checkedIds, {
             headers: {
@@ -516,19 +594,96 @@ const handleDeleteClick2 = () => {
 
     }
 
+// [삭제] 개별 삭제하기 요청
+const handleDeletePickClick = () => {
+    // 사용자에게 확인 메시지 표시
+    if (window.confirm('정말 비활성화 하시겠습니까?')) {
+        // 사용자가 확인한 경우에만 삭제 요청
+        axios.post('/employee/employeeDeletePick', modifyItem.employeeId, {
+            headers: {
+                'Content-Type': 'text/plain'
+            }
+        })
+        .then(response => {
+            console.log('삭제 요청 성공', response.data);
+            alert('비활성화 되었습니다.');
+        })
+        .catch(error => {
+            console.error('서버 요청 중 오류 발생', error);
+        })
+        .finally(() => {
+            setIsModifyModalVisible(false);
+            window.location.reload(); // 모달 숨기기
+        });
+    } else {
+        // 사용자가 취소한 경우
+        alert('비활성화가 취소되었습니다.');
+    }
+};
 
-// 긴 글씨 줄이기
+
+// [리스트] 긴 글씨 줄이기
   const truncateText = (str, maxLength) => {
     return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
   };
 
-// 비밀번호 변경 버튼
-    const [isVisibleDeleteInput, setIsVisibleDeleteInput] = useState(false);
 
-    // Toggle function to show or hide the input field
-    const toggleInput = () => {
-        setIsVisibleDeleteInput(prevIsVisible => !prevIsVisible);
+
+
+
+
+
+
+  const getOriginalIndex = (item) => {
+      // sortedData가 배열인지 확인
+      if (!Array.isArray(sortedData)) {
+          console.error("sortedData가 배열이 아닙니다.");
+          return -1; // 배열이 아닌 경우 -1을 반환하여 오류 처리
+      }
+
+      // item.id와 일치하는 originalItem을 찾고, 그 인덱스를 반환
+      const index = sortedData.findIndex(originalItem => originalItem.id === item.id);
+
+      // 인덱스가 -1인 경우는 일치하는 항목이 없다는 뜻이므로 +1 하지 않음
+      return index !== -1 ? index + 1 : -1;
+  };
+
+// 페이지 네이션
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(30); // 페이지당 항목 수
+
+    // 전체 페이지 수 계산
+    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+    // 현재 페이지에 맞는 데이터 필터링
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
     };
+
+    // 페이지네이션 버튼 렌더링
+    const renderPageNumbers = () => {
+        let pageNumbers = [];
+        for (let i = 1; i <= totalPages; i++) {
+            pageNumbers.push(
+                <button
+                    key={i}
+                    onClick={() => handlePageChange(i)}
+                    disabled={i === currentPage}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return pageNumbers;
+    };
+
+
 
     return (
 
@@ -576,15 +731,14 @@ const handleDeleteClick2 = () => {
                             </div>
 
                             <div className="filter-item">
-                                <label htmlFor="authorityGrade">권한</label>
+                                <label htmlFor="authorityGrade">직급</label>
                                 <select id="authorityGrade" onChange={handleInputChange} value={emSearch.authorityGrade}>
                                     <option value="">선택하세요</option>
-                                         <option value="S">S</option>
-                                       <option value="A">A</option>
-                                       <option value="B">B</option>
-                                       <option value="C">C</option>
-                                       <option value="D">D</option>
-
+                                          <option value="S">대표</option>
+                                         <option value="A">부장</option>
+                                         <option value="B">과장</option>
+                                         <option value="C">대리</option>
+                                         <option value="D">사원</option>
                                 </select>
                             </div>
 
@@ -641,7 +795,7 @@ const handleDeleteClick2 = () => {
                                     {sortConfig.key === 'employeeAddr' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                 </button>
                             </th>
-                            <th>주민번호
+                          <th>주민번호
                                 <button className="sortBtn" onClick={() => sortData('residentNum')}>
                                     {sortConfig.key === 'residentNum' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                 </button>
@@ -662,40 +816,44 @@ const handleDeleteClick2 = () => {
                                 </button>
                             </th>
 
-                            <th> 권한
+                        {/*    <th> 권한
                                 <button className="sortBtn" onClick={() => sortData('authorityGrade')}>
                                     {sortConfig.key === 'authorityGrade' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                </button>
+                            </th>*/}
+                             <th> 직급
+                                <button className="sortBtn" onClick={() => sortData('authorityName')}>
+                                    {sortConfig.key === 'authorityName' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                 </button>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {sortedData.length > 0 ? (
-                            sortedData.map((item, index) => (
+                        {currentItems.length > 0 ? (
+                            currentItems.map((item, index) => (
                                 <tr key={index} className={checkItemMain[index] ? 'selected-row' : ''} onDoubleClick={() => {
                                     handleModify(item)
                                 }}>
                                     <td><input className="mainCheckbox" type="checkbox" id={item.employeeId} checked={checkItemMain[index] || false}
                                         onChange={handleCheckboxChangeMain} /></td>
                                     <td style={{ display: 'none' }}>{index}</td>
-                                    <td>{index + 1}</td>
-
+                                     <td>{index + 1}</td>
                                     <td>{item.employeeId}</td>
-                                    <td>{truncateText(item.employeePw, 10)}</td>
+                                   <td>{truncateText(item.employeePw, 10)}</td>
                                     <td>{item.employeeName}</td>
                                     <td>{item.employeeTel}</td>
                                     <td>{item.employeeEmail}</td>
                                     <td>{item.employeeAddr}</td>
-                                    <td>{item.residentNum}</td>
+                                   <td>{item.residentNum}</td>
                                     <td>{item.hireDate}</td>
                                     <td>{item.salary}</td>
                                     <td>{item.employeeManagerId}</td>
-                                    <td>{item.authorityGrade}</td>
+                                    <td>{item.authorityName}</td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="13">등록된 상품이 없습니다<i class="bi bi-emoji-tear"></i></td>
+                                <td colSpan="13">등록된 직원이 없습니다<i class="bi bi-emoji-tear"></i></td>
                             </tr>
                         )}
                         <tr>
@@ -704,6 +862,9 @@ const handleDeleteClick2 = () => {
                         </tr>
                     </tbody>
                 </table>
+                   <div>
+                    {renderPageNumbers()}
+                </div>
             </div>
 
 
@@ -756,7 +917,7 @@ const handleDeleteClick2 = () => {
                                         <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeeAddr" name="employeeAddr" value={test.employeeAddr} onChange={handleInputAddChange} /></td>
                                     </tr>
                                     <tr>
-                                        <th colSpan="1"><label htmlFor="registStartDate">주민번호</label></th>
+                                      <th colSpan="1"><label htmlFor="registStartDate">주민번호</label></th>
                                         <td colSpan="2"><input type="text" placeholder="필드 입력" id="residentNum" name="residentNum" value={test.residentNum} onChange={handleInputAddChange} /> </td>
 
 
@@ -771,14 +932,14 @@ const handleDeleteClick2 = () => {
                                         <th colSpan="1"><label htmlFor="registEndDate">직속상사</label></th>
                                         <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeeManagerId" name="employeeManagerId" value={test.employeeManagerId} onChange={handleInputAddChange} /></td>
 
-                                        <th colSpan="1"><label htmlFor="registEndDate">권한</label></th>
+                                        <th colSpan="1"><label htmlFor="registEndDate">직급</label></th>
                                         <td colSpan="2">        <select id="authorityGrade" name="authorityGrade" value={test.authorityGrade} onChange={handleInputAddChange}>
                                             <option value="">선택하세요</option>
-                                              <option value="S">S</option>
-                                            <option value="A">A</option>
-                                            <option value="B">B</option>
-                                            <option value="C">C</option>
-                                            <option value="D">D</option>
+                                            <option value="S">대표</option>
+                                            <option value="A">부장</option>
+                                            <option value="B">과장</option>
+                                            <option value="C">대리</option>
+                                            <option value="D">사원</option>
                                         </select>
 
                                         </td>
@@ -818,7 +979,7 @@ const handleDeleteClick2 = () => {
                                             <th>입사일</th>
                                             <th>급여</th>
                                             <th>직속상사</th>
-                                            <th>권한</th>
+                                            <th>직급</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -842,7 +1003,22 @@ const handleDeleteClick2 = () => {
                                                 <td>{item.hireDate}</td>
                                                 <td>{item.salary}</td>
                                                 <td>{item.employeeManagerId}</td>
-                                                <td>{item.authorityGrade}</td>
+                                               <td>
+                                                 {(() => {
+                                                   switch (item.authorityGrade) {
+                                                     case 'S':
+                                                       return '대표';
+                                                     case 'A':
+                                                       return '부장';
+                                                     case 'B':
+                                                       return '과장';
+                                                     case 'C':
+                                                       return '대리';
+                                                     case 'D':
+                                                       return '사원';
+                                                   }
+                                                 })()}
+                                               </td>
                                             </tr>
                                         ))}
 
@@ -869,6 +1045,7 @@ const handleDeleteClick2 = () => {
                                     </div>
                                     <div className="btn-close">
                                         {/* 다른 버튼이 필요한 경우 여기에 추가 */}
+                                        <button type="button" onClick={handleDeletePickClick}> 비활성화 </button>
                                     </div>
                                 </div>
                             </div>
@@ -877,30 +1054,46 @@ const handleDeleteClick2 = () => {
                                     <tbody>
                                         <tr>
                                             <th><label htmlFor="employeeName">직원명</label></th>
-                                            <td><input type="text" id="employeeName" name="employeeName" value={modifyItem.employeeName} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <td><input type="text" id="employeeName" name="employeeName" value={modifyItem.employeeName} onChange={(e) => handleModifyItemChange(e.target)}  disabled/></td>
 
                                             <th><label htmlFor="employeeId">아이디</label></th>
-                                            <td><input type="text" id="employeeId" name="employeeId" value={modifyItem.employeeId} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <td><input type="text" id="employeeId" name="employeeId" value={modifyItem.employeeId} onChange={(e) => handleModifyItemChange(e.target)} disabled/></td>
 
                                             <th><label htmlFor="employeePw">비밀번호</label></th>
-                                            <td>  <input  type="text" id="employeePw" name="employeePw" onChange={(e) => handleModifyItemChange(e.target)}/>{/* <button type="button" className="btn-common" onClick={toggleInput}> 비밀번호 변경 </button> */ }</td>
+                                            <td>  {isVisibleDeleteInput && (
+
+                                                  <div className="confirmRegistPw">
+                                                            <div className="fullBodyPw">
+                                                                <div className="form-containerPw">
+                                                                 <button className="close-btn" onClick={handlePwCloseClick}> &times; </button>
+                                                                           <div className="form-headerPw">
+                                                                                    <h3> 비밀번호 변경 </h3>
+                                                                                    <div> <input type="text" id="employeePw" name="employeePw" value="1234*" disabled/> </div>
+                                                                                    <button type="button" className="btn-common" onClick={pwChangeClick}> 변경하기 </button>
+                                                                                    <p> 초기값 1234* 로 비밀번호 초기화가 됩니다.</p>
+                                                                           </div>
+
+                                                                </div>
+                                                            </div>
+                                                    </div>
+                                            )} <button type="button" className="btn-common" onClick={handlePwOpenClick}> 비밀번호 초기화 </button> </td>
                                         </tr>
                                         <tr>
                                             <th><label htmlFor="employeeTel">연락처</label></th>
-                                            <td><input type="text" id="employeeTel" name="employeeTel" value={modifyItem.employeeTel} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <td><input type="text" id="employeeTel" name="employeeTel" value={modifyItem.employeeTel} onChange={(e) => handleModifyItemChange(e.target)} disabled/></td>
 
                                             <th><label htmlFor="employeeEmail">이메일</label></th>
-                                            <td><input type="text" id="employeeEmail" name="employeeEmail" value={modifyItem.employeeEmail} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <td><input type="text" id="employeeEmail" name="employeeEmail" value={modifyItem.employeeEmail} onChange={(e) => handleModifyItemChange(e.target)} disabled/></td>
 
                                             <th><label htmlFor="employeeAddr">주소</label></th>
-                                            <td><input type="text" id="employeeAddr" name="employeeAddr" value={modifyItem.employeeAddr} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <td><input type="text" id="employeeAddr" name="employeeAddr" value={modifyItem.employeeAddr} onChange={(e) => handleModifyItemChange(e.target)} disabled/></td>
                                         </tr>
                                         <tr>
                                             <th><label htmlFor="residentNum">주민번호</label></th>
-                                            <td><input type="text" id="residentNum" name="residentNum" value={modifyItem.residentNum} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <td><input type="text" id="residentNum" name="residentNum" value={modifyItem.residentNum} onChange={(e) => handleModifyItemChange(e.target)} disabled/></td>
 
                                             <th><label htmlFor="hireDate">입사일</label></th>
-                                            <td><input type="date" id="hireDate" name="hireDate" value={modifyItem.hireDate} onChange={(e) => handleModifyItemChange(e.target)} /></td>
+                                            <td><input type="date" id="hireDate" name="hireDate" value={modifyItem.hireDate} onChange={(e) => handleModifyItemChange(e.target)} disabled/></td>
 
                                             <th><label htmlFor="salary">급여</label></th>
                                             <td><input type="text" id="salary" name="salary" value={modifyItem.salary} onChange={(e) => handleModifyItemChange(e.target)} /></td>
@@ -913,11 +1106,11 @@ const handleDeleteClick2 = () => {
                                             <td>
                                                 <select id="authorityGrade" name="authorityGrade" value={modifyItem.authorityGrade} onChange={(e) => handleModifyItemChange(e.target)}>
                                                     <option value="">선택하세요</option>
-                                                    <option value="S">S</option>
-                                                    <option value="A">A</option>
-                                                    <option value="B">B</option>
-                                                    <option value="C">C</option>
-                                                    <option value="D">D</option>
+                                                          <option value="S">대표</option>
+                                                           <option value="A">부장</option>
+                                                           <option value="B">과장</option>
+                                                           <option value="C">대리</option>
+                                                           <option value="D">사원</option>
                                                 </select>
                                             </td>
                                         </tr>

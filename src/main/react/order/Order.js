@@ -308,7 +308,7 @@ function Order() {
     return (
         <div>
 
-            <div className="pageHeader"><h1><i class="bi bi-menu-up"></i>주문 관리</h1></div>
+            <div className="pageHeader"><h1><i class="bi bi-chat-square-text-fill"></i> 주문 관리</h1></div>
 
             <div className="main-container">
                 <div className="filter-containers">

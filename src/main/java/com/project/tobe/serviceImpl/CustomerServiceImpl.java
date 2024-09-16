@@ -1,5 +1,7 @@
-package com.project.tobe.customer;
+package com.project.tobe.serviceImpl;
 
+import com.project.tobe.mapper.CustomerMapper;
+import com.project.tobe.service.CustomerService;
 import com.project.tobe.dto.CustomerSearchDTO;
 import com.project.tobe.dto.CustomerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 //이름 어노 넣기
-@Service("customerServiceImpl")
+@Service("customerService")
 public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
@@ -28,10 +30,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void customerRegistTest( List<CustomerDTO> dto) {
+    public void customerRegistTest(List<CustomerDTO> dto) {
         System.out.println("서비스");
         customerMapper.customerRegistTest(dto);
     }
+
 
     @Override
     public void customerUpdateTest(CustomerDTO dto) {
