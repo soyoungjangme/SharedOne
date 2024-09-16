@@ -49,6 +49,8 @@ public class MypageController {
     if(authentication != null) { //인증이 되지않았다면 null입니다.
       EmployeeDetails user = (EmployeeDetails)authentication.getPrincipal(); //인증객체 안에 principal값을 얻으면 유저객체가 나옵니다.
       userId = user.getUsername();
+
+      System.out.println("------------------권한" + user.getUserAuthorityGrade());
       System.out.println(userId);
     }
 
@@ -68,9 +70,5 @@ public class MypageController {
 
     return isMatch;
   }
-
-
-
-
 
 }

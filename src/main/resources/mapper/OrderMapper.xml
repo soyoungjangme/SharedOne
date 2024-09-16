@@ -138,25 +138,29 @@
         </collection>
     </resultMap>
 
-    <!-- 주문 헤더 업데이트 -->
-    <update id="updateOrderHeader" parameterType="OrderHDTO">
-        UPDATE order_header
-        SET reg_date = #{regDate},
-        del_date = #{delDate},
-        confirm_status = #{confirmStatus},
-        confirm_change_date = #{confirmChangeDate},
-        remarks = #{remarks}
-        WHERE order_no = #{orderNo}
-    </update>
+<!--    &lt;!&ndash; 주문 헤더 업데이트 &ndash;&gt;-->
+<!--    <update id="updateOrderHeader" parameterType="OrderHDTO">-->
+<!--        UPDATE order_header-->
+<!--        SET reg_date = #{regDate},-->
+<!--        del_date = #{delDate},-->
+<!--        confirm_status = #{confirmStatus},-->
+<!--        confirm_change_date = #{confirmChangeDate},-->
+<!--        remarks = #{remarks}-->
+<!--        WHERE order_no = #{orderNo}-->
+<!--    </update>-->
 
-    <!-- 주문 바디 업데이트 -->
-    <update id="updateOrderBody" parameterType="OrderBDTO">
-        UPDATE order_body
-        SET order_product_qty = #{orderB.orderProductQty}
-        WHERE order_no = #{orderNo}
-        AND product_no = #{orderB.productNo}
-    </update>
+    <insert id="updateOrderHeader" useGeneratedKeys="true" keyProperty="orderNo" parameterType="OrderUp1DTO">
+        INSERT INTO order_header (reg_date, del_date, confirm_status, customer_no, employee_id)
+        VALUES (CURRENT_TIMESTAMP, #{delDate}, '대기', #{customerNo}, #{employeeId})
+    </insert>
 
+    <insert id="updateOrderBody" parameterType="map">
+        INSERT INTO order_body (order_no, product_no, order_product_qty)
+        VALUES
+        <foreach collection="orderB" item="orderBody" separator=",">
+            (#{orderNo}, #{orderBody.productNo}, #{orderBody.orderProductQty})
+        </foreach>
+    </insert>
     <!--유선화 END-->
 
 </mapper>

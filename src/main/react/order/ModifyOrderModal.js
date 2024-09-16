@@ -5,13 +5,15 @@ import './OrderModalDetail.css'
 import axios from 'axios';
 
 const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate }) => {
-    console.log("ModifyOrderModal received onUpdate:", onUpdate);  // 디버깅 로그 추가
+
+
+
 
     const [modifyItem, setModifyItem] = useState({
         orderNo: '',
         regDate: '',
-        employee: { employeeName: '' },
-        customer: { customerName: '' },
+        employee: { employeeName: '' , employeeId : ''},
+        customer: { customerName: '' , customerId : '' },
         delDate: '',
         confirmStatus: '',
         remarks: '',
@@ -21,6 +23,81 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate }) => {
 
     // 승인 여부 관리 (승인 됐으면 조회만 되게끔 하기 위해 만듦)
     const [isApproved, setIsApproved] = useState(false);
+
+    console.log(modifyItem.orderBList);
+
+
+    //- ---------------------------------------------
+ const [orderDetails, setOrderDetails] = useState({
+        orderNo: 0,
+        customerNo: '',
+        employeeId: '',
+        delDate: '',
+        orderB: [
+            {
+                productNo: 0,
+                orderProductQty: 0,
+                product: '',
+                price: 0,
+            }
+        ]
+    });
+
+    // modifyItem이 업데이트될 때마다 orderDetails와 orderDetailsBList를 업데이트
+    useEffect(() => {
+        if (modifyItem) {
+            const updatedOrderDetailsBList = modifyItem.orderBList.map(item => ({
+                productNo: item.productNo,            // 원본 값
+                orderProductQty: item.orderProductQty,                  // 기본값 또는 나중에 업데이트 필요
+                price: item.productPrice ?? 0        // null을 0으로 대체
+            }));
+
+            // 상태를 한 번에 업데이트
+            setOrderDetails({
+                orderNo: modifyItem.orderNo,          // 예시: orderNo 추가
+                employeeId: modifyItem.employee.employeeId,
+                customerNo: modifyItem.customer.customerNo,
+                delDate: modifyItem.delDate,
+                orderB: updatedOrderDetailsBList
+            });
+        }
+    }, [modifyItem]);  // modifyItem이 변경될 때마다 호출
+
+    // 상태를 콘솔에 찍어보는 함수
+    const logOrderDetails = () => {
+        console.log('Order Details:', orderDetails);
+    };
+
+    // modifyItem이 업데이트될 때마다 콘솔에 찍기
+    useEffect(() => {
+        logOrderDetails();
+    }, [orderDetails]);  // orderDetails가 변경될 때마다 호출
+
+
+const handleUpdate = async () => {
+    try {
+        console.log('Sending Order Details:', orderDetails); // 전송 전 데이터 확인
+
+        const response = await axios.post('/order/updateOrder', orderDetails, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        console.log('Response:', response.data); // 서버 응답 확인
+    } catch (error) {
+        console.error('Error:', error.response ? error.response.data : error.message); // 에러 상세 확인
+    }
+};
+
+
+
+
+
+
+
+
+
 
     // 주문 데이터 가져오기
     useEffect(() => {
@@ -128,25 +205,25 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate }) => {
     //         alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
     //     }
     // };
-    const handleUpdate = async () => {
-        try {
-            const response = await axios.put(`/order/update/${modifyItem.orderNo}`, modifyItem);
-            alert('주문이 성공적으로 수정되었습니다.');
-
-            console.log("Sending updated order to onUpdate:", modifyItem); // 업데이트된 아이템 로그
-            if (onUpdate) {
-                console.log("onUpdate is defined, calling it..."); // onUpdate가 정의되어 있는지 확인
-                onUpdate(modifyItem);
-            } else {
-                console.warn("onUpdate is not defined");
-            }
-            onClose();  // 모달 닫기
-        } catch (error) {
-            console.error('주문 수정 실패', error);
-            alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
-        }
-    };
-
+//    const handleUpdate = async () => {
+//        try {
+//            const response = await axios.put(`/order/update/${modifyItem.orderNo}`, modifyItem);
+//            alert('주문이 성공적으로 수정되었습니다.');
+//
+//            console.log("Sending updated order to onUpdate:", modifyItem); // 업데이트된 아이템 로그
+//            if (onUpdate) {
+//                console.log("onUpdate is defined, calling it..."); // onUpdate가 정의되어 있는지 확인
+//                onUpdate(modifyItem);
+//            } else {
+//                console.warn("onUpdate is not defined");
+//            }
+//            onClose();  // 모달 닫기
+//        } catch (error) {
+//            console.error('주문 수정 실패', error);
+//            alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
+//        }
+//    };
+//
 
 
     return isOpen ? (

@@ -1,8 +1,6 @@
 package com.project.tobe.controller;
 
-import com.project.tobe.dto.OrderHDTO;
-import com.project.tobe.dto.OrderSearchDTO;
-import com.project.tobe.dto.PriceDTO;
+import com.project.tobe.dto.*;
 import com.project.tobe.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -63,11 +61,11 @@ public class OrderController {
     }
 
     // 주문 업데이트
-    @PutMapping("/update/{orderNo}")
-    public ResponseEntity<String> updateOrder(@PathVariable Long orderNo, @RequestBody OrderHDTO orderData) {
-        orderService.updateOrder(orderNo, orderData);
-        return ResponseEntity.ok("주문이 성공적으로 수정되었습니다.");
+    @PostMapping("/updateOrder")
+    public void updateOrder(@RequestBody OrderUp1DTO orderH) {
+        orderService.updateOrder(orderH);
+        System.out.println(orderH);
+        System.out.println("오더 업데이트 컨트롤러");
     }
-
     /* 유선화 END */
 }
