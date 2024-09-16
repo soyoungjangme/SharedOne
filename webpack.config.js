@@ -1,6 +1,11 @@
 let path = require('path');
 const webpack = require('webpack');
 
+// 현재 시간을 가져오는 함수
+function getCurrentTime() {
+    const now = new Date();
+    return now.toLocaleString();
+}
 
 module.exports = {
     context: path.resolve(__dirname, 'src/main/react'),
@@ -31,7 +36,7 @@ module.exports = {
             use: {
                 loader: 'babel-loader',
                 options: {
-                    presets: [ '@babel/preset-env', '@babel/preset-react' ]
+                    presets: [ '@babel/preset-env', ["@babel/preset-react", {"runtime": "automatic"}] ]
                 }
             }
         }, {
@@ -52,5 +57,15 @@ module.exports = {
         new webpack.ProvidePlugin({
             process: 'process/browser',
         }),
+        new webpack.DefinePlugin({
+            BUILD_TIME: JSON.stringify(getCurrentTime()), // 현재 시간을 BUILD_TIME으로 정의
+        }),
+        {
+            apply: (compiler) => {
+                compiler.hooks.beforeCompile.tap('ShowTimePlugin', () => {
+                    console.log('Webpack Build Time:', getCurrentTime());
+                });
+            },
+        },
     ],
 };

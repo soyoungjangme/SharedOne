@@ -1,7 +1,5 @@
 package com.project.tobe.dto;
 
-import com.project.tobe.entity.Customer;
-import com.project.tobe.entity.Employee;
 import lombok.*;
 
 import java.sql.Date;
@@ -14,7 +12,7 @@ import java.util.List;
 @Setter
 @ToString
 @Builder
-public class OrderH {
+public class OrderHDTO {
 
 
     private Long orderNo; //주문 번호
@@ -28,7 +26,7 @@ public class OrderH {
 
     private CustomerDTO customer;
     private EmployeeDTO employee;
-    private List<OrderB> orderBList;
+    private List<OrderBDTO> orderBList;
 
 
 }

@@ -10,12 +10,12 @@ import lombok.*;
 @Setter
 @ToString
 @Builder
-public class OrderB {
+public class OrderBDTO {
+
     private Long orderNo;
     private Long productNo;
     private int orderProductQty;
-
-
-    private Product product;
+    private ProductDTO product;
+    private PriceDTO price;
 
 }

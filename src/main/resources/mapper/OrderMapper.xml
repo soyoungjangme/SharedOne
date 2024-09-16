@@ -6,7 +6,7 @@
 <mapper namespace="com.project.tobe.mapper.OrderMapper">
 
     <!-- 주문 데이터 조회 -->
-    <select id="getOrder" resultMap="OrderH">
+    <select id="getOrder" resultMap="GetOrderResultMap">
         select oh.order_no, c.customer_name, emp.employee_name,
         oh.confirm_status, oh.reg_date
         from order_header oh
@@ -31,7 +31,7 @@
         </where>
     </select>
 
-    <resultMap id="OrderH" type="OrderH">
+    <resultMap id="GetOrderResultMap" type="OrderHDTO">
         <result column="order_no" property="orderNo"/> <!-- 주문번호 -->
         <result column="reg_date" property="regDate"/> <!-- 작성일 -->
         <result column="confirm_status" property="confirmStatus"/> <!-- 결재상태 -->
@@ -44,9 +44,9 @@
     </resultMap>
 
     <!--  주문등록 상품 조회  -->
-    <select id="getPrice" resultMap="PriceDTO">
+    <select id="getPrice" resultMap="GetPriceResultMap">
         select p.product_no, p.product_name, p.product_writer, p.product_category,
-                price.custom_price, price.start_date, price.end_date
+        price.custom_price, price.start_date, price.end_date
         from price
         join product p
         on p.product_no=price.product_no
@@ -55,16 +55,112 @@
         where c.customer_no = #{iocn}
     </select>
 
-    <resultMap id="PriceDTO" type="PriceDTO">
+    <resultMap id="GetPriceResultMap" type="PriceDTO">
         <result column="custom_price" property="customPrice"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
-        <association property="product" javaType="com.project.tobe.entity.Product">
+        <association property="product" javaType="ProductDTO">
             <result column="product_no" property="productNo"/>
             <result column="product_category" property="productCategory"/>
             <result column="product_name" property="productName"/>
             <result column="product_writer" property="productWriter"/>
         </association>
     </resultMap>
+
+    <!--유선화 START-->
+    <!--상세 조회-->
+    <select id="getOrderDetail" resultMap="OrderDetailResultMap">
+        select
+        oh.order_no,
+        oh.reg_date,
+        oh.del_date,
+        oh.confirm_status,
+        oh.confirm_change_date,
+        oh.remarks,
+        c.customer_no,
+        c.customer_name,
+        e.employee_id,
+        e.employee_name,
+        ob.product_no,
+        ob.order_product_qty,
+        p.product_name,
+        p.product_category,
+        p.product_writer,
+        coalesce(pr.custom_price, 0) as custom_price,
+        pr.start_date,
+        pr.end_date
+        from
+        order_header oh
+        join customer c on oh.customer_no = c.customer_no
+        join employee e on oh.employee_id = e.employee_id
+        join order_body ob on oh.order_no = ob.order_no
+        join product p on ob.product_no = p.product_no
+        left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no
+        where
+        oh.order_no = #{orderNo};
+    </select>
+
+    <resultMap id="OrderDetailResultMap" type="OrderHDTO">
+        <id property="orderNo" column="order_no"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="delDate" column="del_date"/>
+        <result property="confirmStatus" column="confirm_status"/>
+        <result property="confirmChangeDate" column="confirm_change_date"/>
+        <result property="remarks" column="remarks"/>
+
+        <association property="customer" javaType="CustomerDTO">
+            <id property="customerNo" column="customer_no"/>
+            <result property="customerName" column="customer_name"/>
+        </association>
+
+        <association property="employee" javaType="EmployeeDTO">
+            <id property="employeeId" column="employee_id"/>
+            <result property="employeeName" column="employee_name"/>
+        </association>
+
+        <collection property="orderBList" ofType="OrderBDTO">
+            <id property="orderNo" column="order_no"/>
+            <id property="productNo" column="product_no"/>
+            <result property="orderProductQty" column="order_product_qty"/>
+
+            <association property="product" javaType="ProductDTO">
+                <id property="productNo" column="product_no"/>
+                <result property="productName" column="product_name"/>
+                <result property="productCategory" column="product_category"/>
+                <result property="productWriter" column="product_writer"/>
+            </association>
+
+            <association property="price" javaType="PriceDTO">
+                <result property="customPrice" column="custom_price"/>
+                <result property="startDate" column="start_date"/>
+                <result property="endDate" column="end_date"/>
+            </association>
+        </collection>
+    </resultMap>
+
+<!--    &lt;!&ndash; 주문 헤더 업데이트 &ndash;&gt;-->
+<!--    <update id="updateOrderHeader" parameterType="OrderHDTO">-->
+<!--        UPDATE order_header-->
+<!--        SET reg_date = #{regDate},-->
+<!--        del_date = #{delDate},-->
+<!--        confirm_status = #{confirmStatus},-->
+<!--        confirm_change_date = #{confirmChangeDate},-->
+<!--        remarks = #{remarks}-->
+<!--        WHERE order_no = #{orderNo}-->
+<!--    </update>-->
+
+    <insert id="updateOrderHeader" useGeneratedKeys="true" keyProperty="orderNo" parameterType="OrderUp1DTO">
+        INSERT INTO order_header (reg_date, del_date, confirm_status, customer_no, employee_id)
+        VALUES (CURRENT_TIMESTAMP, #{delDate}, '대기', #{customerNo}, #{employeeId})
+    </insert>
+
+    <insert id="updateOrderBody" parameterType="map">
+        INSERT INTO order_body (order_no, product_no, order_product_qty)
+        VALUES
+        <foreach collection="orderB" item="orderBody" separator=",">
+            (#{orderNo}, #{orderBody.productNo}, #{orderBody.orderProductQty})
+        </foreach>
+    </insert>
+    <!--유선화 END-->
 
 </mapper>

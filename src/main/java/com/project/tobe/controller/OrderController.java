@@ -1,8 +1,6 @@
 package com.project.tobe.controller;
 
-import com.project.tobe.dto.OrderH;
-import com.project.tobe.dto.OrderSearchDTO;
-import com.project.tobe.dto.PriceDTO;
+import com.project.tobe.dto.*;
 import com.project.tobe.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,19 +16,19 @@ import java.util.Map;
 public class OrderController {
 
     @Autowired
-    @Qualifier("orderservice")
+    @Qualifier("orderService")
     private OrderService orderService;
 
     //초기 목록 호출
     @GetMapping("/orderList")
-    public List<OrderH> orderList (){
+    public List<OrderHDTO> orderList (){
         System.out.println("orderList실행됨.");
         return orderService.getOrder(null);
     }
 
     @PostMapping("/searchSelect")
-    public ResponseEntity<List<OrderH>> searchOrderList(@RequestBody OrderSearchDTO criteria) {
-        List<OrderH> orders = orderService.getOrder(criteria);
+    public ResponseEntity<List<OrderHDTO>> searchOrderList(@RequestBody OrderSearchDTO criteria) {
+        List<OrderHDTO> orders = orderService.getOrder(criteria);
         return ResponseEntity.ok(orders);
     }
 
@@ -50,4 +48,24 @@ public class OrderController {
         return ResponseEntity.ok(customPrice);
     }
 
+    /* 유선화 START */
+    // 주문 상세 정보 조회
+    @GetMapping("/detail/{orderNo}")
+    public ResponseEntity<OrderHDTO> getOrderDetail(@PathVariable Long orderNo) {
+        OrderHDTO orderDetail = orderService.getOrderDetail(orderNo);
+        if (orderDetail != null) {
+            return ResponseEntity.ok(orderDetail);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // 주문 업데이트
+    @PostMapping("/updateOrder")
+    public void updateOrder(@RequestBody OrderUp1DTO orderH) {
+        orderService.updateOrder(orderH);
+        System.out.println(orderH);
+        System.out.println("오더 업데이트 컨트롤러");
+    }
+    /* 유선화 END */
 }

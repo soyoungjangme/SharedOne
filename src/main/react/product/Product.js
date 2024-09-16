@@ -7,26 +7,28 @@ import useCheckboxManager from "../js/CheckboxManager";
 
 
 function Product() {
-        const {
-            allCheck: allCheckMain,
-            checkItem: checkItemMain,
-            showDelete: showDeleteMain,
-            handleMasterCheckboxChange: handleMasterCheckboxChangeMain,
-            handleCheckboxChange: handleCheckboxChangeMain,
-            handleDelete: handleDeleteMain
-        } = useCheckboxManager();
-    
-        const {
-            allCheck: allCheckModal,
-            checkItem: checkItemModal,
-            showDelete: showDeleteModal,
-            handleMasterCheckboxChange: handleMasterCheckboxChangeModal,
-            handleCheckboxChange: handleCheckboxChangeModal,
-            handleDelete: handleDeleteModal,
-            setCheckItem: setCheckItemModal,
-            setAllCheck: setAllCheckModal,
-            setShowDelete: setShowDeleteModal
-        } = useCheckboxManager();
+    //체크박스매니저 메인용
+    const {
+        allCheck: allCheckMain,
+        checkItem: checkItemMain,
+        showDelete: showDeleteMain,
+        handleMasterCheckboxChange: handleMasterCheckboxChangeMain,
+        handleCheckboxChange: handleCheckboxChangeMain,
+        handleDelete: handleDeleteMain
+    } = useCheckboxManager();
+
+    //체크박스매니저 모달용
+    const {
+        allCheck: allCheckModal,
+        checkItem: checkItemModal,
+        showDelete: showDeleteModal,
+        handleMasterCheckboxChange: handleMasterCheckboxChangeModal,
+        handleCheckboxChange: handleCheckboxChangeModal,
+        handleDelete: handleDeleteModal,
+        setCheckItem: setCheckItemModal,
+        setAllCheck: setAllCheckModal,
+        setShowDelete: setShowDeleteModal
+    } = useCheckboxManager();
 
     const [product, setProduct] = useState([]); // 리스트 데이터를 저장할 state
 
@@ -49,54 +51,34 @@ function Product() {
 
 
 
-  // ========================= 테이블 정렬 부분 =========================
-const [order, setOrder] = useState([]); // 메인 리스트 데이터를 저장할 state
-const [modalOrder, setModalOrder] = useState([]); // 모달 리스트 데이터를 저장할 state
-const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
-const [modalSortConfig, setModalSortConfig] = useState({ key: '', direction: 'ascending' }); // 모달 정렬 상태와 방향을 저장하는 상태
+    // ========================= 테이블 정렬 부분 =========================
 
-// 메인 테이블 정렬 함수
-const sortData = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-        direction = 'descending';
-    }
-    const sortOrder = [...order].sort((a, b) => {
-        if (a[key] < b[key]) {
-            return direction === 'ascending' ? -1 : 1;
-        }
-        if (a[key] > b[key]) {
-            return direction === 'ascending' ? 1 : -1;
-        }
-        return 0;
-    });
-    setOrder(sortOrder);
-    setSortConfig({ key, direction });
-};
+    const [order, setOrder] = useState([]); // 메인 리스트 데이터를 저장할 state
+    const [sortConfig, setSortConfig] = useState({ key: '', direction: 'ascending' });
 
-// 모달 테이블 정렬 함수
-const sortModalData = (key) => {
-    let direction = 'ascending';
-    if (modalSortConfig.key === key && modalSortConfig.direction === 'ascending') {
-        direction = 'descending';
-    }
-    const sortOrder = [...modalOrder].sort((a, b) => {
-        if (a[key] < b[key]) {
-            return direction === 'ascending' ? -1 : 1;
+    // 메인 테이블 정렬 함수
+    const sortData = (key) => {
+        let direction = 'ascending';
+        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+            direction = 'descending';
         }
-        if (a[key] > b[key]) {
-            return direction === 'ascending' ? 1 : -1;
-        }
-        return 0;
-    });
-    setModalOrder(sortOrder);
-    setModalSortConfig({ key, direction });
-};
-
+        const sortOrder = [...order].sort((a, b) => {
+            if (a[key] < b[key]) {
+                return direction === 'ascending' ? -1 : 1;
+            }
+            if (a[key] > b[key]) {
+                return direction === 'ascending' ? 1 : -1;
+            }
+            return 0;
+        });
+        setOrder(sortOrder);
+        setSortConfig({ key, direction });
+    };
 
 
 
     // ========================= 상품 삭제 부분 =========================
+
     useEffect(() => {
         // 데이터가 로드된 이후에 삭제된 항목을 로컬 스토리지에서 필터링
         if (product.length > 0) {
@@ -181,12 +163,11 @@ const sortModalData = (key) => {
         productCategory: '',
         productPrice: '',
     });
-
     const handleFilterChange = (e) => {
         const { id, value } = e.target;
 
-        // 상품원가 입력값이 음수일 경우 처리
-        if (id === 'productPrice' && value < 0) {
+        // 상품원가, 최소가격, 최대가격 입력값이 음수일 경우 처리
+        if ((id === 'productPrice' || id === 'minPrice' || id === 'maxPrice') && value < 0) {
             setFilters(prevFilters => ({
                 ...prevFilters,
                 [id]: 0 // 음수를 입력하면 0으로 변경
@@ -199,8 +180,9 @@ const sortModalData = (key) => {
         }
     };
 
-    // 모든 공백 제거
-    const normalizeString = (str) => str.replace(/\s+/g, ''); 
+
+    //공백 제거, 대소문자 통일
+    const normalizeString = (str) => str.replace(/\s+/g, '').toLowerCase();
 
     // 조회 버튼 클릭 시 필터링
     const handleSearch = () => {
@@ -215,9 +197,14 @@ const sortModalData = (key) => {
             const normalizedItemCategory = normalizeString(item.productCategory);
             const itemPrice = parseFloat(item.productPrice);
 
-            const isPriceMatch = isNaN(filterPrice) ||
+            // 가격 필터 조건이 구간일 경우에 최소 가격과 최대 가격이 일치하는지 확인
+            const isPriceMatch =
+                isNaN(filterPrice) ||
                 (filters.priceComparison === 'gte' && itemPrice >= filterPrice) ||
-                (filters.priceComparison === 'lte' && itemPrice <= filterPrice);
+                (filters.priceComparison === 'lte' && itemPrice <= filterPrice) ||
+                (filters.priceComparison === 'range' &&
+                    itemPrice >= filters.minPrice &&
+                    itemPrice <= filters.maxPrice);
 
             return (
                 (!normalizedProductName || normalizedItemName.includes(normalizedProductName)) &&
@@ -231,6 +218,12 @@ const sortModalData = (key) => {
         setOrder(filteredData);
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // 폼이 제출되지 않도록 방지
+            handleSearch(); // 엔터키를 누르면 검색 실행
+        }
+    };
 
 
 
@@ -247,14 +240,14 @@ const sortModalData = (key) => {
     });
     const [productList, setProductList] = useState([]);
 
+    // 상품 정보 입력 처리
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        // 상품원가 입력값이 음수일 경우처리
-        if(name === 'productPrice' && value < 0) {
+        if (name === 'productPrice' && value < 0) {
             setProductForm({
                 ...productForm,
-                [name]: 0 //음수 입력하면 0으로 바뀜
+                [name]: 0
             });
         } else {
             setProductForm({
@@ -262,32 +255,36 @@ const sortModalData = (key) => {
                 [name]: value
             });
         }
-       
     };
 
+    // 모달 열기
     const handleAddClick = () => {
         setIsVisible(true);
+        updateModalOrder(); // 모달 열 때 데이터 업데이트
     };
 
+    // 모달 닫기
     const handleCloseClick = () => {
         setIsVisible(false);
     };
 
+    // CSV 모달 열기/닫기
     const handleAddClickCSV = () => {
         setIsVisibleCSV(prevState => !prevState);
     };
 
+    // 폼 유효성 검사
     const isFormValid = () => {
         const { productYn, ...otherFields } = productForm;
         return Object.values(otherFields).every(value => value.trim() !== '');
     };
 
-    // 추가한 상품 중복 체크 (상품명으로)
+    // 추가한 상품 중복 체크
     const isProductNameDuplicate = (name) => {
         return productList.some(product => normalizeString(product.productName) === normalizeString(name));
     };
 
-    // 등록되어있는 상품과 중복되는지 체크 (상품명으로)
+    // 등록되어있는 상품과 중복 체크
     const isProductNameOnScreen = (name) => {
         return product.some(product =>
             normalizeString(product.productName) === normalizeString(name) &&
@@ -295,6 +292,7 @@ const sortModalData = (key) => {
         );
     };
 
+    // 상품 추가 처리
     const handleAddProduct = () => {
         if (isFormValid()) {
             if (isProductNameOnScreen(productForm.productName)) {
@@ -306,14 +304,16 @@ const sortModalData = (key) => {
                 return;
             }
 
-            setProductList(prevList => [
-                ...prevList,
+            const newProductList = [
+                ...productList,
                 {
-                    no: prevList.length + 1,
+                    no: productList.length + 1,
                     ...productForm,
-                    productPrice: parseInt(productForm.productPrice, 10), // 숫자 변환 시 radix 추가
+                    productPrice: parseInt(productForm.productPrice, 10),
                 }
-            ]);
+            ];
+
+            setProductList(newProductList);
             setProductForm({
                 productName: '',
                 productWriter: '',
@@ -321,11 +321,15 @@ const sortModalData = (key) => {
                 productPrice: '',
                 productYn: 'Y',
             });
+
+            // 추가 후 정렬 데이터 업데이트
+            updateModalOrder(newProductList);
         } else {
             alert('상품 정보를 모두 입력해야 합니다.');
         }
     };
 
+    // 상품 등록 처리
     const handleSubmit = async () => {
         if (productList.length === 0) {
             alert('추가한 상품이 없습니다. 상품을 추가한 후 등록해 주세요.');
@@ -337,7 +341,6 @@ const sortModalData = (key) => {
         }
 
         try {
-            // 상품 등록 API 호출
             await Promise.all(productList.map(product =>
                 fetch('/product/addProduct', {
                     method: 'POST',
@@ -348,10 +351,8 @@ const sortModalData = (key) => {
                 })
             ));
 
-            // 성공적으로 등록 후 상태 초기화 및 원래 화면 데이터 갱신
             setProductList([]);
             await fetchData(); // 원래 화면 데이터 갱신
-            // 모달 창 닫기
             setIsVisible(false);
             alert("총 " + productList.length + " 개의 상품이 등록되었습니다.");
         } catch (error) {
@@ -360,38 +361,73 @@ const sortModalData = (key) => {
         }
     };
 
-      //추가한 상품 삭제
-      const handleDeleteClickModal = () => {
+    // 상품 삭제 처리
+    const handleDeleteClickModal = () => {
         const itemsToDelete = productList
             .map((item, index) => ({
-                index: index + 1, // 인덱스는 1부터 시작
+                index: index + 1,
                 checked: checkItemModal[index + 1] || false
             }))
             .filter(item => item.checked)
-            .map(item => item.index); // 삭제할 인덱스만 추출
-    
-        // 선택된 항목이 없으면 함수 종료
+            .map(item => item.index);
+
         if (itemsToDelete.length === 0) {
             alert('삭제할 항목이 선택되지 않았습니다.');
             return;
         }
-    
-        // 확인 대화 상자 표시
+
         if (!window.confirm(`${itemsToDelete.length} 개의 항목을 삭제하시겠습니까?`)) {
             return;
         }
-    
-        // 화면에서 삭제 처리
-        setProductList(prevList => prevList.filter((_, index) => !itemsToDelete.includes(index + 1)));
-    
-        // 상태 초기화
+
+        const updatedProductList = productList.filter((_, index) => !itemsToDelete.includes(index + 1));
+
+        setProductList(updatedProductList);
         setCheckItemModal({});
         setAllCheckModal(false);
         setShowDeleteModal(false);
 
+        // 삭제 후 정렬 데이터 업데이트
+        updateModalOrder(updatedProductList);
+
         alert(itemsToDelete.length + " 선택한 항목이 삭제되었습니다.");
     };
-    
+
+    // 모달의 데이터를 업데이트하는 함수
+    const updateModalOrder = (data) => {
+        const sortedData = [...data].sort((a, b) => {
+            if (modalSortConfig.key) {
+                if (a[modalSortConfig.key] < b[modalSortConfig.key]) {
+                    return modalSortConfig.direction === 'ascending' ? -1 : 1;
+                }
+                if (a[modalSortConfig.key] > b[modalSortConfig.key]) {
+                    return modalSortConfig.direction === 'ascending' ? 1 : -1;
+                }
+            }
+            return 0;
+        });
+        setModalOrder(sortedData);
+    };
+
+    // 초기 로딩 시 모달 데이터 업데이트
+    useEffect(() => {
+        updateModalOrder(productList);
+    }, [productList]);
+
+    // 모달 데이터 정렬 함수
+    const [modalOrder, setModalOrder] = useState([]);
+    const [modalSortConfig, setModalSortConfig] = useState({ key: '', direction: 'ascending' }); // 모달 정렬 상태와 방향을 저장하는 상태
+    const sortModalData = (key) => {
+        let direction = 'ascending';
+        if (modalSortConfig.key === key && modalSortConfig.direction === 'ascending') {
+            direction = 'descending';
+        }
+
+        setModalSortConfig({ key, direction });
+        updateModalOrder(productList);
+    };
+
+
 
     // ========================= 상품 수정 모달창 =========================
 
@@ -419,7 +455,7 @@ const sortModalData = (key) => {
         const { name, value } = e.target;
 
         //상품원가 입력값이 음수일 경우
-        if(name === 'productPrice' && value < 0) {
+        if (name === 'productPrice' && value < 0) {
             setModifyItem((prevItem) => ({
                 ...prevItem,
                 [name]: 0, //음수 입력시 0으로 바뀜
@@ -430,10 +466,33 @@ const sortModalData = (key) => {
                 [name]: value,
             }));
         }
-       
+
     };
 
     const handleModifySubmit = async () => {
+        // 입력값이 비어있는지 확인
+        const isInputEmpty = Object.values(modifyItem).some(value => !value);
+
+        if (isInputEmpty) {
+            alert('상품 정보를 모두 입력해야 합니다.');
+            return;
+        }
+
+        // 공백 제거 및 대소문자 통일 후 중복 확인
+        const normalizedProductName = normalizeString(modifyItem.productName);
+
+        // 등록된 상품 중 productYn = 'Y'인 데이터와 중복 확인
+        const isDuplicate = product.some(item =>
+            normalizeString(item.productName) === normalizedProductName && // 공백 제거 및 대소문자 통일 후 비교
+            item.productYn === 'Y' &&
+            normalizeString(item.productName) !== normalizeString(originalItem.productName) // 자기 자신과는 비교하지 않음
+        );
+
+        if (isDuplicate) {
+            alert('이미 존재하는 상품명입니다.');
+            return;
+        }
+
         if (!confirm('상품을 수정하시겠습니까?')) {
             return;
         }
@@ -454,15 +513,15 @@ const sortModalData = (key) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(modifyItem),
+                body: JSON.stringify({ ...modifyItem, productName: normalizedProductName }), // 공백 제거 및 대소문자 통일된 값 전송
             });
 
             if (response.ok) {
                 const result = await response.json();
                 alert('상품이 수정되었습니다.');
                 setIsModifyModalVisible(false);
-                setProductList([]);
-                await fetchData(); // 원래 화면 데이터 갱신
+                setProductList([]); // 리스트 초기화
+                await fetchData(); // 기존 데이터 갱신
             } else {
                 alert('상품 수정에 실패하였습니다.');
             }
@@ -473,9 +532,8 @@ const sortModalData = (key) => {
     };
 
 
-  
-    
-    
+
+
 
 
     // 문자열 길면 ... 처리
@@ -488,49 +546,110 @@ const sortModalData = (key) => {
         <div>
 
             <div className="pageHeader"><h1>
-                {/* <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-box-seam-fill" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15.528 2.973a.75.75 0 0 1 .472.696v8.662a.75.75 0 0 1-.472.696l-7.25 2.9a.75.75 0 0 1-.557 0l-7.25-2.9A.75.75 0 0 1 0 12.331V3.669a.75.75 0 0 1 .471-.696L7.443.184l.01-.003.268-.108a.75.75 0 0 1 .558 0l.269.108.01.003zM10.404 2 4.25 4.461 1.846 3.5 1 3.839v.4l6.5 2.6v7.922l.5.2.5-.2V6.84l6.5-2.6v-.4l-.846-.339L8 5.961 5.596 5l6.154-2.461z" />
-            </svg> */}
-                <i class="bi bi-cart-check-fill"></i>
-                {/* <i class="bi bi-cart-check"></i> 2번 */}
-                {/* <i class="bi bi-cart-plus-fill"></i> 3번 */}
-                {/* <i class="bi bi-cart-plus"></i> 4번 */}
-                {/* <i class="bi bi-box-seam"></i> */}
+                <i className="bi bi-cart-check-fill"></i>
                 상품 관리</h1></div>
 
             {/* <i class="bi bi-chat-square-text-fill"></i> 주문관리 아이콘*/}
 
             <div className="main-container">
                 <div className="filter-container">
-
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="productName">상품명</label>
-                        <input className="filter-input" type="text" id="productName" placeholder="상품명" value={filters.productName} onChange={handleFilterChange} />
+                        <input
+                            className="filter-input"
+                            type="text"
+                            id="productName"
+                            placeholder="상품명"
+                            value={filters.productName}
+                            onChange={handleFilterChange}
+                            onKeyDown={handleKeyDown}
+                        />
                     </div>
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="productWriter">상품저자</label>
-                        <input className="filter-input" type="text" id="productWriter" placeholder="상품저자" value={filters.productWriter} onChange={handleFilterChange} />
+                        <input
+                            className="filter-input"
+                            type="text"
+                            id="productWriter"
+                            placeholder="상품저자"
+                            value={filters.productWriter}
+                            onChange={handleFilterChange}
+                            onKeyDown={handleKeyDown}
+                        />
                     </div>
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="productCategory">상품카테고리</label>
-                        <input className="filter-input" type="text" id="productCategory" placeholder="상품카테고리" value={filters.productCategory} onChange={handleFilterChange} />
+                        <input
+                            className="filter-input"
+                            type="text"
+                            id="productCategory"
+                            placeholder="상품카테고리"
+                            value={filters.productCategory}
+                            onChange={handleFilterChange}
+                            onKeyDown={handleKeyDown}
+                        />
                     </div>
                     <div className="filter-row">
                         <label className="filter-label" htmlFor="productPrice">상품원가</label>
                         <div className="filter-input-group">
-                            <input className="filter-input" type="number" id="productPrice" placeholder="상품원가" min={0} value={filters.productPrice} onChange={handleFilterChange} />
-                            <select id="priceComparison" value={filters.priceComparison} onChange={handleFilterChange}>
+                            {/* 가격 비교 조건에 따라 인풋 필드를 다르게 표시 */}
+                            {filters.priceComparison === 'range' ? (
+                                <>
+                                    <input
+                                        className="filter-input"
+                                        type="number"
+                                        id="minPrice"
+                                        placeholder="최소가격"
+                                        min={0}
+                                        value={filters.minPrice}
+                                        onChange={handleFilterChange}
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                    <input
+                                        className="filter-input"
+                                        type="number"
+                                        id="maxPrice"
+                                        placeholder="최대가격"
+                                        min={0}
+                                        value={filters.maxPrice}
+                                        onChange={handleFilterChange}
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                </>
+                            ) : (
+                                // 구간 이외의 조건에서는 기본 상품원가 필드만 표시
+                                <input
+                                    className="filter-input"
+                                    type="number"
+                                    id="productPrice"
+                                    placeholder="상품원가"
+                                    min={0}
+                                    value={filters.productPrice}
+                                    onChange={handleFilterChange}
+                                    onKeyDown={handleKeyDown}
+                                />
+                            )}
+
+                            <select
+                                id="priceComparison"
+                                value={filters.priceComparison}
+                                onChange={handleFilterChange}
+                            >
                                 <option value="">선택</option>
                                 <option value="gte">이상</option>
                                 <option value="lte">이하</option>
+                                <option value="range">범위</option>
                             </select>
                         </div>
                     </div>
 
-
-
-                    <button className="filter-button" onClick={handleSearch}>조회</button>
+                    <div className="button-container">
+                        <button type="button" className="search-btn" onClick={handleSearch}>
+                            <i className="bi bi-search search-icon"></i>
+                        </button>
+                    </div>
                 </div>
+
                 <button className="filter-button" id="add" type="button" onClick={handleAddClick}>상품 등록</button>
 
                 {showDeleteMain && <button className='delete-btn-main' onClick={() => { handleDeleteClickMain(); handleDeleteMain(); }}>삭제</button>}
@@ -607,23 +726,23 @@ const sortModalData = (key) => {
                                 <h1>상품등록</h1>
                                 <div className="btns">
                                     <div className="btn-add2">
-                                        <button onClick={handleSubmit} disabled={productList.length === 0}>등록하기</button>
+                                        <button className="product-register-btn" onClick={handleSubmit} disabled={productList.length === 0}>등록하기</button>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="RegistForm">
-                                {showDeleteModal && <button className='delete-btn-modal' onClick={() => { handleDeleteClickModal(); handleDeleteModal(); }}>삭제</button>}
+                                {showDeleteModal && (
+                                    <button className='delete-btn-modal' onClick={() => { handleDeleteClickModal(); handleDeleteModal(); }}>삭제</button>
+                                )}
                                 <table className="formTable">
                                     <tbody>
-
                                         <tr>
                                             <th><label htmlFor="productName">상품명</label></th>
                                             <td><input type="text" name="productName" value={productForm.productName} onChange={handleInputChange} placeholder="상품명" /></td>
 
                                             <th><label htmlFor="productWriter">상품저자</label></th>
                                             <td><input type="text" name="productWriter" value={productForm.productWriter} onChange={handleInputChange} placeholder="상품저자" /></td>
-
                                         </tr>
 
                                         <tr>
@@ -633,7 +752,6 @@ const sortModalData = (key) => {
                                             <th><label htmlFor="productPrice">상품원가</label></th>
                                             <td><input type="number" name="productPrice" value={productForm.productPrice} onChange={handleInputChange} placeholder="상품원가" /></td>
                                         </tr>
-
                                     </tbody>
                                 </table>
 
@@ -644,7 +762,7 @@ const sortModalData = (key) => {
                                 )}
 
                                 <div className="btn-add">
-                                    <button onClick={handleAddProduct}>추가</button>
+                                    <button className='product-add-btn' onClick={handleAddProduct}>추가</button>
                                 </div>
                             </div>
 
@@ -653,47 +771,45 @@ const sortModalData = (key) => {
                                 <table className="formTableList">
                                     <thead>
                                         <tr>
-                                            <th><input type="checkbox" checked={allCheckModal} onChange={handleMasterCheckboxChangeModal}/></th>
+                                            <th><input type="checkbox" checked={allCheckModal} onChange={handleMasterCheckboxChangeModal} /></th>
                                             <th>no</th>
                                             <th>상품명
-                <button className="sortBtn" onClick={() => sortModalData('productName')}>
-                    {modalSortConfig.key === 'productName' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                </button>
-            </th>
-            <th>상품저자
-                <button className="sortBtn" onClick={() => sortModalData('productWriter')}>
-                    {modalSortConfig.key === 'productWriter' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                </button>
-            </th>
-            <th>상품카테고리
-                <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
-                    {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                </button>
-            </th>
-            <th>상품원가
-                <button className="sortBtn" onClick={() => sortModalData('productPrice')}>
-                    {modalSortConfig.key === 'productPrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                </button>
-            </th>
+                                                <button className="sortBtn" onClick={() => sortModalData('productName')}>
+                                                    {modalSortConfig.key === 'productName' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                </button>
+                                            </th>
+                                            <th>상품저자
+                                                <button className="sortBtn" onClick={() => sortModalData('productWriter')}>
+                                                    {modalSortConfig.key === 'productWriter' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                </button>
+                                            </th>
+                                            <th>상품카테고리
+                                                <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
+                                                    {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                </button>
+                                            </th>
+                                            <th>상품원가
+                                                <button className="sortBtn" onClick={() => sortModalData('productPrice')}>
+                                                    {modalSortConfig.key === 'productPrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                                </button>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {productList.map((item, index) => (
-                                            !item.deleted && (
+                                        {modalOrder.filter(item => !item.deleted).map((item, index) => (
                                             <tr key={index} className={checkItemModal[index + 1] ? 'selected-row' : ''}>
-                                                <td><input type="checkbox" checked={checkItemModal[index + 1] || false} onChange={handleCheckboxChangeModal}/></td>
+                                                <td ><input type="checkbox" checked={checkItemModal[index + 1] || false} onChange={() => handleCheckboxChangeModal(index + 1)} /></td>
                                                 <td>{index + 1}</td>
                                                 <td>{item.productName}</td>
                                                 <td>{item.productWriter}</td>
                                                 <td>{item.productCategory}</td>
                                                 <td>{item.productPrice}</td>
                                             </tr>
-                                            )
                                         ))}
                                         <tr style={{ fontWeight: 'bold' }}>
                                             <td colSpan="5">합계</td>
                                             <td colSpan="1">
-                                                {productList.length}건
+                                                {modalOrder.filter(item => !item.deleted).length}건
                                             </td>
                                         </tr>
                                     </tbody>
@@ -702,8 +818,9 @@ const sortModalData = (key) => {
                         </div>
                     </div>
                 </div>
-
             )}
+
+
 
 
             {/* ---------------------- 수정 모달창 ----------------------*/}
