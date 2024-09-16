@@ -50,7 +50,8 @@ public class OrderController {
         return ResponseEntity.ok(customPrice);
     }
 
-    /*상세 보기 - 유선화 START*/
+    /* 유선화 START */
+    // 주문 상세 정보 조회
     @GetMapping("/detail/{orderNo}")
     public ResponseEntity<OrderHDTO> getOrderDetail(@PathVariable Long orderNo) {
         OrderHDTO orderDetail = orderService.getOrderDetail(orderNo);
@@ -60,6 +61,13 @@ public class OrderController {
             return ResponseEntity.notFound().build();
         }
     }
-    /*상세 보기 - 유선화 END*/
 
+    // 주문 업데이트
+    @PutMapping("/update/{orderNo}")
+    public ResponseEntity<String> updateOrder(@PathVariable Long orderNo, @RequestBody OrderHDTO orderData) {
+        orderService.updateOrder(orderNo, orderData);
+        return ResponseEntity.ok("주문이 성공적으로 수정되었습니다.");
+    }
+
+    /* 유선화 END */
 }

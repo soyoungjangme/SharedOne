@@ -15,5 +15,6 @@ public class OrderBDTO {
     private Long productNo;
     private int orderProductQty;
     private Product product;
+    private PriceDTO price;
 
 }
