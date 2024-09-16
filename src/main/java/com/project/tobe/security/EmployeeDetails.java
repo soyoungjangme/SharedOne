@@ -1,9 +1,8 @@
 package com.project.tobe.security;
 
-import com.project.tobe.dto.AuthorityDto;
 import com.project.tobe.dto.EmployeeDTO;
 import com.project.tobe.entity.Employee;
-import com.project.tobe.entity.UserRole;
+import com.project.tobe.dto.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

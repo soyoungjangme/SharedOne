@@ -1,5 +1,7 @@
-package com.project.tobe.customer;
+package com.project.tobe.serviceImpl;
 
+import com.project.tobe.mapper.CustomerMapper;
+import com.project.tobe.service.CustomerService;
 import com.project.tobe.dto.CustomerSearchDTO;
 import com.project.tobe.dto.CustomerDTO;
 import org.springframework.beans.factory.annotation.Autowired;

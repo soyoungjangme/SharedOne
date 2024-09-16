@@ -4,8 +4,8 @@ import './Order.css'
 import './OrderRegist.css'
 import './OrderModalDetail.css'
 import useCheckboxManager from "../js/CheckboxManager";
-import ModifyOrderModal from './ModifyOrderModal';
 import axios from 'axios';
+import ModifyOrderModal from './ModifyOrderModal';
 
 function Order() {
 
@@ -201,8 +201,6 @@ function Order() {
     },[registCustomer]); //의존성 배열: 특정 값이 변경될 때마다 실행한다.
 
 
-
-
     //상품 체크 이벤트 - 체크항목만 checkProd 넣기
     const handleCheck = (prodNo, prodCat, prodName, salePrice, saleStart, saleEnd) => (e) => { //체크항목 가져오기
         setCheckProd( prevCheckProd => {
@@ -242,7 +240,9 @@ function Order() {
 
     /*---------------jsy주문 등록 끝---------------*/
 
+
 // ---  모달창 띄우는 스크립트
+
     const [isVisibleCSV, setIsVisibleCSV] = useState(false);
 
     const handleAddClickCSV = () => {
@@ -260,18 +260,35 @@ function Order() {
         setIsVisible(false);
     };
 
+    const [modifyItem, setModifyItem] = useState([
+        {
+            orderNo: 0,
+            title: '',
+            details: '',
+            manager: '',
+            status: '',
+            date: ''
+        }
+    ]);
 
-// 유선화 시작 -업데이트 처리용 props 전달-
-    /* 아래부터는 상세보기 관련된 모든 것 */
-    const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
+    const [selectedOrderNo, setSelectedOrderNo] = useState(null);
 
-    /*창 닫기*/
+    //유선화 - 시작  모달창 열기 (주문 번호 포함)
+    const handleDetailView = (orderNo) => {
+        setSelectedOrderNo(orderNo);  // 주문 번호 설정
+        setIsModifyModalVisible(true);  // 모달 열기
+    };
+    // 유선화 - 끝
+
     const handleModifyCloseClick = () => {
         setIsModifyModalVisible(false);
-        setSelectedOrderNo(null);
-    }
+    };
 
+
+// --- 모달창 띄우는 스크립트
+
+    // 유선화 시작 -업데이트 처리용 props 전달-
     const handleOrderUpdate = (updatedOrder) => {
         setOrder(prevOrders =>
             prevOrders.map(order =>
@@ -279,7 +296,14 @@ function Order() {
             )
         );
     };
-// 유선화 끝
+    // 유선화 끝
+
+
+
+
+
+
+
 
     return (
         <div>
@@ -404,14 +428,14 @@ function Order() {
                     </thead>
                     <tbody>
                     {order.length > 0 ? (
-                        order.map((item, index) => (/*더블 클릭 시 상세 보기 창 - 유선화*/
+                        order.map((item, index) => ( /*더블 클릭 시 상세 보기 창 - 유선화*/
                             <tr key={`${item.orderNo}`} className={checkItem[index+1] ? 'selected-row' : ''}
                                 onDoubleClick={() => handleDetailView(item.orderNo)}>
                                 <td>
                                     <input
                                         type="checkbox"
                                         checked={checkItem[index + 1] || false}
-                                        onChange={handleCheckboxChange}
+                                        onChange={() => handleCheckboxChange(index + 1)}
                                     />
                                 </td>
                                 <td>{index + 1}</td>
@@ -611,18 +635,15 @@ function Order() {
             )}
             {/* 모달창의 끝  */}
 
-            {/* 상세 보기 모달창 - 선화*/}
             {/* 코드 너무 길어져서 이사 가요! */}
-            <ModifyOrderModal
-                orderNo={selectedOrderNo}
-                isOpen={isModifyModalVisible}
-                onClose={handleModifyCloseClick}
-                onUpdate={handleOrderUpdate}
-                customers={mycustomer}
-                products={customPrice}
-            />
-
-
+            {isModifyModalVisible && (
+                <ModifyOrderModal
+                    orderNo={selectedOrderNo}
+                    isOpen={isModifyModalVisible}
+                    onClose={handleModifyCloseClick}
+                    onUpdate={handleOrderUpdate}
+                />
+            )}
         </div>
     );
 }
