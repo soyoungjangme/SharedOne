@@ -1,5 +1,6 @@
 package com.project.tobe.serviceImpl;
 
+import com.project.tobe.dto.OrderBDTO;
 import com.project.tobe.dto.OrderHDTO;
 import com.project.tobe.dto.OrderSearchDTO;
 import com.project.tobe.dto.PriceDTO;
@@ -37,10 +38,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateOrder(Long orderNo, OrderH updatedOrderData) {
+    public void updateOrder(Long orderNo, OrderHDTO updatedOrderData) {
 
         // 기존 데이터와 수정된 데이터를 비교하고 필요한 경우 업데이트
-        OrderH existingOrder = orderMapper.getOrderDetail(orderNo);
+        OrderHDTO existingOrder = orderMapper.getOrderDetail(orderNo);
 
         if (existingOrder != null) {
             // 필요한 필드 업데이트
@@ -50,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
             existingOrder.setConfirmStatus(updatedOrderData.getConfirmStatus());
 
             // 주문 본문 리스트도 업데이트
-            for (OrderB orderB : updatedOrderData.getOrderBList()) {
+            for (OrderBDTO orderB : updatedOrderData.getOrderBList()) {
                 // 상ㅇ품 번호에 따라 본문을 업데이트
                 orderMapper.updateOrderBody(orderNo, orderB);
             }

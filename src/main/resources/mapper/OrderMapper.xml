@@ -6,7 +6,7 @@
 <mapper namespace="com.project.tobe.mapper.OrderMapper">
 
     <!-- 주문 데이터 조회 -->
-    <select id="getOrder" resultMap="OrderH">
+    <select id="getOrder" resultMap="OrderHDTO">
         select oh.order_no, c.customer_name, emp.employee_name,
         oh.confirm_status, oh.reg_date
         from order_header oh

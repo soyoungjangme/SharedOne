@@ -6,7 +6,6 @@ import com.project.tobe.dto.PriceDTO;
 import com.project.tobe.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,7 +64,7 @@ public class OrderController {
 
     // 주문 업데이트
     @PutMapping("/update/{orderNo}")
-    public ResponseEntity<String> updateOrder(@PathVariable Long orderNo, @RequestBody OrderH orderData) {
+    public ResponseEntity<String> updateOrder(@PathVariable Long orderNo, @RequestBody OrderHDTO orderData) {
         orderService.updateOrder(orderNo, orderData);
         return ResponseEntity.ok("주문이 성공적으로 수정되었습니다.");
     }
