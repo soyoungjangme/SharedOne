@@ -6,6 +6,7 @@ import './OrderModalDetail.css'
 import useCheckboxManager from "../js/CheckboxManager";
 import axios from 'axios';
 import ModifyOrderModal from './ModifyOrderModal';
+import ModifyOrderModal2 from './ModifyOrderModal2';
 
 function Order() {
 
@@ -313,20 +314,33 @@ function Order() {
         }
     ]);
 
+    //유선화 - 시작 (또 다른 모달창 추가시킴)
     const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
+    const [isModifyModal2Visible, setIsModifyModal2Visible] = useState(false);
     const [selectedOrderNo, setSelectedOrderNo] = useState(null);
+    const [selectedOrderData, setSelectedOrderData] = useState(null);
 
-    //유선화 - 시작  모달창 열기 (주문 번호 포함)
+
     const handleDetailView = (orderNo) => {
         setSelectedOrderNo(orderNo);  // 주문 번호 설정
         setIsModifyModalVisible(true);  // 모달 열기
     };
-    // 유선화 - 끝
 
     const handleModifyCloseClick = () => {
         setIsModifyModalVisible(false);
     };
 
+    const handleOpenModifyModal2 = (orderData) => {
+        setSelectedOrderData(orderData);
+        setIsModifyModalVisible(false); // 상세 조회 모달 닫기
+        setIsModifyModal2Visible(true); // 수정 모달 열기
+    };
+
+    const handleCloseModifyModal2 = () => {
+        setIsModifyModal2Visible(false);
+    };
+
+    // 유선화 - 끝
 
 // --- 모달창 띄우는 스크립트
 
@@ -337,6 +351,7 @@ function Order() {
                 order.orderNo === updatedOrder.orderNo ? updatedOrder : order
             )
         );
+        handleCloseModifyModal2();
     };
     // 유선화 끝
 
@@ -678,6 +693,15 @@ function Order() {
                     orderNo={selectedOrderNo}
                     isOpen={isModifyModalVisible}
                     onClose={handleModifyCloseClick}
+                    onOpenModifyModal2={handleOpenModifyModal2}
+                />
+            )}
+
+            {isModifyModal2Visible && (
+                <ModifyOrderModal2
+                    orderData={selectedOrderData}
+                    isOpen={isModifyModal2Visible}
+                    onClose={handleCloseModifyModal2}
                     onUpdate={handleOrderUpdate}
                 />
             )}
