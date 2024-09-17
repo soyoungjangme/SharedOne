@@ -15,11 +15,11 @@ const PriceTable = ({
                         handleDelete
                     }) => {
     return (
-        <table className="search-table" style={{marginTop: '50px'}} onChange={handleMasterCheckboxChange}>
+        <table className="search-table" style={{marginTop: '50px'}}>
             {showDelete && <button className="delete-btn btn-common" onClick={handleDelete}>삭제</button>}
             <thead>
             <tr>
-                <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange}/></th>
+                <th><input type="checkbox" checked={allCheck} onChange={(e)=>handleMasterCheckboxChange(e)}/></th>
                 <th>No.</th>
                 <th>
                     등록일
@@ -78,7 +78,7 @@ const PriceTable = ({
                         handleModify(item)
                     }}>
                         <td><input type="checkbox" checked={checkItem[index] || false}
-                                   onChange={handleCheckboxChange}/></td>
+                                   onChange={(e)=>handleCheckboxChange(e)}/></td>
                         <td style={{display: 'none'}}>{index}</td>
                         <td>{index + 1}</td>
                         <td>{item.registerDate}</td>
