@@ -3,6 +3,7 @@ package com.project.tobe.service;
 import com.project.tobe.dto.*;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface OrderService {
@@ -14,7 +15,7 @@ public interface OrderService {
 
     /*유선화 START*/
     OrderHDTO getOrderDetail(Long orderNo); // 상세 조회
-    //void updateOrder(Long orderNo, OrderHDTO updatedOrderData);
-    void updateOrder(OrderUp1DTO orderH); // 바디 업데이트// 주문 업데이트
+    boolean updateApproval(Long orderNo, String confirmStatus, LocalDate confirmChangeDate);
+    void updateOrder(OrderHDTO orderHDTO);
     /*유선화 END*/
 }

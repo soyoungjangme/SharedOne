@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service("orderService")
@@ -57,51 +59,30 @@ public class OrderServiceImpl implements OrderService {
 
     /* 유선화 START */
 
-    // 특정 주문 상세 정보
+// 특정 주문 상세 정보
     @Override
     public OrderHDTO getOrderDetail(Long orderNo) {
         return orderMapper.getOrderDetail(orderNo);
     }
 
-    @Transactional
+
+// 결재 여부 업데이트
     @Override
-    public void updateOrder(OrderUp1DTO orderH) {
-        // 주문 헤더 업데이트
-        orderMapper.updateOrderHeader(orderH);
-
-        // orderNo를 orderH에서 추출
-        Long orderNo = orderH.getOrderNo();
-
-        // 주문 바디 업데이트
-        orderMapper.updateOrderBody(orderNo, orderH.getOrderB());
-
-        System.out.println("오더 서비스");
+    @Transactional
+    public boolean updateApproval(Long orderNo, String confirmStatus, LocalDate confirmChangeDate) {
+        try {
+            int updatedRows = orderMapper.updateApproval(orderNo, confirmStatus, confirmChangeDate);
+            return updatedRows > 0;
+        } catch (Exception e) {
+            System.out.println("updateApproval 오류");
+            return false;
+        }
     }
 
-//    @Override
-//    public void updateOrder(Long orderNo, OrderHDTO updatedOrderData) {
-//
-//        // 기존 데이터와 수정된 데이터를 비교하고 필요한 경우 업데이트
-//        OrderHDTO existingOrder = orderMapper.getOrderDetail(orderNo);
-//
-//        if (existingOrder != null) {
-//            // 필요한 필드 업데이트
-//            existingOrder.setRegDate(updatedOrderData.getRegDate());
-//            existingOrder.setDelDate(updatedOrderData.getDelDate());
-//            existingOrder.setRemarks(updatedOrderData.getRemarks());
-//            existingOrder.setConfirmStatus(updatedOrderData.getConfirmStatus());
-//
-//            // 주문 본문 리스트도 업데이트
-//            for (OrderBDTO orderB : updatedOrderData.getOrderBList()) {
-//                // 상ㅇ품 번호에 따라 본문을 업데이트
-////                orderMapper.updateOrderBody(orderNo, orderB);
-//            }
-//
-//            // 헤더 정보 업데이트
-//            orderMapper.updateOrderHeader(existingOrder);
-//        } else {
-//            throw new RuntimeException("주문을 찾을 수 없습니다.");
-//        }
-//    }
+    @Override
+    public void updateOrder(OrderHDTO orderHDTO) {
+
+    }
+
     /* 유선화 END */
 }

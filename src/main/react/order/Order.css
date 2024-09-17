@@ -385,6 +385,13 @@ tr:nth-child(0){
 
 }
 
+.delete-btn2 {
+    width: 65px;
+    position: absolute;
+    top: 90%;
+    left: 5%;
+}
+
 /*  sort */
 .sortBtn {
     border: 1px solid #d0d0d0;
