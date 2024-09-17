@@ -86,9 +86,12 @@
                 #{confirmerId}
                 )
     </insert>
-    <insert id="registOrderB">
+    <insert id="registOrderB" parameterType="java.util.List">
         insert into order_body(order_no, product_no, price_no, order_product_qty, prod_total)
-        values(#{orderNo}, #{productNo}, #{priceNo}, #{orderProductQty}, #{prodTotal})
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderNo}, #{item.productNo}, #{item.priceNo}, #{item.orderProductQty}, #{item.prodTotal})
+        </foreach>
     </insert>
 
 
