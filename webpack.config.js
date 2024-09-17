@@ -16,7 +16,6 @@ module.exports = {
         order: './order/Order.js', //주문
         customer: './customer/Customer.js',// 고객
         product: './product/Product.js', // 직원
-        confirm: './confirm/Confirm.js', // 결재
         price: './price/price.js', // 판매가
         myPage: './myPage/myPage.js', // 마이페이지
         main: './main/Main.js',
