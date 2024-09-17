@@ -2,47 +2,147 @@ import React, { useState, useEffect } from 'react';
 import './Order.css'
 import './OrderRegist.css'
 import './OrderModalDetail.css'
+import ModifyOrderModal2 from "./ModifyOrderModal2";
 import axios from 'axios';
 
-const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate }) => {
-    console.log("ModifyOrderModal received onUpdate:", onUpdate);  // 디버깅 로그 추가
+const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModal2 }) => {
 
     const [modifyItem, setModifyItem] = useState({
         orderNo: '',
         regDate: '',
-        employee: { employeeName: '' },
-        customer: { customerName: '' },
+        employee: { employeeName: '' , employeeId : ''},
+        customer: { customerName: '' , customerNo : '' },
         delDate: '',
         confirmStatus: '',
         remarks: '',
-        confirm_change_date: null,
+        confirmChangeDate: null,
         orderBList: []
     });
 
     // 승인 여부 관리 (승인 됐으면 조회만 되게끔 하기 위해 만듦)
     const [isApproved, setIsApproved] = useState(false);
 
+    // 주문 수정하는 모달창
+    const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
+
+    const openModifyModal2 = () => {
+        const updatedModifyItem = {
+            ...modifyItem,
+            customerNo: modifyItem.customer?.customerNo || ''
+        };
+        setIsModifyModalOpen(true);
+        onOpenModifyModal2(updatedModifyItem);
+    };
+    const closeModifyModal = () => {
+        setIsModifyModalOpen(false);
+    };
+
+    const handleModifyUpdate = (updatedOrder) => {
+        setModifyItem(updatedOrder);
+        if (onUpdate) {
+            onUpdate(updatedOrder);
+        }
+        closeModifyModal();
+    };
+
+
+
+//--------------------------------------------------------------------------
+ const [orderDetails, setOrderDetails] = useState({
+        orderNo: 0,
+        customerNo: '',
+        employeeId: '',
+        delDate: '',
+        orderB: [
+            {
+                productNo: 0,
+                orderProductQty: 0,
+                product: '',
+                price: 0,
+            }
+        ]
+    });
+
+    // modifyItem이 업데이트될 때마다 orderDetails와 orderDetailsBList를 업데이트
+    useEffect(() => {
+        if (modifyItem) {
+            const updatedOrderDetailsBList = modifyItem.orderBList.map(item => ({
+                productNo: item.productNo,            // 원본 값
+                orderProductQty: item.orderProductQty,                  // 기본값 또는 나중에 업데이트 필요
+                price: item.productPrice ?? 0        // null을 0으로 대체
+            }));
+
+            // 상태를 한 번에 업데이트
+            setOrderDetails({
+                orderNo: modifyItem.orderNo,          // 예시: orderNo 추가
+                employeeId: modifyItem.employee.employeeId,
+                customerNo: modifyItem.customer.customerNo,
+                delDate: modifyItem.delDate,
+                orderB: updatedOrderDetailsBList
+            });
+        }
+    }, [modifyItem]);  // modifyItem이 변경될 때마다 호출
+
+    // 상태를 콘솔에 찍어보는 함수
+    const logOrderDetails = () => {
+        console.log('Order Details:', orderDetails);
+    };
+
+    // modifyItem이 업데이트될 때마다 콘솔에 찍기
+    useEffect(() => {
+        logOrderDetails();
+    }, [orderDetails]);  // orderDetails가 변경될 때마다 호출
+    
+    const handleUpdate = async () => {
+        try {
+            console.log('Sending Order Details:', orderDetails); // 전송 전 데이터 확인
+    
+            const response = await axios.post('/order/updateOrder', orderDetails, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            console.log('Response:', response.data); // 서버 응답 확인
+        } catch (error) {
+            console.error('Error:', error.response ? error.response.data : error.message); // 에러 상세 확인
+        }
+    };
+//--------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
     // 주문 데이터 가져오기
     useEffect(() => {
         if (isOpen && orderNo) {
+            console.log('useEffect orderNo: '+orderNo);
             const fetchOrderDetails = async () => {
                 try {
                     const response = await axios.get(`/order/detail/${orderNo}`);
+                    console.log('Response data:', response.data);
                     setModifyItem(response.data);
 
-                    if (response.data.confirmStatus.trim() === '승인') {
-                        setIsApproved(true);  // 승인 상태일 때 true로 설정
+                    const confirmStatus = response.data?.confirmStatus?.trim() || '대기';
+                    if (confirmStatus === '승인') {
+                        setIsApproved(true);
                     } else {
-                        setIsApproved(false);  // 그 외 상태는 false
+                        setIsApproved(false);
                     }
-                } catch {
-                    console.error('주문 상세 정보 조회 실패');
+                } catch (error) {
+                    console.error('주문 상세 정보 조회 실패:', error.response ? error.response.data : error.message);
                     alert('주문 상세 정보를 조회하는 중 오류가 발생했습니다.');
                 }
             };
             fetchOrderDetails();
         }
     }, [orderNo, isOpen]);
+
 
     // 입력 값 변경 가능한 처리
     const handleInputChange = (e) => {
@@ -52,16 +152,6 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate }) => {
             ...prev,
             [name]: value
         }));
-    };
-
-    // 수량 변경 처리 함수
-    const handleQuantityChange = (index, newQty) => {
-        setModifyItem(prevState => {
-            const updatedOrderBList = prevState.orderBList.map((item, i) =>
-                i === index ? { ...item, orderProductQty: newQty } : item
-            );
-            return { ...prevState, orderBList: updatedOrderBList };
-        });
     };
 
     // 결재 여부 매핑 처리
@@ -114,10 +204,10 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate }) => {
         setModalSortConfig({ key, direction });
     };
 
-    // 업데이트 처리
+    // // 업데이트 처리
     // const handleUpdate = async () => {
     //     try {
-    //         const response = await axios.put(`/order/update/${modifyItem.orderNo}`, modifyItem);
+    //         const response = await axios.put(`/order/updateOder/${modifyItem.orderNo}`, modifyItem);
     //         alert('주문이 성공적으로 수정되었습니다.');
     //
     //         // 모달이 닫히고 부모 컴포넌트에 업데이트된 값을 전달
@@ -128,25 +218,25 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate }) => {
     //         alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
     //     }
     // };
-    const handleUpdate = async () => {
-        try {
-            const response = await axios.put(`/order/update/${modifyItem.orderNo}`, modifyItem);
-            alert('주문이 성공적으로 수정되었습니다.');
-
-            console.log("Sending updated order to onUpdate:", modifyItem); // 업데이트된 아이템 로그
-            if (onUpdate) {
-                console.log("onUpdate is defined, calling it..."); // onUpdate가 정의되어 있는지 확인
-                onUpdate(modifyItem);
-            } else {
-                console.warn("onUpdate is not defined");
-            }
-            onClose();  // 모달 닫기
-        } catch (error) {
-            console.error('주문 수정 실패', error);
-            alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
-        }
-    };
-
+//    const handleUpdate = async () => {
+//        try {
+//            const response = await axios.put(`/order/update/${modifyItem.orderNo}`, modifyItem);
+//            alert('주문이 성공적으로 수정되었습니다.');
+//
+//            console.log("Sending updated order to onUpdate:", modifyItem); // 업데이트된 아이템 로그
+//            if (onUpdate) {
+//                console.log("onUpdate is defined, calling it..."); // onUpdate가 정의되어 있는지 확인
+//                onUpdate(modifyItem);
+//            } else {
+//                console.warn("onUpdate is not defined");
+//            }
+//            onClose();  // 모달 닫기
+//        } catch (error) {
+//            console.error('주문 수정 실패', error);
+//            alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
+//        }
+//    };
+//
 
 
     return isOpen ? (
@@ -159,48 +249,33 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate }) => {
                         <div className="btns">
                             <div className="btn-add">
                                 {!isApproved && (
-                                    <button type="button" onClick={handleUpdate}>
-                                        수정하기
-                                    </button>
+                                    <>
+                                        <button type="button">반려</button>
+                                        <button type="button">승인</button>
+                                        <button type="button" onClick={openModifyModal2}>
+                                            수정하기
+                                        </button>
+                                    </>
                                 )}
                             </div>
                         </div>
                     </div>
-                    <form className="RegistForm" className={isApproved ? 'form-disabled' : ''}>
+                    <form className="RegistForm  form-disabled" className={isApproved ? 'form-disabled' : ''}>
                         <table className="formTable">
                             <tbody>
                             <tr>
                                 <th><label htmlFor="confirmTitle">주문 번호</label></th>
-                                <td>
-                                    <input type="text" value={modifyItem.orderNo || ''} readOnly
-                                    />
-                                </td>
+                                <td>{modifyItem.orderNo || ''}</td>
                                 <th><label htmlFor="confirmTitle">주문 등록일</label></th>
-                                <td>
-                                    <input type="text" value={modifyItem.regDate || ''} readOnly
-                                    />
-                                </td>
+                                <td>{modifyItem.regDate || ''}</td>
                                 <th><label htmlFor="picName">담당자명</label></th>
-                                <td>
-                                    <input type="text"
-                                           name="employeeName"
-                                           value={modifyItem.employee?.employeeName || ''} readOnly
-                                    />
-                                </td>
+                                <td>{modifyItem.employee?.employeeName || ''}</td>
                             </tr>
                             <tr>
                                 <th colSpan="1"><label htmlFor="customerName">고객명</label></th>
-                                <td colSpan="1">
-                                    <input value={modifyItem.customer?.customerName || ''} readOnly
-                                    />
-                                </td>
+                                <td colSpan="1">{modifyItem.customer?.customerName || ''}</td>
                                 <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
-                                <td>
-                                    <input type="date" name="delDate" value={modifyItem.delDate || ''}
-                                           onChange={handleInputChange}
-                                           readOnly={isApproved}
-                                    />
-                                </td>
+                                <td>{modifyItem.delDate || ''}</td>
                                 <th><label htmlFor="approvalStatus">결재 여부</label></th>
                                 <td>
                                     <select
@@ -222,14 +297,10 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate }) => {
                             <tbody>
                             <tr>
                                 <th><label htmlFor="approver">결재자</label></th>
-                                <td>
-                                    <input type="text"/>
-                                </td>
+                                <td>{''}</td>
                                 <th colSpan="1"><label htmlFor="remarks">비고</label></th>
                                 <td colSpan="3">
-                                    <textarea name="remarks" value={modifyItem.remarks || ''}
-                                              onChange={handleInputChange}
-                                              readOnly={isApproved}
+                                    <textarea name="remarks" value={modifyItem.remarks || ''} disabled
                                     ></textarea>
                                 </td>
                             </tr>
@@ -284,15 +355,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate }) => {
                                             <td>{index + 1}</td>
                                             <td>{item.product?.productCategory}</td>
                                             <td>{item.product?.productName}</td>
-                                            <td>
-                                                {/* 수량 변경 가능하도록 input 추가 */}
-                                                <input
-                                                    type="number"
-                                                    value={item.orderProductQty}
-                                                    onChange={(e) => handleQuantityChange(index, parseInt(e.target.value))}
-                                                    disabled={isApproved}
-                                                />
-                                            </td>
+                                            <td>{item.orderProductQty}</td>
                                             <td>{customPrice}</td>
                                             <td>{item.orderProductQty * customPrice}</td>
                                             {/* 총 금액 */}
@@ -323,6 +386,14 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate }) => {
                     </div>
                 </div>
             </div>
+            {isModifyModalOpen && (
+                <ModifyOrderModal2
+                    orderData={modifyItem}
+                    isOpen={isModifyModalOpen}
+                    onClose={closeModifyModal}
+                    onUpdate={handleModifyUpdate}
+                />
+            )}
         </div>
     ) : null;
 };

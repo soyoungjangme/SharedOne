@@ -6,6 +6,7 @@ import './OrderModalDetail.css'
 import useCheckboxManager from "../js/CheckboxManager";
 import axios from 'axios';
 import ModifyOrderModal from './ModifyOrderModal';
+import ModifyOrderModal2 from './ModifyOrderModal2';
 
 function Order() {
 
@@ -156,10 +157,10 @@ function Order() {
     const [orderCustomer, setOrderCustomer] = useState([]);//고객번호목록
     const [registCustomer, setRegistCustomer] = useState(''); //선택된 고객명 저장
     const [customPrice, setCustomPrice] = useState([]);//판매가리스트
-    const [checkProd, setCheckProd] = useState([]); //체크한 항목의 상태번호 저장
+    const [checkProd, setCheckProd] = useState([]); //체크한 항목 저장
     const [addCheckProd, setAddCheckProd] = useState([]); //체크한 상품 추가된 리스트
 
-    // 고객 번호 변경 시 호출되는 함수
+    // 고객명 변경 시 고객번호 저장
     const handleCustomer = (e) => {
         setRegistCustomer(e.target.value);
         //목록 호출하는게 customoPrice임 ㅇㄴ
@@ -185,7 +186,8 @@ function Order() {
                             prodName: value.product.productName,
                             prodWriter: value.product.productWriter,
                             saleStart: value.startDate,
-                            saleEnd: value.endDate
+                            saleEnd: value.endDate,
+                            priceNo: value.priceNo
                         }));
                         setCustomPrice(getOrderCustomer);
                         setCheckProd([]);
@@ -202,13 +204,15 @@ function Order() {
 
 
     //상품 체크 이벤트 - 체크항목만 checkProd 넣기
-    const handleCheck = (prodNo, prodCat, prodName, salePrice, saleStart, saleEnd) => (e) => { //체크항목 가져오기
+    const handleCheck = (prodList) => (e) => { //체크항목 가져오기
+        const { prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo } = prodList; // 필요한 값 추출
+
         setCheckProd( prevCheckProd => {
             const newCheckProd = [...prevCheckProd];
             if(e.target.checked){ //체크O
-                newCheckProd.push({prodNo, prodCat, prodName, salePrice, saleStart, saleEnd});
+                newCheckProd.push({prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo});
             }else{ //체크 X
-                const index = newCheckProd.findIndex(item => item.prodNo === prodNo); //체크한 prodNo랑 같은 행 찾기
+                const index = newCheckProd.findIndex(item => item.priceNo === priceNo); //체크한 priceNo 같은 행 찾기 - prodNo가 아닌이유: 상품번호는 같아도 판매가 번호별로 조회되므로 priceNo를 살펴야 함.
                 if(index > -1 ){ //내가 체크한게 이미 있다? 그럼 지울거임
                     newCheckProd.splice(index,1);
                 }
@@ -223,20 +227,59 @@ function Order() {
     };
 
     // 값 확인
-    /* useEffect(() => {
-         console.log('checkProd:', checkProd);
-         console.log('addCheckProd:', addCheckProd);
-     }, [checkProd, addCheckProd]);*/
+//     useEffect(() => {
+//         console.log('checkProd:', checkProd);
+//         console.log('addCheckProd:', addCheckProd);
+//     }, [checkProd, addCheckProd]);
 
     //상품 수량
-    const [quantities, setQuantities] = useState(0);
+    const [quantities, setQuantities] = useState({});
     const handleQuantityChange = (index) => (e) => {
-        const qty = e.target.value || 0; // 입력값 정수변환
-
-        setQuantities(prevQuantities => ({ ...prevQuantities, [index]: qty }));
+        const qty = e.target.value || 0;
+        setQuantities(prevQuantities => ({ ...prevQuantities, [index]: qty })); //해당 index수량 업데이트
     };
 
+    //납품요청일 상태관리
+    const [delDate, setDelDate] = useState('');
+    const handleDateChange = (e) => {
+        setDelDate(e.target.value);
+    }
 
+    //등록하기
+    const handleregistOrder = async() => {
+        try{
+            //추가된 리스트 반복 돌리기
+            const addOrder = addCheckProd.map((addProd, index) => {
+                const orderDelDate = delDate; //납품요청일 insert oh
+                const orderCustomerNo = registCustomer; //주문고객번호 where
+                const orderManager = "beak3"; //임의 값(로그인 시 해당 직원명 기입할 예정 where
+                const orderConfirmer = "beak10"; //임의 값 where
+                const orderStatus = "대기"; //등록을 누르면 대기로 insert
+
+                const orderProdNo = addProd.prodNo; //상품번호
+                const orderPriceNo = addProd.priceNo; //판매가 번호 - 판매가 정보가 필요할 경우에 사용가능(body에서 주문번호+상품코드가 있어도 판매가번호에 따라 수량 및 총액이 다르므로 판매가 번호까지 주키로 필요할 듯)
+                const orderProdQty = quantities[index] || 0; // 각 상품에 맞는 수량 가져오기 insert ob
+                const orderProdTotal = orderProdQty * addProd.salePrice; // 수량 * 판매가 insert ob
+
+                return axios.post('/order/registOrder',{
+                    inputDelDate: orderDelDate,
+                    inputCustomerNo: orderCustomerNo,
+                    inputManager: orderManager,
+                    inputConfirmer: orderConfirmer,
+                    inputStatus: orderStatus,
+                    inputProdNo: orderProdNo,
+                    inputPriceNo: orderPriceNo,
+                    inputProdQty: orderProdQty,
+                    inputProdTotal: orderProdTotal
+                });
+            });
+
+            await Promise.all(addOrder); //모든 비동기 요청이 끝날 때까지 기다려!
+            console.log("모든 주문 등록 성공");
+        }catch (error){
+            console.error("주문등록 중 오류발생", error);
+        }
+    };
 
     /*---------------jsy주문 등록 끝---------------*/
 
@@ -271,20 +314,33 @@ function Order() {
         }
     ]);
 
+    //유선화 - 시작 (또 다른 모달창 추가시킴)
     const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
+    const [isModifyModal2Visible, setIsModifyModal2Visible] = useState(false);
     const [selectedOrderNo, setSelectedOrderNo] = useState(null);
+    const [selectedOrderData, setSelectedOrderData] = useState(null);
 
-    //유선화 - 시작  모달창 열기 (주문 번호 포함)
+
     const handleDetailView = (orderNo) => {
         setSelectedOrderNo(orderNo);  // 주문 번호 설정
         setIsModifyModalVisible(true);  // 모달 열기
     };
-    // 유선화 - 끝
 
     const handleModifyCloseClick = () => {
         setIsModifyModalVisible(false);
     };
 
+    const handleOpenModifyModal2 = (orderData) => {
+        setSelectedOrderData(orderData);
+        setIsModifyModalVisible(false); // 상세 조회 모달 닫기
+        setIsModifyModal2Visible(true); // 수정 모달 열기
+    };
+
+    const handleCloseModifyModal2 = () => {
+        setIsModifyModal2Visible(false);
+    };
+
+    // 유선화 - 끝
 
 // --- 모달창 띄우는 스크립트
 
@@ -295,6 +351,7 @@ function Order() {
                 order.orderNo === updatedOrder.orderNo ? updatedOrder : order
             )
         );
+        handleCloseModifyModal2();
     };
     // 유선화 끝
 
@@ -488,7 +545,7 @@ function Order() {
 
                                     </div>
                                     <div class="btn-close">
-                                        <button> 등록하기</button>
+                                        <button type="button" onClick={handleregistOrder}> 등록하기</button>
                                     </div>
                                 </div>
                             </div>
@@ -512,18 +569,18 @@ function Order() {
                                             </select></td>
 
                                         <th colspan="1"><label htmlFor="">납품 요청일</label></th>
-                                        <td colspan="3"><input type="date"/></td>
+                                        <td colspan="3"><input type="date" id="delDate" value={delDate} onChange={handleDateChange}/></td>
 
                                     </tr>
 
 
                                     <tr>
                                         <th colspan="1"><label htmlFor="">담당자명</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
+                                        <td colspan="3"><input type="text" id="" placeholder="필드 입력" value="beak3" /></td>
 
 
                                         <th colspan="1"><label htmlFor="">결재자</label></th>
-                                        <td colspan="3"><input type="text" placeholder="필드 입력"/></td>
+                                        <td colspan="3"><input type="text" placeholder="필드 입력" value="beak10"/></td>
 
                                     </tr>
                                 </table>
@@ -565,12 +622,7 @@ function Order() {
                                     {customPrice.map((prodList, index) => (
                                         <tr key={index}>
                                             <td><input type="checkbox" id="checkProdList"
-                                                       onChange={handleCheck(prodList.prodNo,
-                                                           prodList.prodCat,
-                                                           prodList.prodName,
-                                                           prodList.salePrice,
-                                                           prodList.saleStart,
-                                                           prodList.saleEnd)}/></td>
+                                                       onChange={handleCheck(prodList)}/></td>
                                             <td>{index + 1}</td>
                                             <td>{prodList.prodNo}</td>
                                             <td>{prodList.prodName}</td>
@@ -600,7 +652,7 @@ function Order() {
                                     </thead>
                                     <tbody>
                                     {addCheckProd.map((addProd, index) => {
-                                        const qty = quantities[index] || 0; // 상태에서 수량을 가져옵니다.
+                                        const qty = quantities[index] || 0; // index에 맞는 수량 가져옴
                                         return (
                                             <tr key={index}>
                                                 <td><input type="checkbox"/></td>
@@ -641,6 +693,15 @@ function Order() {
                     orderNo={selectedOrderNo}
                     isOpen={isModifyModalVisible}
                     onClose={handleModifyCloseClick}
+                    onOpenModifyModal2={handleOpenModifyModal2}
+                />
+            )}
+
+            {isModifyModal2Visible && (
+                <ModifyOrderModal2
+                    orderData={selectedOrderData}
+                    isOpen={isModifyModal2Visible}
+                    onClose={handleCloseModifyModal2}
                     onUpdate={handleOrderUpdate}
                 />
             )}
