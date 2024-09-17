@@ -268,7 +268,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                     </div>
 
                     {/* 주문 가능한 상품 목록 */}
-                    <div className="RegistFormList" style={{marginTop: '50px'}} onChange={handleMasterCheckboxChange}>
+                    <div className="RegistFormList" onChange={handleMasterCheckboxChange}>
                         <div style={{fontWeight: 'bold'}}> 총 {filteredProducts.length} 건</div>
                         <table className="formTableList">
                             <thead>
@@ -288,8 +288,9 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                     <td>
                                         <input
                                             type="checkbox"
+                                            data-id={prodList.prodNo}
                                             checked={checkItem[prodList.prodNo] || false}
-                                            onChange={(e) => handleCheckboxChange(e, prodList.prodNo)}
+                                            onChange={(e) => handleCheckboxChange(e)}  // `useCheckboxManager`의 함수를 그대로 사용
                                         />
                                     </td>
                                     <td style={{display: 'none'}}>{index}</td>
@@ -308,7 +309,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                     {/* 선택된 상품 목록*/}
                     <div className="RegistFormList">
                         <div style={{fontWeight: 'bold'}}>총 {modifyItem.orderBList?.length || 0} 건</div>
-                        <table className="formTableList" style={{marginTop: '50px'}} onChange={handleMasterCheckboxChange}>
+                        <table className="formTableList" onChange={handleMasterCheckboxChange}>
                             <thead>
                             <tr>
                                 <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange}/></th>

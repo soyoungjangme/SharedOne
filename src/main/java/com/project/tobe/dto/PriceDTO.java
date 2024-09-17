@@ -21,9 +21,6 @@ public class PriceDTO {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    // OrderMapper에서 getPrice 돌리려면 필요하다고 함
-    private ProductDTO product;
-
     private int page = 1;
     private int amount = 10;
 
