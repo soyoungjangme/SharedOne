@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,9 +19,11 @@ public class OrderRegistDTO {
     private String inputConfirmer; //결재자
     private String inputStatus; //결재상태 = 대기
 
-    private Long inputProdNo; //상품번호
-    private Long inputPriceNo; //판매가 번호
-    private Long inputProdQty; //수량
-    private Long inputProdTotal; //총액(수량 * 판매가)
+    private List<OrderBDTO> orderBList;
+
+//    private Long inputProdNo; //상품번호
+//    private Long inputPriceNo; //판매가 번호
+//    private Long inputProdQty; //수량
+//    private Long inputProdTotal; //총액(수량 * 판매가)
 
 }

@@ -177,11 +177,13 @@ function Order() {
     const [addCheckProd, setAddCheckProd] = useState([]); //체크한 상품 추가된 리스트
 
     // 고객명 변경 시 고객번호 저장
-    const handleCustomer = (e) => {
+    const handleCustomerChange = (e) => {
         setRegistCustomer(e.target.value);
         //목록 호출하는게 customoPrice임 ㅇㄴ
 
         setAddCheckProd([]); //추가리스트 초기화
+        setCustomPrice([]); //판매가리스트 초기화
+        setQuantities({}); //수량 초기화
     };
 
     // 고객이 선택되면 상품+판매가를 가져오는 함수
@@ -215,6 +217,8 @@ function Order() {
                 }
             };
             fetchPrice();
+        }else{
+            setCustomPrice([]);
         }
     }, [registCustomer]); //의존성 배열: 특정 값이 변경될 때마다 실행한다.
 
@@ -234,28 +238,54 @@ function Order() {
                     newCheckProd.splice(index, 1);
                 }
             }
-            return newCheckProd; //새 상태로 prodForm 업데이트~
+            return newCheckProd; //새 상태로 checkProd 업데이트~
         });
     }
 
     //추가 클릭
     const handleAddProd = () => {
-        const newCheckProd = [...checkProd];
+        setAddCheckProd(prevAddCheckProd => {
+            // 기존 addCheckProd에서 priceNo만 Set에 저장
+            const existingPriceNos = new Set(prevAddCheckProd.map(item => item.priceNo));
 
-        if (orderListAllCheck) {
-            for (const element of customPrice) {
-                const {prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo} = element; // 필요한 값 추출
-                // newCheckProd에 같은 priceNo가 있는지 확인
-                const exists = newCheckProd.some(item => item.priceNo === priceNo);
+            const newCheckProd = [];//중복 아닌 것들만 담을 용도
 
-                if (!exists) {
-                    // 중복이 아닐 때만 추가
-                    newCheckProd.push({ prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo });
+            let hasDuplicates = false; //중복확인
+
+            if (orderListAllCheck) { // 체크 전체선택
+                for (const element of customPrice) {
+                    const {prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo} = element; // 필요한 값 추출
+
+                    //existingPriceNos에 priceNo 유무
+                    if (existingPriceNos.has(priceNo)) { //중복
+                        hasDuplicates = true;
+                    } else { //중복 아닌 항목은 newCheckProd에 추가
+                        newCheckProd.push({ prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo });
+                        existingPriceNos.add(priceNo); // Set에도 추가하여 중복 방지
+                    }
                 }
+            } else {
+                // 체크된 항목만 처리
+                checkProd.forEach(item => {
+                    if (existingPriceNos.has(item.priceNo)) {
+                        hasDuplicates = true;
+                    } else {
+                        newCheckProd.push(item);
+                        existingPriceNos.add(item.priceNo); // Set에 추가하여 중복 방지
+                    }
+                });
             }
-        }
-        setAddCheckProd(prevAddCheckProd => [...prevAddCheckProd, ...newCheckProd]); // 기존 리스트에 체크된 항목 추가
+
+            // 중복 항목이 있었으면 알림을 띄움
+            if (hasDuplicates) {
+                alert("이미 추가된 항목이 있습니다.");
+            }
+
+            // 새로운 항목만 addCheckProd에 추가
+            return [...prevAddCheckProd, ...newCheckProd];
+        });
     };
+
 
     // 값 확인
 //     useEffect(() => {
@@ -266,8 +296,8 @@ function Order() {
     //상품 수량
     const [quantities, setQuantities] = useState({});
     const handleQuantityChange = (index) => (e) => {
-        const qty = e.target.value || 0;
-        setQuantities(prevQuantities => ({...prevQuantities, [index]: qty})); //해당 index수량 업데이트
+        const qty = Number(e.target.value) || 0;
+        setQuantities(prevQuantities => ({ ...prevQuantities, [index]: qty }));
     };
 
     //납품요청일 상태관리
@@ -276,37 +306,51 @@ function Order() {
         setDelDate(e.target.value);
     }
 
-    //등록하기
-    const handleregistOrder = async () => {
+    //등록하기 & 임시저장
+    const handleRegistOrder = async (orderStatus) => {
         try {
-            //추가된 리스트 반복 돌리기
-            const addOrder = addCheckProd.map((addProd, index) => {
-                const orderDelDate = delDate; //납품요청일 insert oh
-                const orderCustomerNo = registCustomer; //주문고객번호 where
-                const orderManager = "beak3"; //임의 값(로그인 시 해당 직원명 기입할 예정 where
-                const orderConfirmer = "beak10"; //임의 값 where
-                const orderStatus = "대기"; //등록을 누르면 대기로 insert
 
-                const orderProdNo = addProd.prodNo; //상품번호
-                const orderPriceNo = addProd.priceNo; //판매가 번호 - 판매가 정보가 필요할 경우에 사용가능(body에서 주문번호+상품코드가 있어도 판매가번호에 따라 수량 및 총액이 다르므로 판매가 번호까지 주키로 필요할 듯)
+            //데이터 유효성 검사(등록하기)
+            if (orderStatus === "대기") {
+                const hasInvalidQty = addCheckProd.some((_, index) => {
+                    console.log("qty: ", quantities);
+                    const qty = quantities[index] || 0;
+                    return qty <= 0;
+                });
+
+                if (!registCustomer || !delDate || hasInvalidQty || !addCheckProd.length) {
+                    alert("모두 입력해 주세요.");
+                    return;
+                }
+            }
+
+
+            //추가된 리스트 반복 돌리기
+            const orderBList = addCheckProd.map((addProd, index) => {
+                const orderProdNo = addProd.prodNo || 0; //상품번호
+                const orderPriceNo = addProd.priceNo || 0; //판매가 번호 - 판매가 정보가 필요할 경우에 사용가능(body에서 주문번호+상품코드가 있어도 판매가번호에 따라 수량 및 총액이 다르므로 판매가 번호까지 주키로 필요할 듯)
                 const orderProdQty = quantities[index] || 0; // 각 상품에 맞는 수량 가져오기 insert ob
                 const orderProdTotal = orderProdQty * addProd.salePrice; // 수량 * 판매가 insert ob
 
-                return axios.post('/order/registOrder', {
-                    inputDelDate: orderDelDate,
-                    inputCustomerNo: orderCustomerNo,
-                    inputManager: orderManager,
-                    inputConfirmer: orderConfirmer,
-                    inputStatus: orderStatus,
-                    inputProdNo: orderProdNo,
-                    inputPriceNo: orderPriceNo,
-                    inputProdQty: orderProdQty,
-                    inputProdTotal: orderProdTotal
-                });
+                return {
+                    productNo: orderProdNo,
+                    priceNo: orderPriceNo,
+                    orderProductQty: orderProdQty,
+                    prodTotal: orderProdTotal
+                };
             });
 
-            await Promise.all(addOrder); //모든 비동기 요청이 끝날 때까지 기다려!
+            await axios.post('/order/registOrder',{ // insert into oh
+                inputDelDate: delDate || null,//납품요청일
+                inputCustomerNo: registCustomer || null,//주문고객번호
+                inputManager: "beak3" || null, //임의 값(로그인 시 해당 직원명 기입할 예정)
+                inputConfirmer: "beak10" || null, //임의 값
+                inputStatus: orderStatus,
+                orderBList //ob데이터 배열 전달
+            });
+
             console.log("모든 주문 등록 성공");
+            handleCloseClick(); //등록 창 닫기 및 초기화
         } catch (error) {
             console.error("주문등록 중 오류발생", error);
         }
@@ -332,6 +376,10 @@ function Order() {
 
     const handleCloseClick = () => {
         setIsVisible(false);
+        setRegistCustomer(''); //고객선택 초기화
+        setDelDate(''); //납품요청일 초기화
+        setCheckProd([]); //체크 초기화
+        setAddCheckProd([]); //추가리스트 초기화
     };
 
     const [modifyItem, setModifyItem] = useState([
@@ -572,11 +620,11 @@ function Order() {
 
                                 <div className="btns">
                                     <div className="btn-add2">
-                                        <button> 임시저장</button>
+                                        <button type="button" onClick={() => handleRegistOrder("임시저장")}> 임시저장</button>
 
                                     </div>
                                     <div className="btn-close">
-                                        <button type="button" onClick={handleregistOrder}> 등록하기</button>
+                                        <button type="button" onClick={ () => handleRegistOrder("대기")}> 등록하기</button>
                                     </div>
                                 </div>
                             </div>
@@ -590,7 +638,7 @@ function Order() {
                                         <th colSpan="1"><label htmlFor="orderCustomer">고객사 명</label></th>
                                         <td colSpan="3">
                                             <select id="orderCustomer" value={registCustomer || ''}
-                                                    onChange={handleCustomer}>
+                                                    onChange={handleCustomerChange}>
                                                 <option value="">선택</option>
                                                 {orderCustomer.map(customer => (
                                                     <option key={customer.customerNo} value={customer.customerNo}>
@@ -639,7 +687,7 @@ function Order() {
 
 
                             <div className="RegistFormList">
-                                <div style={{fontWeight: 'bold'}}> 총 N 건</div>
+                                <div style={{fontWeight: 'bold'}}> 총 {customPrice?.length || 0} 건</div>
                                 <table className="formTableList">
                                     <thead>
                                     <tr>
@@ -657,8 +705,8 @@ function Order() {
                                     {customPrice.map((prodList, index) => (
                                         <tr key={index} className={orderListCheckItem[index] ? 'selected-row' : ''}>
                                             <td><input type="checkbox" id="checkProdList"
-                                                       checked={orderListCheckItem[index] || false}
-                                                       onChange={handleCheck(prodList)}/></td>
+                                                checked={orderListCheckItem[index] || false }
+                                                onChange={handleCheck(prodList)}/></td>
                                             <td style={{display: 'none'}}>{index}</td>
                                             <td>{index + 1}</td>
                                             <td>{prodList.prodNo}</td>
@@ -673,7 +721,7 @@ function Order() {
                             </div>
 
                             <div className="RegistFormList">
-                                <div style={{fontWeight: 'bold'}}> 총 N 건</div>
+                                <div style={{fontWeight: 'bold'}}> 총 {addCheckProd?.length || 0} 건</div>
                                 <table className="formTableList">
                                     {orderAddShowDelete && checkProd.length > 0 && <button style={{top:"440px"}} className="delete-btn btn-common" onClick={handleOrderAddDelete}>삭제</button>}
                                     <thead>
@@ -701,19 +749,23 @@ function Order() {
                                                 <td>{addProd.prodCat}</td>
                                                 <td>{addProd.prodName}</td>
                                                 <td>
-                                                    <input type="number" id={`prodQty_${index}`}
+                                                    <input type="number" id={`prodQty_${index}`} value={qty}
                                                            onChange={handleQuantityChange(index)} placeholder="수량"/>
                                                 </td>
                                                 <td>{addProd.salePrice * qty}</td>
-                                                {/* 총액 계산 */}
                                                 <td>{addProd.saleStart}</td>
                                                 <td>{addProd.saleEnd}</td>
                                             </tr>
                                         );
                                     })}
                                     <tr style={{fontWeight: 'bold'}}>
-                                        <td colSpan="6"> 합계</td>
-                                        <td colSpan="2"> 13,000,000</td>
+                                        <td colSpan="5"> 합계</td>
+                                        <td colSpan="3">
+                                            {addCheckProd.reduce((total, addProd, index) => {
+                                                const qty = quantities[index] || 0; //수량
+                                                return total + (addProd.salePrice * qty);
+                                            },0).toLocaleString()}원 {/*toLocaleString() : 숫자를 천 단위로 구분하고, 통화 기호 추가*/}
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>

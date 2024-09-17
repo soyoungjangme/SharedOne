@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service("orderService")
 public class OrderServiceImpl implements OrderService {
@@ -21,14 +22,12 @@ public class OrderServiceImpl implements OrderService {
     //jsy 모든 주문 목록 조회
     @Override
     public List<OrderHDTO> getOrder(OrderSearchDTO criteria) {
-        System.out.println("orderList서비스 실행됨");
         return orderMapper.getOrder(criteria);
     }
 
     //jsy 주문등록 - 고객 별 판매가 리스트
     @Override
     public List<PriceDTO> getPrice(Integer iocn) {
-        System.out.println("getPrice서비스 실행됨");
         return orderMapper.getPrice(iocn);
     }
 
@@ -36,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void registOrder(OrderRegistDTO orderRequest) {
+        //헤더 등록
         OrderHDTO header = OrderHDTO.builder()
                 .delDate(orderRequest.getInputDelDate())
                 .customerNo(orderRequest.getInputCustomerNo())
@@ -46,15 +46,18 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.registOrderH(header); //헤더 등록
         Long orderNo = header.getOrderNo(); //시퀀스로 생성된 orderNo
 
-        OrderBDTO body = OrderBDTO.builder()
-                .orderNo(orderNo) //헤더에서 생성된 orderNo를 body에 연결
-                .priceNo(orderRequest.getInputPriceNo())
-                .productNo(orderRequest.getInputProdNo())
-                .orderProductQty(orderRequest.getInputProdQty())
-                .prodTotal(orderRequest.getInputProdTotal())
-                .build();
+        //주문번호 추가 후 바디는 배치로 처리하기
+        List<OrderBDTO> obList = orderRequest.getOrderBList().stream()
+                        .map(orderBody -> OrderBDTO.builder()
+                                .orderNo(orderNo)
+                                .priceNo(orderBody.getPriceNo())
+                                .productNo(orderBody.getProductNo())
+                                .orderProductQty(orderBody.getOrderProductQty())
+                                .prodTotal(orderBody.getProdTotal())
+                                .build())
+                                .collect(Collectors.toList());
 
-        orderMapper.registOrderB(body);
+        orderMapper.registOrderB(obList); //배치 인서트 처리
     }
 
     /* 유선화 START */
