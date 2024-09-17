@@ -5,7 +5,7 @@
 
 <mapper namespace="com.project.tobe.mapper.OrderMapper">
 
-    <!-- 주문 데이터 조회 -->
+    <!-- jsy주문 전체 조회 -->
     <select id="getOrder" resultMap="GetOrderResultMap">
         select oh.order_no, c.customer_name, emp.employee_name,
         oh.confirm_status, oh.reg_date
@@ -43,10 +43,10 @@
         </association>
     </resultMap>
 
-    <!--  주문등록 상품 조회  -->
+    <!--  jsy주문등록 - 고객 별 상품 조회  -->
     <select id="getPrice" resultMap="GetPriceResultMap">
         select p.product_no, p.product_name, p.product_writer, p.product_category,
-        price.custom_price, price.start_date, price.end_date
+        price.custom_price, price.start_date, price.end_date, price.price_no
         from price
         join product p
         on p.product_no=price.product_no
@@ -56,6 +56,7 @@
     </select>
 
     <resultMap id="GetPriceResultMap" type="PriceDTO">
+        <result column="price_no" property="priceNo"/>
         <result column="custom_price" property="customPrice"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
@@ -66,6 +67,30 @@
             <result column="product_writer" property="productWriter"/>
         </association>
     </resultMap>
+
+    <!--  jsy주문등록 - 등록하기  -->
+    <insert id="registOrderH" useGeneratedKeys="true" keyProperty="orderNo">
+        insert into order_header(reg_date,
+                                del_date,
+                                confirm_status,
+                                confirm_change_date,
+                                customer_no,
+                                employee_id,
+                                confirmer_id)
+        values (now(),
+                #{delDate},
+                #{confirmStatus},
+                now(),
+                #{customerNo},
+                #{employeeId},
+                #{confirmerId}
+                )
+    </insert>
+    <insert id="registOrderB">
+        insert into order_body(order_no, product_no, price_no, order_product_qty, prod_total)
+        values(#{orderNo}, #{productNo}, #{priceNo}, #{orderProductQty}, #{prodTotal})
+    </insert>
+
 
     <!--유선화 START-->
     <!--상세 조회-->

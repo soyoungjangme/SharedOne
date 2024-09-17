@@ -54,4 +54,8 @@ public class PriceDTO {
     public int getPageStart() {
         return (page - 1) * amount;
     }
+
+
+    //jsy 객체 필요
+    private ProductDTO product;
 }
