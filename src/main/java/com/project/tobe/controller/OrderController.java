@@ -23,7 +23,6 @@ public class OrderController {
     //jsy초기 목록 호출
     @GetMapping("/orderList")
     public List<OrderHDTO> orderList (){
-        System.out.println("orderList실행됨.");
         return orderService.getOrder(null);
     }
 
