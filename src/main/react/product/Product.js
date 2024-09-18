@@ -532,10 +532,6 @@ function Product() {
     };
 
 
-
-
-
-
     // 문자열 길면 ... 처리
     // const truncateText = (str, maxLength) => {
     //     return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
@@ -546,101 +542,103 @@ function Product() {
         <div>
 
             <div className="pageHeader"><h1>
-                <i className="bi bi-cart-check-fill"></i>
-                상품 관리</h1></div>
-
-            {/* <i class="bi bi-chat-square-text-fill"></i> 주문관리 아이콘*/}
+                <i className="bi bi-cart-check-fill"></i> 상품 관리</h1></div>
 
             <div className="main-container">
-                <div className="filter-container">
-                    <div className="filter-row">
-                        <label className="filter-label" htmlFor="productName">상품명</label>
-                        <input
-                            className="filter-input"
-                            type="text"
-                            id="productName"
-                            placeholder="상품명"
-                            value={filters.productName}
-                            onChange={handleFilterChange}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-                    <div className="filter-row">
-                        <label className="filter-label" htmlFor="productWriter">상품저자</label>
-                        <input
-                            className="filter-input"
-                            type="text"
-                            id="productWriter"
-                            placeholder="상품저자"
-                            value={filters.productWriter}
-                            onChange={handleFilterChange}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-                    <div className="filter-row">
-                        <label className="filter-label" htmlFor="productCategory">상품카테고리</label>
-                        <input
-                            className="filter-input"
-                            type="text"
-                            id="productCategory"
-                            placeholder="상품카테고리"
-                            value={filters.productCategory}
-                            onChange={handleFilterChange}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-                    <div className="filter-row">
-                        <label className="filter-label" htmlFor="productPrice">상품원가</label>
-                        <div className="filter-input-group">
-                            {/* 가격 비교 조건에 따라 인풋 필드를 다르게 표시 */}
-                            {filters.priceComparison === 'range' ? (
-                                <>
-                                    <input
-                                        className="filter-input"
-                                        type="number"
-                                        id="minPrice"
-                                        placeholder="최소가격"
-                                        min={0}
-                                        value={filters.minPrice}
-                                        onChange={handleFilterChange}
-                                        onKeyDown={handleKeyDown}
-                                    />
-                                    <input
-                                        className="filter-input"
-                                        type="number"
-                                        id="maxPrice"
-                                        placeholder="최대가격"
-                                        min={0}
-                                        value={filters.maxPrice}
-                                        onChange={handleFilterChange}
-                                        onKeyDown={handleKeyDown}
-                                    />
-                                </>
-                            ) : (
-                                // 구간 이외의 조건에서는 기본 상품원가 필드만 표시
+                <div className='filter-containers'>
+                    <div className="filter-container">
+                        <div className='filter-items'>
+                            <div className="filter-item">
+                                <label className="filter-label" htmlFor="productName">상품명</label>
                                 <input
                                     className="filter-input"
-                                    type="number"
-                                    id="productPrice"
-                                    placeholder="상품원가"
-                                    min={0}
-                                    value={filters.productPrice}
+                                    type="text"
+                                    id="productName"
+                                    placeholder="상품명"
+                                    value={filters.productName}
                                     onChange={handleFilterChange}
                                     onKeyDown={handleKeyDown}
                                 />
-                            )}
+                            </div>
+                            <div className="filter-item">
+                                <label className="filter-label" htmlFor="productWriter">상품저자</label>
+                                <input
+                                    className="filter-input"
+                                    type="text"
+                                    id="productWriter"
+                                    placeholder="상품저자"
+                                    value={filters.productWriter}
+                                    onChange={handleFilterChange}
+                                    onKeyDown={handleKeyDown}
+                                />
+                            </div>
+                            <div className="filter-item">
+                                <label className="filter-label" htmlFor="productCategory">상품카테고리</label>
+                                <input
+                                    className="filter-input"
+                                    type="text"
+                                    id="productCategory"
+                                    placeholder="상품카테고리"
+                                    value={filters.productCategory}
+                                    onChange={handleFilterChange}
+                                    onKeyDown={handleKeyDown}
+                                />
+                            </div>
+                            <div className="filter-item full-width">
+                                <label className="filter-label full-label" htmlFor="productPrice">상품원가</label>
+                                <div className="filter-input-group">
+                                    {/* 가격 비교 조건에 따라 인풋 필드를 다르게 표시 */}
+                                    {filters.priceComparison === 'range' ? (
+                                        <>
+                                            <input
+                                                className="filter-input"
+                                                type="number"
+                                                id="minPrice"
+                                                placeholder="최소가격"
+                                                min={0}
+                                                value={filters.minPrice}
+                                                onChange={handleFilterChange}
+                                                onKeyDown={handleKeyDown}
+                                            />
+                                            <input
+                                                className="filter-input"
+                                                type="number"
+                                                id="maxPrice"
+                                                placeholder="최대가격"
+                                                min={0}
+                                                value={filters.maxPrice}
+                                                onChange={handleFilterChange}
+                                                onKeyDown={handleKeyDown}
+                                            />
+                                        </>
+                                    ) : (
+                                        // 구간 이외의 조건에서는 기본 상품원가 필드만 표시
+                                        <input
+                                            className="filter-input"
+                                            type="number"
+                                            id="productPrice"
+                                            placeholder="상품원가"
+                                            min={0}
+                                            value={filters.productPrice}
+                                            onChange={handleFilterChange}
+                                            onKeyDown={handleKeyDown}
+                                        />
+                                    )}
 
-                            <select
-                                id="priceComparison"
-                                value={filters.priceComparison}
-                                onChange={handleFilterChange}
-                            >
-                                <option value="">선택</option>
-                                <option value="gte">이상</option>
-                                <option value="lte">이하</option>
-                                <option value="range">범위</option>
-                            </select>
+                                    <select
+                                        id="priceComparison"
+                                        value={filters.priceComparison}
+                                        onChange={handleFilterChange}
+                                    >
+                                        <option value="">선택</option>
+                                        <option value="gte">이상</option>
+                                        <option value="lte">이하</option>
+                                        <option value="range">범위</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
 
                     <div className="button-container">
@@ -648,12 +646,13 @@ function Product() {
                             <i className="bi bi-search search-icon"></i>
                         </button>
                     </div>
+
                 </div>
 
                 <button className="filter-button" id="add" type="button" onClick={handleAddClick}>상품 등록</button>
 
-                {showDeleteMain && <button className='delete-btn-main' onClick={() => { handleDeleteClickMain(); handleDeleteMain(); }}>삭제</button>}
                 <table className="search-table">
+                    {showDeleteMain && <button className='delete-btn-main' onClick={() => { handleDeleteClickMain(); handleDeleteMain(); }}>삭제</button>}
                     <thead>
                         <tr>
                             <th><input type="checkbox" checked={allCheckMain} onChange={handleMasterCheckboxChangeMain} /></th>
