@@ -10,7 +10,7 @@ public interface OrderService {
 
     List<OrderHDTO> getOrder(OrderSearchDTO criteria); //jsy 조건조회
     List<PriceDTO> getPrice(Integer iocn); //jsy 주문등록 판매가 가져오기
-    void registOrder(OrderRegistDTO orderRegistDTO); //jsy 주문 등록하기
+    Long registOrder(OrderRegistDTO orderRegistDTO); //jsy 주문 등록하기
 
 
     /*유선화 START*/

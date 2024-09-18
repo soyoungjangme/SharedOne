@@ -56,10 +56,10 @@ public class OrderController {
 
     //jsy주문등록 - 등록하기
     @PostMapping("/registOrder")
-    public ResponseEntity<Void> registOrder(@RequestBody OrderRegistDTO request){
-        orderService.registOrder(request);
+    public ResponseEntity<Long> registOrder(@RequestBody OrderRegistDTO request){
+        Long orderNo = orderService.registOrder(request);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(orderNo);
     }
 
 
