@@ -13,6 +13,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPADeleteClause;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -102,6 +105,85 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
                 .where(builder)
                 .orderBy(price.priceNo.desc())
                 .fetch();
+    }
+
+    @Override
+    public Page<PriceProductCustomerDTO> getPriceJoinByDTO(PriceDTO dto, Pageable pageable) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        QPrice price = QPrice.price;
+        QProduct product = QProduct.product;
+        QCustomer customer = QCustomer.customer;
+
+        Optional<LocalDate> registerDate = Optional.ofNullable(dto.getRegisterDate());
+        Optional<String> productNo = Optional.ofNullable(dto.getProductNo());
+        Optional<String> customerNo = Optional.ofNullable(dto.getCustomerNo());
+        Optional<LocalDate> startDate = Optional.ofNullable(dto.getStartDate());
+        Optional<LocalDate> endDate = Optional.ofNullable(dto.getEndDate());
+
+        registerDate.ifPresent(localDate -> builder.and(price.registerDate.eq(localDate)));
+        productNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.product.productNo.eq(Long.parseLong(s))));
+        customerNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customer.customerNo.eq(Long.parseLong(s))));
+        startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
+        endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
+        builder.and(price.activated.eq(Y));
+
+        List<PriceProductCustomerDTO> list = jpaQueryFactory
+                .select(
+                        Projections.constructor(
+                                PriceProductCustomerDTO.class,
+                                price.registerDate,
+                                price.priceNo,
+                                product.productNo,
+                                product.productName,
+                                customer.customerNo,
+                                customer.customerName,
+                                price.customPrice,
+                                price.currency,
+                                price.discount,
+                                price.startDate,
+                                price.endDate
+                        )
+                )
+                .from(price)
+                .join(price.product, product)
+                .join(price.customer, customer)
+                .where(price.product.productYn.eq('Y'))
+                .where(price.customer.activated.eq("Y"))
+                .where(builder)
+                .orderBy(price.priceNo.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = jpaQueryFactory
+                .select(
+                        Projections.constructor(
+                                PriceProductCustomerDTO.class,
+                                price.registerDate,
+                                price.priceNo,
+                                product.productNo,
+                                product.productName,
+                                customer.customerNo,
+                                customer.customerName,
+                                price.customPrice,
+                                price.currency,
+                                price.discount,
+                                price.startDate,
+                                price.endDate
+                        )
+                )
+                .from(price)
+                .join(price.product, product)
+                .join(price.customer, customer)
+                .where(price.product.productYn.eq('Y'))
+                .where(price.customer.activated.eq("Y"))
+                .where(builder)
+                .fetch()
+                .size();
+
+
+        return new PageImpl<PriceProductCustomerDTO>(list, pageable, total);
     }
 
     @Override
