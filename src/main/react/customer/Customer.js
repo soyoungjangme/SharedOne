@@ -9,7 +9,6 @@ import './modalDetail.css'
 import AddressInput from './AddressInput';
 
 
-
 function Customer() {
 
     const {
@@ -115,75 +114,8 @@ function Customer() {
 
     // =============================== 고객 등록 부분 ===============================
 
-// 고객 등록 리스트 상태
-const [regist, setRegist] = useState({
-    customerName: '',
-    customerTel: '',
-    customerAddr: '',
-    postNum: '',
-    businessRegistrationNo: '',
-    nation: '',
-    dealType: '',
-    picName: '',
-    picEmail: '',
-    picTel: '',
-    activated: 'Y' // 기본값
-});
-
-// 고객 등록 리스트
-const [list, setList] = useState([]);
-
-// 입력 핸들러
-const handleInputAddChange = (e) => {
-    const { name, value } = e.target;
-    setRegist((prevRegist) => ({
-        ...prevRegist,
-        [name]: value,
-    }));
-};
-
-// 리스트에 등록된 고객 데이터 추가 핸들러
-const onClickListAdd = () => {
-    // 필수 입력값 확인
-    if (!regist.customerName || !regist.customerTel || !regist.customerAddr || 
-        !regist.postNum || !regist.businessRegistrationNo || !regist.nation ||
-        !regist.dealType || !regist.picName || !regist.picEmail || !regist.picTel) {
-        alert('고객 정보를 모두 입력해야 합니다.');
-        return;
-    }
-
-    // 중복 검사
-    if (checkDuplicateName(regist.customerName)) {
-        alert('고객명이 이미 존재합니다.');
-        return;
-    }
-
-    if (checkDuplicateBusinessRegistrationNo(regist.businessRegistrationNo)) {
-        alert('사업자 등록번호가 이미 존재합니다.');
-        return;
-    }
-
-    // 유효성 검사
-    if (!validatePhoneNumber(regist.customerTel) || !validatePhoneNumber(regist.picTel)) {
-        alert('전화번호 형식으로 입력해주세요.( - 포함)');
-        return;
-    }
-
-    if (!isValidBusinessRegistrationNo(regist.businessRegistrationNo)) {
-        alert('사업자등록번호는 XXX-XX-XXXXX 형식입니다.');
-        return;
-    }
-
-    if (!validateEmail(regist.picEmail)) {
-        alert('이메일 형식으로 입력해야 합니다.');
-        return;
-    }
-
-    // 유효성 검사 및 중복 확인 후 리스트에 추가
-    setList((prevList) => [...prevList, regist]);
-
-    // 입력값 초기화
-    setRegist({
+    // 고객 등록 리스트 상태
+    const [regist, setRegist] = useState({
         customerName: '',
         customerTel: '',
         customerAddr: '',
@@ -194,38 +126,105 @@ const onClickListAdd = () => {
         picName: '',
         picEmail: '',
         picTel: '',
-        activated: 'Y'
+        activated: 'Y' // 기본값
     });
-};
 
-// 서버로 고객 등록 요청
-const onClickRegistBtn = () => {
-    if (list.length === 0) {
-        console.error('등록할 고객이 없습니다.');
-        return;
-    }
+    // 고객 등록 리스트
+    const [list, setList] = useState([]);
 
-    // 고객 등록 컨펌창
-    if (!window.confirm(`고객을 등록하시겠습니까?`)) {
-        return; // 취소하면 등록 진행 안 함
-    }
+    // 입력 핸들러
+    const handleInputAddChange = (e) => {
+        const { name, value } = e.target;
+        setRegist((prevRegist) => ({
+            ...prevRegist,
+            [name]: value,
+        }));
+    };
 
-    axios
-        .post('/customer/customerRegist', list, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        .then((response) => {
-            console.log('등록 성공:', response.data);
-            setList([]); // 등록 후 리스트 초기화
-            alert(`${list.length}명의 고객이 성공적으로 등록되었습니다.`);
-            window.location.reload(); // 페이지 새로고침
-        })
-        .catch((error) => {
-            console.error('등록 중 오류 발생:', error.response.data);
+    // 리스트에 등록된 고객 데이터 추가 핸들러
+    const onClickListAdd = () => {
+        // 필수 입력값 확인
+        if (!regist.customerName || !regist.customerTel || !regist.customerAddr ||
+            !regist.postNum || !regist.businessRegistrationNo || !regist.nation ||
+            !regist.dealType || !regist.picName || !regist.picEmail || !regist.picTel) {
+            alert('고객 정보를 모두 입력해야 합니다.');
+            return;
+        }
+
+        // 중복 검사
+        if (checkDuplicateName(regist.customerName)) {
+            alert('고객명이 이미 존재합니다.');
+            return;
+        }
+
+        if (checkDuplicateBusinessRegistrationNo(regist.businessRegistrationNo)) {
+            alert('사업자 등록번호가 이미 존재합니다.');
+            return;
+        }
+
+        // 유효성 검사
+        if (!validatePhoneNumber(regist.customerTel) || !validatePhoneNumber(regist.picTel)) {
+            alert('전화번호 형식으로 입력해주세요.( - 포함)');
+            return;
+        }
+
+        if (!isValidBusinessRegistrationNo(regist.businessRegistrationNo)) {
+            alert('사업자등록번호는 XXX-XX-XXXXX 형식입니다.');
+            return;
+        }
+
+        if (!validateEmail(regist.picEmail)) {
+            alert('이메일 형식으로 입력해야 합니다.');
+            return;
+        }
+
+        // 유효성 검사 및 중복 확인 후 리스트에 추가
+        setList((prevList) => [...prevList, regist]);
+
+        // 입력값 초기화
+        setRegist({
+            customerName: '',
+            customerTel: '',
+            customerAddr: '',
+            postNum: '',
+            businessRegistrationNo: '',
+            nation: '',
+            dealType: '',
+            picName: '',
+            picEmail: '',
+            picTel: '',
+            activated: 'Y'
         });
-};
+    };
+
+    // 서버로 고객 등록 요청
+    const onClickRegistBtn = () => {
+        if (list.length === 0) {
+            console.error('등록할 고객이 없습니다.');
+            return;
+        }
+
+        // 고객 등록 컨펌창
+        if (!window.confirm(`고객을 등록하시겠습니까?`)) {
+            return; // 취소하면 등록 진행 안 함
+        }
+
+        axios
+            .post('/customer/customerRegist', list, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then((response) => {
+                console.log('등록 성공:', response.data);
+                setList([]); // 등록 후 리스트 초기화
+                alert(`${list.length}명의 고객이 성공적으로 등록되었습니다.`);
+                window.location.reload(); // 페이지 새로고침
+            })
+            .catch((error) => {
+                console.error('등록 중 오류 발생:', error.response.data);
+            });
+    };
 
 
 
@@ -461,8 +460,12 @@ const onClickRegistBtn = () => {
 
 
     return (
-        <div className='fade_effect'>
-            <h1><i className="bi bi-person-lines-fill"></i> 고객 관리</h1>
+        <div>
+
+            <div className='pageHeader'>
+                <h1><i className="bi bi-person-lines-fill"></i>고객 관리</h1>
+            </div>
+
             <div className="main-container">
                 <div className="filter-containers">
                     <div className="filter-container">
@@ -608,19 +611,19 @@ const onClickRegistBtn = () => {
                                     <option value="C2C">C2C</option>
                                 </select>
                             </div>
-
-                            <div className="button-container">
-                                <button type="button" className="search-btn" onClick={handleSearchCustomer}>
-                                    <i className="bi bi-search search-icon"></i>
-                                </button>
-                            </div>
-
                         </div>
                     </div>
+
+                    <div className="button-container">
+                        <button type="button" className="search-btn" onClick={handleSearchCustomer}>
+                            <i className="bi bi-search search-icon"></i>
+                        </button>
+                    </div>
+
                 </div>
 
                 <button className="btn-common add" type="button" onClick={handleAddClick}>
-                    고객 등록
+                    고객등록
                 </button>
 
                 <table className="search-table" style={{ marginTop: "50px" }}>
@@ -727,7 +730,7 @@ const onClickRegistBtn = () => {
                             <div className="form-header">
                                 <h1> 고객등록 </h1>
                                 <div className="btns">
-                                    <button type="button" onClick={onClickRegistBtn}> 등록하기 </button>
+                                    <button className="btn-customer-add" type="button" onClick={onClickRegistBtn}> 등록하기 </button>
                                 </div>
                             </div>
 
@@ -749,7 +752,7 @@ const onClickRegistBtn = () => {
                                             <th colSpan="1"><label htmlFor="customerAddr">고객주소</label></th>
                                             <td colSpan="5">
                                                 <input type="text" placeholder="고객주소" id="customerAddr" name="customerAddr" value={regist.customerAddr} readOnly />
-                                                <button type="button" onClick={openAddressModal}>주소 찾기</button>
+                                                <button className="btn-addr-find" type="button" onClick={openAddressModal}>주소찾기</button>
                                             </td>
                                         </tr>
 
@@ -884,7 +887,7 @@ const onClickRegistBtn = () => {
                                             <th colSpan="1"> <label htmlFor="customerAddr">고객주소</label></th>
                                             <td colspan="5">
                                                 <input type="text" placeholder="고객주소" id="customerAddr" name="customerAddr" value={modifyItem.customerAddr || ''} readOnly />
-                                                <button type="button" onClick={openAddressModal}>주소찾기</button>
+                                                <button className="btn-addr-find" type="button" onClick={openAddressModal}>주소찾기</button>
                                             </td>
                                         </tr>
 
@@ -934,11 +937,6 @@ const onClickRegistBtn = () => {
                         </div>
                     )}
                 </div>
-            )}
-
-            {/* 새로운 모달창 */}
-            {isVisibleDetail && (
-                <div> 추가 모달창  </div>
             )}
         </div>
 

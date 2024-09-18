@@ -48,7 +48,6 @@ function Order() {
 
                 const transfomData = data.map(item => ({
                     orderNo: item.orderNo,
-                    /*상품명은 상세보기 만들면 그거랑 연결 할 예정*/
                     customerN: item.customer.customerName,
                     manager: item.employee.employeeName,
                     status: item.confirmStatus,
@@ -132,11 +131,11 @@ function Order() {
     const handleSearchBtn = async () => {
         //서버로 데이터 보내기
         const date = form.date || null;
-        const orderNo = form.orderNo || null;
+        const orderNo = form.orderNo ? form.orderNo.replace(/\s+/g, '') : null;
         const prod = form.prod || null;
-        const mycustomer = form.mycustomer || null;
-        const manager = form.manager || null;
-        const status = form.selectedConfirm || null;
+        const mycustomer = form.mycustomer|| null;
+        const manager = form.manager ? form.manager.replace(/\s+/g, '') : null;
+        const status = form.selectedConfirm|| null;
 
         const res = await axios.post('/order/searchSelect', {
             inputDate: date,
@@ -152,7 +151,6 @@ function Order() {
         if (Array.isArray(searchOrderData)) {
             const getSearchOrder = searchOrderData.map(item => ({ //res.data.map안된다는 소리
                 orderNo: item.orderNo,
-                /*상품명은 상세보기 만들면 그거랑 연결 할 예정*/
                 customerN: item.customer.customerName,
                 manager: item.employee.employeeName,
                 status: item.confirmStatus,
@@ -173,7 +171,6 @@ function Order() {
     const [orderCustomer, setOrderCustomer] = useState([]);//고객번호목록
     const [registCustomer, setRegistCustomer] = useState(''); //선택된 고객명 저장
     const [customPrice, setCustomPrice] = useState([]);//판매가리스트
-    const [checkProd, setCheckProd] = useState([]); //체크한 항목 저장
     const [addCheckProd, setAddCheckProd] = useState([]); //체크한 상품 추가된 리스트
 
     // 고객명 변경 시 고객번호 저장
@@ -222,26 +219,6 @@ function Order() {
         }
     }, [registCustomer]); //의존성 배열: 특정 값이 변경될 때마다 실행한다.
 
-
-    //상품 체크 이벤트 - 체크항목만 checkProd 넣기
-    const handleCheck = (prodList) => (e) => { //체크항목 가져오기
-        const {prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo} = prodList; // 필요한 값 추출
-        handleOrderListCheckboxChange(e);
-
-        setCheckProd(prevCheckProd => {
-            const newCheckProd = [...prevCheckProd];
-            if (e.target.checked) { //체크O
-                newCheckProd.push({prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo});
-            } else { //체크 X
-                const index = newCheckProd.findIndex(item => item.priceNo === priceNo); //체크한 priceNo 같은 행 찾기 - prodNo가 아닌이유: 상품번호는 같아도 판매가 번호별로 조회되므로 priceNo를 살펴야 함.
-                if (index > -1) { //내가 체크한게 이미 있다? 그럼 지울거임
-                    newCheckProd.splice(index, 1);
-                }
-            }
-            return newCheckProd; //새 상태로 checkProd 업데이트~
-        });
-    }
-
     //추가 클릭
     const handleAddProd = () => {
         setAddCheckProd(prevAddCheckProd => {
@@ -266,12 +243,15 @@ function Order() {
                 }
             } else {
                 // 체크된 항목만 처리
-                checkProd.forEach(item => {
-                    if (existingPriceNos.has(item.priceNo)) {
-                        hasDuplicates = true;
-                    } else {
-                        newCheckProd.push(item);
-                        existingPriceNos.add(item.priceNo); // Set에 추가하여 중복 방지
+                Object.keys(orderListCheckItem).forEach(index => {
+                    if (orderListCheckItem[index]) {
+                        const item = customPrice[index]; // 인덱스로 항목 찾기
+                        if (item && !existingPriceNos.has(item.priceNo)) {
+                            newCheckProd.push(item);
+                            existingPriceNos.add(item.priceNo);
+                        } else {
+                            hasDuplicates = true;
+                        }
                     }
                 });
             }
@@ -289,9 +269,8 @@ function Order() {
 
     // 값 확인
 //     useEffect(() => {
-//         console.log('checkProd:', checkProd);
 //         console.log('addCheckProd:', addCheckProd);
-//     }, [checkProd, addCheckProd]);
+//     }, [addCheckProd]);
 
     //상품 수량
     const [quantities, setQuantities] = useState({});
@@ -326,7 +305,6 @@ function Order() {
                 }
             }
 
-
             //추가된 리스트 반복 돌리기
             const orderBList = addCheckProd.map((addProd, index) => {
                 const orderProdNo = addProd.prodNo || 0; //상품번호
@@ -342,37 +320,57 @@ function Order() {
                 };
             });
 
-            // 조건문으로 update or insert 처리 - 유선화
-            if (isUpdate) {
-                // update 처리
-                await axios.put('/order/update', {
-                    orderNo: selectedOrderNo,  // 주문 번호 포함
-                    inputDelDate: delDate || null,
-                    inputCustomerNo: registCustomer || null,
-                    inputManager: "beak3" || null,
-                    inputConfirmer: "beak10" || null,
-                    inputStatus: orderStatus,
-                    orderBList
-                });
-                console.log("주문 업데이트 성공");
-            } else {
-                await axios.post('/order/registOrder', { // insert into oh
-                    inputDelDate: delDate || null,//납품요청일
-                    inputCustomerNo: registCustomer || null,//주문고객번호
-                    inputManager: "beak3" || null, //임의 값(로그인 시 해당 직원명 기입할 예정)
-                    inputConfirmer: "beak10" || null, //임의 값
-                    inputStatus: orderStatus,
-                    orderBList //ob데이터 배열 전달
-                });
-                console.log("주문 등록 성공");
-            }
+            const response = await axios.post('/order/registOrder',{ // insert into oh
+                inputDelDate: delDate || null,//납품요청일
+                inputCustomerNo: registCustomer || null,//주문고객번호
+                inputManager: "beak3" || null, //임의 값(로그인 시 해당 직원명 기입할 예정)
+                inputConfirmer: "beak10" || null, //임의 값
+                inputStatus: orderStatus,
+                orderBList //ob데이터 배열 전달
+            });
 
-            console.log("모든 주문 등록 성공");
+            const orderNo = response.data; //서버에서 받은 주문번호
+
             handleCloseClick(); //등록 창 닫기 및 초기화
+
+            if(orderStatus === "대기"){
+                alert(`주문번호 ${orderNo} 등록이 완료되었습니다.`);
+            }else{
+                alert(`주문번호 ${orderNo} 임시저장되었습니다.`);
+            }
         } catch (error) {
             console.error("주문등록 중 오류발생", error);
         }
     };
+
+    // 추가리스트 체크 삭제
+    const handleAddProdDelete = () => {
+        setAddCheckProd(prevAddCheckProd => {
+            let newAddCheckProd = prevAddCheckProd;
+
+            if(!orderAddAllCheck){
+
+                const checkedIndexes = Object.keys(orderAddCheckItem).filter(key => orderAddCheckItem[key]);//체크된 항목의 인덱스를 추출
+
+                const checkedPriceNos = checkedIndexes.map(index => prevAddCheckProd[index].priceNo);//해당 인덱스의 priceNo를 추출
+
+                const newAddCheckProd = prevAddCheckProd.filter(item => !checkedPriceNos.includes(item.priceNo)); //체크 안한 것만 남기기
+
+                return newAddCheckProd; //개별 삭제 후 반환
+
+            }else {
+                if(addCheckProd.length > 0){
+                    return []; //전체 삭제
+                }else{
+                    alert(`삭제할 항목이 없습니다.`);
+                    return prevAddCheckProd; //이전 상태 유지
+                }
+            }
+
+        });
+    };
+
+
 
     /*---------------jsy주문 등록 끝---------------*/
 
@@ -396,7 +394,6 @@ function Order() {
         setIsVisible(false);
         setRegistCustomer(''); //고객선택 초기화
         setDelDate(''); //납품요청일 초기화
-        setCheckProd([]); //체크 초기화
         setAddCheckProd([]); //추가리스트 초기화
     };
 
@@ -504,13 +501,13 @@ function Order() {
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="date">등록 일자</label>
                                 <input className="filter-input" type="date" id="date" value={form.date || ''}
-                                       onChange={handleChange} required/>
+                                       onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} required/>
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="orderNo">주문 번호</label>
                                 <input className="filter-input" type="text" id="orderNo" value={form.orderNo || ''}
-                                       onChange={handleChange} placeholder="주문 번호" required/>
+                                       onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} placeholder="주문 번호" required/>
                             </div>
 
                             <div className="filter-item">
@@ -529,7 +526,7 @@ function Order() {
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="manager">담당자명</label>
                                 <input className="filter-input" type="text" id="manager" value={form.manager || ''}
-                                       onChange={handleChange} placeholder="담당자명" required/>
+                                       onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} placeholder="담당자명" required/>
                             </div>
 
                             <div className="filter-item">
@@ -562,8 +559,8 @@ function Order() {
                         </div>
                     </div>
                     <div className="button-container">
-                        <button type="button" className="search-btn" id="searchOrder" onClick={handleSearchBtn}><i
-                            className="b    i bi-search search-icon"></i>
+                        <button type="button" className="search-btn" id="searchOrder" onClick={handleSearchBtn}>
+                            <i className="bi bi-search search-icon"></i>
                         </button>
                     </div>
                 </div>
@@ -772,7 +769,7 @@ function Order() {
                                         <tr key={index} className={orderListCheckItem[index] ? 'selected-row' : ''}>
                                             <td><input type="checkbox" id="checkProdList"
                                                 checked={orderListCheckItem[index] || false }
-                                                onChange={handleCheck(prodList)}/></td>
+                                                onChange={(e) => handleOrderListCheckboxChange(e)}/></td>
                                             <td style={{display: 'none'}}>{index}</td>
                                             <td>{index + 1}</td>
                                             <td>{prodList.prodNo}</td>
@@ -789,7 +786,7 @@ function Order() {
                             <div className="RegistFormList">
                                 <div style={{fontWeight: 'bold'}}> 총 {addCheckProd?.length || 0} 건</div>
                                 <table className="formTableList">
-                                    {orderAddShowDelete && checkProd.length > 0 && <button style={{top:"440px"}} className="delete-btn btn-common" onClick={handleOrderAddDelete}>삭제</button>}
+                                    {orderAddShowDelete && Object.values(orderAddCheckItem).some(isChecked => isChecked) && <button style={{top:"440px"}} className="delete-btn btn-common" onClick={() => {handleAddProdDelete(); handleOrderAddDelete();}}>삭제</button>}
                                     <thead>
                                     <tr>
                                         <th><input type="checkbox" checked={orderAddAllCheck} onChange={(e)=>handleOrderAddMasterCheckboxChange(e)}/></th>
