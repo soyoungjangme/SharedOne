@@ -105,6 +105,7 @@
         oh.confirm_status,
         oh.confirm_change_date,
         oh.remarks,
+        oh.confirmer_id,
         c.customer_no,
         c.customer_name,
         e.employee_id,
@@ -135,6 +136,7 @@
         <result property="confirmStatus" column="confirm_status"/>
         <result property="confirmChangeDate" column="confirm_change_date"/>
         <result property="remarks" column="remarks"/>
+        <result property="confirmerId" column="confirmer_id"/>
 
         <association property="customer" javaType="CustomerDTO">
             <id property="customerNo" column="customer_no"/>
@@ -166,29 +168,16 @@
         </collection>
     </resultMap>
 
-<!--    &lt;!&ndash; 주문 헤더 업데이트 &ndash;&gt;-->
-<!--    <update id="updateOrderHeader" parameterType="OrderHDTO">-->
-<!--        UPDATE order_header-->
-<!--        SET reg_date = #{regDate},-->
-<!--        del_date = #{delDate},-->
-<!--        confirm_status = #{confirmStatus},-->
-<!--        confirm_change_date = #{confirmChangeDate},-->
-<!--        remarks = #{remarks}-->
-<!--        WHERE order_no = #{orderNo}-->
-<!--    </update>-->
+    <!--결재 여부에 따른 업데이트-->
+    <update id="updateApproval">
+        UPDATE order_header
+        SET confirm_status = #{confirmStatus},
+            confirm_change_date = #{confirmChangeDate}
+        WHERE order_no = #{orderNo}
+    </update>
 
-    <insert id="updateOrderHeader" useGeneratedKeys="true" keyProperty="orderNo" parameterType="OrderUp1DTO">
-        INSERT INTO order_header (reg_date, del_date, confirm_status, customer_no, employee_id)
-        VALUES (CURRENT_TIMESTAMP, #{delDate}, '대기', #{customerNo}, #{employeeId})
-    </insert>
+    <!-- 주문 업데이트 -->
 
-    <insert id="updateOrderBody" parameterType="map">
-        INSERT INTO order_body (order_no, product_no, order_product_qty)
-        VALUES
-        <foreach collection="orderB" item="orderBody" separator=",">
-            (#{orderNo}, #{orderBody.productNo}, #{orderBody.orderProductQty})
-        </foreach>
-    </insert>
     <!--유선화 END-->
 
 </mapper>

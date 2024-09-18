@@ -632,7 +632,7 @@ function Order() {
                             {/*주문정보-헤더*/}
                             <div className="RegistForm">
                                 <table className="formTable">
-
+                                    <tbody> {/*table 바로 아래에 tr 태그라 오류남*/}
                                     <tr>
 
                                         <th colSpan="1"><label htmlFor="orderCustomer">고객사 명</label></th>
@@ -665,6 +665,7 @@ function Order() {
                                         <td colSpan="3"><input type="text" placeholder="필드 입력" value="beak10"/></td>
 
                                     </tr>
+                                    </tbody>
                                 </table>
                             </div>
 
@@ -690,7 +691,8 @@ function Order() {
                                 <table className="formTableList">
                                     <thead>
                                     <tr>
-                                        <th><input type="checkbox" checked={orderListAllCheck} onChange={(e) => handleOrderListMasterCheckboxChange(e)}/></th>
+                                        <th><input type="checkbox" checked={orderListAllCheck}
+                                                   onChange={(e) => handleOrderListMasterCheckboxChange(e)}/></th>
                                         <th>no</th>
                                         <th>상품 코드</th>
                                         <th>상품 명</th>

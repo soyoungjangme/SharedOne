@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +61,8 @@ public class OrderController {
     }
 
 
-    /* 유선화 START */
-    // 주문 상세 정보 조회
+/* 유선화 START */
+// 주문 상세 정보 조회
     @GetMapping("/detail/{orderNo}")
     public ResponseEntity<OrderHDTO> getOrderDetail(@PathVariable Long orderNo) {
         OrderHDTO orderDetail = orderService.getOrderDetail(orderNo);
@@ -72,12 +73,26 @@ public class OrderController {
         }
     }
 
-    // 주문 업데이트
-    @PostMapping("/updateOrder")
-    public void updateOrder(@RequestBody OrderUp1DTO orderH) {
-        orderService.updateOrder(orderH);
-        System.out.println(orderH);
-        System.out.println("오더 업데이트 컨트롤러");
+// 결재 여부에 따른 업데이트
+    @PostMapping("/updateApproval")
+    public ResponseEntity<?> updateApproval(@RequestBody OrderHDTO orderHDTO) {
+        boolean updated = orderService.updateApproval(
+                orderHDTO.getOrderNo(),
+                orderHDTO.getConfirmStatus(),
+                LocalDate.now()
+        );
+        if (updated) {
+            return ResponseEntity.ok().body(Map.of("success", true));
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "업데이트 실패!!"));
+        }
     }
-    /* 유선화 END */
+
+    @PostMapping("/updateOrder")
+    public ResponseEntity<?> updateOrder(@RequestBody OrderHDTO orderHDTO) {
+            orderService.updateOrder(orderHDTO);
+            return ResponseEntity.ok().body(Map.of("message", "주문이 성공적으로 업데이트되었습니다."));
+    }
+
+/* 유선화 END */
 }

@@ -15,6 +15,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
         delDate: '',
         confirmStatus: '',
         remarks: '',
+        confirmerId: '',
         confirmChangeDate: null,
         orderBList: []
     });
@@ -237,7 +238,30 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
 //        }
 //    };
 //
+// 임시로 만든 승인, 반려 버튼
+    const handleApproval = async (status) => {
+        try {
+            const response = await axios.post('/order/updateApproval', {
+                orderNo: modifyItem.orderNo,
+                confirmStatus: status,
+                confirmChangeDate: new Date().toISOString()
+            });
 
+            if (response.data.success) {
+                setModifyItem(prev => ({
+                    ...prev,
+                    confirmStatus: status,
+                    confirmChangeDate: new Date().toISOString()
+                }));
+                alert(`주문이 ${status === '승인' ? '승인' : '반려'}되었습니다.`);
+            } else {
+                console.error('승인/반려 처리 실패');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+        }
+    };
 
     return isOpen ? (
         <div className="confirmRegist">
@@ -248,16 +272,18 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                         <h1>상세 조회</h1>
                         <div className="btns">
                             <div className="btn-add">
-                                {!isApproved && (
+                                {modifyItem.confirmStatus.trim() === '대기' && (
                                     <>
-                                        <button type="button">반려</button>
-                                        <button type="button">승인</button>
-                                        <button type="button" onClick={openModifyModal2}>
-                                            수정하기
-                                        </button>
+                                        <button type="button" onClick={() => handleApproval('반려')}>반려</button>
+                                        <button type="button" onClick={() => handleApproval('승인')}>승인</button>
+                                        <button type="button" onClick={openModifyModal2}>수정하기</button>
                                     </>
                                 )}
+                                {(modifyItem.confirmStatus.trim() === '반려' || modifyItem.confirmStatus.trim() === '임시저장') && (
+                                    <button type="button" onClick={openModifyModal2}>수정하기</button>
+                                )}
                             </div>
+
                         </div>
                     </div>
                     <form className="RegistForm  form-disabled" className={isApproved ? 'form-disabled' : ''}>
@@ -278,17 +304,21 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                 <td>{modifyItem.delDate || ''}</td>
                                 <th><label htmlFor="approvalStatus">결재 여부</label></th>
                                 <td>
-                                    <select
-                                        name="confirmStatus"
-                                        value={getConfirmStatus(modifyItem.confirmStatus)}
-                                        onChange={handleInputChange}
-                                        disabled={isApproved}
-                                    >
-                                        <option value="대기">대기</option>
-                                        <option value="승인">승인</option>
-                                        <option value="반려">반려</option>
-                                    </select>
+                                    {(modifyItem.confirmStatus?.trim() === '승인' || modifyItem.confirmStatus?.trim() === '반려') ? (
+                                        <span>{getConfirmStatus(modifyItem.confirmStatus)}</span>
+                                    ) : (
+                                        <select
+                                            name="confirmStatus"
+                                            value={getConfirmStatus(modifyItem.confirmStatus)}
+                                            onChange={handleInputChange}
+                                        >
+                                            <option value="대기">대기</option>
+                                            <option value="승인">승인</option>
+                                            <option value="반려">반려</option>
+                                        </select>
+                                    )}
                                 </td>
+
                             </tr>
                             </tbody>
                         </table>
@@ -297,10 +327,10 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                             <tbody>
                             <tr>
                                 <th><label htmlFor="approver">결재자</label></th>
-                                <td>{''}</td>
+                                <td>{modifyItem.confirmerId || '정보 없음'}</td>
                                 <th colSpan="1"><label htmlFor="remarks">비고</label></th>
                                 <td colSpan="3">
-                                    <textarea name="remarks" value={modifyItem.remarks || ''} disabled
+                                    <textarea name="remarks" value={modifyItem.remarks || ''} readOnly
                                     ></textarea>
                                 </td>
                             </tr>
