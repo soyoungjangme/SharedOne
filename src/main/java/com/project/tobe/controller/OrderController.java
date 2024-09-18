@@ -5,11 +5,13 @@ import com.project.tobe.entity.OrderH;
 import com.project.tobe.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,7 +81,8 @@ public class OrderController {
         boolean updated = orderService.updateApproval(
                 orderHDTO.getOrderNo(),
                 orderHDTO.getConfirmStatus(),
-                LocalDate.now()
+                LocalDate.now(),
+                orderHDTO.getRemarks()
         );
         if (updated) {
             return ResponseEntity.ok().body(Map.of("success", true));
@@ -88,10 +91,15 @@ public class OrderController {
         }
     }
 
-    @PostMapping("/updateOrder")
-    public ResponseEntity<?> updateOrder(@RequestBody OrderHDTO orderHDTO) {
-            orderService.updateOrder(orderHDTO);
-            return ResponseEntity.ok().body(Map.of("message", "주문이 성공적으로 업데이트되었습니다."));
+    @PutMapping("/update")
+    public ResponseEntity<?> updateOrder(@RequestBody OrderUp1DTO orderUp1DTO) {
+        try {
+            OrderHDTO updatedOrder = orderService.updateOrder(orderUp1DTO);
+            return ResponseEntity.ok(updatedOrder);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("주문 업데이트 중 오류 발생: " + e.getMessage());
+        }
     }
 
 /* 유선화 END */

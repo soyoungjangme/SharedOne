@@ -60,6 +60,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                 orderProductQty: 0,
                 product: '',
                 price: 0,
+                priceNo: 0
             }
         ]
     });
@@ -70,7 +71,9 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
             const updatedOrderDetailsBList = modifyItem.orderBList.map(item => ({
                 productNo: item.productNo,            // 원본 값
                 orderProductQty: item.orderProductQty,                  // 기본값 또는 나중에 업데이트 필요
-                price: item.productPrice ?? 0        // null을 0으로 대체
+                price: item.productPrice ?? 0,        // null을 0으로 대체
+                priceNo: item.price?.priceNo ?? 0  // 추가
+
             }));
 
             // 상태를 한 번에 업데이트
@@ -84,16 +87,6 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
         }
     }, [modifyItem]);  // modifyItem이 변경될 때마다 호출
 
-    // 상태를 콘솔에 찍어보는 함수
-    const logOrderDetails = () => {
-        console.log('Order Details:', orderDetails);
-    };
-
-    // modifyItem이 업데이트될 때마다 콘솔에 찍기
-    useEffect(() => {
-        logOrderDetails();
-    }, [orderDetails]);  // orderDetails가 변경될 때마다 호출
-    
     const handleUpdate = async () => {
         try {
             console.log('Sending Order Details:', orderDetails); // 전송 전 데이터 확인
@@ -122,14 +115,14 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
     // 주문 데이터 가져오기
     useEffect(() => {
         if (isOpen && orderNo) {
-            console.log('useEffect orderNo: '+orderNo);
+            console.log('useEffect orderNo: '+orderNo); // 망할 디버깅
             const fetchOrderDetails = async () => {
                 try {
                     const response = await axios.get(`/order/detail/${orderNo}`);
-                    console.log('Response data:', response.data);
+                    console.log('Server response:', JSON.stringify(response.data, null, 2)); // 디버깅
                     setModifyItem(response.data);
 
-                    const confirmStatus = response.data?.confirmStatus?.trim() || '대기';
+                    const confirmStatus = getConfirmStatus(response.data?.confirmStatus);
                     if (confirmStatus === '승인') {
                         setIsApproved(true);
                     } else {
@@ -205,45 +198,13 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
         setModalSortConfig({ key, direction });
     };
 
-    // // 업데이트 처리
-    // const handleUpdate = async () => {
-    //     try {
-    //         const response = await axios.put(`/order/updateOder/${modifyItem.orderNo}`, modifyItem);
-    //         alert('주문이 성공적으로 수정되었습니다.');
-    //
-    //         // 모달이 닫히고 부모 컴포넌트에 업데이트된 값을 전달
-    //         if (onUpdate) onUpdate(modifyItem);  // updatedOrder로 전달
-    //         onClose();  // 모달 닫기
-    //     } catch (error) {
-    //         console.error('주문 수정 실패', error);  // 에러 로그 추가
-    //         alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
-    //     }
-    // };
-//    const handleUpdate = async () => {
-//        try {
-//            const response = await axios.put(`/order/update/${modifyItem.orderNo}`, modifyItem);
-//            alert('주문이 성공적으로 수정되었습니다.');
-//
-//            console.log("Sending updated order to onUpdate:", modifyItem); // 업데이트된 아이템 로그
-//            if (onUpdate) {
-//                console.log("onUpdate is defined, calling it..."); // onUpdate가 정의되어 있는지 확인
-//                onUpdate(modifyItem);
-//            } else {
-//                console.warn("onUpdate is not defined");
-//            }
-//            onClose();  // 모달 닫기
-//        } catch (error) {
-//            console.error('주문 수정 실패', error);
-//            alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
-//        }
-//    };
-//
 // 임시로 만든 승인, 반려 버튼
     const handleApproval = async (status) => {
         try {
             const response = await axios.post('/order/updateApproval', {
                 orderNo: modifyItem.orderNo,
                 confirmStatus: status,
+                remarks: modifyItem.remarks,
                 confirmChangeDate: new Date().toISOString()
             });
 
@@ -272,21 +233,21 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                         <h1>상세 조회</h1>
                         <div className="btns">
                             <div className="btn-add">
-                                {modifyItem.confirmStatus.trim() === '대기' && (
+                                {getConfirmStatus(modifyItem.confirmStatus) === '대기' && (
                                     <>
                                         <button type="button" onClick={() => handleApproval('반려')}>반려</button>
                                         <button type="button" onClick={() => handleApproval('승인')}>승인</button>
-                                        <button type="button" onClick={openModifyModal2}>수정하기</button>
+                                        <button type="button" onClick={() => onOpenModifyModal2(modifyItem)}>수정하기</button>
                                     </>
                                 )}
-                                {(modifyItem.confirmStatus.trim() === '반려' || modifyItem.confirmStatus.trim() === '임시저장') && (
-                                    <button type="button" onClick={openModifyModal2}>수정하기</button>
+                                {(getConfirmStatus(modifyItem.confirmStatus) === '반려' || getConfirmStatus(modifyItem.confirmStatus) === '임시저장') && (
+                                    <button type="button" onClick={() => onOpenModifyModal2(modifyItem)}>수정하기</button>
                                 )}
                             </div>
 
                         </div>
                     </div>
-                    <form className="RegistForm  form-disabled" className={isApproved ? 'form-disabled' : ''}>
+                    <form className={`RegistForm ${isApproved ? 'form-disabled' : ''}`}>
                         <table className="formTable">
                             <tbody>
                             <tr>
@@ -330,7 +291,10 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                 <td>{modifyItem.confirmerId || '정보 없음'}</td>
                                 <th colSpan="1"><label htmlFor="remarks">비고</label></th>
                                 <td colSpan="3">
-                                    <textarea name="remarks" value={modifyItem.remarks || ''} readOnly
+                                    <textarea
+                                        name="remarks"
+                                        value={modifyItem.remarks || ''}
+                                        onChange={handleInputChange}
                                     ></textarea>
                                 </td>
                             </tr>
