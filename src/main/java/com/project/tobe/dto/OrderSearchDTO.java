@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @ToString
 public class OrderSearchDTO {
     private LocalDate inputDate;
-    private Integer inputOrderNo;
+    private String inputOrderNo;
     private Integer inputProdNo;
     private String inputManager;
     private Integer inputCustomerNo;
