@@ -72,9 +72,9 @@ public class OrderServiceImpl implements OrderService {
 // 결재 여부 업데이트
     @Override
     @Transactional
-    public boolean updateApproval(Long orderNo, String confirmStatus, LocalDate confirmChangeDate) {
+    public boolean updateApproval(Long orderNo, String confirmStatus, LocalDate confirmChangeDate, String remarks) {
         try {
-            int updatedRows = orderMapper.updateApproval(orderNo, confirmStatus, confirmChangeDate);
+            int updatedRows = orderMapper.updateApproval(orderNo, confirmStatus, confirmChangeDate, remarks);
             return updatedRows > 0;
         } catch (Exception e) {
             System.out.println("updateApproval 오류");
@@ -83,8 +83,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateOrder(OrderHDTO orderHDTO) {
+    public OrderHDTO updateOrder(OrderUp1DTO orderUp1DTO) {
+        // 주문 헤더 업데이트
+        orderMapper.updateOrderHeader(orderUp1DTO);
 
+        // 기존 주문 상세 삭제
+        orderMapper.deleteOrderDetails(orderUp1DTO.getOrderNo());
+
+        // 새로운 주문 상세 추가
+        for (OrderUp2DTO detail : orderUp1DTO.getOrderBList()) {
+            orderMapper.insertOrderDetail(orderUp1DTO.getOrderNo(), detail);
+        }
+
+        // 업데이트된 주문 정보 조회 및 반환
+        return orderMapper.getOrderDetail(orderUp1DTO.getOrderNo());
     }
 
     /* 유선화 END */

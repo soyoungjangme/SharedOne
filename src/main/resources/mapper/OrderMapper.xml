@@ -110,11 +110,13 @@
         c.customer_name,
         e.employee_id,
         e.employee_name,
+        ob.price_no,
         ob.product_no,
         ob.order_product_qty,
         p.product_name,
         p.product_category,
         p.product_writer,
+        coalesce(ob.price_no, pr.price_no) as price_no,
         coalesce(pr.custom_price, 0) as custom_price,
         pr.start_date,
         pr.end_date
@@ -151,6 +153,7 @@
         <collection property="orderBList" ofType="OrderBDTO">
             <id property="orderNo" column="order_no"/>
             <id property="productNo" column="product_no"/>
+            <result property="priceNo" column="price_no"/>
             <result property="orderProductQty" column="order_product_qty"/>
 
             <association property="product" javaType="ProductDTO">
@@ -161,6 +164,7 @@
             </association>
 
             <association property="price" javaType="PriceDTO">
+                <id property="priceNo" column="price_no"/>
                 <result property="customPrice" column="custom_price"/>
                 <result property="startDate" column="start_date"/>
                 <result property="endDate" column="end_date"/>
@@ -172,12 +176,28 @@
     <update id="updateApproval">
         UPDATE order_header
         SET confirm_status = #{confirmStatus},
-            confirm_change_date = #{confirmChangeDate}
+        confirm_change_date = #{confirmChangeDate},
+        remarks = #{remarks}  <!-- 비고 필드 추가 -->
         WHERE order_no = #{orderNo}
     </update>
 
-    <!-- 주문 업데이트 -->
 
+    <!--주문 업데이트-->
+    <update id="updateOrderHeader" parameterType="com.project.tobe.dto.OrderUp1DTO">
+        UPDATE order_header
+        SET del_date = #{delDate}
+        WHERE order_no = #{orderNo}
+    </update>
+
+    <delete id="deleteOrderDetails" parameterType="long">
+        DELETE FROM order_body
+        WHERE order_no = #{orderNo}
+    </delete>
+
+    <insert id="insertOrderDetail">
+        INSERT INTO order_body (order_no, product_no, order_product_qty, price_no)
+        VALUES (#{orderNo}, #{detail.productNo}, #{detail.orderProductQty}, #{detail.priceNo})
+    </insert>
     <!--유선화 END-->
 
 </mapper>

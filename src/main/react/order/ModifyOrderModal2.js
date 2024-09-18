@@ -9,7 +9,6 @@ import useCheckboxManager from '../js/CheckboxManager';
 function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
 
     const [customPrice, setCustomPrice] = useState([]); // 상품 리스트
-    const [checkProd, setCheckProd] = useState([]);     // 체크한 상품들
     const [addCheckProd, setAddCheckProd] = useState([]); // 추가된 상품 리스트
     const [quantities, setQuantities] = useState({});    // 각 상품의 수량
 
@@ -25,6 +24,11 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
         confirmChangeDate: null,
         orderBList: []
     });
+
+    useEffect(() => { // 디버깅
+        console.log('Updated orderBList:', modifyItem.orderBList);
+    }, [modifyItem.orderBList]);
+
 
 // 주문 가능한 상품 목록을 위한 체크박스
     const {
@@ -70,16 +74,19 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
             } else {
                 console.error('고객 번호가 없습니다.');
             }
-            setModifyItem(orderData);
+            setModifyItem(orderData); // 중복 제거 후 여기에만 설정
         }
     }, [orderData]);
 
-// 고객에 맞는 상품 리스트 가져오기
+// 고객에 맞는 상품 리스트 가져오기 + 디버깅
     const fetchCustomerProducts = async (customerNo) => {
         try {
+            console.log('Fetching products for customerNo:', customerNo);
+
             const response = await axios.post('/order/getPrice', {
                 inputOrderCustomerNo: parseInt(customerNo, 10)
             });
+
             const OrderCustomerData = response.data;
 
             if (Array.isArray(OrderCustomerData)) {
@@ -90,43 +97,43 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                     prodName: value.product.productName,
                     prodWriter: value.product.productWriter,
                     saleStart: value.startDate,
-                    saleEnd: value.endDate
+                    saleEnd: value.endDate,
+                    priceNo: value.priceNo
                 }));
                 setCustomPrice(getOrderCustomer);
-                setCheckProd(new Array(getOrderCustomer.length).fill(false)); // 체크박스 초기 상태 설정
             } else {
                 console.error('상품 목록을 불러오는 중 오류 발생:', OrderCustomerData);
             }
-        } catch {
-            console.error('애초에 fetchCustomerProducts 호출 오류');
+        } catch (error) {
+            console.error('fetchCustomerProducts 호출 오류:', error); // 오류 메시지 출력
+            if (error.response) {
+                console.error('서버 응답 오류:', error.response.data); // 서버 응답에 대한 자세한 오류 메시지
+            }
         }
     };
 
-// 주문 가능한 상품
-    const [prod, setProd] = useState([]);
-    useEffect ( () => {
-        let effectProd = async() => {
-            let getProd = await fetch('/product/products').then(response => response.json());
-            setProd(getProd);
-        }
-        effectProd();
-    },[]);
 
+// 주문 수량
     const handleQuantityChange = (index) => (e) => {
-        const qty = e.target.value || 0;
+        // 빈 문자열을 허용하고, 숫자가 아닌 입력을 방지
+        let qty = e.target.value;
+        if (qty !== '' && isNaN(qty)) {
+            return;
+        }
+
         setModifyItem(prev => {
-            const updatedOrderBList = [...prev.orderBList]; // 배열 복사
+            const updatedOrderBList = [...prev.orderBList];
             updatedOrderBList[index] = {
-                ...updatedOrderBList[index], // 기존 객체 복사
-                orderProductQty: parseInt(qty, 10) // 수량 업데이트
+                ...updatedOrderBList[index],
+                orderProductQty: qty === '' ? '' : parseInt(qty, 10)
             };
+            console.log('Updated quantity:', updatedOrderBList); // 디버깅
             return {
                 ...prev,
-                orderBList: updatedOrderBList // 업데이트된 리스트로 상태 변경
+                orderBList: updatedOrderBList
             };
         });
     };
-
 
 
 // 검색
@@ -139,71 +146,80 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
         product.prodName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-// 입력 값 변경
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setModifyItem(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+// 주문 업데이트 + 디버깅 모드
+    const handleUpdateOrder = async () => {
+        if (!modifyItem.delDate) {
+            alert('납품 요청일을 선택해주세요.');
+            return;
+        }
 
-// 업데이트
-    const handleUpdate = async () => {
-        const updatedOrder = {
-            ...modifyItem,
-            // 선택한 상품 리스트와 납품 요청일을 포함한 주문 데이터를 구성
-            orderBList: modifyItem.orderBList.map((item) => ({
-                productNo: item.product.productNo,
-                orderProductQty: parseInt(item.orderProductQty, 10),
-                priceNo: item.price.priceNo
-            })),
-            delDate: modifyItem.delDate // 납품 요청일 추가
-        };
+        if (modifyItem.orderBList.length === 0) {
+            alert('1개 이상의 상품을 선택해주세요.');
+            return;
+        }
+
+        // 빈 문자열이나 0인 수량 체크
+        const invalidQuantities = modifyItem.orderBList.filter(item =>
+            item.orderProductQty === '' || item.orderProductQty === 0
+        );
+
+        if (invalidQuantities.length > 0) {
+            alert('모든 상품의 수량을 1개 이상 입력해주세요.');
+            return;
+        }
 
         try {
-            const response = await axios.post('/order/updateOrder', updatedOrder, {
-                headers: { 'Content-Type': 'application/json' }
-            });
-            console.log('Response:', response.data);
-            onUpdate(updatedOrder); // 부모 컴포넌트에 업데이트된 주문 전달
-            onClose(); // 모달 닫기
+            // 주문 업데이트에 필요한 데이터 준비
+            const updatedOrderData = {
+                orderNo: modifyItem.orderNo,
+                delDate: modifyItem.delDate,
+                orderBList: modifyItem.orderBList.map(item => ({
+                    productNo: item.product.productNo,
+                    orderProductQty: parseInt(item.orderProductQty, 10), // 문자열을 숫자로 변환
+                    price: item.price.customPrice,
+                    priceNo: item.priceNo || item.price.priceNo
+                }))
+            };
+
+            console.log('Sending data:', updatedOrderData); // 디버깅
+
+            // 서버에 업데이트 요청 보내기
+            const response = await axios.put(`/order/update`, updatedOrderData);
+            console.log('Server response:', response); // 디버깅
+
+            if (response.status === 200 || response.data) {
+                alert('주문이 성공적으로 업데이트되었습니다.');
+                onUpdate(response.data);
+            } else {
+                alert('주문 업데이트에 실패했습니다.');
+            }
+
         } catch (error) {
-            console.error('주문 수정에 실패했습니다:', error);
-            alert('주문 수정에 실패했습니다. 다시 시도해주세요.');
+            console.error('주문 업데이트 중 오류 발생:', error);
+            if (error.response) {
+                console.error('Error response:', error.response.data);
+                console.error('Error status:', error.response.status);
+            }
+            alert('주문 업데이트 중 오류가 발생했습니다.');
         }
     };
+
 
 // 상품 체크 이벤트 - 체크항목만 checkProd 넣기
     const handleCheck = (prodList) => (e) => {
         const {prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo} = prodList;
         handleAvailableProductsCheckboxChange(e, prodList.index);
-
-        setCheckProd(prevCheckProd => {
-            const newCheckProd = [...prevCheckProd];
-            if (e.target.checked) {
-                newCheckProd.push({prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo});
-            } else {
-                const index = newCheckProd.findIndex(item => item.priceNo === priceNo);
-                if (index > -1) {
-                    newCheckProd.splice(index, 1);
-                }
-            }
-            return newCheckProd;
-        });
     }
 
 // 추가 버튼
     const handleAddProd = () => {
-        const productsToAdd = availableProductsAllCheck ? customPrice : checkProd;
+        const productsToAdd = availableProductsAllCheck ? customPrice : customPrice.filter((_, index) => availableProductsCheckItem[index]); // availableProductsCheckItem 사용
 
-        const newOrderBList = modifyItem.orderBList.concat(
-            productsToAdd
-                .filter(product => product && product.prodNo)
-                .filter(product => !modifyItem.orderBList.some(item =>
-                    item.product && item.product.productNo === product.prodNo
-                ))
-                .map(product => ({
+        const newOrderBList = [...modifyItem.orderBList];
+
+        productsToAdd.forEach(product => {
+            if (product && product.prodNo && !newOrderBList.some(item => item.product && item.product.productNo === product.prodNo)) {
+                newOrderBList.push({
                     product: {
                         productNo: product.prodNo,
                         productCategory: product.prodCat,
@@ -212,21 +228,21 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                     },
                     orderProductQty: 1,
                     price: {
+                        priceNo: product.priceNo,
                         customPrice: product.salePrice,
                         startDate: product.saleStart,
                         endDate: product.saleEnd
                     }
-                }))
-        );
+                });
+            }
+        });
 
         setModifyItem(prev => ({
             ...prev,
             orderBList: newOrderBList
         }));
 
-        // 체크박스 및 checkProd 초기화
-        handleAvailableProductsMasterCheckboxChange({ target: { checked: false } });
-        setCheckProd([]);
+        handleAvailableProductsMasterCheckboxChange({ target: { checked: false } }); // 체크박스 상태 초기화
     };
 
 // 정렬 상태 관리
@@ -279,7 +295,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                         <h1>주문 수정</h1>
                         <div className="btns">
                             <div className="btn-add">
-                                <button onClick={handleUpdate}>수정하기</button>
+                                <button onClick={handleUpdateOrder}>수정하기</button>
                             </div>
                         </div>
                     </div>
@@ -439,13 +455,13 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                     <td>{item.product?.productName}</td>
                                     <td>
                                         <input
-                                            type="number"
+                                            type="text"
                                             value={item.orderProductQty}
                                             onChange={handleQuantityChange(index)}
                                         />
                                     </td>
                                     <td>{item.price?.customPrice || 0}</td>
-                                    <td>{item.orderProductQty * (item.price?.customPrice || 0)}</td>
+                                    <td>{item.orderProductQty === '' ? 0 : item.orderProductQty * (item.price?.customPrice || 0)}</td>
                                     <td>{`${item.price?.startDate || '정보 없음'} ~ ${item.price?.endDate || '정보 없음'}`}</td>
                                 </tr>
                             ))}
@@ -454,7 +470,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                     <td colSpan="6">합계</td>
                                     <td colSpan="2">
                                         {modifyItem.orderBList.reduce(
-                                            (total, item) => total + (item.orderProductQty * (item.price?.customPrice || 0)),
+                                            (total, item) => total + (item.orderProductQty === '' ? 0 : item.orderProductQty * (item.price?.customPrice || 0)),
                                             0
                                         )}
                                     </td>
