@@ -309,6 +309,8 @@ function Order() {
     //등록하기 & 임시저장
     const handleRegistOrder = async (orderStatus) => {
         try {
+            // 주문 번호 유무에 따라 insert 또는 update 처리 - 유선화
+            const isUpdate = !!selectedOrderNo;
 
             //데이터 유효성 검사(등록하기)
             if (orderStatus === "대기") {
@@ -340,14 +342,30 @@ function Order() {
                 };
             });
 
-            await axios.post('/order/registOrder',{ // insert into oh
-                inputDelDate: delDate || null,//납품요청일
-                inputCustomerNo: registCustomer || null,//주문고객번호
-                inputManager: "beak3" || null, //임의 값(로그인 시 해당 직원명 기입할 예정)
-                inputConfirmer: "beak10" || null, //임의 값
-                inputStatus: orderStatus,
-                orderBList //ob데이터 배열 전달
-            });
+            // 조건문으로 update or insert 처리 - 유선화
+            if (isUpdate) {
+                // update 처리
+                await axios.put('/order/update', {
+                    orderNo: selectedOrderNo,  // 주문 번호 포함
+                    inputDelDate: delDate || null,
+                    inputCustomerNo: registCustomer || null,
+                    inputManager: "beak3" || null,
+                    inputConfirmer: "beak10" || null,
+                    inputStatus: orderStatus,
+                    orderBList
+                });
+                console.log("주문 업데이트 성공");
+            } else {
+                await axios.post('/order/registOrder', { // insert into oh
+                    inputDelDate: delDate || null,//납품요청일
+                    inputCustomerNo: registCustomer || null,//주문고객번호
+                    inputManager: "beak3" || null, //임의 값(로그인 시 해당 직원명 기입할 예정)
+                    inputConfirmer: "beak10" || null, //임의 값
+                    inputStatus: orderStatus,
+                    orderBList //ob데이터 배열 전달
+                });
+                console.log("주문 등록 성공");
+            }
 
             console.log("모든 주문 등록 성공");
             handleCloseClick(); //등록 창 닫기 및 초기화
@@ -370,9 +388,9 @@ function Order() {
 
     const [isVisible, setIsVisible] = useState(false);
 
-    const handleAddClick = () => {
-        setIsVisible(true);
-    };
+    // const handleAddClick = () => {
+    //     setIsVisible(true);
+    // };
 
     const handleCloseClick = () => {
         setIsVisible(false);
@@ -433,6 +451,44 @@ function Order() {
         handleCloseModifyModal2();
     };
     // 유선화 끝
+
+    // 유선화 시작 - 임시 저장 update
+    const handleAddClick = (orderNo = null) => {
+        if (orderNo) {
+            fetchOrderDetail(orderNo); // 임시저장된 주문 불러오기
+        }
+        setIsVisible(true); // 주문 등록 모달 열기
+    };
+
+    const fetchOrderDetail = async (orderNo) => {
+        try {
+            const response = await axios.get(`/order/detail/${orderNo}`);
+            const orderData = response.data;
+
+            // 데이터를 상태에 업데이트 (임시저장된 데이터를 등록창에 반영)
+            setRegistCustomer(orderData.customer.customerNo);  // 고객 번호 설정
+            setDelDate(orderData.delDate);  // 납품 요청일 설정
+            setAddCheckProd(orderData.orderBList.map(item => ({
+                prodNo: item.productNo,
+                priceNo: item.priceNo,
+                prodCat: item.product.productCategory,
+                prodName: item.product.productName,
+                salePrice: item.price.customPrice,
+                saleStart: item.price.startDate,
+                saleEnd: item.price.endDate,
+                orderProductQty: item.orderProductQty
+            })));
+            setQuantities(orderData.orderBList.reduce((acc, item, index) => {
+                acc[index] = item.orderProductQty;  // 수량 업데이트
+                return acc;
+            }, {}));
+        } catch (error) {
+            console.error('주문 상세 정보 가져오기 실패:', error);
+        }
+    };
+
+
+
 
 
     return (
@@ -566,7 +622,13 @@ function Order() {
                     {order.length > 0 ? (
                         order.map((item, index) => ( /*더블 클릭 시 상세 보기 창 - 유선화*/
                             <tr key={`${item.orderNo}`} className={checkItem[index + 1] ? 'selected-row' : ''}
-                                onDoubleClick={() => handleDetailView(item.orderNo)}>
+                                onDoubleClick={() => {
+                                    if (item.status.trim() === '임시저장') {
+                                        handleAddClick(item.orderNo);  // 주문 등록 모달 열기
+                                    } else {
+                                        handleDetailView(item.orderNo);  // 상세보기 모달 열기
+                                    }
+                                }}>
                                 <td>
                                     <input
                                         type="checkbox"
@@ -584,8 +646,12 @@ function Order() {
                                 <td>
                                     <button className="btn-common"
                                             onClick={(e) => {
-                                                e.stopPropagation(); // 클릭 이벤트 행 전체 방지
-                                                handleDetailView(item.orderNo);
+                                                if (item.status.trim() === '임시저장') {
+                                                    e.stopPropagation();
+                                                    handleAddClick(item.orderNo); // 주문 등록 모달 열기
+                                                } else {
+                                                    handleDetailView(item.orderNo); // 상세보기 모달 열기
+                                                }
                                             }}> 상세보기
                                     </button>
                                 </td>
