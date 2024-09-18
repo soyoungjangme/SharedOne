@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
-public class OrderSearchDTO {
+public class OrderSearchDTO { //주문관리- 조건에서 들어오는 매개변수임
     private LocalDate inputDate;
     private Integer inputOrderNo;
     private Integer inputProdNo;

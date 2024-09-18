@@ -14,7 +14,7 @@ public class OrderB {
     private Long orderNo;
     private Long productNo;
     private int orderProductQty;
-
+    private int prodTotal;
 
     private Product product;
 

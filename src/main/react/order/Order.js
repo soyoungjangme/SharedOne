@@ -198,10 +198,6 @@ function Order() {
             fetchPrice();
         }
     },[registCustomer]); //의존성 배열: 특정 값이 변경될 때마다 실행한다.
-
-
-
-
     //상품 체크 이벤트 - 체크항목만 checkProd 넣기
     const handleCheck = (prodNo, prodCat, prodName, salePrice, saleStart, saleEnd) => (e) => { //체크항목 가져오기
         setCheckProd( prevCheckProd => {
@@ -227,6 +223,7 @@ function Order() {
    /* useEffect(() => {
         console.log('checkProd:', checkProd);
         console.log('addCheckProd:', addCheckProd);
+        //prodCat, prodNo, prodName, salePrice, saleStart, saleEnd
     }, [checkProd, addCheckProd]);*/
 
     //상품 수량
@@ -235,7 +232,36 @@ function Order() {
         const qty = e.target.value || 0; // 입력값 정수변환
 
         setQuantities(prevQuantities => ({ ...prevQuantities, [index]: qty }));
+        /*console.log(quantities);*/
     };
+
+
+    const [registOrder, setRegistOrder] = useState({}); //등록 배열
+
+    //드디어 등록
+    const handleRegist = async() => {
+        //고객명(고객번호), 납품요청일, 담당자(직원id), 주문작성일(now())
+        //결재자(datalist),반려사유(null) , 결재상태(대기), 결재상태변경일(결재상태 onChange면 now())
+        //상품코드, 주문수량, 상품별 총액
+
+        const addList = addCheckProd.map((add)=>{
+            const regProdNo = add.prodNo; //상품번호
+            const regProdName = add.prodName; //상품명
+            const regSalePrice = add.salePrice; //상품별 판매가
+            const regSaleStart = add.saleStart; //판매시작날짜
+            const regSaleEnd = add.saleEnd; //판매종료날짜
+        });
+        const regCustomerNo = registCustomer.customerNo; //고객번호
+        const regStatus = '대기'; //결재상태(초기값: 대기)
+        const regChangeDate = now(); //결재상태변경일
+        const regQty = quantities.map(index => index.value); //입력한 수량
+        const regProdTotal = regQty * regSalePrice; //상품별 총액
+
+
+
+        setRegistOrder(addList);
+    };
+
 
 
 
@@ -298,7 +324,7 @@ function Order() {
     return (
         <div>
 
-            <div className="pageHeader"><h1><i class="bi bi-menu-up"></i>주문 관리</h1></div>
+            <div className="pageHeader"><h1><i class="bi bi-chat-square-text-fill"></i>주문 관리</h1></div>
 
             <div className="main-container">
                 <div className="filter-containers">
@@ -471,7 +497,7 @@ function Order() {
 
                                     </div>
                                     <div class="btn-close">
-                                          <button> 등록하기</button>
+                                          <button type="button" onClick={handleRegist}> 등록하기</button>
                                     </div>
                                 </div>
                             </div>
