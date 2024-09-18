@@ -32,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
     //jsy 주문등록 - 등록하기
     @Override
     @Transactional
-    public void registOrder(OrderRegistDTO orderRequest) {
+    public Long registOrder(OrderRegistDTO orderRequest) {
         //헤더 등록
         OrderHDTO header = OrderHDTO.builder()
                 .delDate(orderRequest.getInputDelDate())
@@ -56,6 +56,8 @@ public class OrderServiceImpl implements OrderService {
                                 .collect(Collectors.toList());
 
         orderMapper.registOrderB(obList); //배치 인서트 처리
+
+        return orderNo;
     }
 
     /* 유선화 START */

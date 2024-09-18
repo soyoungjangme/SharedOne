@@ -12,21 +12,25 @@
         from order_header oh
         join employee emp on emp.employee_id = oh.employee_id
         join customer c on c.customer_no = oh.customer_no
+        join order_body ob on ob.order_no = oh.order_no
         <where>
             <if test="inputDate != null">
                 and oh.reg_date = #{inputDate}
             </if>
             <if test="inputOrderNo != null">
-                and oh.order_no = #{inputOrderNo}
-            </if>
-            <if test="inputState != null">
-                and oh.confirm_status = #{inputState}
+                and cast(oh.order_no as text) like concat('%', #{inputOrderNo}, '%')
             </if>
             <if test="inputCustomerNo != null">
                 and c.customer_no = #{inputCustomerNo}
             </if>
             <if test="inputManager != null">
-                and emp.employee_name = #{inputManager}
+                and emp.employee_name like concat('%', #{inputManager}, '%')
+            </if>
+            <if test="inputProdNo != null">
+                and ob.product_no = #{inputProdNo}
+            </if>
+            <if test="inputState != null">
+                and oh.confirm_status = #{inputState}
             </if>
         </where>
     </select>
@@ -41,6 +45,9 @@
         <association property="customer" javaType="CustomerDTO">
             <result column="customer_name" property="customerName"/> <!-- 고객명 -->
         </association>
+        <collection property="orderBList" javaType="OrderBDTO">
+            <result column="product_no" property="productNo"/>
+        </collection>
     </resultMap>
 
     <!--  jsy주문등록 - 고객 별 상품 조회  -->
@@ -85,6 +92,7 @@
                 #{employeeId},
                 #{confirmerId}
                 )
+        RETURNING order_no;
     </insert>
     <insert id="registOrderB" parameterType="java.util.List">
         insert into order_body(order_no, product_no, price_no, order_product_qty, prod_total)
