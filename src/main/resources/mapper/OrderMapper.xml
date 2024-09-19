@@ -205,7 +205,8 @@
     <!--주문 업데이트-->
     <update id="updateOrderHeader" parameterType="com.project.tobe.dto.OrderUp1DTO">
         UPDATE order_header
-        SET del_date = #{delDate}
+        SET del_date = #{delDate},
+            confirm_change_date = #{confirmChangeDate}
         WHERE order_no = #{orderNo}
     </update>
 
@@ -219,5 +220,4 @@
         VALUES (#{orderNo}, #{detail.productNo}, #{detail.orderProductQty}, #{detail.priceNo})
     </insert>
     <!--유선화 END-->
-
 </mapper>

@@ -174,9 +174,14 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
 
         try {
             // 주문 업데이트에 필요한 데이터 준비
+            const today = new Date();
+            today.setDate(today.getDate() + 1);
+            const todayPlus = today.toISOString().split('T')[0];
+
             const updatedOrderData = {
                 orderNo: modifyItem.orderNo,
                 delDate: modifyItem.delDate,
+                confirmChangeDate: todayPlus,
                 orderBList: modifyItem.orderBList.map(item => ({
                     productNo: item.product.productNo,
                     orderProductQty: parseInt(item.orderProductQty, 10), // 문자열을 숫자로 변환

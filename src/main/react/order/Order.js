@@ -57,7 +57,7 @@ function Order() {
     //주문목록 불러오기
     useEffect( () => {
 
-         let effectOrder = async () => {
+        let effectOrder = async () => {
             try {
                 let data = await fetch('/order/orderList').then(res => res.json());
 
@@ -468,16 +468,15 @@ function Order() {
         setAddCheckProd([]); //추가리스트 초기화
     };
 
-    const [modifyItem, setModifyItem] = useState([
-        {
-            orderNo: 0,
-            title: '',
-            details: '',
-            manager: '',
-            status: '',
-            date: ''
-        }
-    ]);
+    const [modifyItem, setModifyItem] = useState({
+        orderNo: 0,
+        title: '',
+        details: '',
+        manager: '',
+        status: '',
+        date: ''
+    });
+
 
     //유선화 - 시작 (또 다른 모달창 추가시킴)
     const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
@@ -510,13 +509,19 @@ function Order() {
     // --- 모달창 띄우는 스크립트
 
     // 유선화 시작 -업데이트 처리용 props 전달-
-    const handleOrderUpdate = (updatedOrder) => {
-        setOrder(prevOrders =>
-            prevOrders.map(order =>
+    const handleOrderUpdate = async (updatedOrder) => {
+        setOrder(prevOrders => {
+            const updatedOrders = prevOrders.map(order =>
                 order.orderNo === updatedOrder.orderNo ? updatedOrder : order
-            )
-        );
-        handleCloseModifyModal2();
+            );
+            return updatedOrders;
+        });
+
+        // 상태가 업데이트된 후 추가 작업 수행
+        useEffect(() => {
+            console.log('Updated orders:', order);
+            // 상태가 반영된 후 필요한 작업 수행
+        }, [order]);  // order가 변경될 때마다 실행
     };
     // 유선화 끝
 
@@ -524,11 +529,14 @@ function Order() {
     const handleAddClick = async (orderNo = null) => {
         if (orderNo) {
             await fetchOrderDetail(orderNo);
-            setSelectedOrderNo(orderNo); // 여기에서 selectedOrderNo 설정
+            setSelectedOrderNo(orderNo);
+            setModifyItem(prev => ({
+                ...prev,
+                orderNo: orderNo // orderNo 설정
+            }));
         }
         setIsVisible(true);
     };
-
 
     // 임시 저장 데이터
     const fetchOrderDetail = async (orderNo) => {
@@ -555,7 +563,7 @@ function Order() {
                 setAddCheckProd(savedProducts);
 
                 const newQuantities = savedProducts.reduce((acc, item, index) => {
-                    acc[index] = item.orderProductQty || 0; // 기본값 설정
+                    acc[index] = item.orderProductQty || 0;
                     return acc;
                 }, {});
 
@@ -565,6 +573,71 @@ function Order() {
             console.error('임시저장 주문 정보 가져오기 실패:', error);
         }
     };
+
+    // 임시 저장 업데이트
+    const handleUpdateOrder = async (status) => {
+        console.log('handleUpdateOrder 함수 시작');
+
+        // 간단한 유효성 검사
+        if (!registCustomer) {
+            alert("고객을 선택해 주세요.");
+            return;
+        }
+
+        if (!delDate) {
+            alert("납품 요청일을 입력해 주세요.");
+            return;
+        }
+
+        if (addCheckProd.length === 0) {
+            alert("상품을 선택해 주세요.");
+            return;
+        }
+
+        const invalidQuantities = addCheckProd.some((_, index) => {
+            const qty = quantities[index] || 0;
+            return qty <= 0;
+        });
+
+        if (invalidQuantities) {
+            alert("모든 상품의 수량을 1개 이상 입력해 주세요.");
+            return;
+        }
+
+        // orderBList 생성
+        const orderBList = addCheckProd.map((addProd, index) => {
+            const orderProdQty = quantities[index] || 0;
+            return {
+                productNo: addProd.prodNo,
+                priceNo: addProd.priceNo,
+                orderProductQty: orderProdQty,
+                prodTotal: orderProdQty * addProd.salePrice,
+            };
+        });
+
+        // 순수한 JavaScript 객체로 업데이트 데이터 생성
+        const orderData = {
+            orderNo: modifyItem.orderNo,
+            inputDelDate: delDate,
+            inputCustomerNo: registCustomer,
+            inputManager: my.id,
+            inputConfirmer: modifyItem.confirmerId,
+            inputStatus: status,
+            orderBList,
+        };
+
+        try {
+            // 업데이트 요청
+            const response = await axios.put('/order/update', orderData);
+            alert(`주문번호 ${modifyItem.orderNo}가 수정되었습니다.`);
+            handleCloseClick(); // 창 닫기
+        } catch (error) {
+            console.error("주문 수정 중 오류 발생:", error);
+            alert("주문 수정 중 오류가 발생했습니다. 다시 시도해 주세요.");
+        }
+    };
+
+
 
     const [confirmerIdList, setConfirmerIdList] = useState([]);
     const [confirmerIdOptions, setConfirmerIdOptions] = useState();
@@ -604,25 +677,25 @@ function Order() {
 
         // 맨 처음 페이지 버튼
         pageNumbers.push(
-        <span
-        key="first"
-        onClick={() => handlePageChange(1)}
-        className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
-        >
+            <span
+                key="first"
+                onClick={() => handlePageChange(1)}
+                className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
+            >
         &laquo;&laquo; {/* 두 개의 왼쪽 화살표 */}
 </span>
-);
+        );
 
 // 이전 페이지 버튼
-pageNumbers.push(
-<span
-key="prev"
-onClick={() => handlePageChange(currentPage - 1)}
-className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
->
+        pageNumbers.push(
+            <span
+                key="prev"
+                onClick={() => handlePageChange(currentPage - 1)}
+                className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
+            >
 &laquo; {/* 왼쪽 화살표 */}
 </span>
-);
+        );
 
 // // 항상 첫 페이지 버튼 표시
 // pageNumbers.push(
@@ -636,69 +709,69 @@ className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
 // );
 
 // 6페이지 이상일 때
-if (totalPages > maxButtons) {
-let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
-let endPage = startPage + maxButtons - 1;
+        if (totalPages > maxButtons) {
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = startPage + maxButtons - 1;
 
-if (endPage > totalPages) {
-endPage = totalPages;
-startPage = Math.max(1, endPage - maxButtons + 1);
-}
+            if (endPage > totalPages) {
+                endPage = totalPages;
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
 
 // 중간 페이지 버튼 추가
-for (let i = startPage; i <= endPage; i++) {
-pageNumbers.push(
-<span
-key={i}
-onClick={() => handlePageChange(i)}
-className={`pagination_link ${i === currentPage ? 'pagination_link_active' : ''}`}
->
+            for (let i = startPage; i <= endPage; i++) {
+                pageNumbers.push(
+                    <span
+                        key={i}
+                        onClick={() => handlePageChange(i)}
+                        className={`pagination_link ${i === currentPage ? 'pagination_link_active' : ''}`}
+                    >
 {i}
 </span>
-);
-}
+                );
+            }
 
 // 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'와 마지막 페이지 추가
-if (endPage < totalPages) {
-pageNumbers.push(<span className="pagination_link">...</span>);
-pageNumbers.push(
-<span key={totalPages} onClick={() => handlePageChange(totalPages)} className="pagination_link">
+            if (endPage < totalPages) {
+                pageNumbers.push(<span className="pagination_link">...</span>);
+                pageNumbers.push(
+                    <span key={totalPages} onClick={() => handlePageChange(totalPages)} className="pagination_link">
 {totalPages}
 </span>
-);
-}
-}
+                );
+            }
+        }
 
 // 다음 페이지 버튼
-pageNumbers.push(
-<span
-key="next"
-onClick={() => handlePageChange(currentPage + 1)}
-className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
->
+        pageNumbers.push(
+            <span
+                key="next"
+                onClick={() => handlePageChange(currentPage + 1)}
+                className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
+            >
 &raquo; {/* 오른쪽 화살표 */}
 </span>
-);
+        );
 
 // 맨 마지막 페이지 버튼
-pageNumbers.push(
-<span
-key="last"
-onClick={() => handlePageChange(totalPages)}
-className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
->
+        pageNumbers.push(
+            <span
+                key="last"
+                onClick={() => handlePageChange(totalPages)}
+                className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
+            >
 &raquo;&raquo; {/* 두 개의 오른쪽 화살표 */}
 </span>
-);
+        );
 
-return pageNumbers;
-};
+        return pageNumbers;
+    };
 
 
     return (
-    <div>
+        <div>
 
-    <div className="pageHeader"><h1><i className="bi bi-chat-square-text-fill"></i> 주문 관리</h1></div>
+            <div className="pageHeader"><h1><i className="bi bi-chat-square-text-fill"></i> 주문 관리</h1></div>
 
             <div className="main-container">
                 <div className="filter-containers">
@@ -821,65 +894,65 @@ return pageNumbers;
 
                     </tr>
                     </thead>
-<tbody>
-{currentItems.length > 0 ? (
-currentItems.map((item, index) => {
-const globalIndex = indexOfFirstItem + index + 1; // +1은 1부터 시작하기 위함
+                    <tbody>
+                    {currentItems.length > 0 ? (
+                        currentItems.map((item, index) => {
+                            const globalIndex = indexOfFirstItem + index + 1; // +1은 1부터 시작하기 위함
 
-return (
-<tr key={item.orderNo} className={checkItem[index + 1] ? 'selected-row' : ''}
-onDoubleClick={() => {
-if (item.status?.trim() === '임시저장') {
-handleAddClick(item.orderNo); // 주문 등록 모달 열기
-} else {
-handleDetailView(item.orderNo); // 상세보기 모달 열기
-}
-}}>
-<td>{globalIndex}</td> {/* 전역 인덱스 사용 */}
-<td>{item.orderNo}</td>
-<td className="ellipsis">{item.manager}</td>
-<td className="ellipsis">{item.customerN}</td>
-<td>{item.status}</td>
-<td>{item.date}</td>
-<td>
-<button className="btn-common"
-onClick={(e) => {
-if (item.status?.trim() === '임시저장') {
-e.stopPropagation();
-handleAddClick(item.orderNo); // 주문 등록 모달 열기
-} else {
-handleDetailView(item.orderNo); // 상세보기 모달 열기
-}
-}}>
-상세보기
-</button>
-</td>
-</tr>
-);
-})
-) : (
-<tr>
-<td colSpan="7">등록된 주문이 없습니다😭</td>
-</tr>
-)}
-<tr>
-<td colSpan="6"></td>
-<td colSpan="1">{order.length} 건</td>
-</tr>
-</tbody>
-
-
+                            return (
+                                <tr key={item.orderNo} className={checkItem[index + 1] ? 'selected-row' : ''}
+                                    onDoubleClick={() => {
+                                        if (item.status?.trim() === '임시저장') {
+                                            handleAddClick(item.orderNo); // 주문 등록 모달 열기
+                                        } else {
+                                            handleDetailView(item.orderNo); // 상세보기 모달 열기
+                                        }
+                                    }}>
+                                    <td>{globalIndex}</td> {/* 전역 인덱스 사용 */}
+                                    <td>{item.orderNo}</td>
+                                    <td className="ellipsis">{item.manager}</td>
+                                    <td className="ellipsis">{item.customerN}</td>
+                                    <td>{item.status}</td>
+                                    <td>{item.date}</td>
+                                    <td>
+                                        <button className="btn-common"
+                                                onClick={(e) => {
+                                                    if (item.status?.trim() === '임시저장') {
+                                                        e.stopPropagation();
+                                                        handleAddClick(item.orderNo); // 주문 등록 모달 열기
+                                                    } else {
+                                                        handleDetailView(item.orderNo); // 상세보기 모달 열기
+                                                    }
+                                                }}>
+                                            상세보기
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })
+                    ) : (
+                        <tr>
+                            <td colSpan="7">등록된 주문이 없습니다😭</td>
+                        </tr>
+                    )}
+                    <tr>
+                        <td colSpan="6"></td>
+                        <td colSpan="1">{order.length} 건</td>
+                    </tr>
+                    </tbody>
 
 
-</table>
+
+
+                </table>
 
 
 
             </div>
 
-<div className="pagination">
-{renderPageNumbers()}
-</div>
+            <div className="pagination">
+                {renderPageNumbers()}
+            </div>
 
 
 
@@ -898,11 +971,34 @@ handleDetailView(item.orderNo); // 상세보기 모달 열기
 
                                 <div className="btns">
                                     <div className="btn-add2">
-                                        <button type="button" onClick={() => handleRegistOrder("임시저장")}> 임시저장</button>
-
+                                        {/* 임시 저장 버튼 */}
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (modifyItem.orderNo) {
+                                                    handleUpdateOrder("임시저장"); // 주문 번호가 있으면 update
+                                                } else {
+                                                    handleRegistOrder("임시저장"); // 주문 번호가 없으면 insert
+                                                }
+                                            }}
+                                        >
+                                            임시 저장
+                                        </button>
                                     </div>
                                     <div className="btn-close">
-                                        <button type="button" onClick={ () => handleRegistOrder("대기")}> 등록하기</button>
+                                        {/* 등록하기 버튼 */}
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (modifyItem.orderNo) {
+                                                    handleUpdateOrder("대기"); // 주문 번호가 있으면 update
+                                                } else {
+                                                    handleRegistOrder("대기"); // 주문 번호가 없으면 insert
+                                                }
+                                            }}
+                                        >
+                                            등록하기
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -911,34 +1007,34 @@ handleDetailView(item.orderNo); // 상세보기 모달 열기
                             <div className="RegistForm">
                                 <table className="formTable">
                                     <tbody>
-                                        <tr>
-                                            <th colSpan="1"><label htmlFor="orderCustomer">고객사 명</label></th>
-                                            <td colSpan="3">
-                                                <select id="orderCustomer" value={registCustomer || ''} onChange={handleCustomerChange}>
-                                                    <option value="">선택</option>
-                                                    {orderCustomer.map(customer => (
-                                                        <option key={customer.customerNo} value={customer.customerNo}>
-                                                            {customer.customerName}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </td>
+                                    <tr>
+                                        <th colSpan="1"><label htmlFor="orderCustomer">고객사 명</label></th>
+                                        <td colSpan="3">
+                                            <select id="orderCustomer" value={registCustomer || ''} onChange={handleCustomerChange}>
+                                                <option value="">선택</option>
+                                                {orderCustomer.map(customer => (
+                                                    <option key={customer.customerNo} value={customer.customerNo}>
+                                                        {customer.customerName}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </td>
 
-                                            <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
-                                            <td colSpan="3"><input type="date" id="delDate" value={delDate} onChange={handleDateChange} /></td>
-                                        </tr>
+                                        <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
+                                        <td colSpan="3"><input type="date" id="delDate" value={delDate} onChange={handleDateChange} /></td>
+                                    </tr>
 
-                                        <tr>
-                                            <th colSpan="1"><label htmlFor="">담당자명</label></th>
-                                            <td colSpan="3"><input type="text" id="" value={my.name} style={{border: 'none', background: 'white'}} /></td>
+                                    <tr>
+                                        <th colSpan="1"><label htmlFor="">담당자명</label></th>
+                                        <td colSpan="3"><input type="text" id="" value={my.name} style={{border: 'none', background: 'white'}} /></td>
 
-                                            <th colSpan="1"><label htmlFor="">결재자</label></th>
-                                            <td colSpan="3">
-                                                <Select name="confirmerId" options={confirmerIdOptions} placeholder="결재자 선택"
+                                        <th colSpan="1"><label htmlFor="">결재자</label></th>
+                                        <td colSpan="3">
+                                            <Select name="confirmerId" options={confirmerIdOptions} placeholder="결재자 선택"
                                                     onChange={(option) => handleManagerChange('confirmerId', option.value)} />
-                                            </td>
+                                        </td>
 
-                                        </tr>
+                                    </tr>
 
                                     </tbody>
                                 </table>
@@ -962,43 +1058,43 @@ handleDetailView(item.orderNo); // 상세보기 모달 열기
                             </div>
 
 
-<div className="RegistFormList">
-<div style={{fontWeight: 'bold'}}> 총 {searchProd?.length || 0} 건</div>
-<table className="formTableList">
-    <thead>
-        <tr>
-            <th><input type="checkbox" checked={orderListAllCheck} onChange={(e) => handleOrderListMasterCheckboxChange(e)}/></th>
-            <th>no</th>
-            <th>상품 코드</th>
-            <th>상품 명</th>
-            <th>저자</th>
-            <th>판매가</th>
-            <th>판매 기간</th>
-        </tr>
-    </thead>
-    <tbody>
-        {searchProd.map((prodList, index) => (
-        <tr key={index} className={orderListCheckItem[index] ? 'selected-row' : ''}>
-            <td><input type="checkbox" id="checkProdList" checked={orderListCheckItem[index] || false } onChange={(e) => handleOrderListCheckboxChange(e)}/></td>
-            <td style={{display: 'none'}}>{index}</td>
-            <td>{index + 1}</td>
-            <td>{prodList.prodNo}</td>
-            <td>{prodList.prodName}</td>
-            <td>{prodList.prodWriter}</td>
-            <td>{prodList.salePrice}</td>
-            <td>{prodList.saleStart} ~ {prodList.saleEnd}</td>
-        </tr>
-        ))}
-    </tbody>
-</table>
-</div>
+                            <div className="RegistFormList">
+                                <div style={{fontWeight: 'bold'}}> 총 {searchProd?.length || 0} 건</div>
+                                <table className="formTableList">
+                                    <thead>
+                                    <tr>
+                                        <th><input type="checkbox" checked={orderListAllCheck} onChange={(e) => handleOrderListMasterCheckboxChange(e)}/></th>
+                                        <th>no</th>
+                                        <th>상품 코드</th>
+                                        <th>상품 명</th>
+                                        <th>저자</th>
+                                        <th>판매가</th>
+                                        <th>판매 기간</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {searchProd.map((prodList, index) => (
+                                        <tr key={index} className={orderListCheckItem[index] ? 'selected-row' : ''}>
+                                            <td><input type="checkbox" id="checkProdList" checked={orderListCheckItem[index] || false } onChange={(e) => handleOrderListCheckboxChange(e)}/></td>
+                                            <td style={{display: 'none'}}>{index}</td>
+                                            <td>{index + 1}</td>
+                                            <td>{prodList.prodNo}</td>
+                                            <td>{prodList.prodName}</td>
+                                            <td>{prodList.prodWriter}</td>
+                                            <td>{prodList.salePrice}</td>
+                                            <td>{prodList.saleStart} ~ {prodList.saleEnd}</td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            </div>
 
                             {/*담아둔 상품 리스트*/}
                             <div className="RegistFormList">
 
                                 <div style={{fontWeight: 'bold'}}> 총 {addCheckProd?.length || 0} 건</div>
                                 {orderAddShowDelete && Object.values(orderAddCheckItem).some(isChecked => isChecked) &&
-                                 <button className="delete-btn btn-common" onClick={() => {handleAddProdDelete(); handleOrderAddDelete();}}>삭제</button>}
+                                    <button className="delete-btn btn-common" onClick={() => {handleAddProdDelete(); handleOrderAddDelete();}}>삭제</button>}
 
                                 <table className="formTableList" style={{marginTop: '5px'}}>
 
