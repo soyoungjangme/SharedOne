@@ -8,7 +8,6 @@ import './modalAdd.css'
 import './modalDetail.css'
 import AddressInput from './AddressInput';
 
-
 function Customer() {
 
     const {
@@ -17,7 +16,10 @@ function Customer() {
         showDelete,
         handleMasterCheckboxChange,
         handleCheckboxChange,
-        handleDelete
+        handleDelete,
+        setAllCheck,
+        setCheckItem,
+        setShowDelete
     } = useCheckboxManager();
 
     // 메인 리스트
@@ -67,6 +69,7 @@ function Customer() {
     const removeHyphensAndSpaces = (str) => str.replace(/[-\s]/g, '');
 
     // 검색 리스트
+    // 검색 리스트
     const handleSearchCustomer = () => {
         const normalizedSearch = {
             ...customerSearch,
@@ -78,6 +81,7 @@ function Customer() {
             picName: normalizeString(customerSearch.picName),
             picTel: removeHyphensAndSpaces(customerSearch.picTel)
         };
+
         // 검색 실행
         if (normalizedSearch) {
             axios.post('/customer/customerSearch', normalizedSearch, {
@@ -85,12 +89,38 @@ function Customer() {
                     'Content-Type': 'application/json'
                 }
             })
-                .then(response => setCustomer(response.data)) // 응답 데이터를 고객 목록에 반영
+                .then(response => {
+                    // 응답 데이터를 고객 목록에 반영하고 정렬
+                    const sortedData = response.data.sort((a, b) => {
+                        // 영어와 한글을 구분하여 정렬
+                        const regex = /^[A-Za-z]/; // 영어로 시작하는지 확인하는 정규식
+
+                        const aIsEnglish = regex.test(a.customerName);
+                        const bIsEnglish = regex.test(b.customerName);
+
+                        // 둘 다 영어일 경우
+                        if (aIsEnglish && bIsEnglish) {
+                            return a.customerName.localeCompare(b.customerName);
+                        }
+
+                        // 둘 다 한글일 경우
+                        if (!aIsEnglish && !bIsEnglish) {
+                            return a.customerName.localeCompare(b.customerName, 'ko-KR', { sensitivity: 'base' });
+                        }
+
+                        // 하나는 영어이고 다른 하나는 한글일 경우
+                        // 영어를 먼저 정렬하기 위해
+                        return aIsEnglish ? -1 : 1;
+                    });
+                    setCustomer(sortedData); // 정렬된 데이터를 상태에 설정
+                })
                 .catch(error => console.error('에러 발생:', error)); // 오류 처리
         } else {
             console.error('[필터 입력이 없습니다.]');
         }
     };
+
+
 
     // 엔터 키로 검색 처리
     const handleKeyPress = (e) => {
@@ -105,6 +135,7 @@ function Customer() {
     // =============================== 고객 등록 부분 ===============================
 
     // 고객 등록 리스트 상태
+    // 고객 등록 상태
     const [regist, setRegist] = useState({
         customerNo: '',
         customerName: '',
@@ -120,9 +151,6 @@ function Customer() {
         activated: 'Y' // 기본값
     });
 
-    // 고객 등록 리스트
-    const [list, setList] = useState([]);
-
     // 입력 핸들러
     const handleInputAddChange = (e) => {
         const { name, value } = e.target;
@@ -132,8 +160,8 @@ function Customer() {
         }));
     };
 
-    // 리스트에 등록된 고객 데이터 추가 핸들러
-    const onClickListAdd = () => {
+    // 서버로 고객 등록 요청
+    const onClickRegistBtn = () => {
         // 필수 입력값 확인
         if (!regist.customerName || !regist.customerTel || !regist.customerAddr ||
             !regist.postNum || !regist.businessRegistrationNo || !regist.nation ||
@@ -169,54 +197,45 @@ function Customer() {
             return;
         }
 
-        // 유효성 검사 및 중복 확인 후 리스트에 추가
-        setList((prevList) => [...prevList, regist]);
-
-        // 입력값 초기화
-        setRegist({
-            customerNo: '',
-            customerName: '',
-            customerTel: '',
-            customerAddr: '',
-            postNum: '',
-            businessRegistrationNo: '',
-            nation: '',
-            dealType: '',
-            picName: '',
-            picEmail: '',
-            picTel: '',
-            activated: 'Y'
-        });
-    };
-
-    // 서버로 고객 등록 요청
-    const onClickRegistBtn = () => {
-        if (list.length === 0) {
-            console.error('등록할 고객이 없습니다.');
-            return;
-        }
-
         // 고객 등록 컨펌창
         if (!window.confirm(`고객을 등록하시겠습니까?`)) {
             return; // 취소하면 등록 진행 안 함
         }
 
+        // 고객 등록 요청
         axios
-            .post('/customer/customerRegist', list, {
+            .post('/customer/customerRegist', [regist], { // 배열로 감싸서 전송
                 headers: {
                     'Content-Type': 'application/json',
                 },
             })
             .then((response) => {
                 console.log('등록 성공:', response.data);
-                setList([]); // 등록 후 리스트 초기화
-                alert(`${list.length}명의 고객이 성공적으로 등록되었습니다.`);
+                alert('고객이 성공적으로 등록되었습니다.');
+
+                // 입력값 초기화
+                setRegist({
+                    customerNo: '',
+                    customerName: '',
+                    customerTel: '',
+                    customerAddr: '',
+                    postNum: '',
+                    businessRegistrationNo: '',
+                    nation: '',
+                    dealType: '',
+                    picName: '',
+                    picEmail: '',
+                    picTel: '',
+                    activated: 'Y'
+                });
+
                 window.location.reload(); // 페이지 새로고침
             })
             .catch((error) => {
                 console.error('등록 중 오류 발생:', error.response.data);
             });
     };
+
 
 
 
@@ -246,7 +265,6 @@ function Customer() {
         setIsVisible(true);
     };
     const handleCloseClick = () => {
-        setList([]); // 기존 목록 초기화
         setIsVisible(false);
     };
 
@@ -308,6 +326,15 @@ function Customer() {
 
     // 수정 클릭 시 호출
     const handleUpdateClick = () => {
+
+        // 기존 고객 정보와 비교하여 변경 내용 확인
+        const originalItem = customer.find(item => item.customerNo === modifyItem.customerNo);
+        const hasChanges = Object.keys(modifyItem).some(key => modifyItem[key] !== originalItem[key]);
+
+        if (!hasChanges) {
+            alert('수정된 내용이 없습니다.');
+            return;
+        }
         // 필수 입력값 확인
         if (!modifyItem.customerName || !modifyItem.customerTel || !modifyItem.customerAddr ||
             !modifyItem.postNum || !modifyItem.businessRegistrationNo || !modifyItem.nation ||
@@ -384,6 +411,27 @@ function Customer() {
         }));
     }
 
+    // 삭제 기능 구현
+    const handleDeleteItem = () => {
+        const customerNo = modifyItem.customerNo; // 수정하는 고객의 ID 가져오기
+        if (window.confirm('삭제하시겠습니까?')) {
+            axios.post('/customer/customerDelete', [customerNo], {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    console.log('삭제 요청 성공', response.data);
+                    alert('삭제되었습니다.');
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('서버 요청 중 오류 발생', error);
+                    alert('삭제 중 오류가 발생했습니다.'); // 오류 알림
+                });
+        }
+    };
+
 
     // =============================== 고객 삭제 부분 ===============================
 
@@ -404,19 +452,25 @@ function Customer() {
 
     //삭제 기능
     const handleDeleteClick = () => {
-        axios.post('/customer/customerDelete', checkedIds, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => {
-                console.log('삭제 요청 성공', response.data);
-                window.location.reload();
+        if (window.confirm('삭제하시겠습니까?')) {
+            axios.post('/customer/customerDelete', checkedIds, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             })
-            .catch(error => {
-                console.error('서버 요청 중 오류 발생', error);
-            });
-    }
+                .then(response => {
+                    console.log('삭제 요청 성공', response.data);
+                    const deletedCount = checkedIds.length;
+                    alert(`${deletedCount}개 항목이 삭제되었습니다.`);
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('서버 요청 중 오류 발생', error);
+                    alert('삭제 중 오류가 발생했습니다.'); // 오류 알림
+                });
+        }
+    };
+
 
 
 
@@ -449,6 +503,125 @@ function Customer() {
         }
 
         closeAddressModal(); // 주소 입력 모달 닫기
+    };
+
+
+    // =============================== 페이지 네이션 ===============================
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(5); // 페이지당 항목 수
+
+    // 전체 페이지 수 계산
+    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+    // 현재 페이지에 맞는 데이터 필터링
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNumber) => {
+        setAllCheck(false);
+        setCheckItem(false);
+        setShowDelete(false);
+        setCurrentPage(pageNumber);
+    };
+
+    // 페이지네이션 버튼 렌더링
+    const renderPageNumbers = () => {
+        let pageNumbers = [];
+        const maxButtons = 2; // 고정된 버튼 수
+
+        // 맨 처음 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="first"
+                onClick={() => handlePageChange(1)}
+                className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
+            >
+                &laquo;&laquo; {/* 두 개의 왼쪽 화살표 */}
+            </span>
+        );
+
+        // 이전 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="prev"
+                onClick={() => handlePageChange(currentPage - 1)}
+                className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
+            >
+                &laquo; {/* 왼쪽 화살표 */}
+            </span>
+        );
+
+        // // 항상 첫 페이지 버튼 표시
+        // pageNumbers.push(
+        //     <span
+        //         key={1}
+        //         onClick={() => handlePageChange(1)}
+        //         className={`pagination_link ${currentPage === 1 ? 'pagination_link_active' : ''}`}
+        //     >
+        //         1
+        //     </span>
+        // );
+
+        // 6페이지 이상일 때
+        if (totalPages > maxButtons) {
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = startPage + maxButtons - 1;
+
+            if (endPage > totalPages) {
+                endPage = totalPages;
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+
+            // 중간 페이지 버튼 추가
+            for (let i = startPage; i <= endPage; i++) {
+                pageNumbers.push(
+                    <span
+                        key={i}
+                        onClick={() => handlePageChange(i)}
+                        className={`pagination_link ${i === currentPage ? 'pagination_link_active' : ''}`}
+                    >
+                        {i}
+                    </span>
+                );
+            }
+
+            // 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'와 마지막 페이지 추가
+            if (endPage < totalPages) {
+                pageNumbers.push(<span className="pagination_link">...</span>);
+                pageNumbers.push(
+                    <span key={totalPages} onClick={() => handlePageChange(totalPages)} className="pagination_link">
+                        {totalPages}
+                    </span>
+                );
+            }
+        }
+
+        // 다음 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="next"
+                onClick={() => handlePageChange(currentPage + 1)}
+                className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
+            >
+                &raquo; {/* 오른쪽 화살표 */}
+            </span>
+        );
+
+        // 맨 마지막 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="last"
+                onClick={() => handlePageChange(totalPages)}
+                className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
+            >
+                &raquo;&raquo; {/* 두 개의 오른쪽 화살표 */}
+            </span>
+        );
+
+        return pageNumbers;
     };
 
 
@@ -589,7 +762,7 @@ function Customer() {
                                 />
                             </div>
 
-                            <div className="filter-item">
+                            {/* <div className="filter-item">
                                 <label className="filter-label" htmlFor="dealType">거래 유형</label>
                                 <select
                                     id="dealType"
@@ -603,7 +776,7 @@ function Customer() {
                                     <option value="B2C">B2C</option>
                                     <option value="C2C">C2C</option>
                                 </select>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 
@@ -620,7 +793,7 @@ function Customer() {
                 </button>
 
                 <table className="search-table" style={{ marginTop: "50px" }}>
-                    {showDelete && <button className='delete-btn btn-common' onClick={() => {handleDeleteClick(); handleDelete();}}>삭제</button>}
+                    {showDelete && <button className='delete-btn btn-common' onClick={() => { handleDeleteClick(); handleDelete(); }}>삭제</button>}
                     <thead>
                         <tr>
                             <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange} /></th>
@@ -679,39 +852,58 @@ function Customer() {
                     </thead>
 
                     <tbody>
-                        {sortedData.length > 0 ? (
-                            sortedData.map((item, index) => (
-                                <tr key={index} className={checkItem[index + 1] ? 'selected-row' : ''} onDoubleClick={() => {
-                                    handleModify(item);
-                                }}>
-                                    <td><input className="mainCheckbox" type="checkbox" id={item.customerNo} checked={checkItem[index] || false}
-                                        onChange={handleCheckboxChange} /></td>
-                                    <td style={{ display: 'none' }}>{index}</td>
-                                    <td>{index}</td>
-                                    <td>{index + 1}</td>
-                                    <td>{item.customerName}</td>
-                                    <td>{item.customerAddr}</td>
-                                    <td>{item.customerTel}</td>
-                                    <td>{item.postNum}</td>
-                                    <td>{item.businessRegistrationNo}</td>
-                                    <td>{item.nation}</td>
-                                    <td>{item.dealType}</td>
-                                    <td>{item.picName}</td>
-                                    <td>{item.picEmail}</td>
-                                    <td>{item.picTel}</td>
-                                </tr>
-                            ))
+                        {currentItems.length > 0 ? (
+                            currentItems.map((item, index) => {
+                                // Calculate globalIndex to continue numbering across pages
+                                const globalIndex = indexOfFirstItem + index + 1; // +1 to start from 1
+                                return (
+                                    <tr
+                                        key={index}
+                                        className={checkItem[index] ? 'selected-row' : ''}
+                                        onDoubleClick={() => handleModify(item)}
+                                    >
+                                        <td>
+                                            <input
+                                                className="mainCheckbox"
+                                                type="checkbox"
+                                                id={item.customerNo}
+                                                checked={checkItem[index] || false}
+                                                onChange={handleCheckboxChange}
+                                            />
+                                        </td>
+                                        <td style={{ display: 'none' }}>{index}</td>
+                                        <td>{globalIndex}</td> {/* Use globalIndex here */}
+                                        <td>{item.customerName}</td>
+                                        <td>
+                                            <div style={{ whiteSpace: 'pre-wrap' }}>{item.customerAddr}</div>
+                                        </td>
+                                        <td>{item.customerTel}</td>
+                                        <td>{item.postNum}</td>
+                                        <td>{item.businessRegistrationNo}</td>
+                                        <td>{item.nation}</td>
+                                        <td>{item.dealType}</td>
+                                        <td>{item.picName}</td>
+                                        <td>{item.picEmail}</td>
+                                        <td>{item.picTel}</td>
+                                    </tr>
+                                );
+                            })
                         ) : (
                             <tr>
-                                <td colspan="12">등록된 상품이 없습니다<i className="bi bi-emoji-tear"></i></td>
+                                <td colSpan="12">등록된 상품이 없습니다<i className="bi bi-emoji-tear"></i></td>
                             </tr>
                         )}
                         <tr>
-                            <td colspan="10"></td>
-                            <td colspan="2"> {customer.length} 건</td>
+                            <td colSpan="10"></td>
+                            <td colSpan="2"> {customer.length} 건</td>
                         </tr>
                     </tbody>
+
                 </table>
+            </div>
+
+            <div className="pagination">
+                {renderPageNumbers()}
             </div>
 
 
@@ -775,7 +967,7 @@ function Customer() {
                                 </table>
 
                             </div>
-
+                            {/* 
                             <div className="btn-add">
                                 <button className="btn-common btn-add-p" onClick={onClickListAdd}> 추가</button>
                             </div>
@@ -821,7 +1013,7 @@ function Customer() {
                                     </tbody>
                                 </table>
 
-                            </div>
+                            </div> */}
 
                             {/* 주소 모달 */}
                             {isAddressModalVisible && (
@@ -852,8 +1044,13 @@ function Customer() {
                             <div className="form-header">
                                 <h1>고객 정보 수정</h1>
                                 <div className="btns">
+
+                                    <div className="btn-delete">
+                                        <button type="button" onClick={handleDeleteItem}>삭제</button>
+                                    </div>
+
                                     <div className="btn-add2">
-                                        <button type="button" onClick={handleUpdateClick}>수정하기</button>
+                                        <button type="button" onClick={handleUpdateClick}>수정</button>
                                     </div>
                                     <div className="btn-close">
                                         {/* 다른 버튼이 필요한 경우 여기에 추가 */}
@@ -879,7 +1076,7 @@ function Customer() {
 
                                         <tr>
                                             <th colSpan="1"> <label htmlFor="customerAddr">고객주소</label></th>
-                                            <td colspan="5">
+                                            <td colSpan="5">
                                                 <input type="text" placeholder="고객주소" id="customerAddr" name="customerAddr" value={modifyItem.customerAddr || ''} readOnly />
                                                 <button className="btn-addr-find" type="button" onClick={openAddressModal}>주소찾기</button>
                                             </td>

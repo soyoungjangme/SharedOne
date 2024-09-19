@@ -112,7 +112,7 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
                 .size();
 
 
-        return new PageImpl<PriceProductCustomerDTO>(list, pageable, total);
+        return new PageImpl<>(list, pageable, total);
     }
 
     @Override
