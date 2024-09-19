@@ -37,21 +37,6 @@ public class PriceServiceImpl implements PriceService {
     private CustomerRepository customerRepository;
 
     @Override
-    public List<Price> getAllPrice() {
-        return priceRepository.findByActivatedEquals(YesNo.Y);
-    }
-
-    @Override
-    public List<Price> getPriceByDTO(PriceDTO dto) {
-        return priceRepository.getPriceByDTO(dto);
-    }
-
-    @Override
-    public List<PriceProductCustomerDTO> getPriceProductCustomerDTO(PriceDTO dto) {
-        return priceRepository.getPriceJoinByDTO(dto);
-    }
-
-    @Override
     public Page<PriceProductCustomerDTO> getPriceProductCustomerDTO(PriceDTO dto, Pageable pageable) {
         return priceRepository.getPriceJoinByDTO(dto, pageable);
     }

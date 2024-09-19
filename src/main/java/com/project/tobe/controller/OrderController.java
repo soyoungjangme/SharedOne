@@ -2,6 +2,7 @@ package com.project.tobe.controller;
 
 import com.project.tobe.dto.*;
 import com.project.tobe.entity.OrderH;
+import com.project.tobe.service.EmployeeService;
 import com.project.tobe.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,6 +23,10 @@ public class OrderController {
     @Autowired
     @Qualifier("orderService")
     private OrderService orderService;
+
+    @Autowired
+    @Qualifier("employeeService")
+    private EmployeeService employeeService;
 
     //jsy초기 목록 호출
     @GetMapping("/orderList")
@@ -100,6 +105,11 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("주문 업데이트 중 오류 발생: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/getManagerList/{employeeId}")
+    public List<EmployeeDTO> getManagerList(@PathVariable String employeeId) {
+        return employeeService.getManagerList(employeeId);
     }
 
 /* 유선화 END */

@@ -7,6 +7,7 @@ import useCheckboxManager from "../js/CheckboxManager";
 import axios from 'axios';
 import ModifyOrderModal from './ModifyOrderModal';
 import ModifyOrderModal2 from './ModifyOrderModal2';
+import Select from "react-select";
 
 function Order() {
 
@@ -43,10 +44,17 @@ function Order() {
     // 주문 데이터를 저장하는 상태
     const [order, setOrder] = useState([]);
 
-    //주문목록 불러오기
-    useEffect(() => {
+    const [userInfo, setUserInfo] = useState(null);
 
-        let effectOrder = async () => {
+    const fetchUserInfo = async () => {
+        const response = await axios.get('/employee/user-info', { withCredentials: true });
+        setUserInfo(response.data);
+    }
+
+    //주문목록 불러오기
+    useEffect( () => {
+
+         let effectOrder = async () => {
             try {
                 let data = await fetch('/order/orderList').then(res => res.json());
 
@@ -66,6 +74,20 @@ function Order() {
         }
 
         effectOrder();
+
+
+
+        const fetchConfirmerIdList = async () => {
+            const response = await axios.get('/employee/user-info', { withCredentials: true });
+            console.log(response);
+            const {data} = await axios.get(`/order/getManagerList/${response.data.userId}`);
+            console.log(data);
+            setConfirmerIdList(data);
+            setConfirmerIdOptions(
+                data.map(manager => ({value:manager.employeeId, label: manager.employeeName+' / ' + manager.employeeEmail}))
+            );
+        };
+        fetchConfirmerIdList();
     }, []);
 
 
@@ -483,6 +505,7 @@ function Order() {
             )
         );
         handleCloseModifyModal2();
+        setIsModifyModalVisible(true);
     };
     // 유선화 끝
 
@@ -531,6 +554,13 @@ function Order() {
             console.error('임시저장 주문 정보 가져오기 실패:', error);
         }
     };
+
+    const [confirmerIdList, setConfirmerIdList] = useState([]);
+    const [confirmerIdOptions, setConfirmerIdOptions] = useState();
+
+    const handleManagerChange = (name, value) => {
+        setModifyItem((prev) => ({ ...prev, [name]: value }));
+    }
 
     return (
         <div>
@@ -764,7 +794,12 @@ function Order() {
 
                                     <tr>
                                         <th colSpan="1"><label htmlFor="">담당자명</label></th>
-                                        <td colSpan="3"><input type="text" id="" placeholder="필드 입력" value="beak3"/>
+                                        <td colSpan="3"><Select
+                                            name="confirmerId"
+                                            options={confirmerIdOptions}
+                                            placeholder="담당자 선택"
+                                            onChange={(option) => handleManagerChange('confirmerId', option.value)}
+                                        />
                                         </td>
 
 
