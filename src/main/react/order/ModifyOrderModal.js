@@ -111,6 +111,9 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
 
 
 
+
+
+
     // 주문 데이터 가져오기
     useEffect(() => {
         if (isOpen && orderNo) {
@@ -298,11 +301,15 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                 <td>{modifyItem.confirmerId || '정보 없음'}</td>
                                 <th colSpan="1"><label htmlFor="remarks">비고</label></th>
                                 <td colSpan="3">
-                                    <textarea
-                                        name="remarks"
-                                        value={modifyItem.remarks || ''}
-                                        onChange={handleInputChange}
-                                    ></textarea>
+                                    {(getConfirmStatus(modifyItem.confirmStatus) === '승인' || getConfirmStatus(modifyItem.confirmStatus) === '반려') ? (
+                                        <span>{modifyItem.remarks || '비고 없음'}</span>
+                                    ) : (
+                                        <textarea
+                                            name="remarks"
+                                            value={modifyItem.remarks || ''}
+                                            onChange={handleInputChange}
+                                        ></textarea>
+                                    )}
                                 </td>
                             </tr>
                             </tbody>
@@ -310,11 +317,11 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                     </form>
 
                     <div className="RegistFormList">
-                        <div style={{ fontWeight: 'bold' }}>총 {modifyItem.orderBList?.length || 0} 건</div>
+                        <div style={{fontWeight: 'bold'}}>총 {modifyItem.orderBList?.length || 0} 건</div>
                         <table className="formTableList">
                             <thead>
                             <tr>
-                                <th>No</th>
+                            <th>No</th>
                                 <th>상품 카테고리
                                     <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
                                         {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}

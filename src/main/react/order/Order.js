@@ -37,6 +37,10 @@ function Order() {
         handleDelete: handleOrderAddDelete
     } = useCheckboxManager(setOrder);
 
+    useEffect(() => {
+        console.log("addCheckProd:", addCheckProd);
+    }, [addCheckProd]);
+
     // 주문 데이터를 저장하는 상태
     const [order, setOrder] = useState([]);
 
@@ -200,12 +204,47 @@ function Order() {
         setRegistCustomer(e.target.value);
         //목록 호출하는게 customoPrice임 ㅇㄴ
 
-        setAddCheckProd([]); //추가리스트 초기화
-        setCustomPrice([]); //판매가리스트 초기화
-        setQuantities({}); //수량 초기화
+        // setAddCheckProd([]); //추가리스트 초기화
+        // setCustomPrice([]); //판매가리스트 초기화
+        // setQuantities({}); //수량 초기화
     };
 
     // 고객이 선택되면 상품+판매가를 가져오는 함수
+    // useEffect(() => {
+    //     if (registCustomer) {
+    //         const fetchPrice = async () => {
+    //             try {
+    //                 const resp = await axios.post('/order/getPrice', {
+    //                     inputOrderCustomerNo: parseInt(registCustomer, 10)
+    //                 });
+    //                 const OrderCustomerData = resp.data;
+    //
+    //                 if (Array.isArray(OrderCustomerData)) {
+    //                     const getOrderCustomer = OrderCustomerData.map(value => ({
+    //                         salePrice: value.customPrice,
+    //                         prodNo: value.product.productNo,
+    //                         prodCat: value.product.productCategory,
+    //                         prodName: value.product.productName,
+    //                         prodWriter: value.product.productWriter,
+    //                         saleStart: value.startDate,
+    //                         saleEnd: value.endDate,
+    //                         priceNo: value.priceNo
+    //                     }));
+    //                     setCustomPrice(getOrderCustomer);
+    //                     setAddCheckProd([]);
+    //                 } else {
+    //                     console.error('등록폼 에러', OrderCustomerData);
+    //                 }
+    //             } catch (error) {
+    //                 console.error('API 호출 오류', error);
+    //             }
+    //         };
+    //         fetchPrice();
+    //     }else{
+    //         setCustomPrice([]);
+    //     }
+    // }, [registCustomer]); //의존성 배열: 특정 값이 변경될 때마다 실행한다.
+    // 예시: 고객이 변경될 때 상품과 가격을 가져오는 useEffect
     useEffect(() => {
         if (registCustomer) {
             const fetchPrice = async () => {
@@ -227,7 +266,7 @@ function Order() {
                             priceNo: value.priceNo
                         }));
                         setCustomPrice(getOrderCustomer);
-                        setCheckProd([]);
+                        // 상태 초기화 코드 제거 - 임시 저장 데이터 불러올 때 자꾸 한 번 더 초기화 돼서ㅜㅜ
                     } else {
                         console.error('등록폼 에러', OrderCustomerData);
                     }
@@ -236,10 +275,11 @@ function Order() {
                 }
             };
             fetchPrice();
-        }else{
-            setCustomPrice([]);
+        } else {
+            setCustomPrice([]); // 고객이 없을 때만 초기화
         }
-    }, [registCustomer]); //의존성 배열: 특정 값이 변경될 때마다 실행한다.
+    }, [registCustomer]); // registCustomer가 변경될 때만 실행
+
 
     //추가 클릭
     const handleAddProd = () => {
@@ -307,11 +347,10 @@ function Order() {
         setDelDate(e.target.value);
     }
 
-    //등록하기 & 임시저장
+//등록하기 & 임시저장
     const handleRegistOrder = async (orderStatus) => {
         try {
-
-            //데이터 유효성 검사(등록하기)
+            // 데이터 유효성 검사(등록하기)
             if (orderStatus === "대기") {
                 const hasInvalidQty = addCheckProd.some((_, index) => {
                     console.log("qty: ", quantities);
@@ -325,12 +364,12 @@ function Order() {
                 }
             }
 
-            //추가된 리스트 반복 돌리기
+            // 추가된 리스트 반복 돌리기
             const orderBList = addCheckProd.map((addProd, index) => {
-                const orderProdNo = addProd.prodNo || 0; //상품번호
-                const orderPriceNo = addProd.priceNo || 0; //판매가 번호 - 판매가 정보가 필요할 경우에 사용가능(body에서 주문번호+상품코드가 있어도 판매가번호에 따라 수량 및 총액이 다르므로 판매가 번호까지 주키로 필요할 듯)
-                const orderProdQty = quantities[index] || 0; // 각 상품에 맞는 수량 가져오기 insert ob
-                const orderProdTotal = orderProdQty * addProd.salePrice; // 수량 * 판매가 insert ob
+                const orderProdNo = addProd.prodNo || 0; // 상품번호
+                const orderPriceNo = addProd.priceNo || 0; // 판매가 번호
+                const orderProdQty = quantities[index] || 0; // 각 상품에 맞는 수량 가져오기
+                const orderProdTotal = orderProdQty * addProd.salePrice; // 수량 * 판매가
 
                 return {
                     productNo: orderProdNo,
@@ -340,28 +379,28 @@ function Order() {
                 };
             });
 
-            const response = await axios.post('/order/registOrder',{ // insert into oh
-                inputDelDate: delDate || null,//납품요청일
-                inputCustomerNo: registCustomer || null,//주문고객번호
-                inputManager: "beak3" || null, //임의 값(로그인 시 해당 직원명 기입할 예정)
-                inputConfirmer: "beak10" || null, //임의 값
+            const response = await axios.post('/order/registOrder', { // insert into oh
+                inputDelDate: delDate || null, // 납품 요청일
+                inputCustomerNo: registCustomer || null, // 주문 고객 번호
+                inputManager: "beak3" || null, // 임의 값
+                inputConfirmer: "beak10" || null, // 임의 값
                 inputStatus: orderStatus,
-                orderBList //ob데이터 배열 전달
+                orderBList // ob 데이터 배열 전달
             });
 
-            const orderNo = response.data; //서버에서 받은 주문번호
+            const orderNo = response.data; // 서버에서 받은 주문 번호
+            handleCloseClick(); // 등록 창 닫기 및 초기화
 
-            handleCloseClick(); //등록 창 닫기 및 초기화
-
-            if(orderStatus === "대기"){
+            if (orderStatus === "대기") {
                 alert(`주문번호 ${orderNo} 등록이 완료되었습니다.`);
-            }else{
-                alert(`주문번호 ${orderNo} 임시저장되었습니다.`);
+            } else {
+                alert(`주문번호 ${orderNo} 임시 저장되었습니다.`);
             }
         } catch (error) {
-            console.error("주문등록 중 오류발생", error);
+            console.error("주문등록 중 오류 발생", error);
         }
     };
+
 
     // 추가리스트 체크 삭제
     const handleAddProdDelete = () => {
@@ -406,9 +445,9 @@ function Order() {
 
     const [isVisible, setIsVisible] = useState(false);
 
-    const handleAddClick = () => {
-        setIsVisible(true);
-    };
+    // const handleAddClick = () => {
+    //     setIsVisible(true);
+    // };
 
     const handleCloseClick = () => {
         setIsVisible(false);
@@ -470,6 +509,51 @@ function Order() {
     };
     // 유선화 끝
 
+    // 유선화 시작 - 임시 저장 update
+    const handleAddClick = async (orderNo = null) => {
+        if (orderNo) {
+            await fetchOrderDetail(orderNo);
+            setSelectedOrderNo(orderNo); // 여기에서 selectedOrderNo 설정
+        }
+        setIsVisible(true);
+    };
+
+
+    // 임시 저장 데이터
+    const fetchOrderDetail = async (orderNo) => {
+        try {
+            const response = await axios.get(`/order/detail/${orderNo}`);
+            const orderData = response.data;
+
+            setRegistCustomer(orderData.customer.customerNo);
+            setDelDate(orderData.delDate);
+
+            if (Array.isArray(orderData.orderBList)) {
+                const savedProducts = orderData.orderBList.map(item => ({
+                    prodNo: item.product.productNo,
+                    priceNo: item.price.priceNo,
+                    prodCat: item.product.productCategory,
+                    prodName: item.product.productName,
+                    prodWriter: item.product.productWriter,
+                    salePrice: item.price.customPrice,
+                    saleStart: item.price.startDate,
+                    saleEnd: item.price.endDate,
+                    orderProductQty: item.orderProductQty
+                }));
+
+                setAddCheckProd(savedProducts);
+
+                const newQuantities = savedProducts.reduce((acc, item, index) => {
+                    acc[index] = item.orderProductQty || 0; // 기본값 설정
+                    return acc;
+                }, {});
+
+                setQuantities(newQuantities);
+            }
+        } catch (error) {
+            console.error('임시저장 주문 정보 가져오기 실패:', error);
+        }
+    };
 
     const [confirmerIdList, setConfirmerIdList] = useState([]);
     const [confirmerIdOptions, setConfirmerIdOptions] = useState();
@@ -609,7 +693,13 @@ function Order() {
                     {order.length > 0 ? (
                         order.map((item, index) => ( /*더블 클릭 시 상세 보기 창 - 유선화*/
                             <tr key={`${item.orderNo}`} className={checkItem[index + 1] ? 'selected-row' : ''}
-                                onDoubleClick={() => handleDetailView(item.orderNo)}>
+                                onDoubleClick={() => {
+                                    if (item.status?.trim() === '임시저장') {
+                                        handleAddClick(item.orderNo);  // 주문 등록 모달 열기
+                                    } else {
+                                        handleDetailView(item.orderNo);  // 상세보기 모달 열기
+                                    }
+                                }}>
                                 <td>
                                     <input
                                         type="checkbox"
@@ -627,8 +717,12 @@ function Order() {
                                 <td>
                                     <button className="btn-common"
                                             onClick={(e) => {
-                                                e.stopPropagation(); // 클릭 이벤트 행 전체 방지
-                                                handleDetailView(item.orderNo);
+                                                if (item.status?.trim() === '임시저장') {
+                                                    e.stopPropagation();
+                                                    handleAddClick(item.orderNo); // 주문 등록 모달 열기
+                                                } else {
+                                                    handleDetailView(item.orderNo); // 상세보기 모달 열기
+                                                }
                                             }}> 상세보기
                                     </button>
                                 </td>
@@ -733,7 +827,7 @@ function Order() {
                                     </div>*/}
                             </div>
 
-
+                            {/*주문 가능한 상품 리스트*/}
                             <div className="RegistFormList">
                                 <div style={{fontWeight: 'bold'}}> 총 {customPrice?.length || 0} 건</div>
                                 <table className="formTableList">
@@ -753,8 +847,8 @@ function Order() {
                                     {customPrice.map((prodList, index) => (
                                         <tr key={index} className={orderListCheckItem[index] ? 'selected-row' : ''}>
                                             <td><input type="checkbox" id="checkProdList"
-                                                checked={orderListCheckItem[index] || false }
-                                                onChange={(e) => handleOrderListCheckboxChange(e)}/></td>
+                                                       checked={orderListCheckItem[index] || false }
+                                                       onChange={(e) => handleOrderListCheckboxChange(e)}/></td>
                                             <td style={{display: 'none'}}>{index}</td>
                                             <td>{index + 1}</td>
                                             <td>{prodList.prodNo}</td>
@@ -768,6 +862,7 @@ function Order() {
                                 </table>
                             </div>
 
+                            {/*담아둔 상품 리스트*/}
                             <div className="RegistFormList">
                                 <div style={{fontWeight: 'bold'}}> 총 {addCheckProd?.length || 0} 건</div>
                                 <table className="formTableList">
@@ -786,6 +881,7 @@ function Order() {
                                     </thead>
                                     <tbody>
                                     {addCheckProd.map((addProd, index) => {
+                                        console.log(`렌더링 중: 상품명 = ${addProd.prodName}, 수량 = ${quantities[index] || 0}`);
                                         const qty = quantities[index] || 0; // index에 맞는 수량 가져옴
                                         return (
                                             <tr key={index} className={orderAddCheckItem[index] ? 'selected-row' : ''}>
