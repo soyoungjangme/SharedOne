@@ -27,7 +27,7 @@ const Price = () => {
         startDate: '',
         endDate: '',
         page: 1,
-        amount: 10,
+        amount: 50,
     });
     const [isChartVisible, setIsChartVisible] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
@@ -170,6 +170,8 @@ const Price = () => {
             <AddPriceModal
                 isVisible={isVisible}
                 setIsVisible={setIsVisible}
+                product={product}
+                customer={customer}
                 productOptions={productOptions}
                 customerOptions={customerOptions}
                 fetchData={fetchData}

@@ -295,7 +295,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                         <h1>주문 수정</h1>
                         <div className="btns">
                             <div className="btn-add">
-                                <button className="mdfy-btn" onClick={handleUpdateOrder}>수정하기</button>
+                                <button onClick={handleUpdateOrder}>수정완료</button>
                             </div>
                         </div>
                     </div>

@@ -13,9 +13,6 @@ import java.io.IOException;
 import java.util.List;
 
 public interface PriceService {
-    List<Price> getAllPrice();
-    List<Price> getPriceByDTO(PriceDTO dto);
-    List<PriceProductCustomerDTO> getPriceProductCustomerDTO(PriceDTO dto);
     Page<PriceProductCustomerDTO> getPriceProductCustomerDTO(PriceDTO dto, Pageable pageable);
 
 
