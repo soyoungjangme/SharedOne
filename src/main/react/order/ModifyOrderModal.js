@@ -237,7 +237,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                     <>
                                         <button type="button" onClick={() => handleApproval('반려')}>반려</button>
                                         <button type="button" onClick={() => handleApproval('승인')}>승인</button>
-                                        <button type="button" onClick={() => onOpenModifyModal2(modifyItem)}>수정하기</button>
+                                        <button type="button" className="mdfy-btn" onClick={() => onOpenModifyModal2(modifyItem)}>수정하기</button>
                                     </>
                                 )}
                                 {(getConfirmStatus(modifyItem.confirmStatus) === '반려' || getConfirmStatus(modifyItem.confirmStatus) === '임시저장') && (
@@ -291,11 +291,15 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                 <td>{modifyItem.confirmerId || '정보 없음'}</td>
                                 <th colSpan="1"><label htmlFor="remarks">비고</label></th>
                                 <td colSpan="3">
-                                    <textarea
-                                        name="remarks"
-                                        value={modifyItem.remarks || ''}
-                                        onChange={handleInputChange}
-                                    ></textarea>
+                                    {(getConfirmStatus(modifyItem.confirmStatus) === '승인' || getConfirmStatus(modifyItem.confirmStatus) === '반려') ? (
+                                        <span>{modifyItem.remarks || '비고 없음'}</span>
+                                    ) : (
+                                        <textarea
+                                            name="remarks"
+                                            value={modifyItem.remarks || ''}
+                                            onChange={handleInputChange}
+                                        ></textarea>
+                                    )}
                                 </td>
                             </tr>
                             </tbody>
@@ -303,11 +307,11 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                     </form>
 
                     <div className="RegistFormList">
-                        <div style={{ fontWeight: 'bold' }}>총 {modifyItem.orderBList?.length || 0} 건</div>
+                        <div style={{fontWeight: 'bold'}}>총 {modifyItem.orderBList?.length || 0} 건</div>
                         <table className="formTableList">
                             <thead>
                             <tr>
-                                <th>No</th>
+                            <th>No</th>
                                 <th>상품 카테고리
                                     <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
                                         {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
