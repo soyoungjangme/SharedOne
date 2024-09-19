@@ -52,7 +52,7 @@ function Customer() {
         postNum: '',
         businessRegistrationNo: '',
         nation: '',
-        dealType: '',
+        // dealType: '',
         picName: '',
         picEmail: '',
         picTel: '',
@@ -595,22 +595,9 @@ function Customer() {
                                     required
                                 />
                             </div>
+                            
 
-                            <div className="filter-item">
-                                <label className="filter-label" htmlFor="dealType">거래 유형</label>
-                                <select
-                                    id="dealType"
-                                    className="filter-input"
-                                    onChange={handleInputChange}
-                                    value={customerSearch.dealType}
-                                    required
-                                >
-                                    <option value="" disabled>거래 유형 선택</option>
-                                    <option value="B2B">B2B</option>
-                                    <option value="B2C">B2C</option>
-                                    <option value="C2C">C2C</option>
-                                </select>
-                            </div>
+
                         </div>
                     </div>
 
