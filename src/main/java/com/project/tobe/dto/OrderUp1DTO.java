@@ -17,7 +17,6 @@ public class OrderUp1DTO {
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   private Date delDate; // 납품일
-
   private Long customerNo; // 고객번호
   private String employeeId; // 직원아이디
   private List<OrderUp2DTO> orderBList; // 주문 세부 사항
