@@ -6,6 +6,8 @@ import com.project.tobe.dto.EmployeeSearchDTO;
 import com.project.tobe.dto.EmployeeTestDTO;
 import com.project.tobe.entity.Employee;
 import com.project.tobe.security.EmployeeDetails;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -13,7 +15,7 @@ public interface EmployeeService {
   Employee getUserById(String id);
   EmployeeDetails login(EmployeeDTO dto);
   public List<EmployeeDTO> getAllList();
-  public List<EmployeeDTO> getPickList(EmployeeSearchDTO dto);
+  public Page<EmployeeDTO> getPickList(EmployeeDTO dto, Pageable pageable);
   public void employeeRegistTest( List<EmployeeTestDTO> dto);
   public void employeeUpdateMaster(EmployeeTestDTO dto);
   public void employeeDeleteTest(List<String> employeeIds);
@@ -24,4 +26,5 @@ public interface EmployeeService {
   public void employeeUpdateMypage(EmployeeDTO dto);
   public void employeeUpdateMypagePw(EmployeeDTO dto);
 
+    List<EmployeeDTO> getManagerList(String id);
 }

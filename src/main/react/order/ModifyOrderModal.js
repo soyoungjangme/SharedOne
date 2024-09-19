@@ -4,12 +4,14 @@ import './OrderRegist.css'
 import './OrderModalDetail.css'
 import ModifyOrderModal2 from "./ModifyOrderModal2";
 import axios from 'axios';
+import Select from "react-select";
 
 const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModal2 }) => {
 
     const [modifyItem, setModifyItem] = useState({
         orderNo: '',
         regDate: '',
+        changeDate:'',
         employee: { employeeName: '' , employeeId : ''},
         customer: { customerName: '' , customerNo : '' },
         delDate: '',
@@ -237,12 +239,17 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                     <>
                                         <button type="button" onClick={() => handleApproval('반려')}>반려</button>
                                         <button type="button" onClick={() => handleApproval('승인')}>승인</button>
-                                        <button type="button" className="mdfy-btn" onClick={() => onOpenModifyModal2(modifyItem)}>수정하기</button>
                                     </>
                                 )}
-                                {(getConfirmStatus(modifyItem.confirmStatus) === '반려' || getConfirmStatus(modifyItem.confirmStatus) === '임시저장') && (
-                                    <button type="button" onClick={() => onOpenModifyModal2(modifyItem)}>수정하기</button>
+                                {
+                                    getConfirmStatus(modifyItem.confirmStatus) === '임시저장' ||
+                                    getConfirmStatus(modifyItem.confirmStatus) === '대기' && (
+                                    <>
+                                        <button type="button" >주문등록</button>
+                                        <button type="button" >임시저장</button>
+                                    </>
                                 )}
+                                <button type="button" onClick={() => onOpenModifyModal2(modifyItem)}>수정하기</button>
                             </div>
 
                         </div>
@@ -279,13 +286,16 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                         </select>
                                     )}
                                 </td>
-
+                            </tr>
+                            <tr>
+                                <th colSpan="3"><label htmlFor="confirmTitle">상태 변경일</label></th>
+                                <td colSpan="3">{modifyItem.changeDate || ''}</td>
                             </tr>
                             </tbody>
                         </table>
 
                         <table className="formTable2">
-                            <tbody>
+                        <tbody>
                             <tr>
                                 <th><label htmlFor="approver">결재자</label></th>
                                 <td>{modifyItem.confirmerId || '정보 없음'}</td>

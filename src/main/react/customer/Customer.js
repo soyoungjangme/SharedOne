@@ -21,21 +21,10 @@ function Customer() {
     } = useCheckboxManager();
 
     // 메인 리스트
-    let [customer, setCustomer] = useState([{
-        customerName: '',
-        customerTel: '',
-        customerAddr: '',
-        postNum: '',
-        businessRegistrationNo: '',
-        nation: '',
-        dealType: '',
-        picName: '',
-        picEmail: '',
-        picTel: '',
-    }]);
+    const [customer, setCustomer] = useState([]);
 
     useEffect(() => {
-        axios.get('/customer/customerALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
+        axios.get('/customer/customerAll')  // Spring Boot 엔드포인트와 동일한 URL로 요청
             .then(response => setCustomer(response.data))  // 응답 데이터를 상태로 설정
             .catch(error => console.error('Error fetching Customer data:', error));
     }, []);
@@ -46,6 +35,7 @@ function Customer() {
 
     // 검색, 필터 기능
     let [customerSearch, setEmSearch] = useState({
+        customerNo: '',
         customerName: '',
         customerTel: '',
         customerAddr: '',
@@ -116,6 +106,7 @@ function Customer() {
 
     // 고객 등록 리스트 상태
     const [regist, setRegist] = useState({
+        customerNo: '',
         customerName: '',
         customerTel: '',
         customerAddr: '',
@@ -183,6 +174,7 @@ function Customer() {
 
         // 입력값 초기화
         setRegist({
+            customerNo: '',
             customerName: '',
             customerTel: '',
             customerAddr: '',
@@ -283,6 +275,7 @@ function Customer() {
 
     // 고객 수정 아이템 상태
     const [modifyItem, setModifyItem] = useState({
+        customerNo: '',
         customerName: '',
         customerTel: '',
         customerAddr: '',
@@ -569,12 +562,12 @@ function Customer() {
                             </div>
 
                             <div className="filter-item">
-                                <label className="filter-label" htmlFor="picEmail">담당자 이메일</label>
+                                <label className="filter-label" htmlFor="picEmail">담당자이메일</label>
                                 <input
                                     className="filter-input"
                                     type="text"
                                     id="picEmail"
-                                    placeholder="담당자 이메일"
+                                    placeholder="담당자이메일"
                                     onChange={handleInputChange}
                                     value={customerSearch.picEmail}
                                     onKeyPress={handleKeyPress}
@@ -583,12 +576,12 @@ function Customer() {
                             </div>
 
                             <div className="filter-item">
-                                <label className="filter-label" htmlFor="picTel">담당자 연락처</label>
+                                <label className="filter-label" htmlFor="picTel">담당자연락처</label>
                                 <input
                                     className="filter-input"
                                     type="text"
                                     id="picTel"
-                                    placeholder="담당자 연락처"
+                                    placeholder="담당자연락처"
                                     onChange={handleInputChange}
                                     value={customerSearch.picTel}
                                     onKeyPress={handleKeyPress}
@@ -627,7 +620,7 @@ function Customer() {
                 </button>
 
                 <table className="search-table" style={{ marginTop: "50px" }}>
-                    {showDelete && <button className='delete-btn btn-common' onClick={handleDeleteClick}>삭제</button>}
+                    {showDelete && <button className='delete-btn btn-common' onClick={() => {handleDeleteClick(); handleDelete();}}>삭제</button>}
                     <thead>
                         <tr>
                             <th><input type="checkbox" checked={allCheck} onChange={handleMasterCheckboxChange} /></th>
@@ -688,12 +681,13 @@ function Customer() {
                     <tbody>
                         {sortedData.length > 0 ? (
                             sortedData.map((item, index) => (
-                                <tr key={index} className={checkItem[index] ? 'selected-row' : ''} onDoubleClick={() => {
+                                <tr key={index} className={checkItem[index + 1] ? 'selected-row' : ''} onDoubleClick={() => {
                                     handleModify(item);
                                 }}>
-                                    <td><input className="mainCheckbox" type="checkbox" id={index + 1} checked={checkItem[index] || false}
+                                    <td><input className="mainCheckbox" type="checkbox" id={item.customerNo} checked={checkItem[index] || false}
                                         onChange={handleCheckboxChange} /></td>
                                     <td style={{ display: 'none' }}>{index}</td>
+                                    <td>{index}</td>
                                     <td>{index + 1}</td>
                                     <td>{item.customerName}</td>
                                     <td>{item.customerAddr}</td>
@@ -768,11 +762,11 @@ function Customer() {
                                         </tr>
 
                                         <tr>
-                                            <th><label htmlFor="picName">담장자명</label></th>
-                                            <td><input type="text" placeholder="담장자명" id="picName" name="picName" value={regist.picName} onChange={handleInputAddChange} /></td>
+                                            <th><label htmlFor="picName">담당자명</label></th>
+                                            <td><input type="text" placeholder="담당자명" id="picName" name="picName" value={regist.picName} onChange={handleInputAddChange} /></td>
 
-                                            <th><label htmlFor="picEmail">담장자이메일</label></th>
-                                            <td><input type="text" placeholder="담장자이메일" id="picEmail" name="picEmail" value={regist.picEmail} onChange={handleInputAddChange} /></td>
+                                            <th><label htmlFor="picEmail">담당자이메일</label></th>
+                                            <td><input type="text" placeholder="담당자이메일" id="picEmail" name="picEmail" value={regist.picEmail} onChange={handleInputAddChange} /></td>
 
                                             <th><label htmlFor="picTel">담당자연락처</label></th>
                                             <td><input type="text" placeholder="담당자연락처" id="picTel" name="picTel" value={regist.picTel} onChange={handleInputAddChange} /></td>
@@ -800,7 +794,7 @@ function Customer() {
                                             <th>국가</th>
                                             <th>거래유형</th>
                                             <th>담당자명</th>
-                                            <th>담장자이메일</th>
+                                            <th>담당자이메일</th>
                                             <th>담당자연락처</th>
                                         </tr>
                                     </thead>
