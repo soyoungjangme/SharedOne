@@ -50,16 +50,28 @@
         </collection>
     </resultMap>
 
+    <!-- 담당자명(작성자) 이름 -->
+    <select id="getMyName" parameterType="string" resultType="string">
+        select employee_name
+        from employee
+        where employee_id = #{myId}
+    </select>
+
+
     <!--  jsy주문등록 - 고객 별 상품 조회  -->
     <select id="getPrice" resultMap="GetPriceResultMap">
         select p.product_no, p.product_name, p.product_writer, p.product_category,
         price.custom_price, price.start_date, price.end_date, price.price_no
         from price
-        join product p
-        on p.product_no=price.product_no
-        join customer c
-        on c.customer_no=price.customer_no
-        where c.customer_no = #{iocn}
+        join product p on p.product_no=price.product_no
+        join customer c on c.customer_no=price.customer_no
+        join order_header oh on oh.customer_no = c.customer_no
+        where price.activated = 'Y'
+        and c.customer_no = #{iocn}
+        and price.end_date &gt; now()
+        <if test="delDate != null">
+            and (#{delDate}::date) &lt; price.end_date
+        </if>
     </select>
 
     <resultMap id="GetPriceResultMap" type="PriceDTO">

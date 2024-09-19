@@ -367,7 +367,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                 <th>저자</th>
                                 <th>판매가</th>
                                 <th>판매 기간</th>
-                            </tr>
+                            </tr>sear
                             </thead>
                             <tbody>
                             {filteredProducts.map((prodList, index) => (

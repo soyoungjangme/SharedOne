@@ -1,7 +1,6 @@
 package com.project.tobe.util;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -10,7 +9,9 @@ import java.util.stream.IntStream;
 
 @Getter
 @Setter
-
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class PageVO<T>  {
     // 화면에 그려질 pageNation을 계산하는 클래스
     private int start; // 시작페이지 번호

@@ -80,7 +80,7 @@ const PriceTable = ({
                         <td><input type="checkbox" checked={checkItem[index] || false}
                                    onChange={(e)=>handleCheckboxChange(e)}/></td>
                         <td style={{display: 'none'}}>{index}</td>
-                        <td>{index + 1}</td>
+                        <td>{((price.length-1)*10) + index + 1}</td>
                         <td>{item.registerDate}</td>
                         <td>
                             {item.productName}

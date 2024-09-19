@@ -14,7 +14,9 @@ import ReactDOM from "react-dom/client";
 import './Price.css';
 import '../js/modalAdd.css';
 import '../js/Pagination.css';
+import '../js/RenderPageNumbers.css';
 import ModalDetail from "../js/ModalDetail";
+import RenderPageNumbers from "../js/RenderPageNumbers";
 
 const Price = () => {
     const [price, setPrice] = useState([]);
@@ -27,7 +29,7 @@ const Price = () => {
         startDate: '',
         endDate: '',
         page: 1,
-        amount: 50,
+        amount: 30,
     });
     const [isChartVisible, setIsChartVisible] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
@@ -47,6 +49,7 @@ const Price = () => {
         checkItem,
         setCheckItem,
         showDelete,
+        setShowDelete,
         handleMasterCheckboxChange,
         handleCheckboxChange,
         handleDelete,
@@ -91,6 +94,9 @@ const Price = () => {
                 'Accept': 'application/json',
             },
         });
+
+        console.log(data);
+
         setPrice(data.pageData);
         setCurrentPage(data.page);
         setTotalItems(data.total);
@@ -109,10 +115,13 @@ const Price = () => {
     };
 
     const handlePageChange = async (selectedPage) => {
+        console.log(selectedPage);
         setCheckItem(new Array(checkItem.length).fill(false));
         setAllCheck(false);
-        let copy = {...searchPrice, page: selectedPage.selected+1};
+        let copy = {...searchPrice, page: selectedPage};
+        console.log(copy);
         await getSearchItems(copy).then(r => console.log(r));
+        // setCurrentPage(selectedPage);
     };
 
     const handleModify = (item) => {
@@ -143,7 +152,7 @@ const Price = () => {
                 customer={customer}
                 handleSearchBtn={handleSearchBtn}
             />
-            {isChartVisible && <Chart />}
+            {isChartVisible && <Chart/>}
             <button className="btn-common add" type="button" onClick={handleAddClick}>
                 판매가 등록
             </button>
@@ -161,12 +170,16 @@ const Price = () => {
                 showDelete={showDelete}
                 handleDelete={handleDelete}
             />
-            <Pagination
-                pageCount={pageCount} // 총 페이지 수
-                onPageChange={handlePageChange} // 페이지 변경 이벤트 핸들러
+            <RenderPageNumbers
+                setAllCheckMain={setAllCheck}
+                setCurrentPage={setCurrentPage}
+                setCheckItemMain={setCheckItem}
+                setShowDeleteMain={setShowDelete}
+                onPageChange={handlePageChange}
+                totalPages={pageCount} // 총 페이지 수
                 currentPage={currentPage} // 현재 페이지
-                total={totalItems} // 총 아이템 수
             />
+
             <AddPriceModal
                 isVisible={isVisible}
                 setIsVisible={setIsVisible}
@@ -177,12 +190,6 @@ const Price = () => {
                 fetchData={fetchData}
                 handleCloseClick={handleCloseClick}
             />
-            {/*<ModifyPriceModal*/}
-            {/*    isVisible={isModifyModalVisible}*/}
-            {/*    setIsVisible={setIsModifyModalVisible}*/}
-            {/*    modifyItem={modifyItem}*/}
-            {/*    fetchData={fetchData}*/}
-            {/*/>*/}
             {isVisibleDetail && (
 
                 <div className="confirmRegist">
