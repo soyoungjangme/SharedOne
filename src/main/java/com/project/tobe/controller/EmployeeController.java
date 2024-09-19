@@ -6,8 +6,12 @@ import com.project.tobe.dto.EmployeeDTO;
 import com.project.tobe.entity.Employee;
 import com.project.tobe.security.EmployeeDetails;
 import com.project.tobe.service.EmployeeService;
+import com.project.tobe.util.PageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -41,8 +45,14 @@ public class EmployeeController {
   }
 
   @PostMapping("/employeeSearch")
-  public List<EmployeeDTO> employeePick(@RequestBody EmployeeSearchDTO dto) {
-    return employeeService.getPickList(dto);
+  public PageVO<EmployeeDTO> employeePick(@RequestBody EmployeeDTO dto) {
+    Pageable pageable = PageRequest.of(dto.getPage() - 1, dto.getAmount());
+
+    Page<EmployeeDTO> page = employeeService.getPickList(dto, pageable);
+
+    System.out.println(new PageVO<>(page).toString());
+
+    return new PageVO<>(page);
   }
 
 

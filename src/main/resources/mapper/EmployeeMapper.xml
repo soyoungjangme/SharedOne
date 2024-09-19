@@ -20,8 +20,52 @@
         END;
     </select>
 
-    <select id="getPickList" resultType="com.project.tobe.dto.EmployeeDTO">
+    <select id="getPickList" resultType="com.project.tobe.dto.EmployeeDTO" parameterType="RequestList">
         SELECT *
+        FROM employee e
+        join authority a
+        on e.authority_grade = a.authority_grade
+        <!--        WHERE employee_id LIKE CONCAT('%', #{employeeId}, '%')-->
+        <where>
+            e.empl_yn = 'y'
+            <if test="data.employeeId != '' and data.employeeId != null">
+                AND e.employee_id LIKE CONCAT('%', #{data.employeeId}, '%')
+            </if>
+            <if test="data.employeeName != '' and data.employeeName != null">
+                AND e.employee_name LIKE CONCAT('%', #{data.employeeName}, '%')
+            </if>
+            <if test="data.employeeTel != '' and data.employeeTel != null">
+                AND e.employee_tel LIKE CONCAT('%', #{data.employeeTel}, '%')
+            </if>
+            <if test="data.employeeEmail != '' and data.employeeEmail != null">
+                AND e.employee_email LIKE CONCAT('%', #{data.employeeEmail}, '%')
+            </if>
+            <if test="data.employeeAddr != '' and data.employeeAddr != null">
+                ANDe.employee_addr LIKE CONCAT('%', #{data.employeeAddr}, '%')
+            </if>
+            <if test="data.hireDate != null">
+                AND e.hire_date = #{data.hireDate}
+            </if>
+            <if test="data.employeeManagerId != '' and data.employeeManagerId != null">
+                AND e.employee_manager_id LIKE CONCAT('%', #{data.employeeManagerId}, '%')
+            </if>
+            <if test="data.authorityGrade != '' and data.authorityGrade != null">
+                AND e.authority_grade LIKE CONCAT('%', #{data.authorityGrade}, '%')
+            </if>
+        </where>
+        ORDER BY
+        CASE e.authority_grade
+        WHEN 'S' THEN 1
+        WHEN 'A' THEN 2
+        WHEN 'B' THEN 3
+        WHEN 'C' THEN 4
+        WHEN 'D' THEN 5
+        END
+        offset #{pageable.offset} rows fetch next #{pageable.pageSize} rows only
+    </select>
+
+    <select id="getPickListTotal" parameterType="com.project.tobe.dto.EmployeeDTO">
+        SELECT count(*)
         FROM employee e
         join authority a
         on e.authority_grade = a.authority_grade
