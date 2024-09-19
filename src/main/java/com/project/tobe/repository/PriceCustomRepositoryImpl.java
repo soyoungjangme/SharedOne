@@ -37,77 +37,6 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
     }
 
     @Override
-    public List<Price> getPriceByDTO(PriceDTO dto) {
-        BooleanBuilder builder = new BooleanBuilder();
-
-        QPrice price = QPrice.price;
-
-//        Optional<LocalDate> registerDate = Optional.ofNullable(dto.getRegisterDate());
-//        Optional<String> productNo = Optional.ofNullable(dto.getProductNo());
-//        Optional<String> customerNo = Optional.ofNullable(dto.getCustomerNo());
-//        Optional<LocalDate> startDate = Optional.ofNullable(dto.getStartDate());
-//        Optional<LocalDate> endDate = Optional.ofNullable(dto.getEndDate());
-//
-//        registerDate.ifPresent(localDate -> builder.and(price.registerDate.eq(localDate)));
-//        productNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.product.productNo.eq(Long.parseLong(s))));
-//        customerNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customer.customerNo.eq(Long.parseLong(s))));
-//        startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
-//        endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
-//        builder.and(price.activated.eq(Y));
-
-
-        return jpaQueryFactory.select(price).from(price).where(builder).orderBy(price.priceNo.desc()).fetch();
-    }
-
-    @Override
-    public List<PriceProductCustomerDTO> getPriceJoinByDTO(PriceDTO dto) {
-        BooleanBuilder builder = new BooleanBuilder();
-
-        QPrice price = QPrice.price;
-        QProduct product = QProduct.product;
-        QCustomer customer = QCustomer.customer;
-
-        Optional<LocalDate> registerDate = Optional.ofNullable(dto.getRegisterDate());
-        Optional<String> productNo = Optional.ofNullable(dto.getProductNo());
-        Optional<String> customerNo = Optional.ofNullable(dto.getCustomerNo());
-        Optional<LocalDate> startDate = Optional.ofNullable(dto.getStartDate());
-        Optional<LocalDate> endDate = Optional.ofNullable(dto.getEndDate());
-
-        registerDate.ifPresent(localDate -> builder.and(price.registerDate.eq(localDate)));
-        productNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.product.productNo.eq(Long.parseLong(s))));
-        customerNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customer.customerNo.eq(Long.parseLong(s))));
-        startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
-        endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
-        builder.and(price.activated.eq(Y));
-
-        return jpaQueryFactory
-                .select(
-                        Projections.constructor(
-                                PriceProductCustomerDTO.class,
-                                price.registerDate,
-                                price.priceNo,
-                                product.productNo,
-                                product.productName,
-                                customer.customerNo,
-                                customer.customerName,
-                                price.customPrice,
-                                price.currency,
-                                price.discount,
-                                price.startDate,
-                                price.endDate
-                        )
-                )
-                .from(price)
-                .join(price.product, product)
-                .join(price.customer, customer)
-                .where(price.product.productYn.eq('Y'))
-                .where(price.customer.activated.eq("Y"))
-                .where(builder)
-                .orderBy(price.priceNo.desc())
-                .fetch();
-    }
-
-    @Override
     public Page<PriceProductCustomerDTO> getPriceJoinByDTO(PriceDTO dto, Pageable pageable) {
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -116,14 +45,14 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
         QCustomer customer = QCustomer.customer;
 
         Optional<LocalDate> registerDate = Optional.ofNullable(dto.getRegisterDate());
-        Optional<String> productNo = Optional.ofNullable(dto.getProductNo());
-        Optional<String> customerNo = Optional.ofNullable(dto.getCustomerNo());
+        Optional<String> productName = Optional.ofNullable(dto.getProductName());
+        Optional<String> customerName = Optional.ofNullable(dto.getCustomerName());
         Optional<LocalDate> startDate = Optional.ofNullable(dto.getStartDate());
         Optional<LocalDate> endDate = Optional.ofNullable(dto.getEndDate());
 
         registerDate.ifPresent(localDate -> builder.and(price.registerDate.eq(localDate)));
-        productNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.product.productNo.eq(Long.parseLong(s))));
-        customerNo.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customer.customerNo.eq(Long.parseLong(s))));
+        productName.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.product.productName.contains(s)));
+        customerName.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customer.customerName.contains(s)));
         startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
         endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
         builder.and(price.activated.eq(Y));
@@ -183,7 +112,7 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
                 .size();
 
 
-        return new PageImpl<PriceProductCustomerDTO>(list, pageable, total);
+        return new PageImpl<>(list, pageable, total);
     }
 
     @Override

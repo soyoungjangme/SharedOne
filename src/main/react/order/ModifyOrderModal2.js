@@ -299,7 +299,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                         <h1>주문 수정</h1>
                         <div className="btns">
                             <div className="btn-add">
-                                <button className="mdfy-btn" onClick={handleUpdateOrder}>수정하기</button>
+                                <button onClick={handleUpdateOrder}>수정완료</button>
                             </div>
                         </div>
                     </div>
@@ -371,7 +371,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                 <th>저자</th>
                                 <th>판매가</th>
                                 <th>판매 기간</th>
-                            </tr>
+                            </tr>sear
                             </thead>
                             <tbody>
                             {filteredProducts.map((prodList, index) => (

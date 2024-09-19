@@ -9,8 +9,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface PriceCustomRepository {
-    List<Price> getPriceByDTO(PriceDTO dto);
-    List<PriceProductCustomerDTO> getPriceJoinByDTO(PriceDTO dto);
     Page<PriceProductCustomerDTO> getPriceJoinByDTO(PriceDTO dto, Pageable pageable);
 
     void updatePrice(PriceDTO dto);

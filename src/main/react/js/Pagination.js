@@ -11,7 +11,7 @@ const Pagination = ({ pageCount, onPageChange, currentPage, total }) => {
             previousLabel={<FiChevronLeft />}
             nextLabel={<FiChevronRight />}
             activePage={currentPage}
-            pageRangeDisplayed={1}
+            pageRangeDisplayed={3}
             pageCount={pageCount}
             onPageChange={onPageChange}
             totalItemsCount={total}
