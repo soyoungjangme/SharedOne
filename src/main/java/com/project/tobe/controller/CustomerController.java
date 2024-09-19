@@ -31,13 +31,12 @@ public class CustomerController {
         return customerService.getPickList(dto);
     }
 
-    //등록
+    // 컨트롤러 메서드
     @PostMapping("/customerRegist")
     public ResponseEntity<String> customerRegistTest(@RequestBody List<CustomerDTO> dto) {
         customerService.customerRegistTest(dto);
         return ResponseEntity.ok("등록 성공");
     }
-
 
     //업데이트
     @PostMapping("/customerUpdate")

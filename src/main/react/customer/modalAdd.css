@@ -224,7 +224,7 @@
   /* background: rgb(241,241,241); */
   /* background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%); */
   border: 1px solid #ddd;
-  width: 90px;
+  width: 50px;
   height: 35px;
   border-radius: 2px;
   font-weight: bold;
@@ -273,9 +273,21 @@
   cursor: pointer;
 }
 
+.btn-delete button {
+  background-color: #004e90;
+  color: #fff;
+  border: 1px solid #ddd;
+  width: 50px;
+  height: 35px;
+  border-radius: 2px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 .btn-add button:hover,
 .btn-add2 button:hover,
 .btn-addr-find:hover,
-.btn-customer-add:hover {
+.btn-customer-add:hover,
+.btn-delete:hover {
   background-color: #0056b3;
 }
