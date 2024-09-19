@@ -56,14 +56,18 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
 
 // 삭제
     const handleDelete = () => {
-        const newOrderBList = modifyItem.orderBList.filter((_, index) => !selectedProductsCheckItem[index]);
-        setModifyItem(prev => ({
-            ...prev,
-            orderBList: newOrderBList
-        }));
-        // 체크박스 상태 초기화
-        setSelectedProductsCheckItem({});
+        const confirmDelete = window.confirm('선택한 상품을 목록에서 삭제하시겠습니까?');
+        if (confirmDelete) {
+            const newOrderBList = modifyItem.orderBList.filter((_, index) => !selectedProductsCheckItem[index]);
+            setModifyItem(prev => ({
+                ...prev,
+                orderBList: newOrderBList
+            }));
+            // 체크박스 상태 초기화
+            setSelectedProductsCheckItem({});
+        }
     };
+
 
 // 기존의 주문 데이터 불러오기
     useEffect(() => {

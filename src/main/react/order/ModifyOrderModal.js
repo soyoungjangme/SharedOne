@@ -214,7 +214,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                     confirmStatus: status,
                     confirmChangeDate: new Date().toISOString()
                 }));
-                alert(`주문이 ${status === '승인' ? '승인' : '반려'}되었습니다.`);
+                alert(`주문 번호 ${modifyItem.orderNo} ${status === '승인' ? '승인' : '반려'} 처리되었습니다.`);
             } else {
                 console.error('승인/반려 처리 실패');
             }
@@ -237,11 +237,19 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                     <>
                                         <button type="button" onClick={() => handleApproval('반려')}>반려</button>
                                         <button type="button" onClick={() => handleApproval('승인')}>승인</button>
-                                        <button type="button" className="mdfy-btn" onClick={() => onOpenModifyModal2(modifyItem)}>수정하기</button>
+                                        <button type="button" className="mdfy-btn" onClick={() => {
+                                            if (window.confirm('주문을 수정하시겠습니까?')) {
+                                                onOpenModifyModal2(modifyItem); // 수정 모달 열기
+                                            }
+                                        }}>수정하기</button>
                                     </>
                                 )}
                                 {(getConfirmStatus(modifyItem.confirmStatus) === '반려' || getConfirmStatus(modifyItem.confirmStatus) === '임시저장') && (
-                                    <button type="button" onClick={() => onOpenModifyModal2(modifyItem)}>수정하기</button>
+                                    <button type="button" onClick={() => {
+                                        if (window.confirm('주문을 수정하시겠습니까?')) {
+                                            onOpenModifyModal2(modifyItem); // 수정 모달 열기
+                                        }
+                                    }}>수정하기</button>
                                 )}
                             </div>
 
