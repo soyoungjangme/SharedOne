@@ -48,7 +48,6 @@ public class OrderController {
 
         List<PriceDTO> customPrice;
 
-
         if( inputOrderCustomerNo == null || inputOrderCustomerNo.isEmpty() ){ //고객명 선택x
             customPrice = new ArrayList<>(); //빈 리스ㅡㅌ 반환
 

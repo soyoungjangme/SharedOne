@@ -207,6 +207,11 @@ function Order() {
         setDelDate(e.target.value);
         console.log(delDate);
 
+        const now = new Date();
+        if(new Date(delDate) < now){
+            alert("납품요청")
+        }
+
         setAddCheckProd([]); //추가리스트 초기화
     }
 
@@ -287,6 +292,8 @@ function Order() {
 
     //추가 클릭
     const handleAddProd = () => {
+
+
         if(!delDate){
             alert("납품요청일을 입력해주십시오.");
             return;
