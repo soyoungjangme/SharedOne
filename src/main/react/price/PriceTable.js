@@ -21,7 +21,6 @@ const PriceTable = ({
             {showDelete && <button className="delete-btn btn-common" onClick={handleDelete}>삭제</button>}
             <thead>
             <tr>
-                <th><input type="checkbox" checked={allCheck} onChange={(e)=>handleMasterCheckboxChange(e)}/></th>
                 <th>No.</th>
                 <th>
                     등록일
@@ -76,12 +75,9 @@ const PriceTable = ({
             <tbody>
             {price.length > 0 ? (
                 price.map((item, index) => (
-                    <tr key={index} className={checkItem[index] ? 'selected-row' : ''} onDoubleClick={() => {
+                    <tr key={index} onDoubleClick={() => {
                         handleModify(item)
                     }}>
-                        <td><input type="checkbox" checked={checkItem[index] || false}
-                                   onChange={(e)=>handleCheckboxChange(e)}/></td>
-                        <td style={{display: 'none'}}>{index}</td>
                         <td>{((currentPage-1)*amount) + index + 1}</td>
                         <td>{item.registerDate}</td>
                         <td>
