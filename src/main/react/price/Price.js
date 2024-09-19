@@ -157,6 +157,8 @@ const Price = () => {
                 판매가 등록
             </button>
             <PriceTable
+                currentPage={currentPage}
+                amount={searchPrice.amount}
                 price={sortedData}
                 checkItem={checkItem}
                 setCheckItem={setCheckItem}
