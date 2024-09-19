@@ -71,6 +71,8 @@ public class PriceController {
 
         Page<PriceProductCustomerDTO> page = priceService.getPriceProductCustomerDTO(dto, pageable);
 
+        System.out.println(page.toString());
+
         return new PageVO<>(page);
     }
 
