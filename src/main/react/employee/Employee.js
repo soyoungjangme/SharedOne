@@ -8,6 +8,7 @@ import './modalPw.css';
 import '../js/modalAdd.css';
 import '../js/Pagination.css';
 import Pagination from '../js/Pagination';
+import '../js/pagecssReal.css';
 
 import { Bar } from 'react-chartjs-2';
 import {
@@ -74,7 +75,11 @@ function Employee() {
           showDelete: showDeleteMain,
           handleMasterCheckboxChange: handleMasterCheckboxChangeMain,
           handleCheckboxChange: handleCheckboxChangeMain,
-          handleDelete: handleDeleteMain
+          handleDelete: handleDeleteMain,
+    setAllCheck: setAllCheckMain,
+      setCheckItem: setCheckItemMain,
+      setShowDelete: setShowDeleteMain
+
       } = useCheckboxManager();
 
 
@@ -703,10 +708,14 @@ const handleDeletePickClick = () => {
       return index !== -1 ? index + 1 : -1;
   };
 
-// 페이지 네이션
+
+    // =============================================== 페이지 네이션
+
+
+    // 페이지 네이션
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10); // 페이지당 항목 수
+    const [itemsPerPage] = useState(5); // 페이지당 항목 수
 
     // 전체 페이지 수 계산
     const totalPages = Math.ceil(sortedData.length / itemsPerPage);
@@ -718,23 +727,106 @@ const handleDeletePickClick = () => {
 
     // 페이지 변경 핸들러
     const handlePageChange = (pageNumber) => {
+        setAllCheckMain(false);
+        setCheckItemMain(false);
+        setShowDeleteMain(false);
         setCurrentPage(pageNumber);
     };
 
     // 페이지네이션 버튼 렌더링
     const renderPageNumbers = () => {
         let pageNumbers = [];
-        for (let i = 1; i <= totalPages; i++) {
-            pageNumbers.push(
-                <button
-                    key={i}
-                    onClick={() => handlePageChange(i)}
-                    disabled={i === currentPage}
-                >
-                    {i}
-                </button>
-            );
+        const maxButtons = 3; // 고정된 버튼 수
+
+        // 맨 처음 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="first"
+                onClick={() => handlePageChange(1)}
+                className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
+            >
+                &laquo;&laquo; {/* 두 개의 왼쪽 화살표 */}
+            </span>
+        );
+
+        // 이전 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="prev"
+                onClick={() => handlePageChange(currentPage - 1)}
+                className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
+            >
+                &laquo; {/* 왼쪽 화살표 */}
+            </span>
+        );
+
+        // // 항상 첫 페이지 버튼 표시
+        // pageNumbers.push(
+        //     <span
+        //         key={1}
+        //         onClick={() => handlePageChange(1)}
+        //         className={`pagination_link ${currentPage === 1 ? 'pagination_link_active' : ''}`}
+        //     >
+        //         1
+        //     </span>
+        // );
+
+        // 6페이지 이상일 때
+        if (totalPages > maxButtons) {
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = startPage + maxButtons - 1;
+
+            if (endPage > totalPages) {
+                endPage = totalPages;
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+
+            // 중간 페이지 버튼 추가
+            for (let i = startPage; i <= endPage; i++) {
+                pageNumbers.push(
+                    <span
+                        key={i}
+                        onClick={() => handlePageChange(i)}
+                        className={`pagination_link ${i === currentPage ? 'pagination_link_active' : ''}`}
+                    >
+                        {i}
+                    </span>
+                );
+            }
+
+            // 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'와 마지막 페이지 추가
+            if (endPage < totalPages) {
+                pageNumbers.push(<span className="pagination_link">...</span>);
+                pageNumbers.push(
+                    <span key={totalPages} onClick={() => handlePageChange(totalPages)} className="pagination_link">
+                        {totalPages}
+                    </span>
+                );
+            }
         }
+
+        // 다음 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="next"
+                onClick={() => handlePageChange(currentPage + 1)}
+                className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
+            >
+                &raquo; {/* 오른쪽 화살표 */}
+            </span>
+        );
+
+        // 맨 마지막 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="last"
+                onClick={() => handlePageChange(totalPages)}
+                className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
+            >
+                &raquo;&raquo; {/* 두 개의 오른쪽 화살표 */}
+            </span>
+        );
+
         return pageNumbers;
     };
 
@@ -885,14 +977,16 @@ const handleDeletePickClick = () => {
                     </thead>
                     <tbody>
                         {currentItems.length > 0 ? (
-                            currentItems.map((item, index) => (
+                            currentItems.map((item, index) => {
+                             const globalIndex = indexOfFirstItem + index + 1; // +1은 1부터 시작하기 위함
+                             return(
                                 <tr key={index} className={checkItemMain[index] ? 'selected-row' : ''} onDoubleClick={() => {
                                     handleModify(item)
                                 }}>
                                     <td><input className="mainCheckbox" type="checkbox" id={item.employeeId} checked={checkItemMain[index] || false}
                                         onChange={handleCheckboxChangeMain} /></td>
                                     <td style={{ display: 'none' }}>{index}</td>
-                                     <td>{index + 1}</td>
+                                     <td>{globalIndex}</td> {/* 여기에서 globalIndex 사용 */}
                                     <td>{item.employeeId}</td>
                                    <td>{truncateText(item.employeePw, 10)}</td>
                                     <td>{item.employeeName}</td>
@@ -905,7 +999,8 @@ const handleDeletePickClick = () => {
                                     {/*<td>{item.employeeManagerId}</td>*/}
                                     <td>{item.authorityName}</td>
                                 </tr>
-                            ))
+                              );
+                            })
                         ) : (
                             <tr>
                                 <td colSpan="12">등록된 직원이 없습니다<i class="bi bi-emoji-tear"></i></td>
@@ -918,13 +1013,9 @@ const handleDeletePickClick = () => {
                     </tbody>
                 </table>
                    <div>
-                    {renderPageNumbers()}
-                       <Pagination
-                           pageCount={pageCount} // 총 페이지 수
-                           onPageChange={handlePageChange} // 페이지 변경 이벤트 핸들러
-                           currentPage={currentPage} // 현재 페이지
-                           total={totalItems} // 총 아이템 수
-                       />
+                  <div className="pagination">
+                            {renderPageNumbers()}
+                    </div>
                 </div>
             </div>
 
