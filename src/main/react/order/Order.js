@@ -8,6 +8,10 @@ import axios from 'axios';
 import ModifyOrderModal from './ModifyOrderModal';
 import ModifyOrderModal2 from './ModifyOrderModal2';
 import Select from "react-select";
+/*
+import '../js/pagecssReal.css';
+*/
+
 
 function Order() {
 
@@ -25,7 +29,10 @@ function Order() {
         allCheck: orderListAllCheck,
         checkItem: orderListCheckItem,
         handleMasterCheckboxChange: handleOrderListMasterCheckboxChange,
-        handleCheckboxChange: handleOrderListCheckboxChange
+        handleCheckboxChange: handleOrderListCheckboxChange,
+        setAllCheck: setAllCheckMal,
+        setShowDelete: setShowDeleteMal,
+        setCheckItem: setCheckItemMal
     } = useCheckboxManager(setOrder);
 
     const {
@@ -133,7 +140,7 @@ function Order() {
     //고객명 목록 data
     useEffect(() => {
         let effectCustomer = async () => {
-            let getCustomer = await fetch('/customer/customerALL').then(res => res.json());
+            let getCustomer = await fetch('/customer/customerAll').then(res => res.json());
             setMycustomer(getCustomer);//주문필터
             setOrderCustomer(getCustomer);//주문등록폼
         }
@@ -198,6 +205,8 @@ function Order() {
 
     const handleDateChange = (e) => {
         setDelDate(e.target.value);
+        console.log(delDate);
+
         setAddCheckProd([]); //추가리스트 초기화
     }
 
@@ -239,6 +248,7 @@ function Order() {
 
     // 고객이 선택되면 상품+판매가를 가져오는 함수
     useEffect(() => {
+        console.log(delDate);
         if (registCustomer) {
             const fetchPrice = async () => {
                 try {
@@ -272,7 +282,7 @@ function Order() {
         } else {
             setCustomPrice([]); // 고객이 없을 때만 초기화
         }
-    }, [registCustomer]); // registCustomer가 변경될 때만 실행
+    }, [registCustomer, delDate]); // registCustomer가 변경될 때만 실행
 
 
     //추가 클릭
@@ -325,12 +335,6 @@ function Order() {
             return [...prevAddCheckProd, ...newCheckProd];
         });
     };
-
-
-    // 값 확인
-    //     useEffect(() => {
-    //         console.log('addCheckProd:', addCheckProd);
-    //     }, [addCheckProd]);
 
     //상품 수량
     const [quantities, setQuantities] = useState({});
@@ -449,12 +453,15 @@ function Order() {
 
     const [isVisible, setIsVisible] = useState(false);
 
-    const handleAddClick = () => {
+    {/*const handleAddClick = () => {
         setIsVisible(true);
-    };
+    };*/}
 
 
     const handleCloseClick = () => {
+        setCheckItemMal(false);
+        setShowDeleteMal(false);
+        setAllCheckMal(false);
         setIsVisible(false);
         setRegistCustomer(''); //고객선택 초기화
         setDelDate(''); //납품요청일 초기화
@@ -566,6 +573,128 @@ function Order() {
         setModifyItem((prev) => ({ ...prev, [name]: value }));
     }
 
+
+
+
+    // =============================================== 페이지 네이션
+
+
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(30); // 페이지당 항목 수
+
+    // 전체 페이지 수 계산
+    const totalPages = Math.ceil(order.length / itemsPerPage);
+
+    // 현재 페이지에 맞는 데이터 필터링
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = order.slice(indexOfFirstItem, indexOfLastItem);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNumber) => {
+
+        setCurrentPage(pageNumber);
+    };
+
+    // 페이지네이션 버튼 렌더링
+    const renderPageNumbers = () => {
+        let pageNumbers = [];
+        const maxButtons = 3; // 고정된 버튼 수
+
+        // 맨 처음 페이지 버튼
+        pageNumbers.push(
+        <span
+        key="first"
+        onClick={() => handlePageChange(1)}
+        className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
+        >
+        &laquo;&laquo; {/* 두 개의 왼쪽 화살표 */}
+</span>
+);
+
+// 이전 페이지 버튼
+pageNumbers.push(
+<span
+key="prev"
+onClick={() => handlePageChange(currentPage - 1)}
+className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
+>
+&laquo; {/* 왼쪽 화살표 */}
+</span>
+);
+
+// // 항상 첫 페이지 버튼 표시
+// pageNumbers.push(
+//     <span
+//         key={1}
+//         onClick={() => handlePageChange(1)}
+//         className={`pagination_link ${currentPage === 1 ? 'pagination_link_active' : ''}`}
+//     >
+//         1
+//     </span>
+// );
+
+// 6페이지 이상일 때
+if (totalPages > maxButtons) {
+let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+let endPage = startPage + maxButtons - 1;
+
+if (endPage > totalPages) {
+endPage = totalPages;
+startPage = Math.max(1, endPage - maxButtons + 1);
+}
+
+// 중간 페이지 버튼 추가
+for (let i = startPage; i <= endPage; i++) {
+pageNumbers.push(
+<span
+key={i}
+onClick={() => handlePageChange(i)}
+className={`pagination_link ${i === currentPage ? 'pagination_link_active' : ''}`}
+>
+{i}
+</span>
+);
+}
+
+// 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'와 마지막 페이지 추가
+if (endPage < totalPages) {
+pageNumbers.push(<span className="pagination_link">...</span>);
+pageNumbers.push(
+<span key={totalPages} onClick={() => handlePageChange(totalPages)} className="pagination_link">
+{totalPages}
+</span>
+);
+}
+}
+
+// 다음 페이지 버튼
+pageNumbers.push(
+<span
+key="next"
+onClick={() => handlePageChange(currentPage + 1)}
+className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
+>
+&raquo; {/* 오른쪽 화살표 */}
+</span>
+);
+
+// 맨 마지막 페이지 버튼
+pageNumbers.push(
+<span
+key="last"
+onClick={() => handlePageChange(totalPages)}
+className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
+>
+&raquo;&raquo; {/* 두 개의 오른쪽 화살표 */}
+</span>
+);
+
+return pageNumbers;
+};
+
+
     return (
     <div>
 
@@ -651,7 +780,6 @@ function Order() {
                     {showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}
                     <thead>
                     <tr>
-                        <th><input type="checkbox"/></th>
                         <th>No.</th>
                         <th>
                             주문 번호
@@ -693,59 +821,68 @@ function Order() {
 
                     </tr>
                     </thead>
-                    <tbody>
-                    {order.length > 0 ? (
-                        order.map((item, index) => ( /*더블 클릭 시 상세 보기 창 - 유선화*/
-                            <tr key={`${item.orderNo}`} className={checkItem[index + 1] ? 'selected-row' : ''}
-                                onDoubleClick={() => {
-                                    if (item.status?.trim() === '임시저장') {
-                                        handleAddClick(item.orderNo);  // 주문 등록 모달 열기
-                                    } else {
-                                        handleDetailView(item.orderNo);  // 상세보기 모달 열기
-                                    }
-                                }}>
-                                <td>
-                                    <input
-                                        type="checkbox"
-                                        checked={checkItem[index + 1] || false}
-                                        onChange={() => handleCheckboxChange(index + 1)}
-                                    />
-                                </td>
-                                <td>{index + 1}</td>
-                                <td>{item.orderNo}</td>
-                                <td className="ellipsis">{item.manager}</td>
-                                <td className="ellipsis">{item.customerN}</td>
-                                <td>{item.status}</td>
-                                <td>{item.date}</td>
-                                {/*상세 보기 버튼에 이벤트 연결 - 유선화*/}
-                                <td>
-                                    <button className="btn-common"
-                                            onClick={(e) => {
-                                                if (item.status?.trim() === '임시저장') {
-                                                    e.stopPropagation();
-                                                    handleAddClick(item.orderNo); // 주문 등록 모달 열기
-                                                } else {
-                                                    handleDetailView(item.orderNo); // 상세보기 모달 열기
-                                                }
-                                            }}> 상세보기
-                                    </button>
-                                </td>
-                                {/*<td>{item.prodName}</td>*/}
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="8">등록된 주문이 없습니다😭</td>
-                        </tr>
-                    )}
-                    <tr>
-                        <td colSpan="7"></td>
-                        <td colSpan="1"> {order.length} 건</td>
-                    </tr>
+<tbody>
+{currentItems.length > 0 ? (
+currentItems.map((item, index) => {
+const globalIndex = indexOfFirstItem + index + 1; // +1은 1부터 시작하기 위함
 
-                    </tbody>
-                </table>
+return (
+<tr key={item.orderNo} className={checkItem[index + 1] ? 'selected-row' : ''}
+onDoubleClick={() => {
+if (item.status?.trim() === '임시저장') {
+handleAddClick(item.orderNo); // 주문 등록 모달 열기
+} else {
+handleDetailView(item.orderNo); // 상세보기 모달 열기
+}
+}}>
+<td>{globalIndex}</td> {/* 전역 인덱스 사용 */}
+<td>{item.orderNo}</td>
+<td className="ellipsis">{item.manager}</td>
+<td className="ellipsis">{item.customerN}</td>
+<td>{item.status}</td>
+<td>{item.date}</td>
+<td>
+<button className="btn-common"
+onClick={(e) => {
+if (item.status?.trim() === '임시저장') {
+e.stopPropagation();
+handleAddClick(item.orderNo); // 주문 등록 모달 열기
+} else {
+handleDetailView(item.orderNo); // 상세보기 모달 열기
+}
+}}>
+상세보기
+</button>
+</td>
+</tr>
+);
+})
+) : (
+<tr>
+<td colSpan="7">등록된 주문이 없습니다😭</td>
+</tr>
+)}
+<tr>
+<td colSpan="6"></td>
+<td colSpan="1">{order.length} 건</td>
+</tr>
+</tbody>
+
+
+
+
+</table>
+
+
+
             </div>
+
+<div className="pagination">
+{renderPageNumbers()}
+</div>
+
+
+
 
             {/* 여기 아래는 모달이다. */}
 
@@ -773,50 +910,39 @@ function Order() {
                             {/*주문정보-헤더*/}
                             <div className="RegistForm">
                                 <table className="formTable">
-                                    <tbody> {/*table 바로 아래에 tr 태그라 오류남*/}
-                                    <tr>
+                                    <tbody>
+                                        <tr>
+                                            <th colSpan="1"><label htmlFor="orderCustomer">고객사 명</label></th>
+                                            <td colSpan="3">
+                                                <select id="orderCustomer" value={registCustomer || ''} onChange={handleCustomerChange}>
+                                                    <option value="">선택</option>
+                                                    {orderCustomer.map(customer => (
+                                                        <option key={customer.customerNo} value={customer.customerNo}>
+                                                            {customer.customerName}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </td>
 
-                                        <th colSpan="1"><label htmlFor="orderCustomer">고객사 명</label></th>
-                                        <td colSpan="3">
-                                            <select id="orderCustomer" value={registCustomer || ''}
-                                                    onChange={handleCustomerChange}>
-                                                <option value="">선택</option>
-                                                {orderCustomer.map(customer => (
-                                                    <option key={customer.customerNo} value={customer.customerNo}>
-                                                        {customer.customerName}
-                                                    </option>
-                                                ))
-                                                }
-                                            </select></td>
+                                            <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
+                                            <td colSpan="3"><input type="date" id="delDate" value={delDate} onChange={handleDateChange} /></td>
+                                        </tr>
 
-                                        <th colSpan="1"><label htmlFor="">납품 요청일</label></th>
-                                        <td colSpan="3"><input type="date" id="delDate" value={delDate}
-                                                               onChange={handleDateChange}/></td>
+                                        <tr>
+                                            <th colSpan="1"><label htmlFor="">담당자명</label></th>
+                                            <td colSpan="3"><input type="text" id="" value={my.name} style={{border: 'none', background: 'white'}} /></td>
 
-                                    </tr>
+                                            <th colSpan="1"><label htmlFor="">결재자</label></th>
+                                            <td colSpan="3">
+                                                <Select name="confirmerId" options={confirmerIdOptions} placeholder="결재자 선택"
+                                                    onChange={(option) => handleManagerChange('confirmerId', option.value)} />
+                                            </td>
 
+                                        </tr>
 
-<tr>
-    <th colSpan="1"><label htmlFor="">담당자명</label></th>
-        <td colSpan="3"><input type="text" id="" placeholder="필드 입력" value={my.name} style={{border: 'none', background: 'white'}}/>
-    </td>
-                                    <tr>
-                                        <th colSpan="1"><label htmlFor="">담당자명</label></th>
-                                        <td colSpan="3"><Select
-                                            name="confirmerId"
-                                            options={confirmerIdOptions}
-                                            placeholder="담당자 선택"
-                                            onChange={(option) => handleManagerChange('confirmerId', option.value)}
-                                        />
-                                        </td>
-
-
-                                        <th colSpan="1"><label htmlFor="">결재자</label></th>
-                                        <td colSpan="3"><input type="text" placeholder="필드 입력" value="beak10"/></td>
-
-                                    </tr>
                                     </tbody>
                                 </table>
+
                             </div>
 
                             <div className="bookSearchBox">
@@ -869,9 +995,13 @@ function Order() {
 
                             {/*담아둔 상품 리스트*/}
                             <div className="RegistFormList">
+
                                 <div style={{fontWeight: 'bold'}}> 총 {addCheckProd?.length || 0} 건</div>
-                                <table className="formTableList">
-                                    {orderAddShowDelete && Object.values(orderAddCheckItem).some(isChecked => isChecked) && <button style={{top:"440px"}} className="delete-btn btn-common" onClick={() => {handleAddProdDelete(); handleOrderAddDelete();}}>삭제</button>}
+                                {orderAddShowDelete && Object.values(orderAddCheckItem).some(isChecked => isChecked) &&
+                                 <button className="delete-btn btn-common" onClick={() => {handleAddProdDelete(); handleOrderAddDelete();}}>삭제</button>}
+
+                                <table className="formTableList" style={{marginTop: '5px'}}>
+
                                     <thead>
                                     <tr>
                                         <th><input type="checkbox" checked={orderAddAllCheck} onChange={(e)=>handleOrderAddMasterCheckboxChange(e)}/></th>
