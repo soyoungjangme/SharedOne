@@ -7,8 +7,8 @@
     <select id="getAllList" resultType="com.project.tobe.dto.EmployeeDTO">
         select *
         from employee e
-        join authority a
-        on e.authority_grade = a.authority_grade
+                 join authority a
+                      on e.authority_grade = a.authority_grade
         where e.empl_yn = 'y'
         ORDER BY
         CASE e.authority_grade
@@ -20,14 +20,58 @@
         END;
     </select>
 
-    <select id="getPickList" resultType="com.project.tobe.dto.EmployeeDTO">
+    <select id="getPickList" resultType="com.project.tobe.dto.EmployeeDTO" parameterType="RequestList">
         SELECT *
         FROM employee e
         join authority a
         on e.authority_grade = a.authority_grade
-<!--        WHERE employee_id LIKE CONCAT('%', #{employeeId}, '%')-->
+        <!--        WHERE employee_id LIKE CONCAT('%', #{employeeId}, '%')-->
         <where>
-           e.empl_yn = 'y'
+            e.empl_yn = 'y'
+            <if test="data.employeeId != '' and data.employeeId != null">
+                AND e.employee_id LIKE CONCAT('%', #{data.employeeId}, '%')
+            </if>
+            <if test="data.employeeName != '' and data.employeeName != null">
+                AND e.employee_name LIKE CONCAT('%', #{data.employeeName}, '%')
+            </if>
+            <if test="data.employeeTel != '' and data.employeeTel != null">
+                AND e.employee_tel LIKE CONCAT('%', #{data.employeeTel}, '%')
+            </if>
+            <if test="data.employeeEmail != '' and data.employeeEmail != null">
+                AND e.employee_email LIKE CONCAT('%', #{data.employeeEmail}, '%')
+            </if>
+            <if test="data.employeeAddr != '' and data.employeeAddr != null">
+                ANDe.employee_addr LIKE CONCAT('%', #{data.employeeAddr}, '%')
+            </if>
+            <if test="data.hireDate != null">
+                AND e.hire_date = #{data.hireDate}
+            </if>
+            <if test="data.employeeManagerId != '' and data.employeeManagerId != null">
+                AND e.employee_manager_id LIKE CONCAT('%', #{data.employeeManagerId}, '%')
+            </if>
+            <if test="data.authorityGrade != '' and data.authorityGrade != null">
+                AND e.authority_grade LIKE CONCAT('%', #{data.authorityGrade}, '%')
+            </if>
+        </where>
+        ORDER BY
+        CASE e.authority_grade
+        WHEN 'S' THEN 1
+        WHEN 'A' THEN 2
+        WHEN 'B' THEN 3
+        WHEN 'C' THEN 4
+        WHEN 'D' THEN 5
+        END
+        offset #{pageable.offset} rows fetch next #{pageable.pageSize} rows only
+    </select>
+
+    <select id="getPickListTotal" parameterType="com.project.tobe.dto.EmployeeDTO">
+        SELECT count(*)
+        FROM employee e
+        join authority a
+        on e.authority_grade = a.authority_grade
+        <!--        WHERE employee_id LIKE CONCAT('%', #{employeeId}, '%')-->
+        <where>
+            e.empl_yn = 'y'
             <if test="employeeId != '' and employeeId != null">
                 AND e.employee_id LIKE CONCAT('%', #{employeeId}, '%')
             </if>
@@ -87,47 +131,41 @@
         </foreach>
     </insert>
 
-    <update id="employeeUpdateUser" parameterType="com.project.tobe.dto.EmployeeDTO" >
+    <update id="employeeUpdateUser" parameterType="com.project.tobe.dto.EmployeeDTO">
         UPDATE employee
-        SET
-        employee_name = #{employeeName},
-        employee_tel = #{employeeTel},
-        employee_email = #{employeeEmail},
-        employee_addr = #{employeeAddr},
-        WHERE employee_id = #{employeeId}
-    </update>
-
-
-    <update id="employeeUpdateMaster" parameterType="com.project.tobe.dto.EmployeeDTO" >
-            UPDATE employee
-            SET
-            salary = #{salary},
-            employee_manager_id = #{employeeManagerId},
-            authority_grade = #{authorityGrade}
+        SET employee_name  = #{employeeName},
+            employee_tel   = #{employeeTel},
+            employee_email = #{employeeEmail},
+            employee_addr  = #{employeeAddr},
             WHERE employee_id = #{employeeId}
     </update>
 
-    <update id="employeePwChange" parameterType="com.project.tobe.dto.EmployeeDTO" >
+
+    <update id="employeeUpdateMaster" parameterType="com.project.tobe.dto.EmployeeDTO">
         UPDATE employee
-        SET
-        employee_pw = #{employeePw}
+        SET salary              = #{salary},
+            employee_manager_id = #{employeeManagerId},
+            authority_grade     = #{authorityGrade}
         WHERE employee_id = #{employeeId}
     </update>
 
-    <update id="employeeUpdateMypagePw" parameterType="com.project.tobe.dto.EmployeeDTO" >
+    <update id="employeePwChange" parameterType="com.project.tobe.dto.EmployeeDTO">
         UPDATE employee
-        SET
-        employee_pw = #{employeePw}
+        SET employee_pw = #{employeePw}
         WHERE employee_id = #{employeeId}
     </update>
 
-
+    <update id="employeeUpdateMypagePw" parameterType="com.project.tobe.dto.EmployeeDTO">
+        UPDATE employee
+        SET employee_pw = #{employeePw}
+        WHERE employee_id = #{employeeId}
+    </update>
 
 
     <update id="employeeDeleteTest" parameterType="java.util.List">
         UPDATE employee
         SET empl_yn = 'n',
-            employee_id = CONCAT('del-', employee_id)
+        employee_id = CONCAT('del-', employee_id)
         WHERE employee_id IN
         <foreach collection="list" item="employeeId" open="(" separator="," close=")">
             #{employeeId}
@@ -136,21 +174,18 @@
 
     <update id="employeeDeletePick" parameterType="String">
         UPDATE employee
-        SET empl_yn = 'n',
-        employee_id = CONCAT('del-', employee_id)
+        SET empl_yn     = 'n',
+            employee_id = CONCAT('del-', employee_id)
         WHERE employee_id = #{employeeId}
     </update>
-
-
-
 
 
     <select id="mypageAll" parameterType="String" resultType="com.project.tobe.dto.AuthorityDto">
 
         select *
         from employee e
-        join authority a
-        on a.authority_grade = e.authority_grade
+                 join authority a
+                      on a.authority_grade = e.authority_grade
         where e.employee_id = #{employeeId}
 
     </select>
@@ -160,8 +195,8 @@
 
         select *
         from employee e
-        join authority a
-        on a.authority_grade = e.authority_grade
+                 join authority a
+                      on a.authority_grade = e.authority_grade
         where e.employee_id = #{session};
 
     </select>
@@ -169,13 +204,24 @@
 
     <update id="employeeUpdateMypage" parameterType="com.project.tobe.dto.EmployeeDTO">
         UPDATE employee
-        SET
-        employee_tel = #{employeeTel},
-        employee_email = #{employeeEmail},
-        employee_addr = #{employeeAddr}
+        SET employee_tel   = #{employeeTel},
+            employee_email = #{employeeEmail},
+            employee_addr  = #{employeeAddr}
         WHERE employee_id = #{employeeId}
     </update>
 
-
+    <select id="getManagerList" resultType="EmployeeDTO">
+    <![CDATA[
+        select *
+        from employee
+        where empl_yn = 'y'
+          and (
+            authority_grade = 'S' or
+            authority_grade < (select authority_grade
+                               from employee
+                               where employee_id = #{employeeId})
+            )
+        ]]>
+</select>
 
 </mapper>

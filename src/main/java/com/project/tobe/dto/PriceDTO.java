@@ -14,7 +14,9 @@ public class PriceDTO {
     private Long priceNo;
     private LocalDate registerDate;
     private String productNo;
+    private String productName;
     private String customerNo;
+    private String customerName;
     private Double customPrice;
     private String currency;
     private Double discount;
@@ -22,7 +24,7 @@ public class PriceDTO {
     private LocalDate endDate;
 
     private int page = 1;
-    private int amount = 10;
+    private int amount = 50;
 
     public PriceDTO(String productNo, String customerNo, Double customPrice, String currency, Double discount, LocalDate startDate, LocalDate endDate) {
         this.productNo = productNo;
