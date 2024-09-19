@@ -40,6 +40,8 @@ ChartJS.register(
 
 
 function Employee() {
+    const [totalItems, setTotalItems] = useState(); // 총 아이템 수
+    const [pageCount, setPageCount] = useState(); // 총 페이지 수 계산
 
     const options = {
         responsive: true,
@@ -112,7 +114,9 @@ function Employee() {
         salary: 0,
  /*       employeeManagerId: '',*/
         authorityGrade: '',
-        authorityName: ''
+        authorityName: '',
+        page: 1,
+        amount: 10
     });
 
     // 필터 변경 핸들러
@@ -135,7 +139,14 @@ function Employee() {
                     'Content-Type': 'application/json'
                 }
             })
-                .then(response => setEmployee(response.data))
+                .then(response => {
+                    console.log(response.data);
+                    setEmployee(response.data.pageData);
+                    setCurrentPage(response.data.page);
+                    setTotalItems(response.data.total);
+                    setItemsPerPage(response.data.pageData.length);
+                    setPageCount(response.data.realEnd);
+                })
                 .catch(error => console.error('에러에러', error));
         } else {
             console.error('[핸들러 작동 잘 함]');
@@ -695,7 +706,7 @@ const handleDeletePickClick = () => {
 // 페이지 네이션
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(30); // 페이지당 항목 수
+    const [itemsPerPage] = useState(10); // 페이지당 항목 수
 
     // 전체 페이지 수 계산
     const totalPages = Math.ceil(sortedData.length / itemsPerPage);
@@ -908,6 +919,12 @@ const handleDeletePickClick = () => {
                 </table>
                    <div>
                     {renderPageNumbers()}
+                       <Pagination
+                           pageCount={pageCount} // 총 페이지 수
+                           onPageChange={handlePageChange} // 페이지 변경 이벤트 핸들러
+                           currentPage={currentPage} // 현재 페이지
+                           total={totalItems} // 총 아이템 수
+                       />
                 </div>
             </div>
 
