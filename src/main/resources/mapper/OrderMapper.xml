@@ -55,11 +55,11 @@
         select p.product_no, p.product_name, p.product_writer, p.product_category,
         price.custom_price, price.start_date, price.end_date, price.price_no
         from price
-        join product p
-        on p.product_no=price.product_no
-        join customer c
-        on c.customer_no=price.customer_no
+        join product p on p.product_no=price.product_no
+        join customer c on c.customer_no=price.customer_no
         where c.customer_no = #{iocn}
+        and price.activated = 'Y'
+<!--    입력 String을 Date로 변환해서 판매종료일보다 낮으면 ㄱㄱ    -->
     </select>
 
     <resultMap id="GetPriceResultMap" type="PriceDTO">
