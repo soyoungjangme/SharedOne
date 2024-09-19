@@ -8,7 +8,7 @@
     <!-- 고객 목록 조회 쿼리 -->
     <!-- 모든 활성 고객 조회 -->
     <select id="getAllList" resultType="CustomerDTO">
-        SELECT * FROM customer WHERE activated='Y'
+        select * from customer where activated='Y' order by customer_name collate "ko_KR.utf8";
     </select>
 
     <!-- 필터에 따라 고객 조회 -->
@@ -100,7 +100,7 @@
 
     <update id="customerDeleteTest" parameterType="java.util.List">
         UPDATE customer
-        SET activated = 'n'
+        SET activated = 'N'
         WHERE customer_no IN
         <foreach collection="list" item="customerNo" open="(" separator="," close=")">
             CAST(#{customerNo} AS bigint)
