@@ -54,6 +54,7 @@ public class MypageController {
       System.out.println(userId);
     }
 
+
     return userId;
 
   }

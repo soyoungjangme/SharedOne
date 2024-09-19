@@ -32,7 +32,7 @@ const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSear
                             />
                             <datalist id="productDataList">
                                 {product.map((item) => (
-                                    <option value={item.productNo} key={item.productNo}>{item.productName}</option>
+                                    <option value={item.productNo} key={item.productNo}> {item.productName} </option>
                                 ))}
                             </datalist>
                         </div>
