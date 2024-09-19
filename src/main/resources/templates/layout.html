@@ -47,7 +47,14 @@
                     <div class="user-profile-box">
                         <p sec:authorize="isAuthenticated()">
 
-                            <p><span th:text="${nickName}">  </span>  <span> ( ??? ) </span> 님</p>
+                            <p><span th:text="${nickName}"></span>
+                        <span th:if="${auth == 'S'}" th:text="대표"></span>
+                        <span th:if="${auth == 'A'}" th:text="부장"></span>
+                        <span th:if="${auth == 'B'}" th:text="과장"></span>
+                        <span th:if="${auth == 'C'}" th:text="대리"></span>
+                        <span th:if="${auth == 'D'}" th:text="사원"></span>
+
+                        </p>
 
 
                         </p>

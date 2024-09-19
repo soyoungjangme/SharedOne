@@ -37,6 +37,8 @@ public class MainController {
 
             model.addAttribute("authName", user.getUsername());
             model.addAttribute("nickName", user.getNickname());
+            model.addAttribute("authSession", user.getAuthorities());
+            System.out.println(user.getAuthorities());
             model.addAttribute("auth", user.getUserAuthorityGrade());
 //            System.out.println("권한명" + user.getUserAuthorityName());
 //            model.addAttribute("authName", user.getUserAuthorityName());
