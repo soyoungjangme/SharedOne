@@ -26,5 +26,7 @@ public interface EmployeeMapper {
   public void employeeDeletePick(String employeeId);
   public void employeeUpdateMypage(EmployeeDTO dto);
   public void employeeUpdateMypagePw(EmployeeDTO dto);
+
+    List<EmployeeDTO> getManagerList(String id);
 }
 

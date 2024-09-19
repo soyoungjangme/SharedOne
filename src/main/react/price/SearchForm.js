@@ -21,9 +21,9 @@ const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSear
                         <div className="filter-item">
                             <label className="filter-label" htmlFor="product">상품</label>
                             <input
-                                name="productNo"
+                                name="productName"
                                 className="filter-label"
-                                type="number"
+                                type="text"
                                 list="productDataList"
                                 id="product"
                                 placeholder="상품"
@@ -32,7 +32,7 @@ const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSear
                             />
                             <datalist id="productDataList">
                                 {product.map((item) => (
-                                    <option value={item.productNo} key={item.productNo}>{item.productName}</option>
+                                    <option value={item.productName} key={item.productNo}></option>
                                 ))}
                             </datalist>
                         </div>
@@ -41,9 +41,9 @@ const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSear
                         <div className="filter-item">
                             <label className="filter-label" htmlFor="customer">업체</label>
                             <input
-                                name="customerNo"
+                                name="customerName"
                                 className="filter-label"
-                                type="number"
+                                type="text"
                                 list="customerDataList"
                                 id="customer"
                                 placeholder="고객"
@@ -51,7 +51,7 @@ const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSear
                             />
                             <datalist id="customerDataList">
                                 {customer.map((item) => (
-                                    <option value={item.customerNo} key={item.customerNo}>{item.customerName}</option>
+                                    <option value={item.customerName} key={item.customerNo}></option>
                                 ))}
                             </datalist>
                         </div>

@@ -156,5 +156,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     employeeMapper.employeeUpdateMypagePw(dto);
   }
 
+    @Override
+    public List<EmployeeDTO> getManagerList(String id) {
+        return employeeMapper.getManagerList(id);
+    }
+
 
 }

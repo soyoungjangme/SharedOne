@@ -4,12 +4,18 @@ package com.project.tobe.controller;
 import com.project.tobe.dto.*;
 import com.project.tobe.dto.EmployeeDTO;
 import com.project.tobe.entity.Employee;
+import com.project.tobe.security.EmployeeDetails;
 import com.project.tobe.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/employee")
@@ -28,11 +34,11 @@ public class EmployeeController {
 //        return e;
 //        }
 
-    @GetMapping("/employeeALL")
-    public List<EmployeeDTO> employeeALL() {
-      List<EmployeeDTO> emploList = employeeService.getAllList();
-      return employeeService.getAllList();
-    }
+  @GetMapping("/employeeALL")
+  public List<EmployeeDTO> employeeALL() {
+    List<EmployeeDTO> emploList = employeeService.getAllList();
+    return employeeService.getAllList();
+  }
 
   @PostMapping("/employeeSearch")
   public List<EmployeeDTO> employeePick(@RequestBody EmployeeSearchDTO dto) {
@@ -73,6 +79,19 @@ public class EmployeeController {
     employeeService.employeePwChange(dto);
   }
 
+  @GetMapping("/user-info")
+  public ResponseEntity<?> employeeUserInfo(Authentication authentication) {
+    if (authentication == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+    }
 
+    EmployeeDetails user = (EmployeeDetails)authentication.getPrincipal(); //인증객체 안에 principal값을 얻으면 유저객체가 나옵니다.
 
+    // 사용자 이름과 권한을 반환
+    Map<String, Object> response = new HashMap<>();
+    response.put("userId", user.getUsername());
+    response.put("grade", user.getUserAuthorityGrade());
+
+    return ResponseEntity.ok(response);
+  }
 }

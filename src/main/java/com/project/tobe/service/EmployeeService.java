@@ -24,4 +24,5 @@ public interface EmployeeService {
   public void employeeUpdateMypage(EmployeeDTO dto);
   public void employeeUpdateMypagePw(EmployeeDTO dto);
 
+    List<EmployeeDTO> getManagerList(String id);
 }
