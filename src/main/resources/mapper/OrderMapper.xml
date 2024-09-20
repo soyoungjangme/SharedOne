@@ -103,7 +103,8 @@
                 now(),
                 #{customerNo},
                 #{employeeId},
-                #{confirmerId})
+                #{confirmerId}
+                )
         RETURNING order_no;
     </insert>
     <insert id="registOrderB" parameterType="java.util.List">
@@ -118,34 +119,39 @@
     <!--유선화 START-->
     <!--상세 조회-->
     <select id="getOrderDetail" resultMap="OrderDetailResultMap">
-        select oh.order_no,
-               oh.reg_date,
-               oh.del_date,
-               oh.confirm_status,
-               oh.confirm_change_date,
-               oh.remarks,
-               oh.confirmer_id,
-               c.customer_no,
-               c.customer_name,
-               e.employee_id,
-               e.employee_name,
-               ob.price_no,
-               ob.product_no,
-               ob.order_product_qty,
-               p.product_name,
-               p.product_category,
-               p.product_writer,
-               coalesce(ob.price_no, pr.price_no) as price_no,
-               coalesce(pr.custom_price, 0)       as custom_price,
-               pr.start_date,
-               pr.end_date
-        from order_header oh
-                 join customer c on oh.customer_no = c.customer_no
-                 join employee e on oh.employee_id = e.employee_id
-                 join order_body ob on oh.order_no = ob.order_no
-                 join product p on ob.product_no = p.product_no
-                 left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no
-        where oh.order_no = #{orderNo};
+        select
+        oh.order_no,
+        oh.reg_date,
+        oh.del_date,
+        oh.confirm_status,
+        oh.confirm_change_date,
+        oh.remarks,
+        c.customer_no,
+        c.customer_name,
+        e.employee_id, --담당자 아이디
+        e.employee_name, --담당자 이름
+        ec.employee_id as confirmer_id, --결재자 아이디
+        ec.employee_name as confirmer_name, --결재자 이름
+        ob.price_no,
+        ob.product_no,
+        ob.order_product_qty,
+        p.product_name,
+        p.product_category,
+        p.product_writer,
+        coalesce(ob.price_no, pr.price_no) as price_no,
+        coalesce(pr.custom_price, 0) as custom_price,
+        pr.start_date,
+        pr.end_date
+        from
+        order_header oh
+        join customer c on oh.customer_no = c.customer_no
+        join employee e on oh.employee_id = e.employee_id  -- 담당자 조인
+        join employee ec on oh.confirmer_id = ec.employee_id  -- 결재자 조인
+        join order_body ob on oh.order_no = ob.order_no
+        join product p on ob.product_no = p.product_no
+        left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no
+        where
+        oh.order_no = #{orderNo};
     </select>
 
     <resultMap id="OrderDetailResultMap" type="OrderHDTO">
@@ -156,6 +162,7 @@
         <result property="confirmChangeDate" column="confirm_change_date"/>
         <result property="remarks" column="remarks"/>
         <result property="confirmerId" column="confirmer_id"/>
+        <result property="confirmerName" column="confirmer_name"/>
 
         <association property="customer" javaType="CustomerDTO">
             <id property="customerNo" column="customer_no"/>
@@ -202,14 +209,13 @@
     <!--주문 업데이트-->
     <update id="updateOrderHeader" parameterType="com.project.tobe.dto.OrderUp1DTO">
         UPDATE order_header
-        SET del_date            = #{delDate},
+        SET del_date = #{delDate},
             confirm_change_date = #{confirmChangeDate}
         WHERE order_no = #{orderNo}
     </update>
 
     <delete id="deleteOrderDetails" parameterType="long">
-        DELETE
-        FROM order_body
+        DELETE FROM order_body
         WHERE order_no = #{orderNo}
     </delete>
 
