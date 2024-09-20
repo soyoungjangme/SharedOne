@@ -374,7 +374,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                 <th>주문 번호</th>
                                 <td><input type="text" value={modifyItem.orderNo || ''} disabled/></td>
                                 <th>주문 등록일</th>
-                                <td><input type="text" value={modifyItem.regDate || ''} disabled/></td>
+                                <td><input type="text" value={modifyItem.regDate ? new Date(modifyItem.regDate).toLocaleDateString('en-CA') : ''} disabled/></td>
                             </tr>
                             <tr>
                                 <th>고객명</th>
@@ -385,10 +385,19 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                         type="date"
                                         name="delDate"
                                         value={modifyItem.delDate || ''}
-                                        onChange={(e) => setModifyItem(prev => ({
-                                            ...prev,
-                                            delDate: e.target.value
-                                        }))}
+                                        onChange={(e) => {
+                                            const now = new Date();
+                                            const selectDate = new Date(e.target.value);
+
+                                            if(selectDate < now ){
+                                                alert(`납품 요청일을 확인해주세요.`);
+                                                return;
+                                            }
+                                            setModifyItem(prev => ({
+                                                ...prev,
+                                                delDate: e.target.value
+                                            })
+                                        )}}
                                     />
                                 </td>
                             </tr>
@@ -434,7 +443,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                 <th>저자</th>
                                 <th>판매가</th>
                                 <th>판매 기간</th>
-                            </tr>sear
+                            </tr>
                             </thead>
                             <tbody>
                             {filteredProducts.map((prodList, index) => (
