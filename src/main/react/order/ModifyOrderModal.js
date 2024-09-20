@@ -17,6 +17,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
         confirmStatus: '',
         remarks: '',
         confirmerId: '',
+        confirmerName:'',
         confirmChangeDate: null,
         orderBList: []
     });
@@ -327,7 +328,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                 <th><label htmlFor="picName">담당자명</label></th>
                                 <td>{modifyItem.employee?.employeeName || ''}</td>
                                 <th><label htmlFor="approver">결재자</label></th>
-                                <td>{modifyItem.confirmerId || '정보 없음'}</td>
+                                <td>{modifyItem.confirmerName || '정보 없음'}</td>
                                 <th><label htmlFor="approvalStatus">결재 여부</label></th>
                                 <td>
                                     {(modifyItem.confirmStatus?.trim() === '승인' || modifyItem.confirmStatus?.trim() === '반려') ? (

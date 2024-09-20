@@ -25,6 +25,7 @@ public class OrderHDTO {
     private String remarks; //반려사유
     private String employeeId; //담당자 아이디
     private String confirmerId; //결재자 아이디
+    private String confirmerName; //결재자 이름
 
     private CustomerDTO customer;
     private EmployeeDTO employee;
