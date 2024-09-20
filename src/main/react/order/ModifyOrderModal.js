@@ -3,10 +3,11 @@ import './Order.css'
 import './OrderRegist.css'
 import './OrderModalDetail.css'
 import ModifyOrderModal2 from "./ModifyOrderModal2";
+import Order2 from './Order2';
 import axios from 'axios';
 import Select from "react-select";
 
-const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModal2 }) => {
+const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModal2, onOpenOrder2 }) => {
 
     const [modifyItem, setModifyItem] = useState({
         orderNo: '',
@@ -39,13 +40,19 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
         setIsModifyModalOpen(false);
     };
 
-    // const handleModifyUpdate = (updatedOrder) => {
-    //     setModifyItem(updatedOrder);
-    //     if (onUpdate) {
-    //         onUpdate(updatedOrder);
-    //     }
-    //     closeModifyModal();
-    // };
+    // 임시 저장 모달 관리
+    const [isOrder2Open, setIsOrder2Open] = useState(false);
+
+    // 임시 저장 모달 열기 함수
+    const openOrder2 = (orderData) => {
+        setIsOrder2Open(true);
+    };
+
+    // 임시 저장 모달 닫기 함수
+    const closeOrder2Modal = () => {
+        setIsOrder2Open(false);
+    };
+
     const handleModifyUpdate = (updatedOrder) => {
         // 수정된 주문 데이터를 반영하여 modifyItem 상태 업데이트
         setModifyItem(prev => ({
@@ -61,8 +68,6 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
 
         closeModifyModal(); // 모달2 닫기
     };
-
-
 
 //--------------------------------------------------------------------------
  const [orderDetails, setOrderDetails] = useState({
@@ -227,7 +232,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
 
         try {
             const today = new Date();
-            today.setDate(today.getDate() + 1);
+            today.setDate(today.getDate());
             const todayPlus = today.toISOString().split('T')[0];
 
             const response = await axios.post('/order/updateApproval', {
@@ -274,7 +279,9 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                         <div className="btns">
                             <div className="btn-add">
                                 {getConfirmStatus(modifyItem.confirmStatus) === '임시저장' && (
-                                    <button type="button">삭제</button>
+                                    <>
+                                        <button type="button" >삭제</button>
+                                    </>
                                 )}
                                 {getConfirmStatus(modifyItem.confirmStatus) === '대기' && (
                                     <>
@@ -282,24 +289,22 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                         <button type="button" onClick={() => handleApproval('승인')}>승인</button>
                                     </>
                                 )}
-                                {
-                                    getConfirmStatus(modifyItem.confirmStatus) === '임시저장' ||
-                                    getConfirmStatus(modifyItem.confirmStatus) === '대기' && (
-                                        <>
-                                            <button type="button" >주문등록</button>
-                                            <button type="button" >임시저장</button>
-                                        </>
-                                    )}
                                 <button
                                     type="button"
                                     onClick={() => {
                                         if (window.confirm('주문을 수정하시겠습니까?')) {
-                                            onOpenModifyModal2(modifyItem);
+                                            if (getConfirmStatus(modifyItem.confirmStatus) === '임시저장') {
+                                                openOrder2(modifyItem);
+                                            } else {
+                                                onOpenModifyModal2(modifyItem);
+                                            }
                                         }
                                     }}
                                 >수정하기
                                 </button>
                             </div>
+
+
                         </div>
                     </div>
                     <form className={`RegistForm ${isApproved ? 'form-disabled' : ''}`}>
@@ -323,21 +328,21 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                 <th><label htmlFor="approver">결재자</label></th>
                                 <td>{modifyItem.confirmerId || '정보 없음'}</td>
                                 <th><label htmlFor="approvalStatus">결재 여부</label></th>
-                                <td>
-                                    {(modifyItem.confirmStatus?.trim() === '승인' || modifyItem.confirmStatus?.trim() === '반려') ? (
-                                        <span>{getConfirmStatus(modifyItem.confirmStatus)}</span>
-                                    ) : (
-                                        <select
-                                            name="confirmStatus"
-                                            value={getConfirmStatus(modifyItem.confirmStatus)}
-                                            onChange={handleInputChange}
-                                        >
-                                            <option value="대기">대기</option>
-                                            <option value="승인">승인</option>
-                                            <option value="반려">반려</option>
-                                        </select>
-                                    )}
-                                </td>
+                                <td>{modifyItem.confirmStatus}</td>
+                                    {/*{(modifyItem.confirmStatus?.trim() === '승인' || modifyItem.confirmStatus?.trim() === '반려') ? (*/}
+                                    {/*    <span>{getConfirmStatus(modifyItem.confirmStatus)}</span>*/}
+                                    {/*) : (*/}
+                                    {/*    <select*/}
+                                    {/*        name="confirmStatus"*/}
+                                    {/*        value={getConfirmStatus(modifyItem.confirmStatus)}*/}
+                                    {/*        onChange={handleInputChange}*/}
+                                    {/*    >*/}
+                                    {/*        <option value="대기">대기</option>*/}
+                                    {/*        <option value="승인">승인</option>*/}
+                                    {/*        <option value="반려">반려</option>*/}
+                                    {/*    </select>*/}
+                                    {/*)}*/}
+
                             </tr>
                             </tbody>
                         </table>
@@ -442,6 +447,15 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                     </div>
                 </div>
             </div>
+
+            {isOrder2Open && (
+            <Order2
+                orderNo={modifyItem.orderNo}
+                onClose={closeOrder2Modal}
+                initialData={modifyItem}
+            />
+        )}
+
             {isModifyModalOpen && (
                 <ModifyOrderModal2
                     orderData={modifyItem}

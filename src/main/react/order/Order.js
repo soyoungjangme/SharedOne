@@ -7,6 +7,7 @@ import useCheckboxManager from "../js/CheckboxManager";
 import axios from 'axios';
 import ModifyOrderModal from './ModifyOrderModal';
 import ModifyOrderModal2 from './ModifyOrderModal2';
+import Order2 from './Order2';
 import Select from "react-select";
 /*
 import '../js/pagecssReal.css';
@@ -487,7 +488,6 @@ function Order() {
         date: ''
     });
 
-
     //유선화 - 시작 (또 다른 모달창 추가시킴)
     const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
     const [isModifyModal2Visible, setIsModifyModal2Visible] = useState(false);
@@ -513,6 +513,14 @@ function Order() {
     const handleCloseModifyModal2 = () => {
         setIsModifyModal2Visible(false);
     };
+
+    /* 임시 저장 모달 창*/
+    const handleOpenOrder2 = (orderData) => {
+        setSelectedOrderData(orderData);  // 선택된 주문 데이터를 설정
+        setIsModifyModalVisible(false);   // 상세보기 모달 닫기
+        setIsVisible(true);               // 임시 저장 수정 창 열기
+    };
+
 
     // 유선화 - 끝
 
@@ -912,11 +920,7 @@ function Order() {
                             return (
                                 <tr key={item.orderNo} className={checkItem[index + 1] ? 'selected-row' : ''}
                                     onDoubleClick={() => {
-                                        if (item.status?.trim() === '임시저장') {
-                                            handleAddClick(item.orderNo); // 주문 등록 모달 열기
-                                        } else {
-                                            handleDetailView(item.orderNo); // 상세보기 모달 열기
-                                        }
+                                            handleDetailView(item.orderNo); // 상세보기 모달 열기 - 임시저장 조건 없앴음
                                     }}>
                                     <td>{globalIndex}</td> {/* 전역 인덱스 사용 */}
                                     <td>{item.orderNo}</td>
@@ -927,12 +931,7 @@ function Order() {
                                     <td>
                                         <button className="btn-common"
                                                 onClick={(e) => {
-                                                    if (item.status?.trim() === '임시저장') {
-                                                        e.stopPropagation();
-                                                        handleAddClick(item.orderNo); // 주문 등록 모달 열기
-                                                    } else {
-                                                        handleDetailView(item.orderNo); // 상세보기 모달 열기
-                                                    }
+                                                        handleDetailView(item.orderNo); // 상세보기 모달 열기 - 임시저장 조건 없앴음
                                                 }}>
                                             상세보기
                                         </button>
@@ -986,9 +985,9 @@ function Order() {
                                             type="button"
                                             onClick={() => {
                                                 if (modifyItem.orderNo) {
-                                                    handleUpdateOrder("임시저장"); // 주문 번호가 있으면 update
+                                                    handleUpdateOrder("임시저장");
                                                 } else {
-                                                    handleRegistOrder("임시저장"); // 주문 번호가 없으면 insert
+                                                    handleRegistOrder("임시저장");
                                                 }
                                             }}
                                         >
@@ -1173,6 +1172,7 @@ function Order() {
                     isOpen={isModifyModalVisible}
                     onClose={handleModifyCloseClick}
                     onOpenModifyModal2={handleOpenModifyModal2}
+                    onOpenOrder2={handleOpenOrder2}
                 />
             )}
 
@@ -1182,6 +1182,14 @@ function Order() {
                     isOpen={isModifyModal2Visible}
                     onClose={handleCloseModifyModal2}
                     onUpdate={handleOrderUpdate}
+                />
+            )}
+
+            {isVisible && (
+                <Order2
+                    orderNo={selectedOrderNo}
+                    onClose={handleCloseClick}
+                    initialData={modifyItem}
                 />
             )}
         </div>

@@ -154,6 +154,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
     const handleUpdateOrder = async () => {
         if (!modifyItem.delDate) {
             alert('납품 요청일을 선택해주세요.');
+            onClose();
             return;
         }
 
