@@ -22,5 +22,8 @@ public class OrderUp1DTO {
   private Date confirmChangeDate; // 상태 변경일
   private Long customerNo; // 고객번호
   private String employeeId; // 직원아이디
-  private List<OrderUp2DTO> orderBList; // 주문 세부 사항
+
+   private List<OrderUp2DTO> orderBList; // 주문 세부 사항
+
+
 }
