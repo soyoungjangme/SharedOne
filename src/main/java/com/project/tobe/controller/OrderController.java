@@ -132,6 +132,7 @@ public class OrderController {
     public ResponseEntity<OrderHDTO> getOrderDetail(@PathVariable Long orderNo) {
         OrderHDTO orderDetail = orderService.getOrderDetail(orderNo);
         if (orderDetail != null) {
+            System.out.println(orderDetail.getConfirmerName());
             return ResponseEntity.ok(orderDetail);
         } else {
             return ResponseEntity.notFound().build();

@@ -126,11 +126,12 @@
         oh.confirm_status,
         oh.confirm_change_date,
         oh.remarks,
-        oh.confirmer_id,
         c.customer_no,
         c.customer_name,
-        e.employee_id,
-        e.employee_name,
+        e.employee_id, --담당자 아이디
+        e.employee_name, --담당자 이름
+        ec.employee_id as confirmer_id, --결재자 아이디
+        ec.employee_name as confirmer_name, --결재자 이름
         ob.price_no,
         ob.product_no,
         ob.order_product_qty,
@@ -144,7 +145,8 @@
         from
         order_header oh
         join customer c on oh.customer_no = c.customer_no
-        join employee e on oh.employee_id = e.employee_id
+        join employee e on oh.employee_id = e.employee_id  -- 담당자 조인
+        join employee ec on oh.confirmer_id = ec.employee_id  -- 결재자 조인
         join order_body ob on oh.order_no = ob.order_no
         join product p on ob.product_no = p.product_no
         left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no
@@ -160,6 +162,7 @@
         <result property="confirmChangeDate" column="confirm_change_date"/>
         <result property="remarks" column="remarks"/>
         <result property="confirmerId" column="confirmer_id"/>
+        <result property="confirmerName" column="confirmer_name"/>
 
         <association property="customer" javaType="CustomerDTO">
             <id property="customerNo" column="customer_no"/>
