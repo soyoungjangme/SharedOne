@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 import './MyPage.css';
 import MonthlySalesChart from '../main/MonthlySalesChart';
 import axios from 'axios';
+import './MyPage_password.css';
+
 
 function MyPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -275,7 +277,9 @@ const employeeUpdateMypage = () => {
               <div className="modal">
                 <div className="modal-content">
                   <span className="close" onClick={closeModal}>&times;</span>
+
                   <h2>비밀번호 변경</h2>
+                  
                   <form>
                     <div>
                       <label>현재 비밀번호:</label>
@@ -285,6 +289,7 @@ const employeeUpdateMypage = () => {
                         onChange={(e) => setCurrentPassword(e.target.value)}
                       />
                     </div>
+
                     <div>
                       <label>새로운 비밀번호:</label>
                       <input
@@ -293,6 +298,7 @@ const employeeUpdateMypage = () => {
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
                     </div>
+
                     <div>
                       <label>새로운 비밀번호 확인:</label>
                       <input
@@ -301,6 +307,7 @@ const employeeUpdateMypage = () => {
                         onChange={(e) => setConfirmNewPassword(e.target.value)}
                       />
                     </div>
+
                     {error && <p style={{ color: 'red' }}>{error}</p>}
                     <button type="button" onClick={handleSubmit}>변경</button>
                     <button type="button" onClick={closeModal}>취소</button>
@@ -309,47 +316,7 @@ const employeeUpdateMypage = () => {
               </div>
             )}
 
-            {/* Add CSS styles for modal */}
-            <style jsx>{`
-              .modal {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.5);
-              }
-              .modal-content {
-                background: white;
-                padding: 20px;
-                border-radius: 5px;
-                width: 300px;
-                text-align: center;
-              }
-              .close {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                font-size: 20px;
-                cursor: pointer;
-              }
-              form div {
-                margin-bottom: 15px;
-              }
-              input {
-                width: 100%;
-                padding: 8px;
-                box-sizing: border-box;
-              }
-              button {
-                margin: 5px;
-              }
-            `}</style>
-
-
+          
 
 
     </div>
