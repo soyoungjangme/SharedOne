@@ -1,5 +1,6 @@
 .dashboard {
-    width: 90%;
+    width: 100%;
+    min-height: 1000px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 30px;
@@ -10,6 +11,7 @@
     padding: 20px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
+    min-height: 50%;
 }
 .card:hover {
     /* transform: translateY(-5px);
@@ -24,7 +26,7 @@
 }
 .chart-container {
     position: relative;
-    height: 250px;
+    height: 85%;
 }
 .top-genres {
     display: flex;

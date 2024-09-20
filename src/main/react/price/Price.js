@@ -121,7 +121,7 @@ const Price = () => {
 
     const handleCloseClick = () => {
         setIsVisible(false);
-        handleSearchBtn();
+        getSearchItems(searchPrice);
     };
 
     const handlePageChange = async (selectedPage) => {

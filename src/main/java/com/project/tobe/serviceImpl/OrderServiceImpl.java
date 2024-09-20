@@ -119,4 +119,24 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.insertBack2(orderUp1DTO.getOrderBList(), orderNo);
     }
+
+    @Override
+    public EmployeeDTO getTopOfMonth() {
+        return orderMapper.getEmployeeTopOfMonth();
+    }
+
+    @Override
+    public List<Integer> getSalesByMonth() {
+        return orderMapper.getSalesByMonth();
+    }
+
+    @Override
+    public List<EmployeeDTO> getEmployeeRank() {
+        return orderMapper.getEmployeeRank();
+    }
+
+    @Override
+    public List<ProductDTO> getProductRank() {
+        return orderMapper.getProductRank();
+    }
 }

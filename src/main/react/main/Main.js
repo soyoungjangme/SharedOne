@@ -1,16 +1,31 @@
 // src/components/Dashboard.js
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import MonthlySalesChart from './MonthlySalesChart';
-import AgeGroupBestsellersChart from './AgeGroupBestsellersChart';
 import EmployeeOfMonth from './EmployeeOfMonth';
-import TopGenres from './TopGenres';
 import TopSalesTable from './TopSalesTable';
-import BestsellersByRegion from './BestsellersByRegion';
-import AuthorRankings from './AuthorRankings';
 import './Main.css';
 import ReactDOM from "react-dom/client";
+import axios from "axios";
 
 function Main() {
+    const [topOfMonth, setTopOfMonth] = useState({});
+    const [salesByMonth, setSalesByMonth] = useState([]);
+    const [employeeRank, setEmployeeRank] = useState([]);
+    const [productRank, setProductRank] = useState([]);
+
+    const getStatistics = async () => {
+        let {data} = await axios.get('/order/getStatistics');
+
+        setTopOfMonth(data.topOfMonth);
+        setSalesByMonth(data.salesByMonth);
+        setEmployeeRank(data.employeeRank);
+        setProductRank(data.productRank);
+    }
+
+    useEffect(() => {
+        getStatistics();
+    }, []);
+
     return (
         <div className="dashboard">
             <div className="card">
@@ -20,30 +35,16 @@ function Main() {
                 </div>
             </div>
             <div className="card">
-                <h3>판매 순위 탑10 (가격 기준)</h3>
-                <TopSalesTable/>
-            </div>
-            <div className="card">
                 <h3>이 달의 우수사원</h3>
                 <EmployeeOfMonth/>
             </div>
             <div className="card">
-                <h3>연령대 별 구매율</h3>
-                <div className="chart-container">
-                    <AgeGroupBestsellersChart/>
-                </div>
+                <h3>직원 판매 순위 탑10 (가격 기준)</h3>
+                <TopSalesTable/>
             </div>
             <div className="card">
-                <h3>인기 있는 장르/카테고리 탑 10</h3>
-                <TopGenres/>
-            </div>
-            <div className="card">
-                <h3>지역 별 베스트셀러</h3>
-                <BestsellersByRegion/>
-            </div>
-            <div className="card">
-                <h3>작가 순위</h3>
-                <AuthorRankings/>
+                <h3>상품 판매 순위 탑10 (가격 기준)</h3>
+                <TopSalesTable/>
             </div>
         </div>
     );

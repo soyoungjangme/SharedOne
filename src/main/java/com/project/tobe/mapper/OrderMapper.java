@@ -27,5 +27,13 @@ public interface OrderMapper {
     void insertOrderDetail(@Param("orderNo") Long orderNo, @Param("detail") OrderUp2DTO detail);
     void insertBack1(OrderUp1DTO orderUp1DTO);
     void insertBack2(@Param("orderBList") List<OrderUp2DTO> orderBList, @Param("orderNo") Long orderNo);
+
+    EmployeeDTO getEmployeeTopOfMonth();
+
+    List<Integer> getSalesByMonth();
+
+    List<EmployeeDTO> getEmployeeRank();
+
+    List<ProductDTO> getProductRank();
     /*유선화 END*/
 }

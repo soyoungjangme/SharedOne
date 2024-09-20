@@ -19,5 +19,14 @@ public interface OrderService {
     boolean updateApproval(Long orderNo, String confirmStatus, LocalDate confirmChangeDate, String remarks);
     OrderHDTO updateOrder(OrderUp1DTO orderUp1DTO);
     void insertBack(OrderUp1DTO orderUp1DTO);
+
     /*유선화 END*/
+
+    EmployeeDTO getTopOfMonth();
+
+    List<Integer> getSalesByMonth();
+
+    List<EmployeeDTO> getEmployeeRank();
+
+    List<ProductDTO> getProductRank();
 }

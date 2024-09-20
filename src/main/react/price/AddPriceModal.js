@@ -85,7 +85,6 @@ const AddPriceModal = ({
                     'Accept': 'application/json'
                 }
             });
-            fetchData();
             alert('등록 되었습니다');
 
             handleCloseClickModal();
@@ -107,8 +106,6 @@ const AddPriceModal = ({
     const handleCustomPriceChange = (customPrice) => {
         let discount = customPrice === productPrice || customPrice === 0 ? 0 : Math.round((productPrice - customPrice) / productPrice * 100);
         setInsertPrice((prev) => ({...prev, customPrice: customPrice, discount: discount}));
-
-        // setInsertPrice((prev) => ({...prev, discount: discount}));
     }
 
     const handleDiscountChange = (discount) => {
