@@ -25,6 +25,7 @@ public interface EmployeeService {
   public void employeeDeletePick(String employeeId);
   public void employeeUpdateMypage(EmployeeDTO dto);
   public void employeeUpdateMypagePw(EmployeeDTO dto);
+  public EmployeeDTO employeeUserSession(String id);
 
     List<EmployeeDTO> getManagerList(String id);
 }
