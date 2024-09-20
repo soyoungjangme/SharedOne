@@ -2,7 +2,9 @@ package com.project.tobe.dto;
 
 import lombok.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,7 +14,7 @@ import java.time.LocalDate;
 @Builder
 public class PriceDTO {
     private Long priceNo;
-    private LocalDate registerDate;
+    private LocalDateTime registerDate;
     private String productNo;
     private String productName;
     private String customerNo;
@@ -36,7 +38,7 @@ public class PriceDTO {
         this.endDate = endDate;
     }
 
-    public PriceDTO(LocalDate registerDate, String productNo, String customerNo, Double customPrice, String currency, Double discount, LocalDate startDate, LocalDate endDate, int page, int amount) {
+    public PriceDTO(LocalDateTime registerDate, String productNo, String customerNo, Double customPrice, String currency, Double discount, LocalDate startDate, LocalDate endDate, int page, int amount) {
         this.registerDate = registerDate;
         this.productNo = productNo;
         this.customerNo = customerNo;

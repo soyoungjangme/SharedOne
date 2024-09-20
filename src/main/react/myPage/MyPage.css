@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
 
 body {
@@ -79,6 +80,9 @@ th {
   font-size: 14px;
   border-radius: 3px;
   cursor: pointer;
+}
+.pw-btn:hover{
+  background-color: #003561;
 }
 
 .mypage-table select {

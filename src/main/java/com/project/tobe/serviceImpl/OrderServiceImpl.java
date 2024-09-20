@@ -106,5 +106,17 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.getOrderDetail(orderUp1DTO.getOrderNo());
     }
 
-    /* 유선화 END */
+
+    @Transactional
+    @Override
+    public void insertBack(OrderUp1DTO orderUp1DTO) {
+        // 1. 주문 헤더 삽입
+        System.out.println("서비스 도착 ");
+        orderMapper.insertBack1(orderUp1DTO);
+
+        // 2. 생성된 주문 번호 가져오기
+        Long orderNo = orderUp1DTO.getOrderNo();
+
+        orderMapper.insertBack2(orderUp1DTO.getOrderBList(), orderNo);
+    }
 }

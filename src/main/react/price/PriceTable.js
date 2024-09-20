@@ -79,7 +79,7 @@ const PriceTable = ({
                         handleModify(item)
                     }}>
                         <td>{((currentPage-1)*amount) + index + 1}</td>
-                        <td>{item.registerDate}</td>
+                        <td>{item.registerDate.substring(0, 10)}</td>
                         <td>
                             {item.productName}
                             <i className="bi bi-search details"
