@@ -1,6 +1,7 @@
 package com.project.tobe.controller;
 
 import com.project.tobe.dto.*;
+import com.project.tobe.entity.Employee;
 import com.project.tobe.entity.OrderH;
 import com.project.tobe.security.EmployeeDetails;
 import com.project.tobe.service.EmployeeService;
@@ -79,7 +80,23 @@ public class OrderController {
             System.out.println("------------------권한" + user.getUserAuthorityGrade());
             System.out.println(userId);
         }
+
         return userId;
+    }
+
+    @GetMapping("/getMyRole")
+    public String getMyRole(Authentication authentication){
+        String userRole = "";
+
+        if(authentication != null) { //인증이 되지않았다면 null입니다.
+            EmployeeDetails user = (EmployeeDetails)authentication.getPrincipal(); //인증객체 안에 principal값을 얻으면 유저객체가 나옵니다.
+            userRole = user.getUserAuthorityGrade();
+
+            System.out.println("------------------권한" + user.getUserAuthorityGrade());
+            System.out.println(userRole);
+        }
+
+        return userRole;
     }
 
     //담당자명 추출
@@ -92,7 +109,21 @@ public class OrderController {
         return myName;
     }
 
+/*
+    @GetMapping("/orderSessionList")
+    public EmployeeDTO getOrderSessionList(Authentication authentication){
 
+        String userId = "";
+
+        if(authentication != null) { //인증이 되지않았다면 null입니다.
+            EmployeeDetails user = (EmployeeDetails)authentication.getPrincipal(); //인증객체 안에 principal값을 얻으면 유저객체가 나옵니다.
+            userId = user.getUsername();
+        }
+
+
+        return employeeService.;
+    }
+*/
 
 
 /* 유선화 START */
@@ -101,6 +132,7 @@ public class OrderController {
     public ResponseEntity<OrderHDTO> getOrderDetail(@PathVariable Long orderNo) {
         OrderHDTO orderDetail = orderService.getOrderDetail(orderNo);
         if (orderDetail != null) {
+            System.out.println(orderDetail.getConfirmerName());
             return ResponseEntity.ok(orderDetail);
         } else {
             return ResponseEntity.notFound().build();
