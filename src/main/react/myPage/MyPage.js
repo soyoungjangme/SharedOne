@@ -192,6 +192,12 @@ function MyPage() {
     return `${front}-******`;
   };
 
+  const checkCount = [
+    !/(.)\1{2,}/.test(newPassword),
+    newPassword.length >= 10 && newPassword.length <= 16,
+    /(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{2,}/.test(newPassword)
+  ].filter(Boolean).length;
+
   return (
     <div>
       <h1 className="header"><i className="bi bi-tag"></i>마이페이지</h1>
@@ -271,8 +277,6 @@ function MyPage() {
         </div>
       </div>
 
-
-
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
@@ -285,40 +289,59 @@ function MyPage() {
                 <label>현재 비밀번호:</label>
                 <input
                   type="password"
+                  placeholder="현재 비밀번호"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  />
+                />
               </div>
 
               <div>
                 <label>새로운 비밀번호:</label>
                 <input
                   type="password"
+                  placeholder="새로운 비밀번호"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  />
+                />
+              </div>
+
+              <div className="password-check-indicators">
+                <div className={`check-item ${checkCount >= 1 ? 'active' : ''}`}></div>
+                <div className={`check-item ${checkCount === 2 ? 'yellow' : (checkCount === 3 ? 'active' : '')}`}></div>
+                <div className={`check-item ${checkCount === 3 ? 'active' : ''}`}></div>
+              </div>
+
+              <div className="password-checks">
+                <p style={{ color: !/(.)\1{2,}/.test(newPassword) ? '#00CC00' : '#FF4D4D' }}>
+                  {!/(.)\1{2,}/.test(newPassword) ? '🟢' : '🔴'} 3자리 연속된 문자, 숫자 제한
+                </p>
+                <p style={{ color: newPassword.length >= 10 && newPassword.length <= 16 ? '#00CC00' : '#FF4D4D' }}>
+                  {newPassword.length >= 10 && newPassword.length <= 16 ? '🟢' : '🔴'} 10자 이상 ~ 16자 이내 입력
+                </p>
+                <p style={{ color: /(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{2,}/.test(newPassword) ? '#00CC00' : '#FF4D4D' }}>
+                  {/(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{2,}/.test(newPassword) ? '🟢' : '🔴'} 영문 대문자, 소문자, 숫자 2종류 혼합
+                </p>
               </div>
 
               <div>
                 <label>새로운 비밀번호 확인:</label>
                 <input
                   type="password"
+                  placeholder="새로운 비밀번호 확인"
                   value={confirmNewPassword}
                   onChange={(e) => setConfirmNewPassword(e.target.value)}
-                  />
+                />
               </div>
 
               {error && <p style={{ color: 'red' }}>{error}</p>}
-              <button className='btn-change-modal' type="button" onClick={handleSubmit}>변경</button>
-              <button className='btn-cancel-modal' type="button" onClick={closeModal}>취소</button>
+
+              <button type="button" className='btn-change-modal' onClick={handleSubmit}>변경</button>
+              <button type="button" className='btn-cancel-modal' onClick={closeModal}>취소</button>
             </form>
+
           </div>
         </div>
       )}
-
-
-
-
     </div>
   );
 }
