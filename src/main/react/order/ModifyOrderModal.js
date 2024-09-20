@@ -244,6 +244,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                     confirmChangeDate: todayPlus
                 }));
                 alert(`주문 번호 ${modifyItem.orderNo}, ${status === '승인' ? '승인' : '반려'} 처리되었습니다.`);
+                window.location.reload();
             } else {
                 console.error('승인/반려 처리 실패');
             }
@@ -308,14 +309,19 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                             <tr>
                                 <th><label htmlFor="confirmTitle">주문 번호</label></th>
                                 <td>{modifyItem.orderNo || ''}</td>
-                                <th><label htmlFor="confirmTitle">주문 등록일</label></th>
-                                <td>{modifyItem.regDate || ''}</td>
+
+                                <th><label htmlFor="customerName">고객명</label></th>
+                                <td>{modifyItem.customer?.customerName || ''}</td>
                             </tr>
                             <tr>
-                                <th colSpan="1"><label htmlFor="customerName">고객명</label></th>
-                                <td colSpan="1">{modifyItem.customer?.customerName || ''}</td>
+                                <th><label htmlFor="confirmTitle">주문 등록일</label></th>
+                                <td>{modifyItem.regDate || ''}</td>
+
                                 <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
                                 <td>{modifyItem.delDate || ''}</td>
+
+                                <th colSpan="1"><label htmlFor="confirmTitle">상태 변경일</label></th>
+                                <td>{modifyItem.confirmChangeDate || '정보 없음'}</td>
                             </tr>
                             <tr>
                                 <th><label htmlFor="picName">담당자명</label></th>
@@ -345,8 +351,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                         <table className="formTable2">
                             <tbody>
                             <tr>
-                                <th colSpan="3"><label htmlFor="confirmTitle">상태 변경일</label></th>
-                                <td colSpan="3">{modifyItem.confirmChangeDate || '정보 없음'}</td>
+
                                 <th colSpan="1"><label htmlFor="remarks">비고</label></th>
                                 <td colSpan="3">
                                     {(getConfirmStatus(modifyItem.confirmStatus) === '승인' || getConfirmStatus(modifyItem.confirmStatus) === '반려') ? (

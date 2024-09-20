@@ -96,7 +96,7 @@
                                 customer_no,
                                 employee_id,
                                 confirmer_id)
-        values (now(),
+        values (current_timestamp,
                 #{delDate},
                 #{confirmStatus},
                 now(),
