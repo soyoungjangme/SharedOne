@@ -76,15 +76,11 @@ public class PriceController {
         return new PageVO<>(page);
     }
 
-//    @PostMapping(value=SEARCH_PRICE , produces = "application/json", consumes = "application/json")
-//    public List<PriceProductCustomerDTO> searchPrice(@RequestBody PriceDTO dto) {
-//        return priceService.getPriceProductCustomerDTO(dto);
-//    }
-
 
     @PostMapping(value=REGISTER_PRICE, produces = "application/json", consumes = "application/json")
-    public ResponseEntity<String> savePrice(@RequestBody List<PriceDTO> list) {
-        return priceService.savePrice(list);
+    public ResponseEntity<String> savePrice(@RequestBody PriceDTO dto) {
+        System.out.println(dto.toString());
+        return priceService.savePrice(dto);
     }
 
     @PostMapping(value=REGISTER_PRICE_CSV, consumes = "multipart/form-data", produces = "application/json")

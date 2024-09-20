@@ -2,10 +2,7 @@ package com.project.tobe.repository;
 
 import com.project.tobe.dto.PriceProductCustomerDTO;
 import com.project.tobe.dto.PriceDTO;
-import com.project.tobe.entity.Price;
-import com.project.tobe.entity.QCustomer;
-import com.project.tobe.entity.QPrice;
-import com.project.tobe.entity.QProduct;
+import com.project.tobe.entity.*;
 import com.project.tobe.util.constants.YesNo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
@@ -20,7 +17,9 @@ import org.springframework.data.domain.Pageable;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,15 +43,15 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
         QProduct product = QProduct.product;
         QCustomer customer = QCustomer.customer;
 
-        Optional<LocalDate> registerDate = Optional.ofNullable(dto.getRegisterDate());
+        Optional<LocalDateTime> registerDate = Optional.ofNullable(dto.getRegisterDate());
         Optional<String> productName = Optional.ofNullable(dto.getProductName());
         Optional<String> customerName = Optional.ofNullable(dto.getCustomerName());
         Optional<LocalDate> startDate = Optional.ofNullable(dto.getStartDate());
         Optional<LocalDate> endDate = Optional.ofNullable(dto.getEndDate());
 
-        registerDate.ifPresent(localDate -> builder.and(price.registerDate.eq(localDate)));
-        productName.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.product.productName.contains(s)));
-        customerName.filter(s-> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customer.customerName.contains(s)));
+        registerDate.ifPresent(localDateTime -> builder.and(price.registerDate.eq(localDateTime)));
+        productName.filter(s -> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.product.productName.contains(s)));
+        customerName.filter(s -> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customer.customerName.contains(s)));
         startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
         endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
         builder.and(price.activated.eq(Y));
@@ -80,7 +79,7 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
                 .where(price.product.productYn.eq('Y'))
                 .where(price.customer.activated.eq("Y"))
                 .where(builder)
-                .orderBy(price.priceNo.desc())
+                .orderBy(price.registerDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -113,6 +112,20 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
 
 
         return new PageImpl<>(list, pageable, total);
+    }
+
+    @Override
+    public List<Price> getPriceList(Customer customer, Product product) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        QPrice price = QPrice.price;
+        builder.and(price.activated.eq(Y));
+        builder.and(price.product.productNo.eq(product.getProductNo()));
+        builder.and(price.customer.customerNo.eq(customer.getCustomerNo()));
+        builder.and(price.product.productYn.eq('Y'));
+        builder.and(price.customer.activated.eq("Y"));
+
+        return jpaQueryFactory.select(price).from(price).where(builder).orderBy(price.registerDate.desc()).fetch();
     }
 
     @Override
@@ -150,13 +163,17 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
     public void updateOldPrice(Price entity) {
         QPrice price = QPrice.price;
 
-        // 1. 삭제: 엔티티의 시작일보다 큰 시작일, 엔티티의 종료일보다 작은 종료일 가진 데이터
-        deletePricesWithDateRange(price, entity);
+        BooleanBuilder builder = new BooleanBuilder();
 
-        // 2. 업데이트: 엔티티의 시작일과 종료일 사이에 있는 데이터들
-        updateStartDateInRange(price, entity);
-        updateEndDateInRange(price, entity);
-        deleteStartDateBiggerEndDate(price);
+        builder.and(price.priceNo.eq(entity.getPriceNo()));
+
+        JPAUpdateClause updateQuery = jpaQueryFactory.update(price).where(builder);
+
+        updateQuery.set(price.startDate, entity.getStartDate());
+        updateQuery.set(price.endDate, entity.getEndDate());
+        updateQuery.set(price.activated, entity.getActivated());
+
+        updateQuery.execute();
     }
 
     private void deletePricesWithDateRange(QPrice price, Price entity) {
