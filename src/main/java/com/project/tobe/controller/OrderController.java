@@ -184,10 +184,15 @@ public class OrderController {
     public Map<String, Object> getStatistics() {
         Map<String, Object> map = new HashMap<>();
 
-        EmployeeDTO top = orderService.getTopOfMonth();
-        List<Integer> salesByMonth= orderService.getSalesByMonth();
-        List<EmployeeDTO> employeeRank = orderService.getEmployeeRank();
-        List<ProductDTO> productRank = orderService.getProductRank();
+        EmployeeRankDTO top = orderService.getTopOfMonth();
+        List<SalesByMonth> salesByMonth= orderService.getSalesByMonth();
+        List<EmployeeRankDTO> employeeRank = orderService.getEmployeeRank();
+        List<ProductSaleRank> productRank = orderService.getProductRank();
+
+        map.put("topOfMonth", top);
+        map.put("employeeRank", employeeRank);
+        map.put("productRank", productRank);
+        map.put("salesByMonth", salesByMonth);
 
         return map;
     }

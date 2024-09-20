@@ -91,20 +91,19 @@
     <!--  jsy주문등록 - 등록하기  -->
     <insert id="registOrderH" useGeneratedKeys="true" keyProperty="orderNo">
         insert into order_header(reg_date,
-                                del_date,
-                                confirm_status,
-                                confirm_change_date,
-                                customer_no,
-                                employee_id,
-                                confirmer_id)
+                                 del_date,
+                                 confirm_status,
+                                 confirm_change_date,
+                                 customer_no,
+                                 employee_id,
+                                 confirmer_id)
         values (current_timestamp,
                 #{delDate},
                 #{confirmStatus},
                 now(),
                 #{customerNo},
                 #{employeeId},
-                #{confirmerId}
-                )
+                #{confirmerId})
         RETURNING order_no;
     </insert>
     <insert id="registOrderB" parameterType="java.util.List">
@@ -119,37 +118,34 @@
     <!--유선화 START-->
     <!--상세 조회-->
     <select id="getOrderDetail" resultMap="OrderDetailResultMap">
-        select
-        oh.order_no,
-        oh.reg_date,
-        oh.del_date,
-        oh.confirm_status,
-        oh.confirm_change_date,
-        oh.remarks,
-        oh.confirmer_id,
-        c.customer_no,
-        c.customer_name,
-        e.employee_id,
-        e.employee_name,
-        ob.price_no,
-        ob.product_no,
-        ob.order_product_qty,
-        p.product_name,
-        p.product_category,
-        p.product_writer,
-        coalesce(ob.price_no, pr.price_no) as price_no,
-        coalesce(pr.custom_price, 0) as custom_price,
-        pr.start_date,
-        pr.end_date
-        from
-        order_header oh
-        join customer c on oh.customer_no = c.customer_no
-        join employee e on oh.employee_id = e.employee_id
-        join order_body ob on oh.order_no = ob.order_no
-        join product p on ob.product_no = p.product_no
-        left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no
-        where
-        oh.order_no = #{orderNo};
+        select oh.order_no,
+               oh.reg_date,
+               oh.del_date,
+               oh.confirm_status,
+               oh.confirm_change_date,
+               oh.remarks,
+               oh.confirmer_id,
+               c.customer_no,
+               c.customer_name,
+               e.employee_id,
+               e.employee_name,
+               ob.price_no,
+               ob.product_no,
+               ob.order_product_qty,
+               p.product_name,
+               p.product_category,
+               p.product_writer,
+               coalesce(ob.price_no, pr.price_no) as price_no,
+               coalesce(pr.custom_price, 0)       as custom_price,
+               pr.start_date,
+               pr.end_date
+        from order_header oh
+                 join customer c on oh.customer_no = c.customer_no
+                 join employee e on oh.employee_id = e.employee_id
+                 join order_body ob on oh.order_no = ob.order_no
+                 join product p on ob.product_no = p.product_no
+                 left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no
+        where oh.order_no = #{orderNo};
     </select>
 
     <resultMap id="OrderDetailResultMap" type="OrderHDTO">
@@ -206,13 +202,14 @@
     <!--주문 업데이트-->
     <update id="updateOrderHeader" parameterType="com.project.tobe.dto.OrderUp1DTO">
         UPDATE order_header
-        SET del_date = #{delDate},
+        SET del_date            = #{delDate},
             confirm_change_date = #{confirmChangeDate}
         WHERE order_no = #{orderNo}
     </update>
 
     <delete id="deleteOrderDetails" parameterType="long">
-        DELETE FROM order_body
+        DELETE
+        FROM order_body
         WHERE order_no = #{orderNo}
     </delete>
 
@@ -237,34 +234,71 @@
 
     <!--유선화 END-->
 
-    <select id="getEmployeeTopOfMonth" resultType="EmployeeDTO">
-        select * from employee where employee_id = (select employee_id from order_header)
+    <select id="getEmployeeTopOfMonth" resultType="EmployeeRankDTO">
+        SELECT e.employee_id,
+               e.employee_name,
+               SUM(coalesce(body.total, 0)) AS monthly_sales
+        FROM employee e
+                 JOIN order_header header ON e.employee_id = header.employee_id
+                 JOIN (SELECT order_no,
+                              SUM(coalesce(prod_total, 0)) AS total
+                       FROM order_body
+                       GROUP BY order_no) body ON header.order_no = body.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date BETWEEN date_trunc('month', current_date)::date
+            AND date_trunc('month', current_date + interval '1 months')::date - 1
+        GROUP BY e.employee_id
+        ORDER BY monthly_sales DESC
+        limit 1
     </select>
 
-    <select id="getSalesByMonth" >
-
+    <select id="getSalesByMonth" resultType="SalesByMonth">
+        SELECT TO_CHAR(header.confirm_change_date, 'YYYY-MM') AS sales_month,
+               SUM(coalesce(body.prod_total, 0))              AS total_sales
+        FROM order_header header
+                 JOIN
+             (SELECT order_no, SUM(coalesce(prod_total, 0)) AS prod_total
+              FROM order_body
+              GROUP BY order_no) body
+             ON header.order_no = body.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date IS NOT NULL
+        GROUP BY TO_CHAR(header.confirm_change_date, 'YYYY-MM')
+        ORDER BY sales_month;
     </select>
 
-    <select id="getEmployeeRank" resultType="EmployeeDTO">
-
+    <select id="getEmployeeRank" resultType="EmployeeRankDTO">
+        SELECT e.employee_id,
+               e.employee_name,
+               SUM(coalesce(body.total, 0)) AS monthly_sales
+        FROM employee e
+                 JOIN order_header header ON e.employee_id = header.employee_id
+                 JOIN (SELECT order_no,
+                              SUM(coalesce(prod_total, 0)) AS total
+                       FROM order_body
+                       GROUP BY order_no) body ON header.order_no = body.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date BETWEEN date_trunc('month', current_date)::date
+            AND date_trunc('month', current_date + interval '1 months')::date - 1
+        GROUP BY e.employee_id
+        ORDER BY monthly_sales DESC
+        limit 10
     </select>
 
-    <select id="getProductRank" resultType="ProductDTO">
+    <select id="getProductRank" resultType="ProductSaleRank">
+        SELECT p.product_no,
+               p.product_name,
+               SUM(coalesce(body.prod_total, 0)) AS total_sales
+        FROM product p
+                 JOIN order_body body ON p.product_no = body.product_no
+                 JOIN order_header header ON body.order_no = header.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date BETWEEN date_trunc('month', current_date)::date
+            AND date_trunc('month', current_date + interval '1 months')::date - 1
+        GROUP BY p.product_no, p.product_name
+        ORDER BY total_sales DESC
+        LIMIT 10;
 
     </select>
-<!--    SELECT e.employee_name,-->
-<!--    SUM(coalesce(body.total, 0)) AS monthly_sales-->
-<!--    FROM employee e-->
-<!--    JOIN order_header header ON e.employee_id = header.employee_id-->
-<!--    JOIN (SELECT order_no,-->
-<!--    SUM(coalesce(prod_total, 0)) AS total-->
-<!--    FROM order_body-->
-<!--    GROUP BY order_no) body ON header.order_no = body.order_no-->
-<!--    WHERE header.confirm_status LIKE '%승인%'-->
-<!--    AND header.confirm_change_date BETWEEN date_trunc('month', current_date)::date-->
-<!--    AND date_trunc('month', current_date + interval '1 months')::date - 1-->
-<!--    GROUP BY e.employee_id-->
-<!--    ORDER BY monthly_sales DESC-->
-<!--    limit 1;-->
 
 </mapper>

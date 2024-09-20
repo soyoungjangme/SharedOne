@@ -9,6 +9,7 @@ import ModifyOrderModal from './ModifyOrderModal';
 import ModifyOrderModal2 from './ModifyOrderModal2';
 import Order2 from './Order2';
 import Select from "react-select";
+
 /*
 import '../js/pagecssReal.css';
 */
@@ -52,12 +53,12 @@ function Order() {
     const [userInfo, setUserInfo] = useState(null);
 
     const fetchUserInfo = async () => {
-        const response = await axios.get('/employee/user-info', { withCredentials: true });
+        const response = await axios.get('/employee/user-info', {withCredentials: true});
         setUserInfo(response.data);
     }
 
     //주문목록 불러오기
-    useEffect( () => {
+    useEffect(() => {
 
         let effectOrder = async () => {
             try {
@@ -69,7 +70,7 @@ function Order() {
                     manager: item.employee.employeeName,
                     status: item.confirmStatus,
                     date: item.regDate,
-                    managerId : item.employee.employeeId
+                    managerId: item.employee.employeeId
                 }));
 
                 setOrder(transfomData);
@@ -82,15 +83,17 @@ function Order() {
         effectOrder();
 
 
-
         const fetchConfirmerIdList = async () => {
-            const response = await axios.get('/employee/user-info', { withCredentials: true });
+            const response = await axios.get('/employee/user-info', {withCredentials: true});
             console.log(response);
             const {data} = await axios.get(`/order/getManagerList/${response.data.userId}`);
             console.log(data);
             setConfirmerIdList(data);
             setConfirmerIdOptions(
-                data.map(manager => ({value:manager.employeeId, label: manager.employeeName+' / ' + manager.employeeEmail}))
+                data.map(manager => ({
+                    value: manager.employeeId,
+                    label: manager.employeeName + ' / ' + manager.employeeEmail
+                }))
             );
         };
         fetchConfirmerIdList();
@@ -100,7 +103,7 @@ function Order() {
     // --- 테이블 정렬 기능
 
     // 정렬 상태와 방향을 저장하는 상태
-    const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'ascending' });
+    const [sortConfig, setSortConfig] = useState({key: 'date', direction: 'ascending'});
 
     // 정렬 함수
     const sortData = (key) => {
@@ -122,18 +125,18 @@ function Order() {
             // 문자열 비교
             if (typeof aValue === 'string' && typeof bValue === 'string') {
                 return direction === 'ascending'
-                ? aValue.localeCompare(bValue)
-                : bValue.localeCompare(aValue);
+                    ? aValue.localeCompare(bValue)
+                    : bValue.localeCompare(aValue);
             }
 
             // 숫자 비교
             return direction === 'ascending'
-            ? aValue - bValue
-            : bValue - aValue;
+                ? aValue - bValue
+                : bValue - aValue;
         });
 
         setOrder(sortOrder);
-        setSortConfig({ key, direction });
+        setSortConfig({key, direction});
     };
 
 
@@ -180,9 +183,9 @@ function Order() {
         const date = form.date || null;
         const orderNo = form.orderNo ? form.orderNo.replace(/\s+/g, '') : null;
         const prod = form.prod || null;
-        const mycustomer = form.mycustomer|| null;
+        const mycustomer = form.mycustomer || null;
         const manager = form.manager ? form.manager.replace(/\s+/g, '') : null;
-        const status = form.selectedConfirm|| null;
+        const status = form.selectedConfirm || null;
 
         const res = await axios.post('/order/searchSelect', {
             inputDate: date,
@@ -225,7 +228,6 @@ function Order() {
         setDelDate(e.target.value);
 
 
-
         setAddCheckProd([]); //추가리스트 초기화
     }
 
@@ -240,11 +242,9 @@ function Order() {
     };
 
 
-
-
-    const [my, setMy]= useState({id: '', name: '', role:''});
+    const [my, setMy] = useState({id: '', name: '', role: ''});
     const [roleList, setRoleList] = useState([]);
-    console.log("ㅋㅋ글쓴이 값이야 " +  order.managerId);
+    console.log("ㅋㅋ글쓴이 값이야 " + order.managerId);
     console.log("ㅋㅋ세션값이야" + JSON.stringify(my));
     //담당자명 세션에서 불러오기
     useEffect(() => {
@@ -255,28 +255,24 @@ function Order() {
                 const myId = idRes.data;
 
                 // 이름 가져오기
-                const nameRes = await axios.post('/order/getMyName', { myId }); // 객체로 전달
-                 const RoleRes = await axios.get('/order/getMyRole'); // 권한 가져오기
+                const nameRes = await axios.post('/order/getMyName', {myId}); // 객체로 전달
+                const RoleRes = await axios.get('/order/getMyRole'); // 권한 가져오기
 
 
-                const response = await axios.get(`/order/getManagerList/${myId}`);
+                const {data} = await axios.get('/order/getManagerList/' + myId);
+                console.log(data);
+                // employeeId와 authorityGrade만 추출
+                const filteredList = data.map(data => ({
+                    employeeId: data.employeeId,
+                    authorityGrade: data.authorityGrade,
+                }));
 
-                const data = response.data; // Assuming response.data contains the list
-                   console.log(data);
-                    // employeeId와 authorityGrade만 추출
-                    const filteredList = data.map(data => ({
-                        employeeId: data.employeeId,
-                        authorityGrade: data.authorityGrade,
-                    }));
-
-                    setRoleList(filteredList);
-                    console.log("Role List" + roleList.employeeId);
-                    console.log("Role List" + roleList.employeeId);
+                setRoleList(filteredList);
+                console.log("Role List" + roleList.employeeId);
+                console.log("Role List" + roleList.employeeId);
 
 
-
-
-                setMy({ id: myId, name: nameRes.data , role : RoleRes.data});
+                setMy({id: myId, name: nameRes.data, role: RoleRes.data});
             } catch (error) {
                 console.error('Error', error);
             }
@@ -285,17 +281,12 @@ function Order() {
     }, []);
 
 
-
-
-
-
-
     // 고객이 선택되면 상품+판매가를 가져오는 함수
     useEffect(() => {
-        console.log("zz",delDate);
+        console.log("zz", delDate);
 
         const now = new Date();
-        if(new Date(delDate) < now){
+        if (new Date(delDate) < now) {
             alert("납품요청일을 확인해주십시오.")
             return setDelDate('');
         }
@@ -340,7 +331,7 @@ function Order() {
     const handleAddProd = () => {
 
 
-        if(!delDate){
+        if (!delDate) {
             alert("납품요청일을 입력해주십시오.");
             return;
         }
@@ -360,7 +351,7 @@ function Order() {
                     if (existingPriceNos.has(priceNo)) { //중복
                         hasDuplicates = true;
                     } else { //중복 아닌 항목은 newCheckProd에 추가
-                        newCheckProd.push({ prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo });
+                        newCheckProd.push({prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo});
                         existingPriceNos.add(priceNo); // Set에도 추가하여 중복 방지
                     }
                 }
@@ -393,9 +384,8 @@ function Order() {
     const [quantities, setQuantities] = useState({});
     const handleQuantityChange = (index) => (e) => {
         const qty = Number(e.target.value) || 0;
-        setQuantities(prevQuantities => ({ ...prevQuantities, [index]: qty }));
+        setQuantities(prevQuantities => ({...prevQuantities, [index]: qty}));
     };
-
 
 
     //등록하기 & 임시저장
@@ -433,7 +423,7 @@ function Order() {
                 };
             });
 
-            const response = await axios.post('/order/registOrder',{ // insert into oh
+            const response = await axios.post('/order/registOrder', { // insert into oh
                 inputDelDate: delDate || null,//납품요청일
                 inputCustomerNo: registCustomer || null,//주문고객번호
                 inputManager: my.id || null, //임의 값(로그인 시 해당 직원id 기입할 예정)
@@ -445,9 +435,9 @@ function Order() {
             const orderNo = response.data; // 서버에서 받은 주문 번호
             handleCloseClick(); // 등록 창 닫기 및 초기화
 
-            if(orderStatus === "대기"){
+            if (orderStatus === "대기") {
                 alert(`주문번호 ${orderNo} 등록이 완료되었습니다.`);
-            }else{
+            } else {
                 alert(`주문번호 ${orderNo} 임시저장되었습니다.`);
             }
         } catch (error) {
@@ -470,7 +460,7 @@ function Order() {
         setAddCheckProd(prevAddCheckProd => {
             let newAddCheckProd = prevAddCheckProd;
 
-            if(!orderAddAllCheck){
+            if (!orderAddAllCheck) {
 
                 const checkedIndexes = Object.keys(orderAddCheckItem).filter(key => orderAddCheckItem[key]);//체크된 항목의 인덱스를 추출
 
@@ -480,10 +470,10 @@ function Order() {
 
                 return newAddCheckProd; //개별 삭제 후 반환
 
-            }else {
-                if(addCheckProd.length > 0){
+            } else {
+                if (addCheckProd.length > 0) {
                     return []; //전체 삭제
-                }else{
+                } else {
                     alert(`삭제할 항목이 없습니다.`);
                     return prevAddCheckProd; //이전 상태 유지
                 }
@@ -491,7 +481,6 @@ function Order() {
 
         });
     };
-
 
 
     /*---------------jsy주문 등록 끝---------------*/
@@ -595,24 +584,21 @@ function Order() {
     const [confirmerName, setConfirmerName] = useState(''); //선택한 결재자 이름
 
     const handleManagerChange = (name, value) => {
-        setModifyItem((prev) => ({ ...prev, [name]: value }));
+        setModifyItem((prev) => ({...prev, [name]: value}));
     }
 
-/*    useEffect(() => {
-        const selectedConfirmer = confirmerIdList.find(emp => emp.employeeId === modifyItem.confirmerId);
-        if (selectedConfirmer) {
-            setConfirmerName(selectedConfirmer.employeeName);
-        } else {
-            setConfirmerName(''); // 선택된 결재자가 없을 경우 빈 문자열로 설정
-        }
-        console.log("Selected confirmer name: ", confirmerName);
-    }, [modifyItem.confirmerId]); // confirmerIdList도 의존성에 추가*/
-
-
+    /*    useEffect(() => {
+            const selectedConfirmer = confirmerIdList.find(emp => emp.employeeId === modifyItem.confirmerId);
+            if (selectedConfirmer) {
+                setConfirmerName(selectedConfirmer.employeeName);
+            } else {
+                setConfirmerName(''); // 선택된 결재자가 없을 경우 빈 문자열로 설정
+            }
+            console.log("Selected confirmer name: ", confirmerName);
+        }, [modifyItem.confirmerId]); // confirmerIdList도 의존성에 추가*/
 
 
     // =============================================== 페이지 네이션
-
 
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -730,7 +716,6 @@ function Order() {
     };
 
 
-
     return (
         <div>
 
@@ -744,13 +729,21 @@ function Order() {
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="date">등록 일자</label>
                                 <input className="filter-input" type="date" id="date" value={form.date || ''}
-                                       onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} required/>
+                                       onChange={handleChange} onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        handleSearchBtn();
+                                    }
+                                }} required/>
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="orderNo">주문 번호</label>
                                 <input className="filter-input" type="text" id="orderNo" value={form.orderNo || ''}
-                                       onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} placeholder="주문 번호" required/>
+                                       onChange={handleChange} onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        handleSearchBtn();
+                                    }
+                                }} placeholder="주문 번호" required/>
                             </div>
 
                             <div className="filter-item">
@@ -769,7 +762,11 @@ function Order() {
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="manager">담당자명</label>
                                 <input className="filter-input" type="text" id="manager" value={form.manager || ''}
-                                       onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} placeholder="담당자명" required/>
+                                       onChange={handleChange} onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        handleSearchBtn();
+                                    }
+                                }} placeholder="담당자명" required/>
                             </div>
 
                             <div className="filter-item">
@@ -866,10 +863,11 @@ function Order() {
                                 <tr key={item.orderNo} className={checkItem[index + 1] ? 'selected-row' : ''}
                                     onDoubleClick={() => {
 
-                                            handleDetailView(item.orderNo); // 상세보기 모달 열기
+                                        handleDetailView(item.orderNo); // 상세보기 모달 열기
 
                                     }}>
-                                    <td>{globalIndex}</td> {/* 전역 인덱스 사용 */}
+                                    <td>{globalIndex}</td>
+                                    {/* 전역 인덱스 사용 */}
                                     <td>{item.orderNo}</td>
                                     <td className="ellipsis">{item.manager}</td>
                                     <td className="ellipsis">{item.managerId}</td>
@@ -909,10 +907,7 @@ function Order() {
                     </tbody>
 
 
-
-
                 </table>
-
 
 
             </div>
@@ -920,8 +915,6 @@ function Order() {
             <div className="pagination">
                 {renderPageNumbers()}
             </div>
-
-
 
 
             {/* 여기 아래는 모달이다. */}
@@ -940,14 +933,18 @@ function Order() {
                                     <div className="btn-add2">
                                         {/* 임시 저장 버튼 */}
 
-                                        <button type="button" onClick={() => {handleRegistOrder("임시저장");}}>
+                                        <button type="button" onClick={() => {
+                                            handleRegistOrder("임시저장");
+                                        }}>
                                             임시 저장
-                                            </button>
+                                        </button>
 
                                     </div>
                                     <div className="btn-close">
                                         {/* 등록하기 버튼 */}
-                                        <button type="button" onClick={() => {handleRegistOrder("대기"); }} >
+                                        <button type="button" onClick={() => {
+                                            handleRegistOrder("대기");
+                                        }}>
                                             등록하기
                                         </button>
                                     </div>
@@ -961,7 +958,8 @@ function Order() {
                                     <tr>
                                         <th colSpan="1"><label htmlFor="orderCustomer">고객사 명</label></th>
                                         <td colSpan="3">
-                                            <select id="orderCustomer" value={registCustomer || ''} onChange={handleCustomerChange}>
+                                            <select id="orderCustomer" value={registCustomer || ''}
+                                                    onChange={handleCustomerChange}>
                                                 <option value="">선택</option>
                                                 {orderCustomer.map(customer => (
                                                     <option key={customer.customerNo} value={customer.customerNo}>
@@ -972,17 +970,19 @@ function Order() {
                                         </td>
 
                                         <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
-                                        <td colSpan="3"><input type="date" id="delDate" value={delDate} onChange={handleDateChange} /></td>
+                                        <td colSpan="3"><input type="date" id="delDate" value={delDate}
+                                                               onChange={handleDateChange}/></td>
                                     </tr>
 
                                     <tr>
                                         <th colSpan="1"><label htmlFor="">담당자명</label></th>
-                                        <td colSpan="3"><input type="text" id="" value={my.name} style={{border: 'none', background: 'white'}} /></td>
+                                        <td colSpan="3"><input type="text" id="" value={my.name}
+                                                               style={{border: 'none', background: 'white'}}/></td>
 
                                         <th colSpan="1"><label htmlFor="">결재자</label></th>
                                         <td colSpan="3">
                                             <Select name="confirmerId" options={confirmerIdOptions} placeholder="결재자 선택"
-                                                    onChange={(option) => handleManagerChange('confirmerId', option.value)} />
+                                                    onChange={(option) => handleManagerChange('confirmerId', option.value)}/>
                                         </td>
 
                                     </tr>
@@ -1014,7 +1014,8 @@ function Order() {
                                 <table className="formTableList">
                                     <thead>
                                     <tr>
-                                        <th><input type="checkbox" checked={orderListAllCheck} onChange={(e) => handleOrderListMasterCheckboxChange(e)}/></th>
+                                        <th><input type="checkbox" checked={orderListAllCheck}
+                                                   onChange={(e) => handleOrderListMasterCheckboxChange(e)}/></th>
                                         <th>no</th>
                                         <th>상품 코드</th>
                                         <th>상품 명</th>
@@ -1026,7 +1027,9 @@ function Order() {
                                     <tbody>
                                     {searchProd.map((prodList, index) => (
                                         <tr key={index} className={orderListCheckItem[index] ? 'selected-row' : ''}>
-                                            <td><input type="checkbox" id="checkProdList" checked={orderListCheckItem[index] || false } onChange={(e) => handleOrderListCheckboxChange(e)}/></td>
+                                            <td><input type="checkbox" id="checkProdList"
+                                                       checked={orderListCheckItem[index] || false}
+                                                       onChange={(e) => handleOrderListCheckboxChange(e)}/></td>
                                             <td style={{display: 'none'}}>{index}</td>
                                             <td>{index + 1}</td>
                                             <td>{prodList.prodNo}</td>
@@ -1045,13 +1048,17 @@ function Order() {
 
                                 <div style={{fontWeight: 'bold'}}> 총 {addCheckProd?.length || 0} 건</div>
                                 {orderAddShowDelete && Object.values(orderAddCheckItem).some(isChecked => isChecked) &&
-                                    <button className="delete-btn btn-common" onClick={() => {handleAddProdDelete(); handleOrderAddDelete();}}>삭제</button>}
+                                    <button className="delete-btn btn-common" onClick={() => {
+                                        handleAddProdDelete();
+                                        handleOrderAddDelete();
+                                    }}>삭제</button>}
 
                                 <table className="formTableList" style={{marginTop: '5px'}}>
 
                                     <thead>
                                     <tr>
-                                        <th><input type="checkbox" checked={orderAddAllCheck} onChange={(e)=>handleOrderAddMasterCheckboxChange(e)}/></th>
+                                        <th><input type="checkbox" checked={orderAddAllCheck}
+                                                   onChange={(e) => handleOrderAddMasterCheckboxChange(e)}/></th>
                                         <th>no</th>
                                         <th>상품 종류</th>
                                         <th>상품 명</th>
@@ -1090,7 +1097,7 @@ function Order() {
                                             {addCheckProd.reduce((total, addProd, index) => {
                                                 const qty = quantities[index] || 0; //수량
                                                 return total + (addProd.salePrice * qty);
-                                            },0).toLocaleString()}원 {/*toLocaleString() : 숫자를 천 단위로 구분하고, 통화 기호 추가*/}
+                                            }, 0).toLocaleString()}원 {/*toLocaleString() : 숫자를 천 단위로 구분하고, 통화 기호 추가*/}
                                         </td>
                                     </tr>
                                     </tbody>

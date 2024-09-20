@@ -1,7 +1,6 @@
 package com.project.tobe.serviceImpl;
 
 import com.project.tobe.dto.*;
-import com.project.tobe.entity.OrderH;
 import com.project.tobe.mapper.OrderMapper;
 import com.project.tobe.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -121,22 +119,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public EmployeeDTO getTopOfMonth() {
+    public EmployeeRankDTO getTopOfMonth() {
         return orderMapper.getEmployeeTopOfMonth();
     }
 
     @Override
-    public List<Integer> getSalesByMonth() {
+    public List<SalesByMonth> getSalesByMonth() {
         return orderMapper.getSalesByMonth();
     }
 
     @Override
-    public List<EmployeeDTO> getEmployeeRank() {
+    public List<EmployeeRankDTO> getEmployeeRank() {
         return orderMapper.getEmployeeRank();
     }
 
     @Override
-    public List<ProductDTO> getProductRank() {
+    public List<ProductSaleRank> getProductRank() {
         return orderMapper.getProductRank();
     }
 }

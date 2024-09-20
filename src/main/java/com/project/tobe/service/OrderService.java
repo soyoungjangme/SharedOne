@@ -1,7 +1,6 @@
 package com.project.tobe.service;
 
 import com.project.tobe.dto.*;
-import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,11 +21,11 @@ public interface OrderService {
 
     /*유선화 END*/
 
-    EmployeeDTO getTopOfMonth();
+    EmployeeRankDTO getTopOfMonth();
 
-    List<Integer> getSalesByMonth();
+    List<SalesByMonth> getSalesByMonth();
 
-    List<EmployeeDTO> getEmployeeRank();
+    List<EmployeeRankDTO> getEmployeeRank();
 
-    List<ProductDTO> getProductRank();
+    List<ProductSaleRank> getProductRank();
 }

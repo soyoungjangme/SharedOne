@@ -1,11 +1,11 @@
 // src/components/EmployeeOfMonth.js
 import React from 'react';
 
-const EmployeeOfMonth = () => {
+const EmployeeOfMonth = ({topOfMonth}) => {
     return (
         <div className="Employee-ranker">
             <div id="Employee-of-month" style={{ textAlign: 'center', marginTop: '30px' }}>
-                Thomas Mueller (매출액: 1,500만원)
+                {topOfMonth.employeeName} (매출액: {topOfMonth.monthlySales})
             </div>
         </div>
     );
