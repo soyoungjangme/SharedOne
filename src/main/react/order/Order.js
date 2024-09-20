@@ -7,6 +7,7 @@ import useCheckboxManager from "../js/CheckboxManager";
 import axios from 'axios';
 import ModifyOrderModal from './ModifyOrderModal';
 import ModifyOrderModal2 from './ModifyOrderModal2';
+import Order2 from './Order2';
 import Select from "react-select";
 /*
 import '../js/pagecssReal.css';
@@ -531,6 +532,14 @@ function Order() {
     const handleCloseModifyModal2 = () => {
         setIsModifyModal2Visible(false);
     };
+
+    /* 임시 저장 모달 창*/
+    const handleOpenOrder2 = (orderData) => {
+        setSelectedOrderData(orderData);  // 선택된 주문 데이터를 설정
+        setIsModifyModalVisible(false);   // 상세보기 모달 닫기
+        setIsVisible(true);               // 임시 저장 수정 창 열기
+    };
+
 
     // 유선화 - 끝
 
@@ -1198,6 +1207,7 @@ function Order() {
                     isOpen={isModifyModalVisible}
                     onClose={handleModifyCloseClick}
                     onOpenModifyModal2={handleOpenModifyModal2}
+                    onOpenOrder2={handleOpenOrder2}
                 />
             )}
 
@@ -1207,6 +1217,14 @@ function Order() {
                     isOpen={isModifyModal2Visible}
                     onClose={handleCloseModifyModal2}
                     onUpdate={handleOrderUpdate}
+                />
+            )}
+
+            {isVisible && (
+                <Order2
+                    orderNo={selectedOrderNo}
+                    onClose={handleCloseClick}
+                    initialData={modifyItem}
                 />
             )}
         </div>
