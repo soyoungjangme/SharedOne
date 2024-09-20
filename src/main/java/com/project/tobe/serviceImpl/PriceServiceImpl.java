@@ -137,11 +137,14 @@ public class PriceServiceImpl implements PriceService {
 
                 if (
                         (
-                                oldPrice.getStartDate().isAfter(newPrice.getStartDate()) &&
-                                        oldPrice.getEndDate().isBefore(newPrice.getEndDate()))
-                                ||
-                                (oldPrice.getStartDate().isEqual(newPrice.getStartDate()) &&
-                                        oldPrice.getEndDate().isEqual(newPrice.getEndDate())
+                                oldPrice.getStartDate().isAfter(newPrice.getStartDate()) ||
+                                        oldPrice.getStartDate().isEqual(newPrice.getStartDate())
+
+                        )
+                                &&
+                                (
+                                        oldPrice.getEndDate().isBefore(newPrice.getEndDate()) ||
+                                                oldPrice.getEndDate().isEqual(newPrice.getEndDate())
                                 )
                 ) {
                     oldPrice.setActivated(YesNo.N);
