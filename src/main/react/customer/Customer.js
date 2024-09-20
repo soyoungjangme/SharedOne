@@ -131,6 +131,24 @@ function Customer() {
     };
 
 
+    // 조히 입력값 초기화
+    const handleReset = () => {
+        setEmSearch({
+            customerName: '',
+            customerTel: '',
+            customerAddr: '',
+            businessRegistrationNo: '',
+            postNum: '',
+            nation: '',
+            picName: '',
+            picEmail: '',
+            picTel: ''
+        });
+
+        handleInputChange(); // 리셋 후 검색 기능 호출
+    };
+
+
 
     // =============================== 고객 등록 부분 ===============================
 
@@ -506,6 +524,7 @@ function Customer() {
     };
 
 
+
     // =============================== 페이지 네이션 ===============================
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -530,7 +549,7 @@ function Customer() {
     // 페이지네이션 버튼 렌더링
     const renderPageNumbers = () => {
         let pageNumbers = [];
-        const maxButtons = 2; // 고정된 버튼 수
+        const maxButtons = 5; // 고정된 버튼 수
 
         // 맨 처음 페이지 버튼
         pageNumbers.push(
@@ -547,26 +566,28 @@ function Customer() {
         pageNumbers.push(
             <span
                 key="prev"
-                onClick={() => handlePageChange(currentPage - 1)}
+                onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
                 className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
             >
                 &laquo; {/* 왼쪽 화살표 */}
             </span>
         );
 
-        // // 항상 첫 페이지 버튼 표시
-        // pageNumbers.push(
-        //     <span
-        //         key={1}
-        //         onClick={() => handlePageChange(1)}
-        //         className={`pagination_link ${currentPage === 1 ? 'pagination_link_active' : ''}`}
-        //     >
-        //         1
-        //     </span>
-        // );
-
-        // 6페이지 이상일 때
-        if (totalPages > maxButtons) {
+        // 페이지 수가 4 이하일 경우 모든 페이지 표시
+        if (totalPages <= 4) {
+            for (let i = 1; i <= totalPages; i++) {
+                pageNumbers.push(
+                    <span
+                        key={i}
+                        onClick={() => handlePageChange(i)}
+                        className={`pagination_link ${i === currentPage ? 'pagination_link_active' : ''}`}
+                    >
+                        {i}
+                    </span>
+                );
+            }
+        } else {
+            // 페이지 수가 5 이상일 경우 유동적으로 변경
             let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
             let endPage = startPage + maxButtons - 1;
 
@@ -575,7 +596,7 @@ function Customer() {
                 startPage = Math.max(1, endPage - maxButtons + 1);
             }
 
-            // 중간 페이지 버튼 추가
+            // 시작 페이지와 끝 페이지에 대한 페이지 버튼 추가
             for (let i = startPage; i <= endPage; i++) {
                 pageNumbers.push(
                     <span
@@ -588,11 +609,15 @@ function Customer() {
                 );
             }
 
-            // 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'와 마지막 페이지 추가
+            // 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'과 마지막 페이지 표시
             if (endPage < totalPages) {
                 pageNumbers.push(<span className="pagination_link">...</span>);
                 pageNumbers.push(
-                    <span key={totalPages} onClick={() => handlePageChange(totalPages)} className="pagination_link">
+                    <span
+                        key={totalPages}
+                        onClick={() => handlePageChange(totalPages)}
+                        className={`pagination_link ${currentPage === totalPages ? 'pagination_link_active' : ''}`}
+                    >
                         {totalPages}
                     </span>
                 );
@@ -603,7 +628,7 @@ function Customer() {
         pageNumbers.push(
             <span
                 key="next"
-                onClick={() => handlePageChange(currentPage + 1)}
+                onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
                 className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
             >
                 &raquo; {/* 오른쪽 화살표 */}
@@ -625,11 +650,13 @@ function Customer() {
     };
 
 
+
+
     return (
         <div>
 
             <div className='pageHeader'>
-                <h1><i className="bi bi-person-lines-fill"></i>고객 관리</h1>
+                <h1><i class="bi bi-people-fill"></i>고객 관리</h1>
             </div>
 
             <div className="main-container">
@@ -781,6 +808,9 @@ function Customer() {
                     </div>
 
                     <div className="button-container">
+                        <button type="button" className="reset-btn" onClick={handleReset}>
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
                         <button type="button" className="search-btn" onClick={handleSearchCustomer}>
                             <i className="bi bi-search search-icon"></i>
                         </button>
@@ -916,7 +946,7 @@ function Customer() {
                             <div className="form-header">
                                 <h1> 고객등록 </h1>
                                 <div className="btns">
-                                    <button className="btn-customer-add" type="button" onClick={onClickRegistBtn}> 등록하기 </button>
+                                    <button className="btn-customer-add" type="button" onClick={onClickRegistBtn}> 등록 </button>
                                 </div>
                             </div>
 

@@ -214,6 +214,23 @@ function Order() {
     };
 
 
+    // =========== 조회 입력 초기화 ===========
+    const handleReset = () => {
+        setForm({
+            inputDate: '',
+            inputDate: '',
+            inputOrderNo: '',
+            inputProdNo: '',
+            inputCustomerNo: '',
+            inputManager: '',
+            inputState: ''
+        })
+
+        handleSearchBtn(); // 리셋 후 검색 기능 호출
+    }
+
+    
+
     /*---------------jsy조건 끝---------------*/
 
     /*==============jsy주문 등록 폼==============*/
@@ -857,6 +874,9 @@ function Order() {
                         </div>
                     </div>
                     <div className="button-container">
+                        <button type="button" className="reset-btn" onClick={handleReset}>  {/* 조회 입력값 초기화 버튼입니다! */} 
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
                         <button type="button" className="search-btn" id="searchOrder" onClick={handleSearchBtn}>
                             <i className="bi bi-search search-icon"></i>
                         </button>

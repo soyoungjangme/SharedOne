@@ -95,6 +95,9 @@ const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSear
                     </div>
                 </div>
                 <div className="button-container">
+                    {/* <button type="button" className="reset-btn" onClick={handleReset}> //입력값 초기화 버튼입니다! 
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button> */}
                     <button type="button" className="search-btn" onClick={handleSearchBtn}>
                         <i className="bi bi-search search-icon"></i>
                     </button>
