@@ -170,7 +170,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     employeeMapper.employeeUpdateMypagePw(dto);
   }
 
-    @Override
+  @Override
+  public EmployeeDTO employeeUserSession(String id) {
+    return employeeMapper.employeeUserSession(id);
+  }
+
+  @Override
     public List<EmployeeDTO> getManagerList(String id) {
         return employeeMapper.getManagerList(id);
     }
