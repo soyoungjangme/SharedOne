@@ -409,7 +409,7 @@ function Order() {
                 inputDelDate: delDate || null,//납품요청일
                 inputCustomerNo: registCustomer || null,//주문고객번호
                 inputManager: my.id || null, //임의 값(로그인 시 해당 직원id 기입할 예정)
-                inputConfirmer: "beak10" || null, //임의 값
+                inputConfirmer: modifyItem.confirmerId || null, //임의 값
                 inputStatus: orderStatus,
                 orderBList //ob데이터 배열 전달
             });
@@ -501,7 +501,8 @@ function Order() {
         details: '',
         manager: '',
         status: '',
-        date: ''
+        date: '',
+        confirmerId: ''
     });
 
 
@@ -673,10 +674,21 @@ function Order() {
 
     const [confirmerIdList, setConfirmerIdList] = useState([]);
     const [confirmerIdOptions, setConfirmerIdOptions] = useState();
+    const [confirmerName, setConfirmerName] = useState(''); //선택한 결재자 이름
 
     const handleManagerChange = (name, value) => {
         setModifyItem((prev) => ({ ...prev, [name]: value }));
     }
+
+/*    useEffect(() => {
+        const selectedConfirmer = confirmerIdList.find(emp => emp.employeeId === modifyItem.confirmerId);
+        if (selectedConfirmer) {
+            setConfirmerName(selectedConfirmer.employeeName);
+        } else {
+            setConfirmerName(''); // 선택된 결재자가 없을 경우 빈 문자열로 설정
+        }
+        console.log("Selected confirmer name: ", confirmerName);
+    }, [modifyItem.confirmerId]); // confirmerIdList도 의존성에 추가*/
 
 
 
