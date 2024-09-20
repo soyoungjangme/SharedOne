@@ -47,6 +47,7 @@ function Order() {
 
     // 주문 데이터를 저장하는 상태
     const [order, setOrder] = useState([]);
+    console.log("order" + JSON.stringify(order));
 
     const [userInfo, setUserInfo] = useState(null);
 
@@ -67,7 +68,8 @@ function Order() {
                     customerN: item.customer.customerName,
                     manager: item.employee.employeeName,
                     status: item.confirmStatus,
-                    date: item.regDate
+                    date: item.regDate,
+                    managerId : item.employee.employeeId
                 }));
 
                 setOrder(transfomData);
@@ -237,8 +239,13 @@ function Order() {
         setQuantities({}); //수량 초기화
     };
 
-    const [my, setMy]= useState({id: '', name: ''});
 
+
+
+    const [my, setMy]= useState({id: '', name: '', role:''});
+    const [roleList, setRoleList] = useState([]);
+    console.log("ㅋㅋ글쓴이 값이야 " +  order.managerId);
+    console.log("ㅋㅋ세션값이야" + JSON.stringify(my));
     //담당자명 세션에서 불러오기
     useEffect(() => {
         const fetchData = async () => {
@@ -249,14 +256,34 @@ function Order() {
 
                 // 이름 가져오기
                 const nameRes = await axios.post('/order/getMyName', { myId }); // 객체로 전달
+                 const RoleRes = await axios.get('/order/getMyRole'); // 권한 가져오기
 
-                setMy({ id: myId, name: nameRes.data });
+
+                const response = await axios.get(`/order/getManagerList/${myId}`);
+
+                const data = response.data; // Assuming response.data contains the list
+                   console.log(data);
+                    // employeeId와 authorityGrade만 추출
+                    const filteredList = data.map(data => ({
+                        employeeId: data.employeeId,
+                        authorityGrade: data.authorityGrade,
+                    }));
+
+                    setRoleList(filteredList);
+                    console.log("Role List" + roleList.employeeId);
+                    console.log("Role List" + roleList.employeeId);
+
+
+
+
+                setMy({ id: myId, name: nameRes.data , role : RoleRes.data});
             } catch (error) {
                 console.error('Error', error);
             }
         };
         fetchData();
     }, []);
+
 
 
 
@@ -512,6 +539,7 @@ function Order() {
     const [isModifyModal2Visible, setIsModifyModal2Visible] = useState(false);
     const [selectedOrderNo, setSelectedOrderNo] = useState(null);
     const [selectedOrderData, setSelectedOrderData] = useState(null);
+    const [isOrder2Open, setOrder2Open] = useState(false);
 
 
     const handleDetailView = (orderNo) => {
@@ -537,7 +565,7 @@ function Order() {
     const handleOpenOrder2 = (orderData) => {
         setSelectedOrderData(orderData);  // 선택된 주문 데이터를 설정
         setIsModifyModalVisible(false);   // 상세보기 모달 닫기
-        setIsVisible(true);               // 임시 저장 수정 창 열기
+        setOrder2Open(true);               // 임시 저장 수정 창 열기
     };
 
 
@@ -561,125 +589,6 @@ function Order() {
         }, [order]);  // order가 변경될 때마다 실행
     };
     // 유선화 끝
-    /*
-        // 유선화 시작 - 임시 저장 update
-        const handleAddClick = async (orderNo = null) => {
-            if (orderNo) {
-                await fetchOrderDetail(orderNo);
-                setSelectedOrderNo(orderNo);
-                setModifyItem(prev => ({
-                    ...prev,
-                    orderNo: orderNo // orderNo 설정
-                }));
-            }
-            setIsVisible(true);
-        };
-
-        // 임시 저장 데이터
-        const fetchOrderDetail = async (orderNo) => {
-
-            try {
-                const response = await axios.get(`/order/detail/${orderNo}`);
-                const orderData = response.data;
-
-                setRegistCustomer(orderData.customer.customerNo);
-                setDelDate(orderData.delDate);
-
-                if (Array.isArray(orderData.orderBList)) {
-                    const savedProducts = orderData.orderBList.map(item => ({
-                        prodNo: item.product.productNo,
-                        priceNo: item.price.priceNo,
-                        prodCat: item.product.productCategory,
-                        prodName: item.product.productName,
-                        prodWriter: item.product.productWriter,
-                        salePrice: item.price.customPrice,
-                        saleStart: item.price.startDate,
-                        saleEnd: item.price.endDate,
-                        orderProductQty: item.orderProductQty
-                    }));
-
-                    setAddCheckProd(savedProducts);
-
-                    const newQuantities = savedProducts.reduce((acc, item, index) => {
-                        acc[index] = item.orderProductQty || 0;
-                        return acc;
-                    }, {});
-
-                    setQuantities(newQuantities);
-                }
-            } catch (error) {
-                console.error('임시저장 주문 정보 가져오기 실패:', error);
-            }
-        };
-
-
-        // 임시 저장 업데이트
-        const handleUpdateOrder = async (status) => {
-
-            console.log(modifyItem.status);
-            console.log('handleUpdateOrder 함수 시작');
-
-            // 간단한 유효성 검사
-            if (!registCustomer) {
-                alert("고객을 선택해 주세요.");
-                return;
-            }
-
-            if (!delDate) {
-                alert("납품 요청일을 입력해 주세요.");
-                return;
-            }
-
-            if (addCheckProd.length === 0) {
-                alert("상품을 선택해 주세요.");
-                return;
-            }
-
-            const invalidQuantities = addCheckProd.some((_, index) => {
-                const qty = quantities[index] || 0;
-                return qty <= 0;
-            });
-
-            if (invalidQuantities) {
-                alert("모든 상품의 수량을 1개 이상 입력해 주세요.");
-                return;
-            }
-
-            // orderBList 생성
-            const orderBList = addCheckProd.map((addProd, index) => {
-                const orderProdQty = quantities[index] || 0;
-                return {
-                    productNo: addProd.prodNo,
-                    priceNo: addProd.priceNo,
-                    orderProductQty: orderProdQty,
-                    prodTotal: orderProdQty * addProd.salePrice,
-                };
-            });
-
-            // 순수한 JavaScript 객체로 업데이트 데이터 생성
-            const orderData = {
-                orderNo: modifyItem.orderNo,
-                inputDelDate: delDate,
-                inputCustomerNo: registCustomer,
-                inputManager: my.id,
-                inputConfirmer: modifyItem.confirmerId,
-                inputStatus: status,
-                orderBList,
-            };
-
-            try {
-                // 업데이트 요청
-                const response = await axios.put('/order/update', orderData);
-                alert(`주문번호 ${modifyItem.orderNo}가 수정되었습니다.`);
-                handleCloseClick(); // 창 닫기
-            } catch (error) {
-                console.error("주문 수정 중 오류 발생:", error);
-                alert("주문 수정 중 오류가 발생했습니다. 다시 시도해 주세요.");
-            }
-        };
-
-    */
-
 
     const [confirmerIdList, setConfirmerIdList] = useState([]);
     const [confirmerIdOptions, setConfirmerIdOptions] = useState();
@@ -956,15 +865,14 @@ function Order() {
                             return (
                                 <tr key={item.orderNo} className={checkItem[index + 1] ? 'selected-row' : ''}
                                     onDoubleClick={() => {
-                                        if (item.status?.trim() === '임시저장') {
-                                            handleAddClick(item.orderNo); // 주문 등록 모달 열기
-                                        } else {
+
                                             handleDetailView(item.orderNo); // 상세보기 모달 열기
-                                        }
+
                                     }}>
                                     <td>{globalIndex}</td> {/* 전역 인덱스 사용 */}
                                     <td>{item.orderNo}</td>
                                     <td className="ellipsis">{item.manager}</td>
+                                    <td className="ellipsis">{item.managerId}</td>
                                     <td className="ellipsis">{item.customerN}</td>
                                     <td>{item.status}</td>
                                     <td>
@@ -977,12 +885,11 @@ function Order() {
                                     <td>
                                         <button className="btn-common"
                                                 onClick={(e) => {
-                                                    if (item.status?.trim() === '임시저장') {
-                                                        e.stopPropagation();
-                                                        handleAddClick(item.orderNo); // 주문 등록 모달 열기
-                                                    } else {
-                                                        handleDetailView(item.orderNo); // 상세보기 모달 열기
-                                                    }
+
+                                                    handleDetailView(item.orderNo); // 상세보기 모달 열기
+                                                    console.log("세션값11" + my.id); // 세션값
+                                                    console.log("글쓴이11" + item.managerId);
+                                                    console.log("세션권한11" + my.role);
                                                 }}>
                                             상세보기
                                         </button>
@@ -1220,7 +1127,7 @@ function Order() {
                 />
             )}
 
-            {isVisible && (
+            {isOrder2Open && (
                 <Order2
                     orderNo={selectedOrderNo}
                     onClose={handleCloseClick}
