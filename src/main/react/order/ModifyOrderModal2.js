@@ -183,92 +183,90 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
 
             const status = modifyItem.confirmStatus.trim();
 
-  if (status === '반려') {
-       console.log('1현재 상태: 반려');
-          try {
-                   // 주문 업데이트에 필요한 데이터 준비
-                   const today = new Date();
-                   today.setDate(today.getDate() + 1);
-                   const todayPlus = today.toISOString().split('T')[0];
+        if (status === '반려') {
+              console.log('1현재 상태: 반려');
+                 try {
+                          // 주문 업데이트에 필요한 데이터 준비
+                          const today = new Date();
+                          today.setDate(today.getDate() + 1);
+                          const todayPlus = today.toISOString().split('T')[0];
 
-                   const updatedOrderData = {
-                       orderNo: modifyItem.orderNo,
-                       delDate: modifyItem.delDate,
-                       confirmChangeDate: todayPlus,
-                          customerNo: modifyItem.customer.customerNo, // 고객 번호 설정
-                           employeeId: modifyItem.employee.employeeId, // 직원 ID 설정
-                       orderBList: modifyItem.orderBList.map(item => ({
-                           productNo: item.product.productNo,
-                           orderProductQty: parseInt(item.orderProductQty, 10), // 문자열을 숫자로 변환
-                           price: item.price.customPrice,
-                           priceNo: item.priceNo || item.price.priceNo
-                       }))
-                   };
+                           const updatedOrderData = {
+                               orderNo: modifyItem.orderNo,
+                               delDate: modifyItem.delDate,
+                               confirmChangeDate: todayPlus,
+                               customerNo: modifyItem.customer.customerNo, // 고객 번호 설정
+                               employeeId: modifyItem.employee.employeeId, // 직원 ID 설정
+                               orderBList: modifyItem.orderBList.map(item => ({
+                               productNo: item.product.productNo,
+                               orderProductQty: parseInt(item.orderProductQty, 10), // 문자열을 숫자로 변환
+                               price: item.price.customPrice,
+                               priceNo: item.priceNo || item.price.priceNo
+                               }))
+                           };
 
-                   const response = await axios.post('/order/insertBack', updatedOrderData);
+                           const response = await axios.post('/order/insertBack', updatedOrderData);
 
-                   if (response.status === 200 || response.data) {
-                       alert('반려 인서트 ');
-                       onClose();
-                   } else {
-                       alert('반려 인서트');
+                           if (response.status === 200 || response.data) {
+                               alert('반려 인서트 ');
+                               onClose();
+                           } else {
+                               alert('반려 인서트');
 
-                   }
-               } catch (error) {
-                   console.error('주문 업데이트 중 오류 발생:', error);
+                           }
+                       } catch (error) {
+                           console.error('주문 업데이트 중 오류 발생:', error);
+                       }
+
+
+
+        } else if (status === '대기') {
+                  console.log('2현재 상태: 대기');
+
+           try {
+                // 주문 업데이트에 필요한 데이터 준비
+                const today = new Date();
+                today.setDate(today.getDate() + 1);
+                const todayPlus = today.toISOString().split('T')[0];
+
+                const updatedOrderData = {
+                    orderNo: modifyItem.orderNo,
+                    delDate: modifyItem.delDate,
+                    confirmChangeDate: todayPlus,
+                    orderBList: modifyItem.orderBList.map(item => ({
+                        productNo: item.product.productNo,
+                        orderProductQty: parseInt(item.orderProductQty, 10), // 문자열을 숫자로 변환
+                        price: item.price.customPrice,
+                        priceNo: item.priceNo || item.price.priceNo
+                    }))
+                };
+
+                console.log('Sending data:', updatedOrderData); // 디버깅
+
+
+                // 서버에 업데이트 요청 보내기
+                const response = await axios.put(`/order/update`, updatedOrderData);
+                console.log('Server response:', response); // 디버깅
+
+                if (response.status === 200 || response.data) {
+                    alert('주문이 성공적으로 업데이트되었습니다.');
+                    onUpdate(response.data);
+                } else {
+                    alert('주문 업데이트에 실패했습니다.');
+                }
+
+
+           } catch (error) {
+               console.error('주문 업데이트 중 오류 발생:', error);
+               if (error.response) {
+                   console.error('Error response:', error.response.data);
+                   console.error('Error status:', error.response.status);
                }
-
-
-
-
-
-
-   } else if (status === '대기') {
-       console.log('2현재 상태: 대기');
-
-         try {
-            // 주문 업데이트에 필요한 데이터 준비
-            const today = new Date();
-            today.setDate(today.getDate() + 1);
-            const todayPlus = today.toISOString().split('T')[0];
-
-            const updatedOrderData = {
-                orderNo: modifyItem.orderNo,
-                delDate: modifyItem.delDate,
-                confirmChangeDate: todayPlus,
-                orderBList: modifyItem.orderBList.map(item => ({
-                    productNo: item.product.productNo,
-                    orderProductQty: parseInt(item.orderProductQty, 10), // 문자열을 숫자로 변환
-                    price: item.price.customPrice,
-                    priceNo: item.priceNo || item.price.priceNo
-                }))
-            };
-
-            console.log('Sending data:', updatedOrderData); // 디버깅
-
-
-            // 서버에 업데이트 요청 보내기
-            const response = await axios.put(`/order/update`, updatedOrderData);
-            console.log('Server response:', response); // 디버깅
-
-            if (response.status === 200 || response.data) {
-                alert('주문이 성공적으로 업데이트되었습니다.');
-                onUpdate(response.data);
-            } else {
-                alert('주문 업데이트에 실패했습니다.');
-            }
-
-
-        } catch (error) {
-            console.error('주문 업데이트 중 오류 발생:', error);
-            if (error.response) {
-                console.error('Error response:', error.response.data);
-                console.error('Error status:', error.response.status);
-            }
-            alert('주문 업데이트 중 오류가 발생했습니다.');
+               alert('주문 업데이트 중 오류가 발생했습니다.');
+           }
         }
-   }
 
+        /*수정창 닫고 데이터 들고 상세보기로 ㄱ*/
 
     };
 
@@ -286,7 +284,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
         const newOrderBList = [...modifyItem.orderBList];
 
         productsToAdd.forEach(product => {
-            if (product && product.prodNo && !newOrderBList.some(item => item.product && item.product.productNo === product.prodNo)) {
+            if (product && product.prodNo && product.priceNo&& !newOrderBList.some(item => item.product && item.price.priceNo === product.priceNo)) {
                 newOrderBList.push({
                     product: {
                         productNo: product.prodNo,
@@ -302,6 +300,9 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                         endDate: product.saleEnd
                     }
                 });
+            }else{
+                alert('이미 추가한 항목이 존재합니다.');
+
             }
         });
 
