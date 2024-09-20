@@ -8,7 +8,7 @@
     <!-- jsy주문 전체 조회 -->
     <select id="getOrder" resultMap="GetOrderResultMap">
         select oh.order_no, c.customer_name, emp.employee_name,
-        oh.confirm_status, oh.reg_date, emp.employee_id
+        oh.confirm_status, oh.reg_date, emp.employee_id, emp.authority_grade
         from order_header oh
         join employee emp on emp.employee_id = oh.employee_id
         join customer c on c.customer_no = oh.customer_no
@@ -42,6 +42,7 @@
         <association property="employee" javaType="EmployeeDTO">
             <result column="employee_name" property="employeeName"/> <!-- 담당자명 -->
             <result column="employee_id" property="employeeId"/> <!-- 담당자명 -->
+            <result column="authority_grade" property="authorityGrade"/> <!-- 담당자명 -->
         </association>
         <association property="customer" javaType="CustomerDTO">
             <result column="customer_name" property="customerName"/> <!-- 고객명 -->
@@ -130,6 +131,7 @@
         c.customer_name,
         e.employee_id, --담당자 아이디
         e.employee_name, --담당자 이름
+        e.authority_grade,
         ec.employee_id as confirmer_id, --결재자 아이디
         ec.employee_name as confirmer_name, --결재자 이름
         ob.price_no,
@@ -171,7 +173,8 @@
 
         <association property="employee" javaType="EmployeeDTO">
             <id property="employeeId" column="employee_id"/>
-            <result property="employeeName" column="employee_name"/>
+            <result column="employee_name" property="employeeName"/> <!-- 담당자명 -->
+            <result column="authority_grade" property="authorityGrade"/> <!-- 담당자명 -->
         </association>
 
         <collection property="orderBList" ofType="OrderBDTO">

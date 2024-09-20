@@ -72,6 +72,7 @@ public class OrderServiceImpl implements OrderService {
 // 특정 주문 상세 정보
     @Override
     public OrderHDTO getOrderDetail(Long orderNo) {
+        System.out.println(orderMapper.getOrderDetail(orderNo));
         return orderMapper.getOrderDetail(orderNo);
     }
 
