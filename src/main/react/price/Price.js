@@ -82,10 +82,19 @@ const Price = () => {
 
     const handleSearchBtn = async () => {
         await getSearchItems(searchPrice);
-        // if (searchPrice.productNo && searchPrice.customerNo) {
-        //     setIsChartVisible(true);
-        // }
     };
+
+    const handleSearchResetBtn = () => {
+        setSearchPrice({
+            registerDate: '',
+            productNo: '',
+            customerNo: '',
+            startDate: '',
+            endDate: '',
+            page: 1,
+            amount: 30,
+        });
+    }
 
     const getSearchItems = async (item) => {
         const { data } = await axios.post('/price/search', item, {
@@ -112,6 +121,7 @@ const Price = () => {
 
     const handleCloseClick = () => {
         setIsVisible(false);
+        handleSearchBtn();
     };
 
     const handlePageChange = async (selectedPage) => {
@@ -151,6 +161,7 @@ const Price = () => {
                 product={product}
                 customer={customer}
                 handleSearchBtn={handleSearchBtn}
+                handleSearchResetBtn={handleSearchResetBtn}
             />
             {isChartVisible && <Chart/>}
             <button className="btn-common add" type="button" onClick={handleAddClick}>

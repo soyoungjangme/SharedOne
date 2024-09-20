@@ -166,7 +166,7 @@ function Product() {
         productPrice: '',
         minPrice: '', // 초기값 추가
         maxPrice: '', // 초기값 추가
-        priceComparison: '' // 가격 비교 상태도 초기화
+        priceComparison: '', // 가격 비교 상태도 초기화
     });
     const handleFilterChange = (e) => {
         const { id, value } = e.target;
@@ -194,24 +194,23 @@ function Product() {
         const normalizedProductName = normalizeString(filters.productName);
         const normalizedProductWriter = normalizeString(filters.productWriter);
         const normalizedProductCategory = normalizeString(filters.productCategory);
-        const filterPrice = parseFloat(filters.productPrice);
-        const minPrice = parseFloat(filters.minPrice);
-        const maxPrice = parseFloat(filters.maxPrice);
-
+        const filterPrice = filters.productPrice ? parseFloat(filters.productPrice) : null;
+        const minPrice = filters.minPrice ? parseFloat(filters.minPrice) : null;
+        const maxPrice = filters.maxPrice ? parseFloat(filters.maxPrice) : null;
+    
         const filteredData = product.filter(item => {
             const normalizedItemName = normalizeString(item.productName);
             const normalizedItemWriter = normalizeString(item.productWriter);
             const normalizedItemCategory = normalizeString(item.productCategory);
             const itemPrice = parseFloat(item.productPrice);
-
-            // 가격 필터 조건이 구간일 경우에 최소 가격과 최대 가격이 일치하는지 확인
+    
+            // 가격 필터 조건이 있을 경우에만 가격 비교
             const isPriceMatch =
-                (filters.priceComparison === 'gte' && itemPrice >= filterPrice) ||
-                (filters.priceComparison === 'lte' && itemPrice <= filterPrice) ||
-                (filters.priceComparison === 'range' &&
-                    itemPrice >= minPrice &&
-                    itemPrice <= maxPrice);
-
+                (filters.priceComparison === 'gte' && filterPrice !== null && itemPrice >= filterPrice) ||
+                (filters.priceComparison === 'lte' && filterPrice !== null && itemPrice <= filterPrice) ||
+                (filters.priceComparison === 'range' && minPrice !== null && maxPrice !== null && itemPrice >= minPrice && itemPrice <= maxPrice) ||
+                filters.priceComparison === ''; // 가격 비교가 없으면 통과
+    
             return (
                 (!normalizedProductName || normalizedItemName.includes(normalizedProductName)) &&
                 (!normalizedProductWriter || normalizedItemWriter.includes(normalizedProductWriter)) &&
@@ -219,10 +218,10 @@ function Product() {
                 isPriceMatch
             );
         });
-
-        // if(filteredData.length === 0) alert("등록된 상품이 없습니다.");
+    
         setOrder(filteredData);
     };
+    
 
 
     const handleKeyDown = (e) => {
@@ -695,9 +694,6 @@ function Product() {
 
         return pageNumbers;
     };
-
-
-
 
 
     return (

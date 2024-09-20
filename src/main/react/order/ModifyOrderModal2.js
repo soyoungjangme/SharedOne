@@ -151,7 +151,15 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
     );
 
 // 주문 업데이트 + 디버깅 모드
+
+   console.log('현재 confirmStatus:', modifyItem.confirmStatus);
+   console.log('타입:', typeof modifyItem.confirmStatus);
+
+
+
+// 수정 버튼 클릭 이벤트 ----------------------------------------------------
     const handleUpdateOrder = async () => {
+
         if (!modifyItem.delDate) {
             alert('납품 요청일을 선택해주세요.');
             onClose();
@@ -173,7 +181,52 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
             return;
         }
 
-        try {
+            const status = modifyItem.confirmStatus.trim();
+
+  if (status === '반려') {
+       console.log('1현재 상태: 반려');
+          try {
+                   // 주문 업데이트에 필요한 데이터 준비
+                   const today = new Date();
+                   today.setDate(today.getDate() + 1);
+                   const todayPlus = today.toISOString().split('T')[0];
+
+                   const updatedOrderData = {
+                       orderNo: modifyItem.orderNo,
+                       delDate: modifyItem.delDate,
+                       confirmChangeDate: todayPlus,
+                          customerNo: modifyItem.customer.customerNo, // 고객 번호 설정
+                           employeeId: modifyItem.employee.employeeId, // 직원 ID 설정
+                       orderBList: modifyItem.orderBList.map(item => ({
+                           productNo: item.product.productNo,
+                           orderProductQty: parseInt(item.orderProductQty, 10), // 문자열을 숫자로 변환
+                           price: item.price.customPrice,
+                           priceNo: item.priceNo || item.price.priceNo
+                       }))
+                   };
+
+                   const response = await axios.post('/order/insertBack', updatedOrderData);
+
+                   if (response.status === 200 || response.data) {
+                       alert('반려 인서트 ');
+                       onClose();
+                   } else {
+                       alert('반려 인서트');
+
+                   }
+               } catch (error) {
+                   console.error('주문 업데이트 중 오류 발생:', error);
+               }
+
+
+
+
+
+
+   } else if (status === '대기') {
+       console.log('2현재 상태: 대기');
+
+         try {
             // 주문 업데이트에 필요한 데이터 준비
             const today = new Date();
             today.setDate(today.getDate() + 1);
@@ -193,6 +246,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
 
             console.log('Sending data:', updatedOrderData); // 디버깅
 
+
             // 서버에 업데이트 요청 보내기
             const response = await axios.put(`/order/update`, updatedOrderData);
             console.log('Server response:', response); // 디버깅
@@ -204,6 +258,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                 alert('주문 업데이트에 실패했습니다.');
             }
 
+
         } catch (error) {
             console.error('주문 업데이트 중 오류 발생:', error);
             if (error.response) {
@@ -212,6 +267,9 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
             }
             alert('주문 업데이트 중 오류가 발생했습니다.');
         }
+   }
+
+
     };
 
 
@@ -317,7 +375,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                 <th>주문 번호</th>
                                 <td><input type="text" value={modifyItem.orderNo || ''} disabled/></td>
                                 <th>주문 등록일</th>
-                                <td><input type="text" value={modifyItem.regDate || ''} disabled/></td>
+                                <td><input type="text" value={modifyItem.regDate ? new Date(modifyItem.regDate).toLocaleDateString('en-CA') : ''} disabled/></td>
                             </tr>
                             <tr>
                                 <th>고객명</th>
@@ -328,10 +386,19 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                         type="date"
                                         name="delDate"
                                         value={modifyItem.delDate || ''}
-                                        onChange={(e) => setModifyItem(prev => ({
-                                            ...prev,
-                                            delDate: e.target.value
-                                        }))}
+                                        onChange={(e) => {
+                                            const now = new Date();
+                                            const selectDate = new Date(e.target.value);
+
+                                            if(selectDate < now ){
+                                                alert(`납품 요청일을 확인해주세요.`);
+                                                return;
+                                            }
+                                            setModifyItem(prev => ({
+                                                ...prev,
+                                                delDate: e.target.value
+                                            })
+                                        )}}
                                     />
                                 </td>
                             </tr>
@@ -377,7 +444,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                 <th>저자</th>
                                 <th>판매가</th>
                                 <th>판매 기간</th>
-                            </tr>sear
+                            </tr>
                             </thead>
                             <tbody>
                             {filteredProducts.map((prodList, index) => (
