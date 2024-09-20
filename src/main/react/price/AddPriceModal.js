@@ -87,8 +87,8 @@ const AddPriceModal = ({
             });
             fetchData();
             alert('등록 되었습니다');
-            setInsertPrice({});
-            handleCloseClick();
+
+            handleCloseClickModal();
         } catch (error) {
             console.error('등록 중 오류 발생:', error);
         }
@@ -116,6 +116,13 @@ const AddPriceModal = ({
         setInsertPrice((prev) => ({...prev, discount: discount, customPrice: price}));
     }
 
+    const handleProductChange = async (value) => {
+        setInsertPrice((prev) => ({...prev, productNo: value}));
+        let price = await getProductPrice(value);
+        setProductPrice(price);
+        handleCustomPriceChange(price);
+    }
+
     useEffect(() => {
         if (productPrice !== null) {
             handleCustomPriceChange(productPrice);
@@ -126,8 +133,8 @@ const AddPriceModal = ({
         let {data} = await axios.get('/product/getProduct?productNo=' + productNo);
         console.log(data);
 
-        await setProductPrice(data.productPrice);
-        // await handleCustomPriceChange(data.productPrice);
+        setProductPrice(data.productPrice);
+        return data.productPrice;
     }
 
     const handleCloseClickModal = () => {
@@ -171,7 +178,7 @@ const AddPriceModal = ({
                                         name="productNo"
                                         options={productOptions}
                                         placeholder="상품 선택"
-                                        onChange={(option) => {handleInsertPrice('productNo', option.value);getProductPrice(option.value)}}
+                                        onChange={(option) => {handleProductChange(option.value)}}
                                     />
                                 </td>
 
