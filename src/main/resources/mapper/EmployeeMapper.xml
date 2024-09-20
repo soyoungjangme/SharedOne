@@ -20,6 +20,9 @@
         END;
     </select>
 
+
+
+
     <select id="getPickList" resultType="com.project.tobe.dto.EmployeeDTO" parameterType="RequestList">
         SELECT *
         FROM employee e

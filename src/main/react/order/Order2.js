@@ -297,20 +297,10 @@ function Order2({orderNo, onClose, initialData}) {
 
     // ---  모달창 띄우는 스크립트
 
-    const [isVisibleCSV, setIsVisibleCSV] = useState(false);
-
-    const handleAddClickCSV = () => {
-        setIsVisibleCSV((prevState) => !prevState);
-    };
-
-
-    const [isVisible, setIsVisible] = useState(false);
-
     const handleCloseClick = () => {
         setCheckItemMal(false);
         setShowDeleteMal(false);
         setAllCheckMal(false);
-        setIsVisible(false);
         setRegistCustomer(''); //고객선택 초기화
         setDelDate(''); //납품요청일 초기화
         setAddCheckProd([]); //추가리스트 초기화
@@ -365,19 +355,6 @@ function Order2({orderNo, onClose, initialData}) {
             }
         }
     }, [initialData]);
-
-
-    const handleAddClick = async (orderNo = null) => {
-        if (orderNo) {
-            await fetchOrderDetail(orderNo);
-            setSelectedOrderNo(orderNo);
-            setModifyItem(prev => ({
-                ...prev,
-                orderNo: orderNo // orderNo 설정
-            }));
-        }
-        setIsVisible(true);
-    };
 
 // 임시 저장 데이터
     const fetchOrderDetail = async (orderNo) => {
