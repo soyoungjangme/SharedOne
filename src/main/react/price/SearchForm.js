@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSearchBtn }) => {
+const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSearchBtn, handleSearchResetBtn }) => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setSearchPrice((prev) => ({ ...prev, [name]: value }));

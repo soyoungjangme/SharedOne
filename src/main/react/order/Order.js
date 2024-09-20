@@ -7,6 +7,7 @@ import useCheckboxManager from "../js/CheckboxManager";
 import axios from 'axios';
 import ModifyOrderModal from './ModifyOrderModal';
 import ModifyOrderModal2 from './ModifyOrderModal2';
+import Order2 from './Order2';
 import Select from "react-select";
 /*
 import '../js/pagecssReal.css';
@@ -409,7 +410,7 @@ function Order() {
                 inputDelDate: delDate || null,//납품요청일
                 inputCustomerNo: registCustomer || null,//주문고객번호
                 inputManager: my.id || null, //임의 값(로그인 시 해당 직원id 기입할 예정)
-                inputConfirmer: "beak10" || null, //임의 값
+                inputConfirmer: modifyItem.confirmerId || null, //임의 값
                 inputStatus: orderStatus,
                 orderBList //ob데이터 배열 전달
             });
@@ -501,7 +502,8 @@ function Order() {
         details: '',
         manager: '',
         status: '',
-        date: ''
+        date: '',
+        confirmerId: ''
     });
 
 
@@ -530,6 +532,14 @@ function Order() {
     const handleCloseModifyModal2 = () => {
         setIsModifyModal2Visible(false);
     };
+
+    /* 임시 저장 모달 창*/
+    const handleOpenOrder2 = (orderData) => {
+        setSelectedOrderData(orderData);  // 선택된 주문 데이터를 설정
+        setIsModifyModalVisible(false);   // 상세보기 모달 닫기
+        setIsVisible(true);               // 임시 저장 수정 창 열기
+    };
+
 
     // 유선화 - 끝
 
@@ -673,10 +683,21 @@ function Order() {
 
     const [confirmerIdList, setConfirmerIdList] = useState([]);
     const [confirmerIdOptions, setConfirmerIdOptions] = useState();
+    const [confirmerName, setConfirmerName] = useState(''); //선택한 결재자 이름
 
     const handleManagerChange = (name, value) => {
         setModifyItem((prev) => ({ ...prev, [name]: value }));
     }
+
+/*    useEffect(() => {
+        const selectedConfirmer = confirmerIdList.find(emp => emp.employeeId === modifyItem.confirmerId);
+        if (selectedConfirmer) {
+            setConfirmerName(selectedConfirmer.employeeName);
+        } else {
+            setConfirmerName(''); // 선택된 결재자가 없을 경우 빈 문자열로 설정
+        }
+        console.log("Selected confirmer name: ", confirmerName);
+    }, [modifyItem.confirmerId]); // confirmerIdList도 의존성에 추가*/
 
 
 
@@ -1186,6 +1207,7 @@ function Order() {
                     isOpen={isModifyModalVisible}
                     onClose={handleModifyCloseClick}
                     onOpenModifyModal2={handleOpenModifyModal2}
+                    onOpenOrder2={handleOpenOrder2}
                 />
             )}
 
@@ -1195,6 +1217,14 @@ function Order() {
                     isOpen={isModifyModal2Visible}
                     onClose={handleCloseModifyModal2}
                     onUpdate={handleOrderUpdate}
+                />
+            )}
+
+            {isVisible && (
+                <Order2
+                    orderNo={selectedOrderNo}
+                    onClose={handleCloseClick}
+                    initialData={modifyItem}
                 />
             )}
         </div>
