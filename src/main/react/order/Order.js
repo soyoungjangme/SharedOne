@@ -886,10 +886,12 @@ function Order() {
                                         <button className="btn-common"
                                                 onClick={(e) => {
 
-                                                    handleDetailView(item.orderNo); // 상세보기 모달 열기
                                                     console.log("세션값11" + my.id); // 세션값
                                                     console.log("글쓴이11" + item.managerId);
+                                                    console.log(JSON.stringify(item));
                                                     console.log("세션권한11" + my.role);
+                                                    handleDetailView(item.orderNo); // 상세보기 모달 열기
+
                                                 }}>
                                             상세보기
                                         </button>
