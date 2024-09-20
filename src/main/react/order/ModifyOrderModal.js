@@ -7,12 +7,12 @@ import Order2 from './Order2';
 import axios from 'axios';
 import Select from "react-select";
 
-const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModal2, onOpenOrder2 }) => {
+const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModal2, onOpenOrder2, roleHierarchy ,fetchData,my }) => {
 
     const [modifyItem, setModifyItem] = useState({
         orderNo: '',
         regDate: '',
-        employee: { employeeName: '' , employeeId : ''},
+        employee: { employeeName: '' , employeeId : '', authorityGrade : ''},
         customer: { customerName: '' , customerNo : '' },
         delDate: '',
         confirmStatus: '',
@@ -269,6 +269,8 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
         }
     }, [modifyItem]);
 
+    console.log(modifyItem.employee.authorityGrade);
+    console.log(JSON.stringify(modifyItem));
 
 
     return isOpen ? (
@@ -282,31 +284,68 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                             <div className="btn-add">
                                 {getConfirmStatus(modifyItem.confirmStatus) === '임시저장' && (
                                     <>
-                                        <button type="button" >삭제</button>
+                                        <button type="button">삭제</button>
+                                              <button
+                                                                                       type="button"
+                                                                                       onClick={() => {
+                                                                                           if (window.confirm('주문을 수정하시겠습니까?')) {
+                                                                                               if (getConfirmStatus(modifyItem.confirmStatus) === '임시저장') {
+                                                                                                   openOrder2(modifyItem);
+                                                                                               } else {
+                                                                                                   onOpenModifyModal2(modifyItem);
+                                                                                               }
+                                                                                           }
+                                                                                       }}
+                                                                                   >
+                                                                                       수정하기
+                                                                                   </button>
                                     </>
                                 )}
-                                {getConfirmStatus(modifyItem.confirmStatus) === '대기' && (
-                                    <>
-                                        <button type="button" onClick={() => handleApproval('반려')}>반려</button>
-                                        <button type="button" onClick={() => handleApproval('승인')}>승인</button>
-                                    </>
-                                )}
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        if (window.confirm('주문을 수정하시겠습니까?')) {
-                                            if (getConfirmStatus(modifyItem.confirmStatus) === '임시저장') {
-                                                openOrder2(modifyItem);
-                                            } else {
-                                                onOpenModifyModal2(modifyItem);
-                                            }
-                                        }
-                                    }}
-                                >수정하기
-                                </button>
+                               {['대기', '반려'].includes(getConfirmStatus(modifyItem.confirmStatus)) && (
+                                   <>
+                                              {getConfirmStatus(modifyItem.confirmStatus) === '대기' && (
+                                                  <>
+                                                      {roleHierarchy[my.role] > roleHierarchy[modifyItem.employee.authorityGrade] && (
+                                                          <>
+                                                              <button type="button" onClick={() => {
+                                                                  console.log('반려 버튼 클릭됨');
+                                                                  handleApproval('반려');
+                                                              }}>
+                                                                  반려
+                                                              </button>
+                                                              <button type="button" onClick={() => {
+                                                                  console.log('승인 버튼 클릭됨');
+                                                                  handleApproval('승인');
+                                                              }}>
+                                                                  승인
+                                                              </button>
+                                                          </>
+                                                      )}
+                                              {console.log('Confirm Status:', getConfirmStatus(modifyItem.confirmStatus))}
+                                              {console.log('My Role:', my.role, 'Authority Grade:', modifyItem.employee.authorityGrade)}
+                                          </>
+                                      )}
+
+                                       {my.id === modifyItem.employee.employeeId && (
+                                           <button
+                                               type="button"
+                                               onClick={() => {
+                                                   if (window.confirm('주문을 수정하시겠습니까?')) {
+                                                       if (getConfirmStatus(modifyItem.confirmStatus) === '임시저장') {
+                                                           openOrder2(modifyItem);
+                                                       } else {
+                                                           onOpenModifyModal2(modifyItem);
+                                                       }
+                                                   }
+                                               }}
+                                           >
+                                               수정하기
+                                           </button>
+                                       )}
+                                   </>
+                               )}
+
                             </div>
-
-
                         </div>
                     </div>
                     <form className={`RegistForm ${isApproved ? 'form-disabled' : ''}`}>
