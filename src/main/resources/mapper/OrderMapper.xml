@@ -96,7 +96,7 @@
                                 customer_no,
                                 employee_id,
                                 confirmer_id)
-        values (now(),
+        values (current_timestamp,
                 #{delDate},
                 #{confirmStatus},
                 now(),
@@ -205,7 +205,8 @@
     <!--주문 업데이트-->
     <update id="updateOrderHeader" parameterType="com.project.tobe.dto.OrderUp1DTO">
         UPDATE order_header
-        SET del_date = #{delDate}
+        SET del_date = #{delDate},
+            confirm_change_date = #{confirmChangeDate}
         WHERE order_no = #{orderNo}
     </update>
 
@@ -218,6 +219,20 @@
         INSERT INTO order_body (order_no, product_no, order_product_qty, price_no)
         VALUES (#{orderNo}, #{detail.productNo}, #{detail.orderProductQty}, #{detail.priceNo})
     </insert>
-    <!--유선화 END-->
 
+
+    <insert id="insertBack1" useGeneratedKeys="true" keyProperty="orderNo" parameterType="OrderUp1DTO">
+        INSERT INTO order_header (reg_date, del_date, confirm_status, customer_no, employee_id)
+        VALUES (CURRENT_TIMESTAMP, #{delDate}, '대기', #{customerNo}, #{employeeId})
+    </insert>
+
+    <insert id="insertBack2" parameterType="map">
+        INSERT INTO order_body (order_no, product_no, order_product_qty, price_no)
+        VALUES
+        <foreach collection="orderBList" item="orderBody" separator=",">
+            (#{orderNo}, #{orderBody.productNo}, #{orderBody.orderProductQty}, #{orderBody.priceNo})
+        </foreach>
+    </insert>
+
+    <!--유선화 END-->
 </mapper>

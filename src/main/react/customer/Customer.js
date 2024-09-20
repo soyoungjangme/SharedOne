@@ -135,106 +135,106 @@ function Customer() {
     // =============================== 고객 등록 부분 ===============================
 
     // 고객 등록 리스트 상태
-   // 고객 등록 상태
-const [regist, setRegist] = useState({
-    customerNo: '',
-    customerName: '',
-    customerTel: '',
-    customerAddr: '',
-    postNum: '',
-    businessRegistrationNo: '',
-    nation: '',
-    dealType: '',
-    picName: '',
-    picEmail: '',
-    picTel: '',
-    activated: 'Y' // 기본값
-});
+    // 고객 등록 상태
+    const [regist, setRegist] = useState({
+        customerNo: '',
+        customerName: '',
+        customerTel: '',
+        customerAddr: '',
+        postNum: '',
+        businessRegistrationNo: '',
+        nation: '',
+        dealType: '',
+        picName: '',
+        picEmail: '',
+        picTel: '',
+        activated: 'Y' // 기본값
+    });
 
-// 입력 핸들러
-const handleInputAddChange = (e) => {
-    const { name, value } = e.target;
-    setRegist((prevRegist) => ({
-        ...prevRegist,
-        [name]: value,
-    }));
-};
+    // 입력 핸들러
+    const handleInputAddChange = (e) => {
+        const { name, value } = e.target;
+        setRegist((prevRegist) => ({
+            ...prevRegist,
+            [name]: value,
+        }));
+    };
 
-// 서버로 고객 등록 요청
-const onClickRegistBtn = () => {
-    // 필수 입력값 확인
-    if (!regist.customerName || !regist.customerTel || !regist.customerAddr ||
-        !regist.postNum || !regist.businessRegistrationNo || !regist.nation ||
-        !regist.dealType || !regist.picName || !regist.picEmail || !regist.picTel) {
-        alert('고객 정보를 모두 입력해야 합니다.');
-        return;
-    }
+    // 서버로 고객 등록 요청
+    const onClickRegistBtn = () => {
+        // 필수 입력값 확인
+        if (!regist.customerName || !regist.customerTel || !regist.customerAddr ||
+            !regist.postNum || !regist.businessRegistrationNo || !regist.nation ||
+            !regist.dealType || !regist.picName || !regist.picEmail || !regist.picTel) {
+            alert('고객 정보를 모두 입력해야 합니다.');
+            return;
+        }
 
-    // 중복 검사
-    if (checkDuplicateName(regist.customerName)) {
-        alert('고객명이 이미 존재합니다.');
-        return;
-    }
+        // 중복 검사
+        if (checkDuplicateName(regist.customerName)) {
+            alert('고객명이 이미 존재합니다.');
+            return;
+        }
 
-    if (checkDuplicateBusinessRegistrationNo(regist.businessRegistrationNo)) {
-        alert('사업자 등록번호가 이미 존재합니다.');
-        return;
-    }
+        if (checkDuplicateBusinessRegistrationNo(regist.businessRegistrationNo)) {
+            alert('사업자 등록번호가 이미 존재합니다.');
+            return;
+        }
 
-    // 유효성 검사
-    if (!validatePhoneNumber(regist.customerTel) || !validatePhoneNumber(regist.picTel)) {
-        alert('전화번호 형식으로 입력해주세요.( - 포함)');
-        return;
-    }
+        // 유효성 검사
+        if (!validatePhoneNumber(regist.customerTel) || !validatePhoneNumber(regist.picTel)) {
+            alert('전화번호 형식으로 입력해주세요.( - 포함)');
+            return;
+        }
 
-    if (!isValidBusinessRegistrationNo(regist.businessRegistrationNo)) {
-        alert('사업자등록번호는 XXX-XX-XXXXX 형식입니다.');
-        return;
-    }
+        if (!isValidBusinessRegistrationNo(regist.businessRegistrationNo)) {
+            alert('사업자등록번호는 XXX-XX-XXXXX 형식입니다.');
+            return;
+        }
 
-    if (!validateEmail(regist.picEmail)) {
-        alert('이메일 형식으로 입력해야 합니다.');
-        return;
-    }
+        if (!validateEmail(regist.picEmail)) {
+            alert('이메일 형식으로 입력해야 합니다.');
+            return;
+        }
 
-    // 고객 등록 컨펌창
-    if (!window.confirm(`고객을 등록하시겠습니까?`)) {
-        return; // 취소하면 등록 진행 안 함
-    }
+        // 고객 등록 컨펌창
+        if (!window.confirm(`고객을 등록하시겠습니까?`)) {
+            return; // 취소하면 등록 진행 안 함
+        }
 
-    // 고객 등록 요청
-    axios
-        .post('/customer/customerRegist', [regist], { // 배열로 감싸서 전송
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        .then((response) => {
-            console.log('등록 성공:', response.data);
-            alert('고객이 성공적으로 등록되었습니다.');
+        // 고객 등록 요청
+        axios
+            .post('/customer/customerRegist', [regist], { // 배열로 감싸서 전송
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then((response) => {
+                console.log('등록 성공:', response.data);
+                alert('고객이 성공적으로 등록되었습니다.');
 
-            // 입력값 초기화
-            setRegist({
-                customerNo: '',
-                customerName: '',
-                customerTel: '',
-                customerAddr: '',
-                postNum: '',
-                businessRegistrationNo: '',
-                nation: '',
-                dealType: '',
-                picName: '',
-                picEmail: '',
-                picTel: '',
-                activated: 'Y'
+                // 입력값 초기화
+                setRegist({
+                    customerNo: '',
+                    customerName: '',
+                    customerTel: '',
+                    customerAddr: '',
+                    postNum: '',
+                    businessRegistrationNo: '',
+                    nation: '',
+                    dealType: '',
+                    picName: '',
+                    picEmail: '',
+                    picTel: '',
+                    activated: 'Y'
+                });
+
+                window.location.reload(); // 페이지 새로고침
+            })
+            .catch((error) => {
+                console.error('등록 중 오류 발생:', error.response.data);
             });
-
-            window.location.reload(); // 페이지 새로고침
-        })
-        .catch((error) => {
-            console.error('등록 중 오류 발생:', error.response.data);
-        });
-};
+    };
 
 
 
@@ -967,7 +967,7 @@ const onClickRegistBtn = () => {
                                 </table>
 
                             </div>
-{/* 
+                            {/* 
                             <div className="btn-add">
                                 <button className="btn-common btn-add-p" onClick={onClickListAdd}> 추가</button>
                             </div>

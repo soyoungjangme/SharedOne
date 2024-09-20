@@ -14,4 +14,5 @@ public class OrderUp2DTO {
   private int orderProductQty;
   private Long priceNo;
 
+
 }

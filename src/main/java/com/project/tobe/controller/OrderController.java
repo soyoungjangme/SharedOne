@@ -48,7 +48,6 @@ public class OrderController {
 
         List<PriceDTO> customPrice;
 
-
         if( inputOrderCustomerNo == null || inputOrderCustomerNo.isEmpty() ){ //고객명 선택x
             customPrice = new ArrayList<>(); //빈 리스ㅡㅌ 반환
 
@@ -135,10 +134,19 @@ public class OrderController {
         }
     }
 
+
     @GetMapping("/getManagerList/{employeeId}")
     public List<EmployeeDTO> getManagerList(@PathVariable String employeeId) {
         return employeeService.getManagerList(employeeId);
     }
+
+
+    @PostMapping("/insertBack")
+    public void insertBack(@RequestBody OrderUp1DTO orderUp1DTO) {
+        System.out.println(orderUp1DTO);
+        orderService.insertBack(orderUp1DTO);
+    }
+
 
 /* 유선화 END */
 }

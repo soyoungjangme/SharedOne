@@ -274,7 +274,7 @@
 }
 
 .btn-delete button {
-  background-color: #004e90;
+  background-color: #bbb;
   color: #fff;
   border: 1px solid #ddd;
   width: 50px;
@@ -287,7 +287,10 @@
 .btn-add button:hover,
 .btn-add2 button:hover,
 .btn-addr-find:hover,
-.btn-customer-add:hover,
-.btn-delete:hover {
+.btn-customer-add:hover {
   background-color: #0056b3;
+}
+
+.btn-delete button:hover {
+  background-color: #ccc;
 }
