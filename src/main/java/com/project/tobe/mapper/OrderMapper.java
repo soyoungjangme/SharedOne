@@ -1,5 +1,6 @@
 package com.project.tobe.mapper;
 import com.project.tobe.dto.*;
+import com.querydsl.core.types.Order;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -24,6 +25,7 @@ public interface OrderMapper {
     void updateOrderHeader(OrderUp1DTO orderUp1DTO);
     void deleteOrderDetails(Long orderNo);
     void insertOrderDetail(@Param("orderNo") Long orderNo, @Param("detail") OrderUp2DTO detail);
-
+    void insertBack1(OrderUp1DTO orderUp1DTO);
+    void insertBack2(@Param("orderBList") List<OrderUp2DTO> orderBList, @Param("orderNo") Long orderNo);
     /*유선화 END*/
 }
