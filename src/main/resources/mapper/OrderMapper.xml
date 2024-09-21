@@ -13,6 +13,7 @@
         join employee emp on emp.employee_id = oh.employee_id
         join customer c on c.customer_no = oh.customer_no
         join order_body ob on ob.order_no = oh.order_no
+        join product prod on prod.product_no = ob.product_no
         <where>
             <if test="inputDate != null">
                 and date(oh.reg_date) = #{inputDate}
@@ -20,19 +21,20 @@
             <if test="inputOrderNo != null">
                 and cast(oh.order_no as text) like concat('%', #{inputOrderNo}, '%')
             </if>
-            <if test="inputCustomerNo != null">
-                and c.customer_no = #{inputCustomerNo}
+            <if test="inputCustomerName != null">
+                and c.customer_name like concat('%', #{inputCustomerName}, '%')
             </if>
             <if test="inputManager != null">
                 and emp.employee_name like concat('%', #{inputManager}, '%')
             </if>
-            <if test="inputProdNo != null">
-                and ob.product_no = #{inputProdNo}
+            <if test="inputProdName != null">
+                and prod.product_name like concat('%', #{inputProdName}, '%')
             </if>
             <if test="inputState != null">
                 and oh.confirm_status = #{inputState}
             </if>
         </where>
+        order by oh.reg_date desc
     </select>
 
     <resultMap id="GetOrderResultMap" type="OrderHDTO">
@@ -47,8 +49,11 @@
         <association property="customer" javaType="CustomerDTO">
             <result column="customer_name" property="customerName"/> <!-- 고객명 -->
         </association>
+
         <collection property="orderBList" javaType="OrderBDTO">
-            <result column="product_no" property="productNo"/>
+            <association property="product" javaType="ProductDTO">
+                <result column="product_name" property="productName"/>
+            </association>
         </collection>
     </resultMap>
 
@@ -223,12 +228,12 @@
     </delete>
 
     <insert id="insertOrderDetail">
-        INSERT INTO order_body (order_no, product_no, order_product_qty, price_no)
-        VALUES (#{orderNo}, #{detail.productNo}, #{detail.orderProductQty}, #{detail.priceNo})
+        INSERT INTO order_body (order_no, product_no, order_product_qty, prod_total, price_no)
+        VALUES (#{orderNo}, #{detail.productNo}, #{detail.orderProductQty}, #{detail.prodTotal}, #{detail.priceNo})
     </insert>
 
 
-    <insert id="insertBack1" useGeneratedKeys="true" keyProperty="orderNo" parameterType="OrderUp1DTO">
+<!--    <insert id="insertBack1" useGeneratedKeys="true" keyProperty="orderNo" parameterType="OrderUp1DTO">
         INSERT INTO order_header (reg_date, del_date, confirm_status, customer_no, employee_id)
         VALUES (CURRENT_TIMESTAMP, #{delDate}, '대기', #{customerNo}, #{employeeId})
     </insert>
@@ -239,7 +244,7 @@
         <foreach collection="orderBList" item="orderBody" separator=",">
             (#{orderNo}, #{orderBody.productNo}, #{orderBody.orderProductQty}, #{orderBody.priceNo})
         </foreach>
-    </insert>
+    </insert>-->
 
     <!--유선화 END-->
 </mapper>

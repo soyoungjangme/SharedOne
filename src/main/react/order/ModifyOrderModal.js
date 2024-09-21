@@ -359,8 +359,8 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                 <td>{modifyItem.customer?.customerName || ''}</td>
                             </tr>
                             <tr>
-                                <th><label htmlFor="confirmTitle">주문 등록일</label></th>
-                                <td>{modifyItem.regDate || ''}</td>
+                                <th><label htmlFor="confirmTitle">등록일</label></th>
+                                <td>{modifyItem.regDate ? new Date(modifyItem.regDate).toLocaleDateString('en-CA') : ''}</td>
 
                                 <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
                                 <td>{modifyItem.delDate || ''}</td>
