@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class OrderSearchDTO { //주문관리- 조건에서 들어오는 매개변수임
-    private LocalDateTime inputDate;
+    private LocalDate inputDate;
     private String inputOrderNo;
     private Integer inputProdNo;
     private String inputManager;

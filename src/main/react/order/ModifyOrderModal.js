@@ -152,7 +152,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                         setIsApproved(false);
                     }
                 } catch (error) {
-                    console.error('주문 상세 정보 조회 실패:', error.response ? error.response.data : error.message);
+                    console.error('주문 상세 정보 조회 실패:', error);
                     alert('주문 상세 정보를 조회하는 중 오류가 발생했습니다.');
                 }
             };

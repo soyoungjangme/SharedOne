@@ -15,7 +15,7 @@
         join order_body ob on ob.order_no = oh.order_no
         <where>
             <if test="inputDate != null">
-                and oh.reg_date = #{inputDate}
+                and date(oh.reg_date) = #{inputDate}
             </if>
             <if test="inputOrderNo != null">
                 and cast(oh.order_no as text) like concat('%', #{inputOrderNo}, '%')
