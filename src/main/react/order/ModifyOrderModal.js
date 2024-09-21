@@ -152,7 +152,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                         setIsApproved(false);
                     }
                 } catch (error) {
-                    console.error('주문 상세 정보 조회 실패:', error.response ? error.response.data : error.message);
+                    console.error('주문 상세 정보 조회 실패:', error);
                     alert('주문 상세 정보를 조회하는 중 오류가 발생했습니다.');
                 }
             };
@@ -359,8 +359,8 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                 <td>{modifyItem.customer?.customerName || ''}</td>
                             </tr>
                             <tr>
-                                <th><label htmlFor="confirmTitle">주문 등록일</label></th>
-                                <td>{modifyItem.regDate || ''}</td>
+                                <th><label htmlFor="confirmTitle">등록일</label></th>
+                                <td>{modifyItem.regDate ? new Date(modifyItem.regDate).toLocaleDateString('en-CA') : ''}</td>
 
                                 <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
                                 <td>{modifyItem.delDate || ''}</td>
@@ -482,7 +482,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                         {modifyItem.orderBList.reduce(
                                             (total, item) => total + (item.orderProductQty * (item.price?.customPrice || 0)),
                                             0
-                                        )}
+                                        ).toLocaleString()}원
                                     </td>
                                 </tr>
                             )}

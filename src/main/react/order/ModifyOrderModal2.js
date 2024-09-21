@@ -21,6 +21,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
         confirmStatus: '',
         remarks: '',
         confirmerId: '',
+        confirmerName:'',
         confirmChangeDate: null,
         orderBList: []
     });
@@ -36,6 +37,9 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
         checkItem: availableProductsCheckItem,
         handleMasterCheckboxChange: handleAvailableProductsMasterCheckboxChange,
         handleCheckboxChange: handleAvailableProductsCheckboxChange,
+        setAllCheck: setAllCheckCustomPrice,
+        setCheckItem: setCheckItemCustomPrice,
+        setShowDelete: setShowDeleteCustomPrice
     } = useCheckboxManager(setCustomPrice);
 
 // 선택된 상품 목록을 위한 체크박스
@@ -83,12 +87,14 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
     }, [orderData]);
 
 // 고객에 맞는 상품 리스트 가져오기 + 디버깅
+
     const fetchCustomerProducts = async (customerNo) => {
         try {
             console.log('Fetching products for customerNo:', customerNo);
 
             const response = await axios.post('/order/getPrice', {
-                inputOrderCustomerNo: parseInt(customerNo, 10)
+                inputOrderCustomerNo: parseInt(customerNo, 10),
+                inputOrderDelDate: modifyItem.delDate || null
             });
 
             const OrderCustomerData = response.data;
@@ -115,6 +121,13 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
             }
         }
     };
+
+    // 납품 요청일 변경 시 fetch 실행
+    useEffect(() => {
+        if (modifyItem && modifyItem.customer?.customerNo && modifyItem.delDate) {
+            fetchCustomerProducts(modifyItem.customer.customerNo, modifyItem.delDate);  // 고객 번호와 납품 요청일로 상품 목록을 불러옴
+        }
+    }, [modifyItem.delDate, modifyItem.customer?.customerNo]);
 
 
 // 주문 수량
@@ -181,42 +194,45 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
             return;
         }
 
-            const status = modifyItem.confirmStatus.trim();
+        const status = modifyItem.confirmStatus.trim();
 
         if (status === '반려') {
               console.log('1현재 상태: 반려');
                  try {
                           // 주문 업데이트에 필요한 데이터 준비
-                          const today = new Date();
+                          /*const today = new Date();
                           today.setDate(today.getDate() + 1);
-                          const todayPlus = today.toISOString().split('T')[0];
+                          const todayPlus = today.toISOString().split('T')[0];*/
 
                            const updatedOrderData = {
-                               orderNo: modifyItem.orderNo,
-                               delDate: modifyItem.delDate,
-                               confirmChangeDate: todayPlus,
-                               customerNo: modifyItem.customer.customerNo, // 고객 번호 설정
-                               employeeId: modifyItem.employee.employeeId, // 직원 ID 설정
+                               /*orderNo: modifyItem.orderNo,*/ // 주문번호는 시퀀스생성
+                               inputDelDate: modifyItem.delDate,
+                               inputStatus : "대기", //고정 값
+                               /*confirmChangeDate: todayPlus,*/ // 인서트이므로, 상태변경일 ㄴㄴ
+                               inputCustomerNo: modifyItem.customer.customerNo, // 고객 번호 설정
+                               inputManager: modifyItem.employee.employeeId, // 직원 ID 설정
+                               inputConfirmer: modifyItem.confirmerId, //담당자 ID 설정
                                orderBList: modifyItem.orderBList.map(item => ({
-                               productNo: item.product.productNo,
-                               orderProductQty: parseInt(item.orderProductQty, 10), // 문자열을 숫자로 변환
-                               price: item.price.customPrice,
-                               priceNo: item.priceNo || item.price.priceNo
+                                   productNo: item.product.productNo,
+                                   orderProductQty: parseInt(item.orderProductQty, 10), // 문자열을 숫자로 변환
+                                   prodTotal: parseInt(item.orderProductQty, 10) * item.price.customPrice,
+                                   priceNo: item.price.priceNo
                                }))
                            };
 
-                           const response = await axios.post('/order/insertBack', updatedOrderData);
+                           const response = await axios.post('/order/registOrder', updatedOrderData);
+                           const orderNo = response.data;
 
                            if (response.status === 200 || response.data) {
-                               alert('반려 인서트 ');
+                               alert(`주문번호 ${orderNo} 등록이 완료되었습니다.`);
                                onClose();
                            } else {
-                               alert('반려 인서트');
+                               alert('주문 등록을 실패하였습니다.');
 
                            }
-                       } catch (error) {
-                           console.error('주문 업데이트 중 오류 발생:', error);
-                       }
+                 } catch (error) {
+                     console.error('주문 업데이트 중 오류 발생:', error);
+                 }
 
 
 
@@ -236,8 +252,8 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                     orderBList: modifyItem.orderBList.map(item => ({
                         productNo: item.product.productNo,
                         orderProductQty: parseInt(item.orderProductQty, 10), // 문자열을 숫자로 변환
-                        price: item.price.customPrice,
-                        priceNo: item.priceNo || item.price.priceNo
+                        prodTotal: parseInt(item.orderProductQty, 10) * item.price.customPrice,
+                        priceNo: item.price.priceNo
                     }))
                 };
 
@@ -266,7 +282,6 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
            }
         }
 
-        /*수정창 닫고 데이터 들고 상세보기로 ㄱ*/
 
     };
 
@@ -312,6 +327,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
         }));
 
         handleAvailableProductsMasterCheckboxChange({ target: { checked: false } }); // 체크박스 상태 초기화
+
     };
 
 // 정렬 상태 관리
@@ -380,7 +396,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                             <tr>
                                 <th>주문 번호</th>
                                 <td><input type="text" value={modifyItem.orderNo || ''} disabled/></td>
-                                <th>주문 등록일</th>
+                                <th>등록일</th>
                                 <td><input type="text" value={modifyItem.regDate ? new Date(modifyItem.regDate).toLocaleDateString('en-CA') : ''} disabled/></td>
                             </tr>
                             <tr>
@@ -402,9 +418,11 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                             }
                                             setModifyItem(prev => ({
                                                 ...prev,
-                                                delDate: e.target.value
-                                            })
-                                        )}}
+                                                delDate: e.target.value,
+                                                orderBList: []
+                                            }))
+
+                                        }}
                                     />
                                 </td>
                             </tr>
@@ -412,7 +430,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                 <th>담당자</th>
                                 <td><input type="text" value={modifyItem.employee?.employeeName || ''} disabled/></td>
                                 <th>결재자</th>
-                                <td><input type="text" value={modifyItem.confirmerId || '정보 없음'} disabled/></td>
+                                <td><input type="text" value={modifyItem.confirmerName || '정보 없음'} disabled/></td>
                             </tr>
                             </tbody>
                         </table>
@@ -555,7 +573,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                         {modifyItem.orderBList.reduce(
                                             (total, item) => total + (item.orderProductQty === '' ? 0 : item.orderProductQty * (item.price?.customPrice || 0)),
                                             0
-                                        )}
+                                        ).toLocaleString()}원
                                     </td>
                                 </tr>
                             )}
