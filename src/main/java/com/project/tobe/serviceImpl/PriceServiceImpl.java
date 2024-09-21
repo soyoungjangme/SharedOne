@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,50 +38,33 @@ public class PriceServiceImpl implements PriceService {
     private CustomerRepository customerRepository;
 
     @Override
-    public List<Price> getAllPrice() {
-        return priceRepository.findByActivatedEquals(YesNo.Y);
-    }
-
-    @Override
-    public List<Price> getPriceByDTO(PriceDTO dto) {
-        return priceRepository.getPriceByDTO(dto);
-    }
-
-    @Override
-    public List<PriceProductCustomerDTO> getPriceProductCustomerDTO(PriceDTO dto) {
-        return priceRepository.getPriceJoinByDTO(dto);
-    }
-
-    @Override
     public Page<PriceProductCustomerDTO> getPriceProductCustomerDTO(PriceDTO dto, Pageable pageable) {
         return priceRepository.getPriceJoinByDTO(dto, pageable);
     }
 
 
     @Override
-    public ResponseEntity<String> savePrice(List<PriceDTO> list) {
-        for (PriceDTO dto : list) {
-            // Customer와 Product를 조회하여 연관관계를 설정
-            Customer customer = customerRepository.findById(Long.parseLong(dto.getCustomerNo())).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
-            Product product = productRepository.findById(Long.parseLong(dto.getProductNo())).orElseThrow(() -> new EntityNotFoundException("Product not found"));
+    public ResponseEntity<String> savePrice(PriceDTO dto) {
+        // Customer와 Product를 조회하여 연관관계를 설정
+        Customer customer = customerRepository.findById(Long.parseLong(dto.getCustomerNo())).orElseThrow(() -> new EntityNotFoundException("Customer not found"));
+        Product product = productRepository.findById(Long.parseLong(dto.getProductNo())).orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-            Price price = Price.builder()
-                    .registerDate(LocalDate.now())
-                    .product(product)
-                    .customer(customer)
-                    .customPrice(Double.valueOf(dto.getCustomPrice()))
-                    .currency(dto.getCurrency())
-                    .discount(dto.getDiscount())
-                    .startDate(dto.getStartDate())
-                    .endDate(dto.getEndDate())
-                    .activated(YesNo.Y)
-                    .build();
+        Price price = Price.builder()
+                .registerDate(LocalDateTime.now())
+                .product(product)
+                .customer(customer)
+                .customPrice(Double.valueOf(dto.getCustomPrice()))
+                .currency(dto.getCurrency())
+                .discount(dto.getDiscount())
+                .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
+                .activated(YesNo.Y)
+                .build();
 
-            System.out.println(price);
+        System.out.println(price);
 
-            priceRepository.save(price);
-            priceRepository.updateOldPrice(price);
-        }
+        priceRepository.save(price);
+        fetchPrice(customer, product);
 
         return ResponseEntity.ok().build();
     }
@@ -100,9 +84,95 @@ public class PriceServiceImpl implements PriceService {
                 .map(this::listToPriceDTO) // 각 List<String>을 PriceDTO로 변환
                 .collect(Collectors.toCollection(LinkedList::new)); // LinkedList로 수집
 
-        savePrice(dtoList);
+//        savePrice(dtoList);
 
         return ResponseEntity.ok().build();
+    }
+
+    private void fetchPrice(Customer customer, Product product) {
+        List<Price> list = priceRepository.getPriceList(customer, product);
+
+        for (int i = 0; i < list.size(); i++) {
+            Price newPrice = list.get(i);
+            for (int j = i + 1; j < list.size(); j++) {
+                Price oldPrice = list.get(j);
+
+                if (oldPrice.getStartDate().isAfter(newPrice.getEndDate()) || oldPrice.getEndDate().isBefore(newPrice.getStartDate())) {
+                    continue;
+                }
+
+                if (oldPrice.getStartDate().isBefore(newPrice.getStartDate()) && oldPrice.getEndDate().isAfter(newPrice.getEndDate())) {
+                    Price priceLeft = Price.builder()
+                            .priceNo(oldPrice.getPriceNo())
+                            .registerDate(oldPrice.getRegisterDate())
+                            .product(oldPrice.getProduct())
+                            .customer(oldPrice.getCustomer())
+                            .customPrice(oldPrice.getCustomPrice())
+                            .currency(oldPrice.getCurrency())
+                            .discount(oldPrice.getDiscount())
+                            .startDate(oldPrice.getStartDate())
+                            .endDate(newPrice.getStartDate().minusDays(1))
+                            .activated(oldPrice.getActivated())
+                            .build();
+
+                    Price priceRight = Price.builder()
+                            .registerDate(oldPrice.getRegisterDate())
+                            .product(oldPrice.getProduct())
+                            .customer(oldPrice.getCustomer())
+                            .customPrice(oldPrice.getCustomPrice())
+                            .currency(oldPrice.getCurrency())
+                            .discount(oldPrice.getDiscount())
+                            .startDate(newPrice.getEndDate().plusDays(1))
+                            .endDate(oldPrice.getEndDate())
+                            .activated(oldPrice.getActivated())
+                            .build();
+
+                    priceLeft = checkStartOverEnd(priceLeft);
+                    priceRight = checkStartOverEnd(priceRight);
+
+                    list.set(j, priceLeft);
+                    list.add(j + 1, priceRight);
+                    continue;
+                }
+
+                if (
+                        (
+                                oldPrice.getStartDate().isAfter(newPrice.getStartDate()) ||
+                                        oldPrice.getStartDate().isEqual(newPrice.getStartDate())
+
+                        )
+                                &&
+                                (
+                                        oldPrice.getEndDate().isBefore(newPrice.getEndDate()) ||
+                                                oldPrice.getEndDate().isEqual(newPrice.getEndDate())
+                                )
+                ) {
+                    oldPrice.setActivated(YesNo.N);
+                }
+
+                if (oldPrice.getStartDate().isAfter(newPrice.getStartDate()) && oldPrice.getEndDate().isAfter(newPrice.getEndDate())) {
+                    oldPrice.setStartDate(newPrice.getEndDate().plusDays(1));
+                }
+
+                if (oldPrice.getStartDate().isBefore(newPrice.getStartDate()) && oldPrice.getEndDate().isBefore(newPrice.getEndDate())) {
+                    oldPrice.setEndDate(newPrice.getStartDate().minusDays(1));
+                }
+
+                if (oldPrice.getStartDate().isAfter(oldPrice.getEndDate())) {
+                    oldPrice.setActivated(YesNo.N);
+                }
+
+                list.set(j, oldPrice);
+            }
+        }
+
+        for (Price price : list) {
+            if (price.getPriceNo() == null) {
+                priceRepository.save(price);
+                continue;
+            }
+            priceRepository.updateOldPrice(price);
+        }
     }
 
     private PriceDTO listToPriceDTO(List<String> list) {
@@ -119,5 +189,13 @@ public class PriceServiceImpl implements PriceService {
         LocalDate endDate = LocalDate.parse(list.get(6));
 
         return new PriceDTO(productNo, customerNo, customPrice, currency, discount, startDate, endDate);
+    }
+
+    private Price checkStartOverEnd(Price price) {
+        if (price.getStartDate().isAfter(price.getEndDate())) {
+            price.setActivated(YesNo.N);
+        }
+
+        return price;
     }
 }

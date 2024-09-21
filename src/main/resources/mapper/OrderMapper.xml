@@ -8,7 +8,7 @@
     <!-- jsy주문 전체 조회 -->
     <select id="getOrder" resultMap="GetOrderResultMap">
         select oh.order_no, c.customer_name, emp.employee_name,
-        oh.confirm_status, oh.reg_date
+        oh.confirm_status, oh.reg_date, emp.employee_id, emp.authority_grade
         from order_header oh
         join employee emp on emp.employee_id = oh.employee_id
         join customer c on c.customer_no = oh.customer_no
@@ -41,6 +41,8 @@
         <result column="confirm_status" property="confirmStatus"/> <!-- 결재상태 -->
         <association property="employee" javaType="EmployeeDTO">
             <result column="employee_name" property="employeeName"/> <!-- 담당자명 -->
+            <result column="employee_id" property="employeeId"/> <!-- 담당자명 -->
+            <result column="authority_grade" property="authorityGrade"/> <!-- 담당자명 -->
         </association>
         <association property="customer" javaType="CustomerDTO">
             <result column="customer_name" property="customerName"/> <!-- 고객명 -->
@@ -50,16 +52,28 @@
         </collection>
     </resultMap>
 
+    <!-- 담당자명(작성자) 이름 -->
+    <select id="getMyName" parameterType="string" resultType="string">
+        select employee_name
+        from employee
+        where employee_id = #{myId}
+    </select>
+
+
     <!--  jsy주문등록 - 고객 별 상품 조회  -->
     <select id="getPrice" resultMap="GetPriceResultMap">
         select p.product_no, p.product_name, p.product_writer, p.product_category,
         price.custom_price, price.start_date, price.end_date, price.price_no
         from price
-        join product p
-        on p.product_no=price.product_no
-        join customer c
-        on c.customer_no=price.customer_no
-        where c.customer_no = #{iocn}
+        join product p on p.product_no=price.product_no
+        join customer c on c.customer_no=price.customer_no
+        join order_header oh on oh.customer_no = c.customer_no
+        where price.activated = 'Y'
+        and c.customer_no = #{iocn}
+        and price.end_date &gt; now()
+        <if test="delDate != null">
+            and (#{delDate}::date) &lt; price.end_date
+        </if>
     </select>
 
     <resultMap id="GetPriceResultMap" type="PriceDTO">
@@ -84,7 +98,7 @@
                                 customer_no,
                                 employee_id,
                                 confirmer_id)
-        values (now(),
+        values (current_timestamp,
                 #{delDate},
                 #{confirmStatus},
                 now(),
@@ -113,11 +127,13 @@
         oh.confirm_status,
         oh.confirm_change_date,
         oh.remarks,
-        oh.confirmer_id,
         c.customer_no,
         c.customer_name,
-        e.employee_id,
-        e.employee_name,
+        e.employee_id, --담당자 아이디
+        e.employee_name, --담당자 이름
+        e.authority_grade,
+        ec.employee_id as confirmer_id, --결재자 아이디
+        ec.employee_name as confirmer_name, --결재자 이름
         ob.price_no,
         ob.product_no,
         ob.order_product_qty,
@@ -131,7 +147,8 @@
         from
         order_header oh
         join customer c on oh.customer_no = c.customer_no
-        join employee e on oh.employee_id = e.employee_id
+        join employee e on oh.employee_id = e.employee_id  -- 담당자 조인
+        join employee ec on oh.confirmer_id = ec.employee_id  -- 결재자 조인
         join order_body ob on oh.order_no = ob.order_no
         join product p on ob.product_no = p.product_no
         left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no
@@ -147,6 +164,7 @@
         <result property="confirmChangeDate" column="confirm_change_date"/>
         <result property="remarks" column="remarks"/>
         <result property="confirmerId" column="confirmer_id"/>
+        <result property="confirmerName" column="confirmer_name"/>
 
         <association property="customer" javaType="CustomerDTO">
             <id property="customerNo" column="customer_no"/>
@@ -155,7 +173,8 @@
 
         <association property="employee" javaType="EmployeeDTO">
             <id property="employeeId" column="employee_id"/>
-            <result property="employeeName" column="employee_name"/>
+            <result column="employee_name" property="employeeName"/> <!-- 담당자명 -->
+            <result column="authority_grade" property="authorityGrade"/> <!-- 담당자명 -->
         </association>
 
         <collection property="orderBList" ofType="OrderBDTO">
@@ -193,7 +212,8 @@
     <!--주문 업데이트-->
     <update id="updateOrderHeader" parameterType="com.project.tobe.dto.OrderUp1DTO">
         UPDATE order_header
-        SET del_date = #{delDate}
+        SET del_date = #{delDate},
+            confirm_change_date = #{confirmChangeDate}
         WHERE order_no = #{orderNo}
     </update>
 
@@ -206,6 +226,20 @@
         INSERT INTO order_body (order_no, product_no, order_product_qty, price_no)
         VALUES (#{orderNo}, #{detail.productNo}, #{detail.orderProductQty}, #{detail.priceNo})
     </insert>
-    <!--유선화 END-->
 
+
+    <insert id="insertBack1" useGeneratedKeys="true" keyProperty="orderNo" parameterType="OrderUp1DTO">
+        INSERT INTO order_header (reg_date, del_date, confirm_status, customer_no, employee_id)
+        VALUES (CURRENT_TIMESTAMP, #{delDate}, '대기', #{customerNo}, #{employeeId})
+    </insert>
+
+    <insert id="insertBack2" parameterType="map">
+        INSERT INTO order_body (order_no, product_no, order_product_qty, price_no)
+        VALUES
+        <foreach collection="orderBList" item="orderBody" separator=",">
+            (#{orderNo}, #{orderBody.productNo}, #{orderBody.orderProductQty}, #{orderBody.priceNo})
+        </foreach>
+    </insert>
+
+    <!--유선화 END-->
 </mapper>

@@ -14,7 +14,10 @@ function Product() {
         showDelete: showDeleteMain,
         handleMasterCheckboxChange: handleMasterCheckboxChangeMain,
         handleCheckboxChange: handleCheckboxChangeMain,
-        handleDelete: handleDeleteMain
+        handleDelete: handleDeleteMain,
+        setAllCheck: setAllCheckMain,
+        setCheckItem: setCheckItemMain,
+        setShowDelete: setShowDeleteMain
     } = useCheckboxManager();
 
     //체크박스매니저 모달용
@@ -143,7 +146,6 @@ function Product() {
                 body: JSON.stringify(productNos),
             });
 
-            // 체크박스 상태 초기화
             alert("총 " + productNos.length + " 개의 상품이 삭제되었습니다.");
         } catch (error) {
             console.error("삭제 중 오류 발생:", error);
@@ -162,6 +164,9 @@ function Product() {
         productWriter: '',
         productCategory: '',
         productPrice: '',
+        minPrice: '', // 초기값 추가
+        maxPrice: '', // 초기값 추가
+        priceComparison: '', // 가격 비교 상태도 초기화
     });
     const handleFilterChange = (e) => {
         const { id, value } = e.target;
@@ -189,7 +194,9 @@ function Product() {
         const normalizedProductName = normalizeString(filters.productName);
         const normalizedProductWriter = normalizeString(filters.productWriter);
         const normalizedProductCategory = normalizeString(filters.productCategory);
-        const filterPrice = parseFloat(filters.productPrice);
+        const filterPrice = filters.productPrice ? parseFloat(filters.productPrice) : null;
+        const minPrice = filters.minPrice ? parseFloat(filters.minPrice) : null;
+        const maxPrice = filters.maxPrice ? parseFloat(filters.maxPrice) : null;
 
         const filteredData = product.filter(item => {
             const normalizedItemName = normalizeString(item.productName);
@@ -197,14 +204,12 @@ function Product() {
             const normalizedItemCategory = normalizeString(item.productCategory);
             const itemPrice = parseFloat(item.productPrice);
 
-            // 가격 필터 조건이 구간일 경우에 최소 가격과 최대 가격이 일치하는지 확인
+            // 가격 필터 조건이 있을 경우에만 가격 비교
             const isPriceMatch =
-                isNaN(filterPrice) ||
-                (filters.priceComparison === 'gte' && itemPrice >= filterPrice) ||
-                (filters.priceComparison === 'lte' && itemPrice <= filterPrice) ||
-                (filters.priceComparison === 'range' &&
-                    itemPrice >= filters.minPrice &&
-                    itemPrice <= filters.maxPrice);
+                (filters.priceComparison === 'gte' && filterPrice !== null && itemPrice >= filterPrice) ||
+                (filters.priceComparison === 'lte' && filterPrice !== null && itemPrice <= filterPrice) ||
+                (filters.priceComparison === 'range' && minPrice !== null && maxPrice !== null && itemPrice >= minPrice && itemPrice <= maxPrice) ||
+                filters.priceComparison === ''; // 가격 비교가 없으면 통과
 
             return (
                 (!normalizedProductName || normalizedItemName.includes(normalizedProductName)) &&
@@ -214,15 +219,32 @@ function Product() {
             );
         });
 
-        //if(filteredData.length === 0) alert("등록된 상품이 없습니다.");
         setOrder(filteredData);
     };
+
+
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault(); // 폼이 제출되지 않도록 방지
             handleSearch(); // 엔터키를 누르면 검색 실행
         }
+    };
+
+
+    // 조히 입력값 초기화
+    const handleReset = () => {
+        setFilters({
+            productName: '',
+            productWriter: '',
+            productCategory: '',
+            productPrice: '',
+            minPrice: '',
+            maxPrice: '',
+            priceComparison: '',
+        });
+
+        handleSearch(); // 리셋 후 검색 기능 호출
     };
 
 
@@ -429,7 +451,7 @@ function Product() {
 
 
 
-    // ========================= 상품 수정 모달창 =========================
+    // ========================= 상품 수정 모달 =========================
 
     const [modifyItem, setModifyItem] = useState({
         productName: '',
@@ -473,6 +495,11 @@ function Product() {
         // 입력값이 비어있는지 확인
         const isInputEmpty = Object.values(modifyItem).some(value => !value);
 
+        if (!hasChanges) {
+            alert('수정한 내용이 없습니다.');
+            return;
+        }
+
         if (isInputEmpty) {
             alert('상품 정보를 모두 입력해야 합니다.');
             return;
@@ -502,10 +529,6 @@ function Product() {
             key => modifyItem[key] !== originalItem[key]
         );
 
-        if (!hasChanges) {
-            alert('수정한 내용이 없습니다.');
-            return;
-        }
 
         try {
             const response = await fetch('/product/updateProduct', {
@@ -531,11 +554,168 @@ function Product() {
         }
     };
 
+    // 삭제 처리 함수
+    const handleDeleteItem = async () => {
+        if (!confirm('상품을 삭제하시겠습니까?')) {
+            return;
+        }
+
+        try {
+            // 삭제할 상품 번호
+            const productNo = originalItem.productNo;
+
+            // 서버에 삭제 요청
+            await fetch('/product/updateProductYn', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify([productNo]), // 배열 형태로 전송
+            });
+
+            alert('상품이 삭제되었습니다.');
+            setIsModifyModalVisible(false);
+            setProductList([]); // 리스트 초기화
+            await fetchData(); // 기존 데이터 갱신
+        } catch (error) {
+            console.error("삭제 중 오류 발생:", error);
+            alert("삭제 중 오류가 발생했습니다.");
+        }
+    };
+
 
     // 문자열 길면 ... 처리
     // const truncateText = (str, maxLength) => {
     //     return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
     // }
+
+
+
+
+
+    // =============================== 페이지 네이션 ===============================
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(5); // 페이지당 항목 수
+
+    // 전체 페이지 수 계산
+    const totalPages = Math.ceil(order.length / itemsPerPage);
+
+    // 현재 페이지에 맞는 데이터 필터링
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = order.slice(indexOfFirstItem, indexOfLastItem);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (pageNumber) => {
+        setAllCheckMain(false);
+        setCheckItemMain(false);
+        setShowDeleteMain(false);
+        setCurrentPage(pageNumber);
+    };
+
+    // 페이지네이션 버튼 렌더링
+    const renderPageNumbers = () => {
+        let pageNumbers = [];
+        const maxButtons = 5; // 고정된 버튼 수
+
+        // 맨 처음 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="first"
+                onClick={() => handlePageChange(1)}
+                className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
+            >
+                &laquo;&laquo; {/* 두 개의 왼쪽 화살표 */}
+            </span>
+        );
+
+        // 이전 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="prev"
+                onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
+            >
+                &laquo; {/* 왼쪽 화살표 */}
+            </span>
+        );
+
+        // 페이지 수가 4 이하일 경우 모든 페이지 표시
+        if (totalPages <= 4) {
+            for (let i = 1; i <= totalPages; i++) {
+                pageNumbers.push(
+                    <span
+                        key={i}
+                        onClick={() => handlePageChange(i)}
+                        className={`pagination_link ${i === currentPage ? 'pagination_link_active' : ''}`}
+                    >
+                        {i}
+                    </span>
+                );
+            }
+        } else {
+            // 페이지 수가 5 이상일 경우 유동적으로 변경
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = startPage + maxButtons - 1;
+
+            if (endPage > totalPages) {
+                endPage = totalPages;
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+
+            // 시작 페이지와 끝 페이지에 대한 페이지 버튼 추가
+            for (let i = startPage; i <= endPage; i++) {
+                pageNumbers.push(
+                    <span
+                        key={i}
+                        onClick={() => handlePageChange(i)}
+                        className={`pagination_link ${i === currentPage ? 'pagination_link_active' : ''}`}
+                    >
+                        {i}
+                    </span>
+                );
+            }
+
+            // 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'과 마지막 페이지 표시
+            if (endPage < totalPages) {
+                pageNumbers.push(<span className="pagination_link">...</span>);
+                pageNumbers.push(
+                    <span
+                        key={totalPages}
+                        onClick={() => handlePageChange(totalPages)}
+                        className={`pagination_link ${currentPage === totalPages ? 'pagination_link_active' : ''}`}
+                    >
+                        {totalPages}
+                    </span>
+                );
+            }
+        }
+
+        // 다음 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="next"
+                onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
+            >
+                &raquo; {/* 오른쪽 화살표 */}
+            </span>
+        );
+
+        // 맨 마지막 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="last"
+                onClick={() => handlePageChange(totalPages)}
+                className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
+            >
+                &raquo;&raquo; {/* 두 개의 오른쪽 화살표 */}
+            </span>
+        );
+
+        return pageNumbers;
+    };
 
 
     return (
@@ -642,6 +822,9 @@ function Product() {
                     </div>
 
                     <div className="button-container">
+                        <button type="button" className="reset-btn" onClick={handleReset}>
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
                         <button type="button" className="search-btn" onClick={handleSearch}>
                             <i className="bi bi-search search-icon"></i>
                         </button>
@@ -680,31 +863,42 @@ function Product() {
                         </tr>
                     </thead>
                     <tbody>
-                        {order.length > 0 ? (
-                            order.map((item, index) => (
-                                !item.deleted && (
-                                    <tr key={index} className={checkItemMain[index + 1] ? 'selected-row' : ''} onDoubleClick={() => {
-                                        handleModify(item)
-                                    }}>
-                                        <td><input type="checkbox" checked={checkItemMain[index + 1] || false} onChange={handleCheckboxChangeMain} /></td>
-                                        <td>{index + 1}</td>
-                                        <td>{item.productName}</td>
-                                        <td>{item.productWriter}</td>
-                                        <td>{item.productCategory}</td>
-                                        <td>{item.productPrice}</td>
-                                    </tr>
-                                )
-                            ))
+                        {currentItems.length > 0 ? (
+                            currentItems.map((item, index) => {
+                                if (!item.deleted) {
+                                    // 전체 데이터에서의 인덱스 계산
+                                    const globalIndex = indexOfFirstItem + index + 1; // +1은 1부터 시작하기 위함
+                                    return (
+                                        <tr key={item.productId} className={checkItemMain[globalIndex] ? 'selected-row' : ''} onDoubleClick={() => {
+                                            handleModify(item);
+                                        }}>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checkItemMain[globalIndex] || false}
+                                                    onChange={handleCheckboxChangeMain}
+                                                />
+                                            </td>
+                                            <td>{globalIndex}</td> {/* 여기에서 globalIndex 사용 */}
+                                            <td>{item.productName}</td>
+                                            <td>{item.productWriter}</td>
+                                            <td>{item.productCategory}</td>
+                                            <td>{item.productPrice}</td>
+                                        </tr>
+                                    );
+                                }
+                                return null; // 삭제된 아이템은 렌더링하지 않음
+                            })
                         ) : (
                             <tr>
-                                <td colSpan="6" style={{ textAlign: 'center', verticalAlign: 'middle' }}>등록된 상품이 없습니다
+                                <td colSpan="6" style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                    등록된 상품이 없습니다
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-emoji-tear" viewBox="0 0 16 16" style={{ verticalAlign: 'middle' }}>
                                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
                                         <path d="M6.831 11.43A3.1 3.1 0 0 1 8 11.196c.916 0 1.607.408 2.25.826.212.138.424-.069.282-.277-.564-.83-1.558-2.049-2.532-2.049-.53 0-1.066.361-1.536.824q.126.27.232.535.069.174.135.373ZM6 11.333C6 12.253 5.328 13 4.5 13S3 12.254 3 11.333c0-.706.882-2.29 1.294-2.99a.238.238 0 0 1 .412 0c.412.7 1.294 2.284 1.294 2.99M7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5m4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5m-1.5-3A.5.5 0 0 1 10 3c1.162 0 2.35.584 2.947 1.776a.5.5 0 1 1-.894.448C11.649 4.416 10.838 4 10 4a.5.5 0 0 1-.5-.5M7 3.5a.5.5 0 0 0-.5-.5c-1.162 0-2.35.584-2.947 1.776a.5.5 0 1 0 .894.448C4.851 4.416 5.662 4 6.5 4a.5.5 0 0 0 .5-.5" />
                                     </svg>
                                 </td>
                             </tr>
-
                         )}
                         <tr>
                             <td colSpan="5">합계</td>
@@ -713,6 +907,12 @@ function Product() {
                     </tbody>
                 </table>
             </div>
+
+            <div className="pagination">
+                {renderPageNumbers()}
+            </div>
+
+
 
 
             {/* ---------------------- 상품 등록 모달 ----------------------*/}
@@ -725,7 +925,7 @@ function Product() {
                                 <h1>상품등록</h1>
                                 <div className="btns">
                                     <div className="btn-add2">
-                                        <button className="product-register-btn" onClick={handleSubmit} disabled={productList.length === 0}>등록하기</button>
+                                        <button className="product-register-btn" onClick={handleSubmit} disabled={productList.length === 0}>등록</button>
                                     </div>
                                 </div>
                             </div>
@@ -832,8 +1032,11 @@ function Product() {
                                 <div className="form-header">
                                     <h1>상품 수정</h1>
                                     <div className="btns">
+                                        <div className="btn-delete">
+                                            <button onClick={handleDeleteItem}>삭제</button>
+                                        </div>
                                         <div className="btn-add2">
-                                            <button onClick={handleModifySubmit}>수정하기</button>
+                                            <button onClick={handleModifySubmit}>수정</button>
                                         </div>
                                         <div className="btn-close"></div>
                                     </div>

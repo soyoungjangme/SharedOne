@@ -3,14 +3,17 @@ package com.project.tobe.serviceImpl;
 
 import com.project.tobe.dto.AuthorityDto;
 import com.project.tobe.dto.EmployeeDTO;
-import com.project.tobe.dto.EmployeeSearchDTO;
 import com.project.tobe.dto.EmployeeTestDTO;
 import com.project.tobe.entity.Employee;
 import com.project.tobe.mapper.EmployeeMapper;
 import com.project.tobe.repository.EmployeeRepository;
 import com.project.tobe.security.EmployeeDetails;
 import com.project.tobe.service.EmployeeService;
+import com.project.tobe.dto.RequestList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -71,8 +74,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 
   // 검색 조회
   @Override
-  public List<EmployeeDTO> getPickList(EmployeeSearchDTO dto) {
-    return employeeMapper.getPickList(dto);
+  public Page<EmployeeDTO> getPickList(EmployeeDTO dto, Pageable pageable) {
+    int total = employeeMapper.getPickListTotal(dto);
+
+    RequestList<?> requestList = RequestList.builder()
+            .data(dto)
+            .pageable(pageable)
+            .build();
+
+    System.out.println(requestList);
+
+    List<EmployeeDTO> list= employeeMapper.getPickList(requestList);
+
+    return new PageImpl<>(list, pageable, total);
   }
 
 
@@ -155,6 +169,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     employeeMapper.employeeUpdateMypagePw(dto);
   }
+
+  @Override
+  public EmployeeDTO employeeUserSession(String id) {
+    return employeeMapper.employeeUserSession(id);
+  }
+
+  @Override
+    public List<EmployeeDTO> getManagerList(String id) {
+        return employeeMapper.getManagerList(id);
+    }
 
 
 }

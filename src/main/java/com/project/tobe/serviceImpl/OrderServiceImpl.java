@@ -27,8 +27,8 @@ public class OrderServiceImpl implements OrderService {
 
     //jsy 주문등록 - 고객 별 판매가 리스트
     @Override
-    public List<PriceDTO> getPrice(Integer iocn) {
-        return orderMapper.getPrice(iocn);
+    public List<PriceDTO> getPrice(Integer iocn, String delDate) {
+        return orderMapper.getPrice(iocn, delDate);
     }
 
     //jsy 주문등록 - 등록하기
@@ -62,11 +62,17 @@ public class OrderServiceImpl implements OrderService {
         return orderNo;
     }
 
+    @Override
+    public String getMyName(String myId) {
+        return orderMapper.getMyName(myId);
+    }
+
     /* 유선화 START */
 
 // 특정 주문 상세 정보
     @Override
     public OrderHDTO getOrderDetail(Long orderNo) {
+        System.out.println(orderMapper.getOrderDetail(orderNo));
         return orderMapper.getOrderDetail(orderNo);
     }
 
@@ -101,5 +107,17 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.getOrderDetail(orderUp1DTO.getOrderNo());
     }
 
-    /* 유선화 END */
+
+    @Transactional
+    @Override
+    public void insertBack(OrderUp1DTO orderUp1DTO) {
+        // 1. 주문 헤더 삽입
+        System.out.println("서비스 도착 ");
+        orderMapper.insertBack1(orderUp1DTO);
+
+        // 2. 생성된 주문 번호 가져오기
+        Long orderNo = orderUp1DTO.getOrderNo();
+
+        orderMapper.insertBack2(orderUp1DTO.getOrderBList(), orderNo);
+    }
 }

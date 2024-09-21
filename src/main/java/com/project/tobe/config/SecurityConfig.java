@@ -1,5 +1,6 @@
 package com.project.tobe.config;
 
+import com.project.tobe.dto.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,8 +33,9 @@ public class SecurityConfig {
 
     http
         .authorizeRequests()
-//        .antMatchers("/main.do", "/myPage.do", "/product.do", "/customer.do", "/order.do", "/price.do").authenticated() // ".do"로 끝나는 모든 요청은 인증된 사용자만 접근 가능
+//        .antMatchers("/login.user").permitAll() // 로그인 페이지는 인증 없이 접근 허용
 //        .antMatchers("/employee.do").hasAnyRole(UserRole.S.toString(), UserRole.A.toString()) // "/employee.do" 경로는 "A","S" 역할을 가진 사용자만 접근 가능
+//        .antMatchers("/*.do").authenticated() // ".do"로 끝나는 모든 요청은 인증된 사용자만 접근 가능
         .anyRequest().permitAll()
         .and()
         .formLogin()

@@ -8,6 +8,7 @@ import './modalPw.css';
 import '../js/modalAdd.css';
 import '../js/Pagination.css';
 import Pagination from '../js/Pagination';
+import '../js/pagecssReal.css';
 
 import { Bar } from 'react-chartjs-2';
 import {
@@ -40,6 +41,8 @@ ChartJS.register(
 
 
 function Employee() {
+    const [totalItems, setTotalItems] = useState(); // 총 아이템 수
+    const [pageCount, setPageCount] = useState(); // 총 페이지 수 계산
 
     const options = {
         responsive: true,
@@ -72,20 +75,13 @@ function Employee() {
           showDelete: showDeleteMain,
           handleMasterCheckboxChange: handleMasterCheckboxChangeMain,
           handleCheckboxChange: handleCheckboxChangeMain,
-          handleDelete: handleDeleteMain
+          handleDelete: handleDeleteMain,
+    setAllCheck: setAllCheckMain,
+      setCheckItem: setCheckItemMain,
+      setShowDelete: setShowDeleteMain
+
       } = useCheckboxManager();
 
-      const {
-          allCheck: allCheckModal,
-          checkItem: checkItemModal,
-          showDelete: showDeleteModal,
-          handleMasterCheckboxChange: handleMasterCheckboxChangeModal,
-          handleCheckboxChange: handleCheckboxChangeModal,
-          handleDelete: handleDeleteModal,
-          setCheckItem: setCheckItemModal,
-          setAllCheck: setAllCheckModal,
-          setShowDelete: setShowDeleteModal
-      } = useCheckboxManager();
 
     // 메인 리스트
     let [employee, setEmployee] = useState([{
@@ -98,7 +94,7 @@ function Employee() {
         residentNum: '',
         hireDate: null,
         salary: 0,
-        employeeManagerId: '',
+      /*  employeeManagerId: '',*/
         authorityGrade: '',
         authorityName: ''
     }]);
@@ -121,9 +117,11 @@ function Employee() {
         residentNum: '',
         hireDate: null,
         salary: 0,
-        employeeManagerId: '',
+ /*       employeeManagerId: '',*/
         authorityGrade: '',
-        authorityName: ''
+        authorityName: '',
+        page: 1,
+        amount: 10
     });
 
     // 필터 변경 핸들러
@@ -146,7 +144,14 @@ function Employee() {
                     'Content-Type': 'application/json'
                 }
             })
-                .then(response => setEmployee(response.data))
+                .then(response => {
+                    console.log(response.data);
+                    setEmployee(response.data.pageData);
+                    setCurrentPage(response.data.page);
+                    setTotalItems(response.data.total);
+                    setItemsPerPage(response.data.pageData.length);
+                    setPageCount(response.data.realEnd);
+                })
                 .catch(error => console.error('에러에러', error));
         } else {
             console.error('[핸들러 작동 잘 함]');
@@ -159,6 +164,19 @@ function Employee() {
                 handleSearchEmployee();
             }
         };
+
+        // =============== 조회 입력값 초기화 ===============
+        const handleReset = () => {
+            setEmSearch({
+                employeeId: '',
+                employeeName: '',
+                employeeTel: '',
+                employeeEmail: '',
+                employeeAddr: '',
+                hireDate: '',
+                authorityGrade: ''
+            })
+        }
 
 
 
@@ -174,7 +192,7 @@ function Employee() {
         residentNum: '',
         hireDate: null,
         salary: null,
-        employeeManagerId: '',
+       /* employeeManagerId: '',*/
         authorityGrade: ''
     });
 
@@ -199,7 +217,7 @@ function Employee() {
 
 
 const validateInputs = () => {
-  const { employeeId, residentNum, salary, employeeTel ,authorityGrade, employeeManagerId, employeePw , employeeEmail} = test; // 상태에서 값을 가져옵니다
+  const { employeeId, residentNum, salary, employeeTel ,authorityGrade, employeePw , employeeEmail} = test; // 상태에서 값을 가져옵니다
 
   if (isObjectEmpty(test)) {
     alert('모든 값을 입력하세요.');
@@ -267,6 +285,8 @@ const validateInputs = () => {
 
 
 const onClickListAdd = () => {
+
+ setButtonColor('#939393');
   if (validateInputs()) {
     const trimmedTest = {
       employeeId: test.employeeId,
@@ -278,7 +298,7 @@ const onClickListAdd = () => {
       residentNum: test.residentNum,
       hireDate: test.hireDate,
       salary: test.salary.replace(/\s+/g, ''),
-      employeeManagerId: test.employeeManagerId.replace(/\s+/g, ''),
+/*      employeeManagerId: test.employeeManagerId.replace(/\s+/g, ''),*/
       authorityGrade : test.authorityGrade
     };
 
@@ -295,7 +315,7 @@ const onClickListAdd = () => {
       residentNum: '',
       hireDate: '',
       salary: '',
-      employeeManagerId: '',
+/*      employeeManagerId: '',*/
       authorityGrade: '',
     });
   }
@@ -420,20 +440,28 @@ useEffect(() => {
             residentNum: '',
             hireDate: null,
             salary: 0,
-            employeeManagerId: '',
+        /*    employeeManagerId: '',*/
             authorityGrade: ''
         }
     );
+const [originalItem, setOriginalItem] = useState({}); // 원래 데이터를 저장할 상태
+
 
 const handleUpdateClick = () => {
     // 급여 유효성 검사
     const trimmedSalary = modifyItem.salary.toString().trim(); // 급여값을 문자열로 변환하고 공백 제거
-
-
     if (!/^[0-9]+$/.test(trimmedSalary)) {
         alert('급여란에는 숫자만 입력하세요.');
         return;
     }
+
+    const hasChanges = Object.keys(modifyItem).some(key => modifyItem[key] !== originalItem[key]);
+    // 변경사항이 없다면 함수 종료
+    if (!hasChanges) {
+        alert('수정된 내용이 없습니다.');
+        return;
+    }
+
 
     // 유효성 검사를 통과한 후, 서버로 데이터 전송
     axios.post('/employee/employeeUpdate', modifyItem, {
@@ -458,6 +486,7 @@ const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
 
 //  [수정] 값 가져오기
    const handleModify = (item) => {
+        setOriginalItem(item); // 원래 데이터를 저장
        setModifyItem(prevState => ({
            employeeId: item.employeeId,
            employeeName: item.employeeName,
@@ -467,13 +496,11 @@ const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
            residentNum: item.residentNum,
            hireDate: item.hireDate,
            salary: item.salary,
-           employeeManagerId: item.employeeManagerId,
+/*           employeeManagerId: item.employeeManagerId,*/
            authorityGrade: item.authorityGrade
        }));
        setIsModifyModalVisible(true);
    };
-
-
 
    console.log(modifyItem);
 
@@ -535,6 +562,61 @@ const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
         setIsVisibleDeleteInput(false);
      }
 
+////////// [수정] ------------------------------
+    const [allChecked, setAllChecked] = useState(false);
+    const [checkedItems, setCheckedItems] = useState({});
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    const handleMasterCheckboxChange = (e) => {
+        const isChecked = e.target.checked;
+        setAllChecked(isChecked);
+
+        const newCheckedItems = {};
+        list.forEach(item => {
+            newCheckedItems[item.employeeId] = isChecked;
+        });
+        setCheckedItems(newCheckedItems);
+        setShowDeleteModal(isChecked);
+    };
+
+    const handleCheckboxChange = (e, employeeId) => {
+        const isChecked = e.target.checked;
+        setCheckedItems(prev => ({
+            ...prev,
+            [employeeId]: isChecked
+        }));
+
+        const hasCheckedItems = Object.values({
+            ...checkedItems,
+            [employeeId]: isChecked
+        }).some(checked => checked);
+        setShowDeleteModal(hasCheckedItems);
+
+        if (!isChecked) {
+            setAllChecked(false);
+        }
+    };
+
+const handleDeleteClick2 = () => {
+    // 선택된 항목 삭제 로직
+    const itemsToDelete = Object.keys(checkedItems).filter(id => checkedItems[id]);
+    console.log("선택된 삭제 항목:", itemsToDelete);
+
+    // 현재 리스트에서 삭제할 항목을 제외한 새로운 리스트 생성
+    const updatedList = list.filter(item => !itemsToDelete.includes(item.employeeId));
+
+    // 리스트 업데이트
+    setList(updatedList);
+
+    // 체크 상태 초기화
+    const newCheckedItems = {};
+    list.forEach(item => {
+        newCheckedItems[item.employeeId] = false;
+    });
+    setCheckedItems(newCheckedItems);
+    setAllChecked(false);
+    setShowDeleteModal(false);
+};
 
 
 
@@ -555,8 +637,8 @@ const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
 
     }, [checkItemMain]);
 
-   const [checkedIds2, setCheckedIds2] = useState([]);
 
+/*
 useEffect(() => {
     const checkedCheckboxes = Array.from(document.querySelectorAll('input.mainCheckboxModal:checked'));
     const ids = checkedCheckboxes.map(checkbox => checkbox.id);
@@ -564,16 +646,7 @@ useEffect(() => {
 }, [checkItemModal]);
 
 
- // [리스트] 체크된 아이디 값 넘기기
-useEffect(() => {
-
-   console.log("Checked IDs:", checkedIds2);
-}, [checkedIds2]);
-
-const handleDeleteClick2 = () => {
-    const updatedList = list.filter(item => checkedIds2.includes(item.id));
-    setList(updatedList);
-};
+*/
 
 
 
@@ -648,10 +721,14 @@ const handleDeletePickClick = () => {
       return index !== -1 ? index + 1 : -1;
   };
 
-// 페이지 네이션
+
+    // =============================================== 페이지 네이션
+
+
+    // 페이지 네이션
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(30); // 페이지당 항목 수
+    const [itemsPerPage] = useState(5); // 페이지당 항목 수
 
     // 전체 페이지 수 계산
     const totalPages = Math.ceil(sortedData.length / itemsPerPage);
@@ -663,23 +740,106 @@ const handleDeletePickClick = () => {
 
     // 페이지 변경 핸들러
     const handlePageChange = (pageNumber) => {
+        setAllCheckMain(false);
+        setCheckItemMain(false);
+        setShowDeleteMain(false);
         setCurrentPage(pageNumber);
     };
 
     // 페이지네이션 버튼 렌더링
     const renderPageNumbers = () => {
         let pageNumbers = [];
-        for (let i = 1; i <= totalPages; i++) {
-            pageNumbers.push(
-                <button
-                    key={i}
-                    onClick={() => handlePageChange(i)}
-                    disabled={i === currentPage}
-                >
-                    {i}
-                </button>
-            );
+        const maxButtons = 3; // 고정된 버튼 수
+
+        // 맨 처음 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="first"
+                onClick={() => handlePageChange(1)}
+                className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
+            >
+                &laquo;&laquo; {/* 두 개의 왼쪽 화살표 */}
+            </span>
+        );
+
+        // 이전 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="prev"
+                onClick={() => handlePageChange(currentPage - 1)}
+                className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
+            >
+                &laquo; {/* 왼쪽 화살표 */}
+            </span>
+        );
+
+        // // 항상 첫 페이지 버튼 표시
+        // pageNumbers.push(
+        //     <span
+        //         key={1}
+        //         onClick={() => handlePageChange(1)}
+        //         className={`pagination_link ${currentPage === 1 ? 'pagination_link_active' : ''}`}
+        //     >
+        //         1
+        //     </span>
+        // );
+
+        // 6페이지 이상일 때
+        if (totalPages > maxButtons) {
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = startPage + maxButtons - 1;
+
+            if (endPage > totalPages) {
+                endPage = totalPages;
+                startPage = Math.max(1, endPage - maxButtons + 1);
+            }
+
+            // 중간 페이지 버튼 추가
+            for (let i = startPage; i <= endPage; i++) {
+                pageNumbers.push(
+                    <span
+                        key={i}
+                        onClick={() => handlePageChange(i)}
+                        className={`pagination_link ${i === currentPage ? 'pagination_link_active' : ''}`}
+                    >
+                        {i}
+                    </span>
+                );
+            }
+
+            // 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'와 마지막 페이지 추가
+            if (endPage < totalPages) {
+                pageNumbers.push(<span className="pagination_link">...</span>);
+                pageNumbers.push(
+                    <span key={totalPages} onClick={() => handlePageChange(totalPages)} className="pagination_link">
+                        {totalPages}
+                    </span>
+                );
+            }
         }
+
+        // 다음 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="next"
+                onClick={() => handlePageChange(currentPage + 1)}
+                className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
+            >
+                &raquo; {/* 오른쪽 화살표 */}
+            </span>
+        );
+
+        // 맨 마지막 페이지 버튼
+        pageNumbers.push(
+            <span
+                key="last"
+                onClick={() => handlePageChange(totalPages)}
+                className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
+            >
+                &raquo;&raquo; {/* 두 개의 오른쪽 화살표 */}
+            </span>
+        );
+
         return pageNumbers;
     };
 
@@ -725,10 +885,10 @@ const handleDeletePickClick = () => {
                             </div>
 
 
-                            <div className="filter-item">
+                       {/*     <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeManagerId">직속 상사</label>
                                 <input     onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeManagerId" placeholder="" onChange={handleInputChange} value={emSearch.employeeManagerId} required />
-                            </div>
+                            </div>*/}
 
                             <div className="filter-item">
                                 <label htmlFor="authorityGrade">직급</label>
@@ -741,16 +901,17 @@ const handleDeletePickClick = () => {
                                          <option value="D">사원</option>
                                 </select>
                             </div>
-
-                            <div className="button-container">
-                                <button type="button" className="search-btn" onClick={handleSearchEmployee}><i
-                                    className="bi bi-search search-icon"></i>
-                                </button>
-                            </div>
-
                         </div>
                     </div>
 
+                    <div className="button-container">
+                        <button type="button" className="reset-btn" onClick={handleReset}>
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                        <button type="button" className="search-btn" onClick={handleSearchEmployee}><i
+                            className="bi bi-search search-icon"></i>
+                        </button>
+                    </div>
 
                 </div>
 
@@ -810,11 +971,11 @@ const handleDeletePickClick = () => {
                                     {sortConfig.key === 'salary' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                 </button>
                             </th>
-                            <th> 직속상사
+                          {/*  <th> 직속상사
                                 <button className="sortBtn" onClick={() => sortData('employeeManagerId')}>
                                     {sortConfig.key === 'employeeManagerId' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                 </button>
-                            </th>
+                            </th>*/}
 
                         {/*    <th> 권한
                                 <button className="sortBtn" onClick={() => sortData('authorityGrade')}>
@@ -830,14 +991,16 @@ const handleDeletePickClick = () => {
                     </thead>
                     <tbody>
                         {currentItems.length > 0 ? (
-                            currentItems.map((item, index) => (
+                            currentItems.map((item, index) => {
+                             const globalIndex = indexOfFirstItem + index + 1; // +1은 1부터 시작하기 위함
+                             return(
                                 <tr key={index} className={checkItemMain[index] ? 'selected-row' : ''} onDoubleClick={() => {
                                     handleModify(item)
                                 }}>
                                     <td><input className="mainCheckbox" type="checkbox" id={item.employeeId} checked={checkItemMain[index] || false}
                                         onChange={handleCheckboxChangeMain} /></td>
                                     <td style={{ display: 'none' }}>{index}</td>
-                                     <td>{index + 1}</td>
+                                     <td>{globalIndex}</td> {/* 여기에서 globalIndex 사용 */}
                                     <td>{item.employeeId}</td>
                                    <td>{truncateText(item.employeePw, 10)}</td>
                                     <td>{item.employeeName}</td>
@@ -847,23 +1010,26 @@ const handleDeletePickClick = () => {
                                    <td>{item.residentNum}</td>
                                     <td>{item.hireDate}</td>
                                     <td>{item.salary}</td>
-                                    <td>{item.employeeManagerId}</td>
+                                    {/*<td>{item.employeeManagerId}</td>*/}
                                     <td>{item.authorityName}</td>
                                 </tr>
-                            ))
+                              );
+                            })
                         ) : (
                             <tr>
-                                <td colSpan="13">등록된 직원이 없습니다<i class="bi bi-emoji-tear"></i></td>
+                                <td colSpan="12">등록된 직원이 없습니다<i class="bi bi-emoji-tear"></i></td>
                             </tr>
                         )}
                         <tr>
-                            <td colSpan="12"></td>
+                            <td colSpan="11"></td>
                             <td colSpan="1"> {employee.length} 건</td>
                         </tr>
                     </tbody>
                 </table>
                    <div>
-                    {renderPageNumbers()}
+                  <div className="pagination">
+                            {renderPageNumbers()}
+                    </div>
                 </div>
             </div>
 
@@ -929,8 +1095,8 @@ const handleDeletePickClick = () => {
                                     </tr>
 
                                     <tr>
-                                        <th colSpan="1"><label htmlFor="registEndDate">직속상사</label></th>
-                                        <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeeManagerId" name="employeeManagerId" value={test.employeeManagerId} onChange={handleInputAddChange} /></td>
+                                      {/*  <th colSpan="1"><label htmlFor="registEndDate">직속상사</label></th>
+                                        <td colSpan="2"><input type="text" placeholder="필드 입력" id="employeeManagerId" name="employeeManagerId" value={test.employeeManagerId} onChange={handleInputAddChange} /></td>*/}
 
                                         <th colSpan="1"><label htmlFor="registEndDate">직급</label></th>
                                         <td colSpan="2">        <select id="authorityGrade" name="authorityGrade" value={test.authorityGrade} onChange={handleInputAddChange}>
@@ -961,68 +1127,67 @@ const handleDeletePickClick = () => {
                             </div>
 
                             <div className="RegistFormList">
-                                <div style={{ fontWeight: 'bold' }}> 총 N 건</div>
-                                  {showDeleteModal && <button className='delete-btn2 btn-common' onClick={handleDeleteClick2}>삭제</button>}
-                                <table className="formTableList">
-
-                                        <thead>
-                                            <tr>
-                                            <th><input type="checkbox" checked={allCheckModal} onChange={handleMasterCheckboxChangeModal} /></th>
-                                            <th>No.</th>
-                                            <th>직원ID</th>
-                                            <th>직원PW</th>
-                                            <th>직원명</th>
-                                            <th>전화번호</th>
-                                            <th>이메일</th>
-                                            <th>주소</th>
-                                            <th>주민번호</th>
-                                            <th>입사일</th>
-                                            <th>급여</th>
-                                            <th>직속상사</th>
-                                            <th>직급</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
-
-                                        {list.map((item, index) => (
-                                            <tr key={index} className={checkItemModal[index] ? 'selected-row' : ''}>
-                                                <td>
-                                                <input className="mainCheckboxModal" type="checkbox" id={item.employeeId} checked={checkItemModal[index] || false}
-                                                                                                                                onChange={handleCheckboxChangeModal} />
-                                                </td>
-                                                <td style={{display : 'none'}}> {index} </td>
-                                                <td> {index + 1} </td>
-                                                <td>{item.employeeId}</td>
-                                                <td>{item.employeePw}</td>
-                                                <td>{item.employeeName}</td>
-                                                <td>{item.employeeTel}</td>
-                                                <td>{item.employeeEmail}</td>
-                                                <td>{item.employeeAddr}</td>
-                                                <td>{item.residentNum}</td>
-                                                <td>{item.hireDate}</td>
-                                                <td>{item.salary}</td>
-                                                <td>{item.employeeManagerId}</td>
-                                               <td>
-                                                 {(() => {
-                                                   switch (item.authorityGrade) {
-                                                     case 'S':
-                                                       return '대표';
-                                                     case 'A':
-                                                       return '부장';
-                                                     case 'B':
-                                                       return '과장';
-                                                     case 'C':
-                                                       return '대리';
-                                                     case 'D':
-                                                       return '사원';
-                                                   }
-                                                 })()}
-                                               </td>
-                                            </tr>
-                                        ))}
-
-                                    </tbody>
+                                        <div style={{ fontWeight: 'bold' }}> 총 {list.length} 건</div>
+                                        {showDeleteModal && (
+                                            <button className='delete-btn2 btn-common' onClick={handleDeleteClick2}>삭제</button>
+                                        )}
+                                        <table className="formTableList">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        <input type="checkbox" checked={allChecked} onChange={handleMasterCheckboxChange} />
+                                                    </th>
+                                                    <th>No.</th>
+                                                    <th>직원ID</th>
+                                                    <th>직원PW</th>
+                                                    <th>직원명</th>
+                                                    <th>전화번호</th>
+                                                    <th>이메일</th>
+                                                    <th>주소</th>
+                                                    <th>주민번호</th>
+                                                    <th>입사일</th>
+                                                    <th>급여</th>
+                                                    <th>직급</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {list.map((item, index) => (
+                                                    <tr key={item.employeeId}>
+                                                        <td>
+                                                            <input
+                                                                className="mainCheckboxModal"
+                                                                type="checkbox"
+                                                                id={item.employeeId}
+                                                                checked={checkedItems[item.employeeId] || false}
+                                                                onChange={(e) => handleCheckboxChange(e, item.employeeId)}
+                                                            />
+                                                        </td>
+                                                        <td style={{ display: 'none' }}>{index}</td>
+                                                        <td>{index + 1}</td>
+                                                        <td>{item.employeeId}</td>
+                                                        <td>{item.employeePw}</td>
+                                                        <td>{item.employeeName}</td>
+                                                        <td>{item.employeeTel}</td>
+                                                        <td>{item.employeeEmail}</td>
+                                                        <td>{item.employeeAddr}</td>
+                                                        <td>{item.residentNum}</td>
+                                                        <td>{item.hireDate}</td>
+                                                        <td>{item.salary}</td>
+                                                        <td>
+                                                            {(() => {
+                                                                switch (item.authorityGrade) {
+                                                                    case 'S': return '대표';
+                                                                    case 'A': return '부장';
+                                                                    case 'B': return '과장';
+                                                                    case 'C': return '대리';
+                                                                    case 'D': return '사원';
+                                                                    default: return '';
+                                                                }
+                                                            })()}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
                                 </table>
                             </div>
                         </div>
@@ -1043,9 +1208,9 @@ const handleDeletePickClick = () => {
                                     <div className="btn-add2">
                                         <button type="button" onClick={handleUpdateClick}>수정하기</button>
                                     </div>
-                                    <div className="btn-close">
+                                    <div className="btn-add1">
                                         {/* 다른 버튼이 필요한 경우 여기에 추가 */}
-                                        <button type="button" onClick={handleDeletePickClick}> 비활성화 </button>
+                                        <button type="button"  onClick={handleDeletePickClick}> 비활성화 </button>
                                     </div>
                                 </div>
                             </div>
@@ -1099,9 +1264,9 @@ const handleDeletePickClick = () => {
                                             <td><input type="text" id="salary" name="salary" value={modifyItem.salary} onChange={(e) => handleModifyItemChange(e.target)} /></td>
                                         </tr>
                                         <tr>
-                                            <th><label htmlFor="employeeManagerId">직속상사</label></th>
+                                     {/*       <th><label htmlFor="employeeManagerId">직속상사</label></th>
                                             <td><input type="text" id="employeeManagerId" name="employeeManagerId" value={modifyItem.employeeManagerId} onChange={(e) => handleModifyItemChange(e.target)} /></td>
-
+*/}
                                             <th><label htmlFor="authorityGrade">권한</label></th>
                                             <td>
                                                 <select id="authorityGrade" name="authorityGrade" value={modifyItem.authorityGrade} onChange={(e) => handleModifyItemChange(e.target)}>

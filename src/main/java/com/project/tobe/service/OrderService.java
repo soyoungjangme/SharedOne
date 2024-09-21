@@ -9,13 +9,15 @@ import java.util.List;
 public interface OrderService {
 
     List<OrderHDTO> getOrder(OrderSearchDTO criteria); //jsy 조건조회
-    List<PriceDTO> getPrice(Integer iocn); //jsy 주문등록 판매가 가져오기
+    List<PriceDTO> getPrice(Integer iocn, String delDate); //jsy 주문등록 판매가 가져오기
     Long registOrder(OrderRegistDTO orderRegistDTO); //jsy 주문 등록하기
+    String getMyName(String myId); //이름 얻기
 
 
     /*유선화 START*/
     OrderHDTO getOrderDetail(Long orderNo); // 상세 조회
     boolean updateApproval(Long orderNo, String confirmStatus, LocalDate confirmChangeDate, String remarks);
     OrderHDTO updateOrder(OrderUp1DTO orderUp1DTO);
+    void insertBack(OrderUp1DTO orderUp1DTO);
     /*유선화 END*/
 }
