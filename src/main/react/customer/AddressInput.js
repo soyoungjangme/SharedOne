@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import DaumPostcode from 'react-daum-postcode';
-import './AddressInput.css'; // CSS 파일 임포트
+import './AddressInput.css';
 
 const AddressInput = (props) => {
   // 상태 관리: 우편번호, 주소, 상세주소, 모달 열림 상태
@@ -49,6 +49,11 @@ const AddressInput = (props) => {
   };
 
   const handleConfirm = () => {
+    if (!detailedAddress.trim()) {
+      alert('상세 주소를 입력해주세요.');
+      return;
+    }
+
     const fullAddress = `${address} ${detailedAddress}`;
     if (props.onAddressConfirm) {
       props.onAddressConfirm({

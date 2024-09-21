@@ -28,7 +28,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     /* 3 columns for filter items */
-    gap: 20px 7%;
+    gap: 20px 3%;
 }
 
 .filter-item {
