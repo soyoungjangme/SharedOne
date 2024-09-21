@@ -50,6 +50,7 @@ body {
     border-radius: 4px;
     font-size: 14px;
     box-sizing: border-box;
+    margin-left: 5px;
 }
 .button-container {
     display: flex;
@@ -386,14 +387,14 @@ tr:nth-child(0){
 }
 
 .delete-btn-main {
-    width: 65px;
-    height: 25px;
     position: absolute;
     top: -45px;
-    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border: 1px solid #004e90;
     background-color: #004e90;
     color: white;
-    border-radius: 2px;
+    font-size: 14px;
+    border-radius: 3px;
     cursor: pointer;
 }
 

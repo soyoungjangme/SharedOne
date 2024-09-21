@@ -819,7 +819,7 @@ function Customer() {
                 </div>
 
                 <button className="btn-common add" type="button" onClick={handleAddClick}>
-                    고객등록
+                    고객 등록
                 </button>
 
                 <table className="search-table" style={{ marginTop: "50px" }}>
@@ -944,9 +944,9 @@ function Customer() {
                         <div className="form-container">
                             <button className="close-btn" onClick={handleCloseClick}> &times; </button>
                             <div className="form-header">
-                                <h1> 고객등록 </h1>
+                                <h1> 고객 등록 </h1>
                                 <div className="btns">
-                                    <button className="btn-customer-add" type="button" onClick={onClickRegistBtn}> 등록 </button>
+                                    <button className="btn-customer-add" type="button" onClick={onClickRegistBtn}>등록</button>
                                 </div>
                             </div>
 
