@@ -569,12 +569,12 @@ function Customer() {
                             </div>
 
                             <div className="filter-item">
-                                <label className="filter-label" htmlFor="picEmail">담당자 이메일</label>
+                                <label className="filter-label" htmlFor="picEmail">담당자이메일</label>
                                 <input
                                     className="filter-input"
                                     type="text"
                                     id="picEmail"
-                                    placeholder="담당자 이메일"
+                                    placeholder="담당자이메일"
                                     onChange={handleInputChange}
                                     value={customerSearch.picEmail}
                                     onKeyPress={handleKeyPress}
@@ -583,12 +583,12 @@ function Customer() {
                             </div>
 
                             <div className="filter-item">
-                                <label className="filter-label" htmlFor="picTel">담당자 연락처</label>
+                                <label className="filter-label" htmlFor="picTel">담당자연락처</label>
                                 <input
                                     className="filter-input"
                                     type="text"
                                     id="picTel"
-                                    placeholder="담당자 연락처"
+                                    placeholder="담당자연락처"
                                     onChange={handleInputChange}
                                     value={customerSearch.picTel}
                                     onKeyPress={handleKeyPress}
