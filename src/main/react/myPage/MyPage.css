@@ -81,9 +81,6 @@ th {
   border-radius: 3px;
   cursor: pointer;
 }
-.pw-btn:hover{
-  background-color: #0056b3;
-}
 
 .mypage-table select {
   text-align: center;
@@ -119,15 +116,27 @@ th {
 }
 
 .mypage-table .form-actions .submit-btn {
-  background-color: #00477a;
+  background-color: #004e90;
   color: white;
 }
 
 .mypage-table .form-actions .cancel-btn {
-  background-color: #00477a;
+  background-color: #bbb;
   color: white;
-
+  border: none;
 }
+
+.pw-btn:hover,
+.mypage-table .form-actions button:hover,
+.mypage-table .form-actions .submit-btn:hover {
+  background-color: #0056b3;
+}
+
+.mypage-table .form-actions .cancel-btn:hover {
+  background-color: #ccc;
+}
+
+
 
 .submit-btn {
   float: right;
