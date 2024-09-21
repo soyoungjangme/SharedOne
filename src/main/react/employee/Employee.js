@@ -165,6 +165,19 @@ function Employee() {
             }
         };
 
+        // =============== 조회 입력값 초기화 ===============
+        const handleReset = () => {
+            setEmSearch({
+                employeeId: '',
+                employeeName: '',
+                employeeTel: '',
+                employeeEmail: '',
+                employeeAddr: '',
+                hireDate: '',
+                authorityGrade: ''
+            })
+        }
+
 
 
 //----------------------------------------------------
@@ -888,16 +901,17 @@ const handleDeletePickClick = () => {
                                          <option value="D">사원</option>
                                 </select>
                             </div>
-
-                            <div className="button-container">
-                                <button type="button" className="search-btn" onClick={handleSearchEmployee}><i
-                                    className="bi bi-search search-icon"></i>
-                                </button>
-                            </div>
-
                         </div>
                     </div>
 
+                    <div className="button-container">
+                        <button type="button" className="reset-btn" onClick={handleReset}>
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                        <button type="button" className="search-btn" onClick={handleSearchEmployee}><i
+                            className="bi bi-search search-icon"></i>
+                        </button>
+                    </div>
 
                 </div>
 

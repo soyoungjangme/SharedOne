@@ -69,7 +69,8 @@ function Order() {
                     manager: item.employee.employeeName,
                     status: item.confirmStatus,
                     date: item.regDate,
-                    managerId : item.employee.employeeId
+                    managerId : item.employee.employeeId,
+                    managerGrade : item.employee.authorityGrade
                 }));
 
                 setOrder(transfomData);
@@ -201,7 +202,9 @@ function Order() {
                 customerN: item.customer.customerName,
                 manager: item.employee.employeeName,
                 status: item.confirmStatus,
-                date: item.regDate
+                date: item.regDate,
+               managerId : item.employee.employeeId,
+                managerGrade : item.employee.authorityGrade
             }))
 
             setOrder(getSearchOrder);
@@ -210,6 +213,23 @@ function Order() {
         }
     };
 
+
+    // =========== 조회 입력 초기화 ===========
+    const handleReset = () => {
+        setForm({
+            inputDate: '',
+            inputDate: '',
+            inputOrderNo: '',
+            inputProdNo: '',
+            inputCustomerNo: '',
+            inputManager: '',
+            inputState: ''
+        })
+
+        handleSearchBtn(); // 리셋 후 검색 기능 호출
+    }
+
+    
 
     /*---------------jsy조건 끝---------------*/
 
@@ -248,7 +268,11 @@ function Order() {
     console.log("ㅋㅋ세션값이야" + JSON.stringify(my));
     //담당자명 세션에서 불러오기
     useEffect(() => {
-        const fetchData = async () => {
+
+        fetchData();
+    }, []);
+
+     const fetchData = async () => {
             try {
                 // 세션에서 ID 가져오기
                 const idRes = await axios.get('/order/getMyId');
@@ -281,9 +305,6 @@ function Order() {
                 console.error('Error', error);
             }
         };
-        fetchData();
-    }, []);
-
 
 
 
@@ -729,6 +750,57 @@ function Order() {
         return pageNumbers;
     };
 
+   const roleHierarchy = { S: 4, A: 3, B: 2, C: 1, D: 0 }; // Define the hierarchy
+
+   const handleButtonClick = (item) => {
+       const trimmedStatus = item.status.trim();
+       const isManager = my.id === item.managerId;
+
+       switch (trimmedStatus) {
+           case '승인':
+               console.log('승인 다 볼수있엉');
+               handleDetailView(item.orderNo);
+               break;
+           case '대기':
+               console.log('대기');
+                  console.log(roleHierarchy[my.role]);
+                              console.log(roleHierarchy[item.managerGrade]);
+               if (roleHierarchy[my.role] > roleHierarchy[item.managerGrade] || isManager) {
+                   console.log("Access granted for 대기");
+                   handleDetailView(item.orderNo);
+               } else {
+                   alert("접근 권한이 없습니다.");
+               }
+               break;
+           case '임시저장':
+               console.log('임시저장');
+               if (isManager) {
+                   handleDetailView(item.orderNo);
+               } else {
+                   alert("접근 권한이 없습니다.");
+               }
+               break;
+           case '반려':
+               console.log('반려');
+               console.log(roleHierarchy[my.role]);
+               console.log(roleHierarchy[item.managerGrade]);
+               if ((roleHierarchy[my.role] > roleHierarchy[item.managerGrade])  || isManager) {
+                   handleDetailView(item.orderNo);
+               } else {
+                  alert("접근 권한이 없습니다.");
+               }
+               break;
+           default:
+               console.log('Unknown status');
+               break;
+       }
+   };
+
+
+
+
+
+
 
 
     return (
@@ -802,6 +874,9 @@ function Order() {
                         </div>
                     </div>
                     <div className="button-container">
+                        <button type="button" className="reset-btn" onClick={handleReset}>  {/* 조회 입력값 초기화 버튼입니다! */} 
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
                         <button type="button" className="search-btn" id="searchOrder" onClick={handleSearchBtn}>
                             <i className="bi bi-search search-icon"></i>
                         </button>
@@ -863,38 +938,38 @@ function Order() {
                             const globalIndex = indexOfFirstItem + index + 1; // +1은 1부터 시작하기 위함
 
                             return (
-                                <tr key={item.orderNo} className={checkItem[index + 1] ? 'selected-row' : ''}
-                                    onDoubleClick={() => {
 
-                                            handleDetailView(item.orderNo); // 상세보기 모달 열기
 
-                                    }}>
-                                    <td>{globalIndex}</td> {/* 전역 인덱스 사용 */}
-                                    <td>{item.orderNo}</td>
-                                    <td className="ellipsis">{item.manager}</td>
-                                    <td className="ellipsis">{item.managerId}</td>
-                                    <td className="ellipsis">{item.customerN}</td>
-                                    <td>{item.status}</td>
-                                    <td>
-                                        {new Date(item.date).toLocaleDateString('ko-KR', {
-                                            year: 'numeric',
-                                            month: '2-digit',
-                                            day: '2-digit'
-                                        }).replace(/\./g, '-').replace(/-$/, '')}
-                                    </td>
-                                    <td>
-                                        <button className="btn-common"
-                                                onClick={(e) => {
-
-                                                    handleDetailView(item.orderNo); // 상세보기 모달 열기
-                                                    console.log("세션값11" + my.id); // 세션값
-                                                    console.log("글쓴이11" + item.managerId);
-                                                    console.log("세션권한11" + my.role);
-                                                }}>
-                                            상세보기
-                                        </button>
-                                    </td>
-                                </tr>
+                              <tr
+                                  key={item.orderNo}
+                                  className={checkItem[index + 1] ? 'selected-row' : ''}
+                     /*             onDoubleClick={() => {
+                                      if (roleHierarchy[item.managerGrade] > roleHierarchy[my.role] || my.id === item.managerId) {
+                                          handleDetailView(item.orderNo); // 상세보기 모달 열기
+                                      } else {
+                                          alert("Access denied: Your role is not high enough."); // Optional alert for access denial
+                                      }
+                                  }}*/
+                              >
+                                  <td>{globalIndex}</td> {/* 전역 인덱스 사용 */}
+                                  <td>{item.orderNo}</td>
+                                  <td className="ellipsis">{item.manager}</td>
+                                  <td className="ellipsis">{item.customerN}</td>
+                                 {/* <td className="ellipsis" >{item.managerGrade}</td>*/}
+                                  <td>{item.status}</td>
+                                  <td>
+                                      {new Date(item.date).toLocaleDateString('ko-KR', {
+                                          year: 'numeric',
+                                          month: '2-digit',
+                                          day: '2-digit'
+                                      }).replace(/\./g, '-').replace(/-$/, '')}
+                                  </td>
+                                  <td>
+                             <button className="btn-common" onClick={() => handleButtonClick(item)}>
+                                   상세보기
+                               </button>
+                                  </td>
+                              </tr>
                             );
                         })
                     ) : (
@@ -1115,6 +1190,10 @@ function Order() {
                     onClose={handleModifyCloseClick}
                     onOpenModifyModal2={handleOpenModifyModal2}
                     onOpenOrder2={handleOpenOrder2}
+                    fetchData={fetchData}
+                      my={my}
+                    roleHierarchy={roleHierarchy}
+
                 />
             )}
 
