@@ -573,7 +573,7 @@ function ModifyOrderModal2({ orderData, isOpen, onClose, onUpdate }) {
                                         {modifyItem.orderBList.reduce(
                                             (total, item) => total + (item.orderProductQty === '' ? 0 : item.orderProductQty * (item.price?.customPrice || 0)),
                                             0
-                                        )}
+                                        ).toLocaleString()}원
                                     </td>
                                 </tr>
                             )}

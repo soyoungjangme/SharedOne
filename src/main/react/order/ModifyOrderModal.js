@@ -482,7 +482,7 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                         {modifyItem.orderBList.reduce(
                                             (total, item) => total + (item.orderProductQty * (item.price?.customPrice || 0)),
                                             0
-                                        )}
+                                        ).toLocaleString()}원
                                     </td>
                                 </tr>
                             )}

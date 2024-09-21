@@ -646,7 +646,6 @@ function Order() {
 
     const [confirmerIdList, setConfirmerIdList] = useState([]);
     const [confirmerIdOptions, setConfirmerIdOptions] = useState();
-    const [confirmerName, setConfirmerName] = useState(''); //선택한 결재자 이름
 
     const handleManagerChange = (name, value) => {
         setModifyItem((prev) => ({ ...prev, [name]: value }));

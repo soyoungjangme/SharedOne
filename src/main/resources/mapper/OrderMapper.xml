@@ -153,9 +153,9 @@
         order_header oh
         join customer c on oh.customer_no = c.customer_no
         join employee e on oh.employee_id = e.employee_id  -- 담당자 조인
-        join employee ec on oh.confirmer_id = ec.employee_id  -- 결재자 조인
+        left join employee ec on oh.confirmer_id = ec.employee_id  -- 결재자 조인
         join order_body ob on oh.order_no = ob.order_no
-        join product p on ob.product_no = p.product_no
+        left join product p on ob.product_no = p.product_no
         left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no
         where
         oh.order_no = #{orderNo};
