@@ -61,32 +61,60 @@ function MyPage() {
   };
 
 
+  // 체크 카운트를 계산하는 함수
+  const getCheckCount = (password) => {
+    return [
+      !/(.)\1{2,}/.test(password),  // 3자리 연속 문자 확인
+      password.length >= 5,          // 비밀번호 길이 확인
+      validPattern.test(password)    // 유효한 패턴 확인
+    ].filter(Boolean).length;
+  };
+
+
+
+  // 아이디 및 비밀번호 문자 검증
+  const validPattern = /^[a-zA-Z0-9!@#$%^&*()_+{}[\]:;"'<>,.?/~`|-]+$/;
+
   const handleSubmit = async () => {
     // 1. 모든 입력 필드가 채워졌는지 확인
     if (currentPassword === '' || newPassword === '' || confirmNewPassword === '') {
-      setError('모든 입력 필드를 채워주세요.');
+      setError('비밀번호를 입력해주세요.');
       return;
     }
 
-    // 2. 기존 비밀번호가 일치하는지 확인
+    // 2. 현재 비밀번호가 일치하는지 확인
     const isPasswordValid = await verifyCurrentPassword(currentPassword);
 
     if (!isPasswordValid) {
-      setError('기존 비밀번호가 일치하지 않습니다.');
+      setError('현재 비밀번호가 일치하지 않습니다.');
       return;
     }
 
     // 3. 새로운 비밀번호와 확인 비밀번호가 일치하는지 확인
     if (newPassword !== confirmNewPassword) {
-      setError('새로운 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+      setError('신규 비밀번호가 일치하지 않습니다.');
       return;
     }
 
-    // 비밀번호 변경 처리
-    try {
-      // editData 업데이트
+    // 현재 비밀번호와 신규 비밀번호가 같은지 확인
+    if (currentPassword === newPassword) {
+      setError('현재 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.');
+      return;
+    }
 
-      // 서버에 비밀번호 변경 요청
+    // 비밀번호 유효성 검사 - 3개의 조건을 모두 충족하는지 확인
+    const checkCount = getCheckCount(newPassword);
+
+    if (checkCount < 3) {
+      setError('비밀번호가 요구 조건에 맞지 않습니다.');
+      return;
+    }
+
+    if (!confirm('비밀번호를 변경하시겠습니까?')) {
+      return;
+    }
+
+    try {
       await axios.post('/mypage/employeeUpdateMypagePw', { employeePw: newPassword, employeeId: session }, {
         headers: {
           'Content-Type': 'application/json',
@@ -103,6 +131,7 @@ function MyPage() {
       setError('비밀번호 변경에 실패했습니다.');
     }
   };
+
 
   // 메인 리스트 가져오기 axios
   useEffect(() => {
@@ -192,15 +221,18 @@ function MyPage() {
     return `${front}-******`;
   };
 
+
+  //유효성 검사 체크 카운트
   const checkCount = [
     !/(.)\1{2,}/.test(newPassword),
-    newPassword.length >= 10 && newPassword.length <= 16,
-    /(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{2,}/.test(newPassword)
+    newPassword.length >= 5,
+    validPattern.test(newPassword)
   ].filter(Boolean).length;
+
 
   return (
     <div>
-      <h1 className="header"><i className="bi bi-tag"></i>마이페이지</h1>
+      <h1 className="header"><i class="bi bi-tag-fill"></i>마이페이지</h1>
       <div className="mypage-main">
         <div className="mypage-table">
           <table>
@@ -272,7 +304,10 @@ function MyPage() {
         </div>
 
         <div className="mypage-chart">
-          <h2 className="header"><i className="bi bi-graph-up"></i> 이번 달 실적</h2>
+          <h2 className="header">
+            {/* <i className="bi bi-graph-up"></i>  */}
+            <i class="bi bi-bar-chart-line-fill"></i>
+            이번 달 실적</h2>
           <MonthlySalesChart />
         </div>
       </div>
@@ -296,10 +331,10 @@ function MyPage() {
               </div>
 
               <div>
-                <label>새로운 비밀번호:</label>
+                <label>신규 비밀번호:</label>
                 <input
                   type="password"
-                  placeholder="새로운 비밀번호"
+                  placeholder="신규 비밀번호"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
@@ -313,27 +348,27 @@ function MyPage() {
 
               <div className="password-checks">
                 <p style={{ color: !/(.)\1{2,}/.test(newPassword) ? '#00CC00' : '#FF4D4D' }}>
-                  {!/(.)\1{2,}/.test(newPassword) ? '🟢' : '🔴'} 3자리 연속된 문자, 숫자 제한
+                  {!/(.)\1{2,}/.test(newPassword) ? '🟢' : '🔴'} 비밀번호는 3자리 연속된 문자, 숫자를 쓸 수 없습니다.
                 </p>
-                <p style={{ color: newPassword.length >= 10 && newPassword.length <= 16 ? '#00CC00' : '#FF4D4D' }}>
-                  {newPassword.length >= 10 && newPassword.length <= 16 ? '🟢' : '🔴'} 10자 이상 ~ 16자 이내 입력
+                <p style={{ color: validPattern.test(newPassword) ? '#00CC00' : '#FF4D4D' }}>
+                  {validPattern.test(newPassword) ? '🟢' : '🔴'} 비밀번호는 대소문자, 숫자, 특수문자만 가능합니다.
                 </p>
-                <p style={{ color: /(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{2,}/.test(newPassword) ? '#00CC00' : '#FF4D4D' }}>
-                  {/(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{2,}/.test(newPassword) ? '🟢' : '🔴'} 영문 대문자, 소문자, 숫자 2종류 혼합
+                <p style={{ color: newPassword.length >= 5 ? '#00CC00' : '#FF4D4D' }}>
+                  {newPassword.length >= 5 ? '🟢' : '🔴'} 비밀번호는 5자 이상입니다.
                 </p>
               </div>
 
               <div>
-                <label>새로운 비밀번호 확인:</label>
+                <label>신규 비밀번호 확인:</label>
                 <input
                   type="password"
-                  placeholder="새로운 비밀번호 확인"
+                  placeholder="신규 비밀번호 확인"
                   value={confirmNewPassword}
                   onChange={(e) => setConfirmNewPassword(e.target.value)}
                 />
               </div>
 
-              {error && <p style={{ color: 'red' }}>{error}</p>}
+              {error && <p style={{ color: 'red', fontSize: '14px' }}> ⚠️ {error}</p>}
 
               <button type="button" className='btn-change-modal' onClick={handleSubmit}>변경</button>
               <button type="button" className='btn-cancel-modal' onClick={closeModal}>취소</button>

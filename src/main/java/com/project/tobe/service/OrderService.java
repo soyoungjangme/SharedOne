@@ -1,6 +1,7 @@
 package com.project.tobe.service;
 
 import com.project.tobe.dto.*;
+import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,8 +18,9 @@ public interface OrderService {
     OrderHDTO getOrderDetail(Long orderNo); // 상세 조회
     boolean updateApproval(Long orderNo, String confirmStatus, LocalDate confirmChangeDate, String remarks);
     OrderHDTO updateOrder(OrderUp1DTO orderUp1DTO);
+/*
     void insertBack(OrderUp1DTO orderUp1DTO);
-
+*/
     /*유선화 END*/
 
     EmployeeRankDTO getTopOfMonth();

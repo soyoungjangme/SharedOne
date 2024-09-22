@@ -1,6 +1,7 @@
 package com.project.tobe.serviceImpl;
 
 import com.project.tobe.dto.*;
+import com.project.tobe.entity.OrderH;
 import com.project.tobe.mapper.OrderMapper;
 import com.project.tobe.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,6 +72,7 @@ public class OrderServiceImpl implements OrderService {
 // 특정 주문 상세 정보
     @Override
     public OrderHDTO getOrderDetail(Long orderNo) {
+        System.out.println(orderMapper.getOrderDetail(orderNo));
         return orderMapper.getOrderDetail(orderNo);
     }
 
@@ -105,7 +108,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    @Transactional
+/*    @Transactional
     @Override
     public void insertBack(OrderUp1DTO orderUp1DTO) {
         // 1. 주문 헤더 삽입
@@ -116,7 +119,7 @@ public class OrderServiceImpl implements OrderService {
         Long orderNo = orderUp1DTO.getOrderNo();
 
         orderMapper.insertBack2(orderUp1DTO.getOrderBList(), orderNo);
-    }
+    }*/
 
     @Override
     public EmployeeRankDTO getTopOfMonth() {

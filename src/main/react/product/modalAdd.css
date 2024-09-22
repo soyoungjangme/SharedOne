@@ -202,14 +202,10 @@
 .btn-add button {
   background-color: #004e90;
   color: #fff;
-  /* background-color: #fff;
-      box-shadow: 0 3px 3px rgba(189, 189, 189, 0.16), 0 3px 6px rgba(131, 131, 131, 0.23); */
-  /* background: rgb(241,241,241); */
-  /* background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%); */
   border: 1px solid #ddd;
-  width: 60px;
+  width: 55px;
   height: 35px;
-  border-radius: 2px;
+  border-radius: 5px;
   font-weight: bold;
   cursor: pointer;
 }
@@ -217,14 +213,10 @@
 .btn-add2 button {
   background-color: #004e90;
   color: #fff;
-  /* background-color: #fff;
-      box-shadow: 0 3px 3px rgba(189, 189, 189, 0.16), 0 3px 6px rgba(131, 131, 131, 0.23); */
-  /* background: rgb(241,241,241); */
-  /* background: linear-gradient(1deg, rgba(241,241,241,1) 0%, rgba(255,255,255,1) 100%); */
   border: 1px solid #ddd;
-  width: 50px;
+  width: 55px;
   height: 35px;
-  border-radius: 2px;
+  border-radius: 5px;
   font-weight: bold;
   cursor: pointer;
 }
@@ -262,15 +254,15 @@
   background-color: #bbb;
   color: #fff;
   border: 1px solid #ddd;
-  width: 50px;
+  width: 55px;
   height: 35px;
-  border-radius: 2px;
+  border-radius: 5px;
   font-weight: bold;
   cursor: pointer;
 }
 
 .btn-add2 button:hover {
-  background-color: #004494;
+  background-color: #0056b3;
 }
 
 .btn-delete button:hover {
