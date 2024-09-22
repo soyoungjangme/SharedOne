@@ -4,6 +4,7 @@ import './MyPage.css';
 import MonthlySalesChart from '../main/MonthlySalesChart';
 import axios from 'axios';
 import './MyPage_password.css';
+import EmployeeMonthlySalesChart from "./EmployeeMonthlySalesChart";
 
 
 function MyPage() {
@@ -308,7 +309,7 @@ function MyPage() {
             {/* <i className="bi bi-graph-up"></i>  */}
             <i class="bi bi-bar-chart-line-fill"></i>
             이번 달 실적</h2>
-          <MonthlySalesChart />
+          <EmployeeMonthlySalesChart />
         </div>
       </div>
 

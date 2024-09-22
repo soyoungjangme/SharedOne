@@ -97,12 +97,12 @@
     <!--  jsy주문등록 - 등록하기  -->
     <insert id="registOrderH" useGeneratedKeys="true" keyProperty="orderNo">
         insert into order_header(reg_date,
-                                del_date,
-                                confirm_status,
-                                confirm_change_date,
-                                customer_no,
-                                employee_id,
-                                confirmer_id)
+                                 del_date,
+                                 confirm_status,
+                                 confirm_change_date,
+                                 customer_no,
+                                 employee_id,
+                                 confirmer_id)
         values (current_timestamp,
                 #{delDate},
                 #{confirmStatus},
@@ -274,4 +274,72 @@
         WHERE order_no = #{orderNo}
     </delete>
     <!--유선화 END-->
+
+    <select id="getEmployeeTopOfMonth" resultType="EmployeeRankDTO">
+        SELECT e.employee_id,
+               e.employee_name,
+               SUM(coalesce(body.total, 0)) AS monthly_sales
+        FROM employee e
+                 JOIN order_header header ON e.employee_id = header.employee_id
+                 JOIN (SELECT order_no,
+                              SUM(coalesce(prod_total, 0)) AS total
+                       FROM order_body
+                       GROUP BY order_no) body ON header.order_no = body.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date BETWEEN date_trunc('month', current_date)::date
+            AND date_trunc('month', current_date + interval '1 months')::date - 1
+        GROUP BY e.employee_id
+        ORDER BY monthly_sales DESC
+        limit 1
+    </select>
+
+    <select id="getSalesByMonth" resultType="SalesByMonth">
+        SELECT TO_CHAR(header.confirm_change_date, 'YYYY-MM') AS sales_month,
+               SUM(coalesce(body.prod_total, 0))              AS total_sales
+        FROM order_header header
+                 JOIN
+             (SELECT order_no, SUM(coalesce(prod_total, 0)) AS prod_total
+              FROM order_body
+              GROUP BY order_no) body
+             ON header.order_no = body.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date IS NOT NULL
+        GROUP BY TO_CHAR(header.confirm_change_date, 'YYYY-MM')
+        ORDER BY sales_month
+    </select>
+
+    <select id="getEmployeeRank" resultType="EmployeeRankDTO">
+        SELECT e.employee_id,
+               e.employee_name,
+               SUM(coalesce(body.total, 0)) AS monthly_sales
+        FROM employee e
+                 JOIN order_header header ON e.employee_id = header.employee_id
+                 JOIN (SELECT order_no,
+                              SUM(coalesce(prod_total, 0)) AS total
+                       FROM order_body
+                       GROUP BY order_no) body ON header.order_no = body.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date BETWEEN date_trunc('month', current_date)::date
+            AND date_trunc('month', current_date + interval '1 months')::date - 1
+        GROUP BY e.employee_id
+        ORDER BY monthly_sales DESC
+        limit 10
+    </select>
+
+    <select id="getProductRank" resultType="ProductSaleRank">
+        SELECT p.product_no,
+               p.product_name,
+               SUM(coalesce(body.prod_total, 0)) AS total_sales
+        FROM product p
+                 JOIN order_body body ON p.product_no = body.product_no
+                 JOIN order_header header ON body.order_no = header.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date BETWEEN date_trunc('month', current_date)::date
+            AND date_trunc('month', current_date + interval '1 months')::date - 1
+        GROUP BY p.product_no, p.product_name
+        ORDER BY total_sales DESC
+        LIMIT 10;
+
+    </select>
+
 </mapper>

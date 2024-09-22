@@ -133,8 +133,8 @@ function Order() {
             // 문자열 비교
             if (typeof aValue === 'string' && typeof bValue === 'string') {
                 return direction === 'ascending'
-                ? aValue.localeCompare(bValue)
-                : bValue.localeCompare(aValue);
+                    ? aValue.localeCompare(bValue)
+                    : bValue.localeCompare(aValue);
             }
 
             // 숫자 비교
@@ -246,7 +246,7 @@ function Order() {
         }
     }, [form]);
 
-    
+
 
     /*---------------jsy조건 끝---------------*/
 
@@ -301,39 +301,39 @@ function Order() {
         fetchData();
     }, []);
 
-     const fetchData = async () => {
-            try {
-                // 세션에서 ID 가져오기
-                const idRes = await axios.get('/order/getMyId');
-                const myId = idRes.data;
+    const fetchData = async () => {
+        try {
+            // 세션에서 ID 가져오기
+            const idRes = await axios.get('/order/getMyId');
+            const myId = idRes.data;
 
-                // 이름 가져오기
-                const nameRes = await axios.post('/order/getMyName', { myId }); // 객체로 전달
-                 const RoleRes = await axios.get('/order/getMyRole'); // 권한 가져오기
-
-
-                const response = await axios.get(`/order/getManagerList/${myId}`);
-
-                const data = response.data; // Assuming response.data contains the list
-                   console.log(data);
-                    // employeeId와 authorityGrade만 추출
-                    const filteredList = data.map(data => ({
-                        employeeId: data.employeeId,
-                        authorityGrade: data.authorityGrade,
-                    }));
-
-                    setRoleList(filteredList);
-                    console.log("Role List" + roleList.employeeId);
-                    console.log("Role List" + roleList.employeeId);
+            // 이름 가져오기
+            const nameRes = await axios.post('/order/getMyName', { myId }); // 객체로 전달
+            const RoleRes = await axios.get('/order/getMyRole'); // 권한 가져오기
 
 
+            const response = await axios.get(`/order/getManagerList/${myId}`);
+
+            const data = response.data; // Assuming response.data contains the list
+            console.log(data);
+            // employeeId와 authorityGrade만 추출
+            const filteredList = data.map(data => ({
+                employeeId: data.employeeId,
+                authorityGrade: data.authorityGrade,
+            }));
+
+            setRoleList(filteredList);
+            console.log("Role List" + roleList.employeeId);
+            console.log("Role List" + roleList.employeeId);
 
 
-                setMy({ id: myId, name: nameRes.data , role : RoleRes.data});
-            } catch (error) {
-                console.error('Error', error);
-            }
-        };
+
+
+            setMy({ id: myId, name: nameRes.data , role : RoleRes.data});
+        } catch (error) {
+            console.error('Error', error);
+        }
+    };
 
 
 
@@ -791,51 +791,51 @@ function Order() {
         return pageNumbers;
     };
 
-   const roleHierarchy = { S: 4, A: 3, B: 2, C: 1, D: 0 }; // Define the hierarchy
+    const roleHierarchy = { S: 4, A: 3, B: 2, C: 1, D: 0 }; // Define the hierarchy
 
-   const handleButtonClick = (item) => {
-       const trimmedStatus = item.status.trim();
-       const isManager = my.id === item.managerId;
+    const handleButtonClick = (item) => {
+        const trimmedStatus = item.status.trim();
+        const isManager = my.id === item.managerId;
 
-       switch (trimmedStatus) {
-           case '승인':
-               console.log('승인 다 볼수있엉');
-               handleDetailView(item.orderNo);
-               break;
-           case '대기':
-               console.log('대기');
-                  console.log(roleHierarchy[my.role]);
-                              console.log(roleHierarchy[item.managerGrade]);
-               if (roleHierarchy[my.role] > roleHierarchy[item.managerGrade] || isManager) {
-                   console.log("Access granted for 대기");
-                   handleDetailView(item.orderNo);
-               } else {
-                   alert("접근 권한이 없습니다.");
-               }
-               break;
-           case '임시저장':
-               console.log('임시저장');
-               if (isManager) {
-                   handleDetailView(item.orderNo);
-               } else {
-                   alert("접근 권한이 없습니다.");
-               }
-               break;
-           case '반려':
-               console.log('반려');
-               console.log(roleHierarchy[my.role]);
-               console.log(roleHierarchy[item.managerGrade]);
-               if ((roleHierarchy[my.role] > roleHierarchy[item.managerGrade])  || isManager) {
-                   handleDetailView(item.orderNo);
-               } else {
-                  alert("접근 권한이 없습니다.");
-               }
-               break;
-           default:
-               console.log('Unknown status');
-               break;
-       }
-   };
+        switch (trimmedStatus) {
+            case '승인':
+                console.log('승인 다 볼수있엉');
+                handleDetailView(item.orderNo);
+                break;
+            case '대기':
+                console.log('대기');
+                console.log(roleHierarchy[my.role]);
+                console.log(roleHierarchy[item.managerGrade]);
+                if (roleHierarchy[my.role] > roleHierarchy[item.managerGrade] || isManager) {
+                    console.log("Access granted for 대기");
+                    handleDetailView(item.orderNo);
+                } else {
+                    alert("접근 권한이 없습니다.");
+                }
+                break;
+            case '임시저장':
+                console.log('임시저장');
+                if (isManager) {
+                    handleDetailView(item.orderNo);
+                } else {
+                    alert("접근 권한이 없습니다.");
+                }
+                break;
+            case '반려':
+                console.log('반려');
+                console.log(roleHierarchy[my.role]);
+                console.log(roleHierarchy[item.managerGrade]);
+                if ((roleHierarchy[my.role] > roleHierarchy[item.managerGrade])  || isManager) {
+                    handleDetailView(item.orderNo);
+                } else {
+                    alert("접근 권한이 없습니다.");
+                }
+                break;
+            default:
+                console.log('Unknown status');
+                break;
+        }
+    };
 
 
 
@@ -864,9 +864,9 @@ function Order() {
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="mycustomer">고객 명</label>
                                 <input className="filter-input" type="text" id="mycustomer" value={form.mycustomer || ''}
-                                onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} placeholder="고객 명" required/>
+                                       onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} placeholder="고객 명" required/>
 
-{/*<select id="mycustomer" className="filter-input" value={form.mycustomer || ''}
+                                {/*<select id="mycustomer" className="filter-input" value={form.mycustomer || ''}
                                         onChange={handleChange}>
                                     <option value="">선택</option>
                                     {mycustomer.map((customer) => (
@@ -886,7 +886,7 @@ function Order() {
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="prod">상품 명</label>
                                 <input className="filter-input" type="text" id="prod" value={form.prod || ''}
-                                onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} placeholder="상품 명" required/>
+                                       onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} placeholder="상품 명" required/>
 
 
 
@@ -984,32 +984,32 @@ function Order() {
                             return (
 
 
-                              <tr
-                                  key={item.orderNo}
-                                  className={checkItem[index + 1] ? 'selected-row' : ''}
-                     /*             onDoubleClick={() => {
-                                      if (roleHierarchy[item.managerGrade] > roleHierarchy[my.role] || my.id === item.managerId) {
-                                          handleDetailView(item.orderNo); // 상세보기 모달 열기
-                                      } else {
-                                          alert("Access denied: Your role is not high enough."); // Optional alert for access denial
-                                      }
-                                  }}*/
-                              >
-                                  <td>{globalIndex}</td> {/* 전역 인덱스 사용 */}
-                                  <td>{item.orderNo}</td>
-                                  <td className="ellipsis">{item.manager}</td>
-                                  <td className="ellipsis">{item.customerN}</td>
-                                 {/* <td className="ellipsis" >{item.managerGrade}</td>*/}
-                                  <td>{item.status}</td>
-                                  <td>
-                                      {new Date(item.regDate).toLocaleDateString('en-CA')}
-                                  </td>
-                                  <td>
-                             <button className="btn-common" onClick={() => handleButtonClick(item)}>
-                                   상세보기
-                               </button>
-                                  </td>
-                              </tr>
+                                <tr
+                                    key={item.orderNo}
+                                    className={checkItem[index + 1] ? 'selected-row' : ''}
+                                    /*             onDoubleClick={() => {
+                                                     if (roleHierarchy[item.managerGrade] > roleHierarchy[my.role] || my.id === item.managerId) {
+                                                         handleDetailView(item.orderNo); // 상세보기 모달 열기
+                                                     } else {
+                                                         alert("Access denied: Your role is not high enough."); // Optional alert for access denial
+                                                     }
+                                                 }}*/
+                                >
+                                    <td>{globalIndex}</td> {/* 전역 인덱스 사용 */}
+                                    <td>{item.orderNo}</td>
+                                    <td className="ellipsis">{item.manager}</td>
+                                    <td className="ellipsis">{item.customerN}</td>
+                                    {/* <td className="ellipsis" >{item.managerGrade}</td>*/}
+                                    <td>{item.status}</td>
+                                    <td>
+                                        {new Date(item.regDate).toLocaleDateString('en-CA')}
+                                    </td>
+                                    <td>
+                                        <button className="btn-common" onClick={() => handleButtonClick(item)}>
+                                            상세보기
+                                        </button>
+                                    </td>
+                                </tr>
                             );
                         })
                     ) : (
@@ -1056,7 +1056,7 @@ function Order() {
                                         {/* 임시 저장 버튼 */}
                                         <button type="button" onClick={() => {handleRegistOrder("임시저장");}}>
                                             임시 저장
-                                            </button>
+                                        </button>
 
                                     </div>
                                     <div className="btn-close">
@@ -1228,7 +1228,7 @@ function Order() {
                     onClose={handleModifyCloseClick}
                     onOpenModifyModal={handleOpenModifyModal}
                     fetchData={fetchData}
-                      my={my}
+                    my={my}
                     roleHierarchy={roleHierarchy}
                     onOpenModifyTempOrderModal={handleOpenModifyTempOrderModal}
                 />

@@ -24,4 +24,12 @@ public interface OrderService {
     OrderHDTO updateTempOrder(OrderHDTO orderHDTO);
     boolean deleteOrder(Long orderNo);
     /*유선화 END*/
+
+    EmployeeRankDTO getTopOfMonth();
+
+    List<SalesByMonth> getSalesByMonth();
+
+    List<EmployeeRankDTO> getEmployeeRank();
+
+    List<ProductSaleRank> getProductRank();
 }

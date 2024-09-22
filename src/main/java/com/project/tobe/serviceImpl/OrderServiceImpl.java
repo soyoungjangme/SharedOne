@@ -145,4 +145,24 @@ public class OrderServiceImpl implements OrderService {
         int deletedRows = orderMapper.deleteOrder(orderNo);
         return deletedRows > 0; // 삭제된 행이 1개 이상이면 true 반환
     }
+
+    @Override
+    public EmployeeRankDTO getTopOfMonth() {
+        return orderMapper.getEmployeeTopOfMonth();
+    }
+
+    @Override
+    public List<SalesByMonth> getSalesByMonth() {
+        return orderMapper.getSalesByMonth();
+    }
+
+    @Override
+    public List<EmployeeRankDTO> getEmployeeRank() {
+        return orderMapper.getEmployeeRank();
+    }
+
+    @Override
+    public List<ProductSaleRank> getProductRank() {
+        return orderMapper.getProductRank();
+    }
 }

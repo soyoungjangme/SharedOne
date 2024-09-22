@@ -1,6 +1,5 @@
 package com.project.tobe.mapper;
 import com.project.tobe.dto.*;
-import com.querydsl.core.types.Order;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -34,4 +33,12 @@ public interface OrderMapper {
     int insertOrderDetails(List<OrderBDTO> orderBList);
     int deleteOrder(@Param("orderNo") Long orderNo);
     /*유선화 END*/
+
+    EmployeeRankDTO getEmployeeTopOfMonth();
+
+    List<SalesByMonth> getSalesByMonth();
+
+    List<EmployeeRankDTO> getEmployeeRank();
+
+    List<ProductSaleRank> getProductRank();
 }
