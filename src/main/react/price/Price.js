@@ -55,16 +55,6 @@ const Price = () => {
         handleDelete,
     } = useCheckboxManager();
 
-    const productOptions = product.map((item) => {
-        return <option name={item.productName} value={item.productNo} key={item.productNo}>{item.productName}</option>
-    });
-    const productDataList = <datalist id="productDataList">{productOptions}</datalist>
-
-    const customerOptions = customer.map((item) => {
-        return <option name={item.customerName} value={item.customerNo} key={item.customerNo}>{item.customerName}</option>
-    });
-    const customerDataList = <datalist id="customerDataList">{customerOptions}</datalist>
-
     useEffect(() => {
         fetchData();
         handleSearchBtn();
@@ -75,6 +65,8 @@ const Price = () => {
             const { data } = await axios('/price/all');
             setProduct(data.productList);
             setCustomer(data.customerList);
+            setProductOptions(data.productList.map((item) => ({value: item.productNo, label: item.productName})));
+            setCustomerOptions(data.customerList.map((item) => ({value: item.customerNo, label: item.customerName})));
         } catch (error) {
             console.error('데이터를 가져오는 중 오류 발생:', error);
         }
@@ -121,7 +113,7 @@ const Price = () => {
 
     const handleCloseClick = () => {
         setIsVisible(false);
-        handleSearchBtn();
+        getSearchItems(searchPrice);
     };
 
     const handlePageChange = async (selectedPage) => {
@@ -152,14 +144,18 @@ const Price = () => {
         setIsVisibleDetail(false);
     };
 
+    const [productOptions, setProductOptions] = useState();
+
+    const [customerOptions, setCustomerOptions] = useState();
+
     return (
         <div>
             <h1><i className="bi bi-currency-dollar"></i> 판매가 리스트 </h1>
             <SearchForm
                 searchPrice={searchPrice}
                 setSearchPrice={setSearchPrice}
-                product={product}
-                customer={customer}
+                productOptions={productOptions}
+                customerOptions={customerOptions}
                 handleSearchBtn={handleSearchBtn}
                 handleSearchResetBtn={handleSearchResetBtn}
             />

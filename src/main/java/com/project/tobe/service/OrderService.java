@@ -22,4 +22,12 @@ public interface OrderService {
     void insertBack(OrderUp1DTO orderUp1DTO);
 */
     /*유선화 END*/
+
+    EmployeeRankDTO getTopOfMonth();
+
+    List<SalesByMonth> getSalesByMonth();
+
+    List<EmployeeRankDTO> getEmployeeRank();
+
+    List<ProductSaleRank> getProductRank();
 }

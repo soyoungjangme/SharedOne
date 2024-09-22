@@ -30,7 +30,7 @@ public class OrderController {
 
     //jsy초기 목록 호출
     @GetMapping("/orderList")
-    public List<OrderHDTO> orderList (){
+    public List<OrderHDTO> orderList() {
         return orderService.getOrder(null);
     }
 
@@ -43,16 +43,16 @@ public class OrderController {
 
     //jsy주문등록 - 고객 별 판매가
     @PostMapping("/getPrice")
-    public ResponseEntity<List<PriceDTO>> getPrice(@RequestBody Map<String, String> request){
+    public ResponseEntity<List<PriceDTO>> getPrice(@RequestBody Map<String, String> request) {
         String inputOrderCustomerNo = request.get("inputOrderCustomerNo"); //문자열로 단일객체 받아서
         String delDate = request.get("inputOrderDelDate");
 
         List<PriceDTO> customPrice;
 
-        if( inputOrderCustomerNo == null || inputOrderCustomerNo.isEmpty() ){ //고객명 선택x
+        if (inputOrderCustomerNo == null || inputOrderCustomerNo.isEmpty()) { //고객명 선택x
             customPrice = new ArrayList<>(); //빈 리스ㅡㅌ 반환
 
-        }else { //고객명 데이터 들어있으면
+        } else { //고객명 데이터 들어있으면
             Integer iocn = Integer.parseInt(inputOrderCustomerNo); //데이터 정수변환
             customPrice = orderService.getPrice(iocn, delDate);
         }
@@ -62,7 +62,7 @@ public class OrderController {
 
     //jsy주문등록 - 등록하기
     @PostMapping("/registOrder")
-    public ResponseEntity<Long> registOrder(@RequestBody OrderRegistDTO request){
+    public ResponseEntity<Long> registOrder(@RequestBody OrderRegistDTO request) {
         Long orderNo = orderService.registOrder(request);
 
         return ResponseEntity.ok(orderNo);
@@ -70,17 +70,16 @@ public class OrderController {
 
     //로그인 시 직원 아이디 추출
     @GetMapping("/getMyId")
-    public String getMyId(Authentication authentication){
+    public String getMyId(Authentication authentication) {
         String userId = "";
 
-        if(authentication != null) { //인증이 되지않았다면 null입니다.
-            EmployeeDetails user = (EmployeeDetails)authentication.getPrincipal(); //인증객체 안에 principal값을 얻으면 유저객체가 나옵니다.
+        if (authentication != null) { //인증이 되지않았다면 null입니다.
+            EmployeeDetails user = (EmployeeDetails) authentication.getPrincipal(); //인증객체 안에 principal값을 얻으면 유저객체가 나옵니다.
             userId = user.getUsername();
 
             System.out.println("------------------권한" + user.getUserAuthorityGrade());
             System.out.println(userId);
         }
-
         return userId;
     }
 
@@ -139,7 +138,7 @@ public class OrderController {
         }
     }
 
-// 결재 여부에 따른 업데이트
+    // 결재 여부에 따른 업데이트
     @PostMapping("/updateApproval")
     public ResponseEntity<?> updateApproval(@RequestBody OrderHDTO orderHDTO) {
         boolean updated = orderService.updateApproval(
@@ -180,5 +179,22 @@ public class OrderController {
     }*/
 
 
-/* 유선화 END */
+    /* 유선화 END */
+
+    @GetMapping("/getStatistics")
+    public Map<String, Object> getStatistics() {
+        Map<String, Object> map = new HashMap<>();
+
+        EmployeeRankDTO top = orderService.getTopOfMonth();
+        List<SalesByMonth> salesByMonth= orderService.getSalesByMonth();
+        List<EmployeeRankDTO> employeeRank = orderService.getEmployeeRank();
+        List<ProductSaleRank> productRank = orderService.getProductRank();
+
+        map.put("topOfMonth", top);
+        map.put("employeeRank", employeeRank);
+        map.put("productRank", productRank);
+        map.put("salesByMonth", salesByMonth);
+
+        return map;
+    }
 }
