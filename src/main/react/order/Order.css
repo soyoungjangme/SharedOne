@@ -7,6 +7,16 @@ body {
     padding: 0;
 }
 
+.formTableBookList {
+margin-top: 30px;
+        height: auto;
+     max-height: 372px;
+     overflow: auto;
+     min-width: 100%;
+     margin-bottom: 30px;
+     border-bottom: 1px solid #ddd;
+}
+
 .filter-containers {
     padding: 20px;
     border: 1px solid #ddd;

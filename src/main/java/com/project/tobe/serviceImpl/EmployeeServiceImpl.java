@@ -74,19 +74,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
   // 검색 조회
   @Override
-  public Page<EmployeeDTO> getPickList(EmployeeDTO dto, Pageable pageable) {
-    int total = employeeMapper.getPickListTotal(dto);
+  public List<EmployeeDTO> getPickList(EmployeeDTO dto) {
 
-    RequestList<?> requestList = RequestList.builder()
-            .data(dto)
-            .pageable(pageable)
-            .build();
-
-    System.out.println(requestList);
-
-    List<EmployeeDTO> list= employeeMapper.getPickList(requestList);
-
-    return new PageImpl<>(list, pageable, total);
+    return employeeMapper.getPickList(dto);
   }
 
 

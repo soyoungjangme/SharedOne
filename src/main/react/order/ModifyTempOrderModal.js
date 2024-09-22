@@ -330,11 +330,14 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
                     <button className="close-btn" onClick={onClose}> &times; </button>
                     <div className="form-header">
                         <h1>임시 저장</h1>
-                        <div className="btns">
-                            <button type="button" onClick={handleDeleteOrder}>삭제</button>
-                            <button type="button" onClick={handleTempSave}>임시 저장</button>
-                            <button type="button" onClick={handleSubmit}>등록하기</button>
-                        </div>
+                            <div className="btns">
+                                              <div className="btn-add2">
+                                                  <button type="button" onClick={handleDeleteOrder}>삭제</button>
+                                                  <button type="button" onClick={handleTempSave}>임시 저장</button>
+                                                  <button type="button" onClick={handleSubmit}>등록하기</button>
+
+                                              </div>
+                                          </div>
                     </div>
 
                     <div className="RegistForm">
@@ -393,7 +396,8 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
 
                     <div className="RegistFormList">
                         <div style={{fontWeight: 'bold'}}>고객별 주문 가능한 상품 리스트 (총 {searchProd.length}건)</div>
-                        <table className="formTableList">
+                         <div className="formTableBookList">
+                                                        <table className="formTableList2">
                             <thead>
                             <tr>
                                 <th><input type="checkbox" checked={orderListAllCheck}
@@ -422,6 +426,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
                             ))}
                             </tbody>
                         </table>
+                        </div>
                     </div>
 
                     <div className="RegistFormList">
