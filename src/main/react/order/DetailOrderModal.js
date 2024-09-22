@@ -185,6 +185,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
             '임시저장': '임시저장',
             '승인': '승인',
             '반려': '반려',
+            '반려(처리완료)': '반려(처리완료)',
             '대기': '대기'
         };
 
@@ -324,7 +325,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                             </>
                                         )}
 
-                                        {my.id === modifyItem.employee.employeeId && (
+                                        {my.id === modifyItem.employee.employeeId && getConfirmStatus(modifyItem.confirmStatus) !== '반려(처리완료)' && (
                                             <button
                                                 type="button"
                                                 onClick={() => {

@@ -114,10 +114,14 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
         }
     }, [modifyItem.customer.customerNo, delDate]);
 
-    const handleQuantityChange = (productNo) => (e) => {
+    const handleQuantityChange = (index) => (e) => {
         const qty = Number(e.target.value) || 0;
-        setQuantities(prevQuantities => ({ ...prevQuantities, [productNo]: qty }));
+        setQuantities(prevQuantities => ({
+            ...prevQuantities,
+            [index]: qty
+        }));
     };
+
 
     const handleTempSave = async () => {
         if (addCheckProd.length === 0) {
@@ -230,7 +234,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
 
             // 검색된 상품들만 대상으로 처리
             if (orderListAllCheck) {
-                for (const element of searchProd) {  // 전체 체크 시 검색된 상품들만 처리
+                for (const element of searchProd) {
                     if (!existingPriceNos.has(element.priceNo)) {
                         newCheckProd.push({
                             product: element.product,
@@ -249,7 +253,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
             } else {
                 Object.keys(orderListCheckItem).forEach(index => {
                     if (orderListCheckItem[index]) {
-                        const item = searchProd[index];  // 검색된 결과에서만 추가
+                        const item = searchProd[index];
                         if (item && !existingPriceNos.has(item.priceNo)) {
                             newCheckProd.push({
                                 product: item.product,
@@ -272,6 +276,17 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
                 alert('이미 추가된 항목이 있습니다.');
             }
 
+            // 수량 초기화
+            const resetQuantities = newCheckProd.reduce((acc, _, index) => {
+                acc[index] = 0; // 기본값 0으로 설정
+                return acc;
+            }, {});
+
+            setQuantities(prevQuantities => ({
+                ...prevQuantities,
+                ...resetQuantities
+            }));
+
             return [...prevAddCheckProd, ...newCheckProd];
         });
 
@@ -279,6 +294,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
         setOrderListCheckboxes({});
         handleOrderListMasterCheckboxChange({ target: { checked: false } });
     };
+
 
 
 
@@ -462,11 +478,12 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
                                         <td>
                                             <input
                                                 type="number"
-                                                value={qty}
-                                                onChange={handleQuantityChange(addProd.product.productNo)}
+                                                value={quantities[index] || 0}
+                                                onChange={handleQuantityChange(index)}
                                                 placeholder="수량"
                                             />
                                         </td>
+
                                         <td>{addProd.price.customPrice * qty}</td>
                                         <td>{addProd.price.startDate}</td>
                                         <td>{addProd.price.endDate}</td>

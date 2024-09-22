@@ -217,24 +217,65 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onUpdate }) {
                     orderBList: modifyItem.orderBList.map(item => ({
                         productNo: item.product.productNo,
                         orderProductQty: parseInt(item.orderProductQty, 10),
-                        price: item.price.customPrice,
+                        // price: item.price.customPrice,
                         priceNo: item.price.priceNo,
-                        prodTotal: parseInt(item.orderProductQty, 10) * item.price.customPrice
+                        prodTotal: parseInt(item.orderProductQty, 10) * item.price.customPrice,
+                        price: {
+                            priceNo: item.price.priceNo,
+                            customPrice: item.price.customPrice,
+                            startDate: item.price.startDate,
+                            endDate: item.price.endDate
+                        }
                     }))
                 };
+
+                // 요청 전에 데이터 로그 찍기
+                console.log('Updated Order Data:', updatedOrderData);  // 전송 데이터 확인
+                console.log('OrderBList:', modifyItem.orderBList);
+                modifyItem.orderBList.forEach((item, index) => {
+                    console.log(`Item ${index} Price Object:`, item.price);
+                });
 
                 const response = await axios.post('/order/registOrder', updatedOrderData);
                 const orderNo = response.data;
 
                 if (response.status === 200 || response.data) {
+                    // 상태를 '반려(처리완료)'로 업데이트
+                    setModifyItem(prev => ({
+                        ...prev,
+                        confirmStatus: '반려(처리완료)'
+                    }));
+
                     alert(`주문번호 ${orderNo} 등록이 완료되었습니다.`);
+
+                    // 기존 주문 상태 '반려(처리완료)'로 업데이트
+                    // const today = new Date().toISOString().split('T')[0];
+                    const updateApprovalResponse = await axios.post('/order/updateApproval', {
+                        orderNo: modifyItem.orderNo,
+                        confirmStatus: '반려(처리완료)',
+                        // confirmChangeDate: today,  // 상태 변경일 업데이트
+                        remarks: modifyItem.remarks // 비고 업데이트
+                    });
+
+                    if (updateApprovalResponse.data.success) {
+                        console.log('기존 주문 상태가 반려(처리완료)로 업데이트되었습니다.');
+                    } else {
+                        alert('기존 주문 상태 업데이트에 실패했습니다.');
+                    }
+
                     onClose();
                 } else {
                     alert('주문 등록을 실패하였습니다.');
 
                 }
-            } catch (error) {
+            } catch (error) {  // 디버깅
                 console.error('주문 업데이트 중 오류 발생:', error);
+                if (error.response) {
+                    console.error('Error response:', error.response.data);  // 서버의 오류 응답 내용을 확인
+                    console.error('Error status:', error.response.status);  // 서버 응답 코드 확인
+                } else {
+                    console.error('Axios request error:', error.message);  // 네트워크 오류나 기타 문제를 확인
+                }
             }
 
         } else if (status === '대기') {
