@@ -25,9 +25,14 @@ public interface OrderMapper {
     void deleteOrderDetails(Long orderNo);
     void insertOrderDetail(@Param("orderNo") Long orderNo, @Param("detail") OrderUp2DTO detail);
 
-    /*void insertBack1(OrderUp1DTO orderUp1DTO);
+    /*
+    void insertBack1(OrderUp1DTO orderUp1DTO);
     void insertBack2(@Param("orderBList") List<OrderUp2DTO> orderBList, @Param("orderNo") Long orderNo);
-    *//*유선화 END*/
+    */
+    int updateTempOrder(OrderHDTO orderHDTO);
+    int insertOrderDetails(List<OrderBDTO> orderBList);
+    int deleteOrder(@Param("orderNo") Long orderNo);
+    /*유선화 END*/
 
     EmployeeRankDTO getEmployeeTopOfMonth();
 
@@ -36,5 +41,4 @@ public interface OrderMapper {
     List<EmployeeRankDTO> getEmployeeRank();
 
     List<ProductSaleRank> getProductRank();
-    /*유선화 END*/
 }

@@ -20,7 +20,9 @@ public interface OrderService {
     OrderHDTO updateOrder(OrderUp1DTO orderUp1DTO);
 /*
     void insertBack(OrderUp1DTO orderUp1DTO);
-*/
+ */
+    OrderHDTO updateTempOrder(OrderHDTO orderHDTO);
+    boolean deleteOrder(Long orderNo);
     /*유선화 END*/
 
     EmployeeRankDTO getTopOfMonth();
