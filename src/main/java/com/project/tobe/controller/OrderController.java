@@ -179,6 +179,36 @@ public class OrderController {
         orderService.insertBack(orderUp1DTO);
     }
 
+    @PutMapping("/temp/{orderNo}")
+    public ResponseEntity<?> updateTempOrder(@PathVariable Long orderNo, @RequestBody OrderHDTO orderHDTO) {
+        // customerNo와 employeeId를 중첩된 객체에서 추출
+        orderHDTO.setCustomerNo(orderHDTO.getCustomer().getCustomerNo());
+        orderHDTO.setEmployeeId(orderHDTO.getEmployee().getEmployeeId());
 
-/* 유선화 END */
+        try {
+            OrderHDTO updatedOrder = orderService.updateTempOrder(orderHDTO);
+            return ResponseEntity.ok(updatedOrder);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("주문 업데이트 중 오류 발생: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete/{orderNo}")
+    public ResponseEntity<?> deleteOrder(@PathVariable Long orderNo) {
+        try {
+            boolean isDeleted = orderService.deleteOrder(orderNo);
+            if (isDeleted) {
+                return ResponseEntity.ok("주문이 삭제되었습니다.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문을 찾을 수 없습니다.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("주문 삭제 중 오류 발생: " + e.getMessage());
+        }
+    }
+
+
+    /* 유선화 END */
 }

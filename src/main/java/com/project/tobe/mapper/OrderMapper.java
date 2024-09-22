@@ -27,5 +27,8 @@ public interface OrderMapper {
     void insertOrderDetail(@Param("orderNo") Long orderNo, @Param("detail") OrderUp2DTO detail);
     void insertBack1(OrderUp1DTO orderUp1DTO);
     void insertBack2(@Param("orderBList") List<OrderUp2DTO> orderBList, @Param("orderNo") Long orderNo);
+    int updateTempOrder(OrderHDTO orderHDTO);
+    int insertOrderDetails(List<OrderBDTO> orderBList);
+    int deleteOrder(@Param("orderNo") Long orderNo);
     /*유선화 END*/
 }

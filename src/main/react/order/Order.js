@@ -5,9 +5,9 @@ import './OrderRegist.css'
 import './OrderModalDetail.css'
 import useCheckboxManager from "../js/CheckboxManager";
 import axios from 'axios';
+import DetailOrderModal from './DetailOrderModal';
 import ModifyOrderModal from './ModifyOrderModal';
-import ModifyOrderModal2 from './ModifyOrderModal2';
-import Order2 from './Order2';
+import ModifyTempOrderModal from './ModifyTempOrderModal';
 import Select from "react-select";
 /*
 import '../js/pagecssReal.css';
@@ -16,7 +16,7 @@ import '../js/pagecssReal.css';
 
 function Order() {
 
-
+    // 주문 데이터 및 체크박스 관리 상태
     const {
         allCheck,
         checkItem,
@@ -26,6 +26,7 @@ function Order() {
         handleDelete
     } = useCheckboxManager(setOrder);
 
+    // 주문 목록에서의 체크박스 관리 상태
     const {
         allCheck: orderListAllCheck,
         checkItem: orderListCheckItem,
@@ -36,6 +37,7 @@ function Order() {
         setCheckItem: setCheckItemMal
     } = useCheckboxManager(setOrder);
 
+    // 추가 상품 리스트에 대한 체크박스 관리 상태
     const {
         allCheck: orderAddAllCheck,
         checkItem: orderAddCheckItem,
@@ -43,20 +45,22 @@ function Order() {
         handleMasterCheckboxChange: handleOrderAddMasterCheckboxChange,
         handleCheckboxChange: handleOrderAddCheckboxChange,
         handleDelete: handleOrderAddDelete
-    } = useCheckboxManager(setOrder);
+    } = useCheckboxManager();
 
     // 주문 데이터를 저장하는 상태
     const [order, setOrder] = useState([]);
     console.log("order" + JSON.stringify(order));
 
+    // 사용자 정보 상태
     const [userInfo, setUserInfo] = useState(null);
 
+    // 사용자 정보 불러오기 함수
     const fetchUserInfo = async () => {
         const response = await axios.get('/employee/user-info', { withCredentials: true });
         setUserInfo(response.data);
     }
 
-    //주문목록 불러오기
+    // 주문 목록을 서버에서 불러오는 함수
     useEffect( () => {
 
         let effectOrder = async () => {
@@ -83,13 +87,13 @@ function Order() {
         effectOrder();
 
 
-
+        // 결재자 리스트 불러오기
         const fetchConfirmerIdList = async () => {
             const response = await axios.get('/employee/user-info', { withCredentials: true });
             console.log(response);
             const {data} = await axios.get(`/order/getManagerList/${response.data.userId}`);
             console.log(data);
-            setConfirmerIdList(data);
+            setConfirmerIdList(data);// 결재자 리스트 상태에 저장
             setConfirmerIdOptions(
                 data.map(manager => ({value:manager.employeeId, label: manager.employeeName+' / ' + manager.employeeEmail}))
             );
@@ -175,7 +179,7 @@ function Order() {
         setForm(copy);
     }
 
-
+    // 검색 버튼 클릭 시 서버로 검색 조건 전송
     const handleSearchBtn = async () => {
         //서버로 데이터 보내기
         const date = form.date || null;
@@ -218,7 +222,6 @@ function Order() {
     const handleReset = () => {
         setForm({
             inputDate: '',
-            inputDate: '',
             inputOrderNo: '',
             inputProdNo: '',
             inputCustomerNo: '',
@@ -241,6 +244,7 @@ function Order() {
     const [addCheckProd, setAddCheckProd] = useState([]); //체크한 상품 추가된 리스트
     const [delDate, setDelDate] = useState('');//납품요청일 상태관리
 
+    // 납품 요청일 변경 시 상태 업데이트
     const handleDateChange = (e) => {
         setDelDate(e.target.value);
 
@@ -261,7 +265,7 @@ function Order() {
 
 
 
-
+    // 세션 정보 가져오기
     const [my, setMy]= useState({id: '', name: '', role:''});
     const [roleList, setRoleList] = useState([]);
     console.log("ㅋㅋ글쓴이 값이야 " +  order.managerId);
@@ -526,7 +530,7 @@ function Order() {
         setIsVisibleCSV((prevState) => !prevState);
     };
 
-
+    // 주문 등록 모달 상태
     const [isVisible, setIsVisible] = useState(false);
 
     const handleAddClick = () => {
@@ -544,6 +548,7 @@ function Order() {
         setAddCheckProd([]); //추가리스트 초기화
     };
 
+    // 수정 모달 상태 관리
     const [modifyItem, setModifyItem] = useState({
         orderNo: 0,
         title: '',
@@ -555,47 +560,52 @@ function Order() {
     });
 
 
-    //유선화 - 시작 (또 다른 모달창 추가시킴)
+    // 상세보기 모달 상태 관리
+    const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
     const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
-    const [isModifyModal2Visible, setIsModifyModal2Visible] = useState(false);
+    const [isModifyTempOrderModalOpen, setIsModifyTempOrderModalOpen] = useState(false);
     const [selectedOrderNo, setSelectedOrderNo] = useState(null);
     const [selectedOrderData, setSelectedOrderData] = useState(null);
-    const [isOrder2Open, setOrder2Open] = useState(false);
 
-
+    // 주문 상세보기 열기
     const handleDetailView = (orderNo) => {
         setSelectedOrderNo(orderNo);  // 주문 번호 설정
-        setIsModifyModalVisible(true);  // 모달 열기
+        setIsDetailModalVisible(true);  // 모달 열기
     };
 
     const handleModifyCloseClick = () => {
+        setIsDetailModalVisible(false);
+    };
+
+    // 주문 수정 모달 열기
+    const handleOpenModifyModal = (orderData) => {
+        setSelectedOrderData(orderData);
+        setIsDetailModalVisible(false); // 상세 조회 모달 닫기
+        setIsModifyModalVisible(true); // 수정 모달 열기
+    };
+
+    const handleCloseModifyModal = () => {
         setIsModifyModalVisible(false);
     };
 
-    const handleOpenModifyModal2 = (orderData) => {
+    // 임시 저장 모달 열기
+    const handleOpenModifyTempOrderModal = (orderData) => {
         setSelectedOrderData(orderData);
-        setIsModifyModalVisible(false); // 상세 조회 모달 닫기
-        setIsModifyModal2Visible(true); // 수정 모달 열기
+        setIsModifyTempOrderModalOpen(true);
+        setIsDetailModalVisible(false);
     };
 
-    const handleCloseModifyModal2 = () => {
-        setIsModifyModal2Visible(false);
+    const handleCloseModifyTempOrderModal = () => {
+        setIsModifyTempOrderModalOpen(false);
     };
-
-    /* 임시 저장 모달 창*/
-    const handleOpenOrder2 = (orderData) => {
-        setSelectedOrderData(orderData);  // 선택된 주문 데이터를 설정
-        setIsModifyModalVisible(false);   // 상세보기 모달 닫기
-        setOrder2Open(true);               // 임시 저장 수정 창 열기
-    };
-
 
     // 유선화 - 끝
 
     // --- 모달창 띄우는 스크립트
 
-    // 유선화 시작 -업데이트 처리용 props 전달-
-    const handleOrderUpdate = async (updatedOrder) => {
+    // 수정된 주문 데이터 업데이트
+    const handleOrderUpdate = (updatedOrder) => {
+        // 수정된 주문 데이터를 반영하여 상태 업데이트
         setOrder(prevOrders => {
             const updatedOrders = prevOrders.map(order =>
                 order.orderNo === updatedOrder.orderNo ? updatedOrder : order
@@ -603,18 +613,29 @@ function Order() {
             return updatedOrders;
         });
 
-        // 상태가 업데이트된 후 추가 작업 수행
-        useEffect(() => {
-            console.log('Updated orders:', order);
-            // 상태가 반영된 후 필요한 작업 수행
-        }, [order]);  // order가 변경될 때마다 실행
-    };
-    // 유선화 끝
+        // 상세보기 모달에 수정된 데이터를 반영
+        setSelectedOrderData(updatedOrder); // 이 부분을 추가하여 상세보기 모달에 수정된 데이터를 전달
 
+        // 최신 데이터를 다시 불러오기
+        fetchData();  // 서버에서 새로운 데이터를 가져오는 함수 (선택사항)
+
+        // 모달 상태 업데이트 (일반 주문 수정과 임시 저장 구분)
+        if (updatedOrder.confirmStatus.trim() === '임시저장') {
+            setIsModifyTempOrderModalOpen(false);  // 임시 저장 모달 닫기
+        } else {
+            setIsModifyModalVisible(false);  // 일반 주문 수정 모달 닫기
+        }
+
+        setIsDetailModalVisible(true);  // 상세보기 모달 다시 열기
+
+    };
+
+    // 결재자 ID 리스트 상태
     const [confirmerIdList, setConfirmerIdList] = useState([]);
     const [confirmerIdOptions, setConfirmerIdOptions] = useState();
     const [confirmerName, setConfirmerName] = useState(''); //선택한 결재자 이름
 
+    // 결재자 변경 처리
     const handleManagerChange = (name, value) => {
         setModifyItem((prev) => ({ ...prev, [name]: value }));
     }
@@ -874,7 +895,7 @@ function Order() {
                         </div>
                     </div>
                     <div className="button-container">
-                        <button type="button" className="reset-btn" onClick={handleReset}>  {/* 조회 입력값 초기화 버튼입니다! */} 
+                        <button type="button" className="reset-btn" onClick={handleReset}>  {/* 조회 입력값 초기화 버튼입니다! */}
                             <i class="bi bi-arrow-clockwise"></i>
                         </button>
                         <button type="button" className="search-btn" id="searchOrder" onClick={handleSearchBtn}>
@@ -1014,13 +1035,12 @@ function Order() {
                                 <div className="btns">
                                     <div className="btn-add2">
                                         {/* 임시 저장 버튼 */}
-
                                         <button type="button" onClick={() => {handleRegistOrder("임시저장");}}>
                                             임시 저장
                                             </button>
 
                                     </div>
-                                    <div className="btn-close">
+                                    <div className="btn-add2">
                                         {/* 등록하기 버튼 */}
                                         <button type="button" onClick={() => {handleRegistOrder("대기"); }} >
                                             등록하기
@@ -1083,7 +1103,7 @@ function Order() {
                                     </div>*/}
                             </div>
 
-
+                            {/*주문 가능한 상품 리스트*/}
                             <div className="RegistFormList">
                                 <div style={{fontWeight: 'bold'}}> 총 {searchProd?.length || 0} 건</div>
                                 <table className="formTableList">
@@ -1182,35 +1202,38 @@ function Order() {
             )}
             {/* 모달창의 끝  */}
 
-            {/* 코드 너무 길어져서 이사 가요! */}
-            {isModifyModalVisible && (
-                <ModifyOrderModal
+            {/* 상세보기 모달 */}
+            {isDetailModalVisible && (
+                <DetailOrderModal
                     orderNo={selectedOrderNo}
-                    isOpen={isModifyModalVisible}
+                    isOpen={isDetailModalVisible}
                     onClose={handleModifyCloseClick}
-                    onOpenModifyModal2={handleOpenModifyModal2}
-                    onOpenOrder2={handleOpenOrder2}
+                    onOpenModifyModal={handleOpenModifyModal}
                     fetchData={fetchData}
                       my={my}
                     roleHierarchy={roleHierarchy}
-
+                    onOpenModifyTempOrderModal={handleOpenModifyTempOrderModal}
                 />
             )}
 
-            {isModifyModal2Visible && (
-                <ModifyOrderModal2
+            {/*수정 모달*/}
+            {isModifyModalVisible && (
+                <ModifyOrderModal
                     orderData={selectedOrderData}
-                    isOpen={isModifyModal2Visible}
-                    onClose={handleCloseModifyModal2}
+                    isOpen={isModifyModalVisible}
+                    onClose={handleCloseModifyModal}
                     onUpdate={handleOrderUpdate}
                 />
             )}
 
-            {isOrder2Open && (
-                <Order2
-                    orderNo={selectedOrderNo}
-                    onClose={handleCloseClick}
-                    initialData={modifyItem}
+            {/* 임시 저장 전용 수정 모달 */}
+            {isModifyTempOrderModalOpen && (
+                <ModifyTempOrderModal
+                    orderNo={selectedOrderData.orderNo}
+                    isOpen={isModifyTempOrderModalOpen}
+                    onClose={handleCloseModifyTempOrderModal}
+                    fetchData={fetchData}
+                    onUpdate={handleOrderUpdate}
                 />
             )}
         </div>

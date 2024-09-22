@@ -1,193 +1,276 @@
 import React, { useState, useEffect } from 'react';
-import './Order.css'
-import './OrderRegist.css'
-import './OrderModalDetail.css'
-import ModifyOrderModal2 from "./ModifyOrderModal2";
-import Order2 from './Order2';
 import axios from 'axios';
-import Select from "react-select";
+import './Order.css';
+import './OrderRegist.css';
+import './OrderModalDetail.css';
+import './OrderModalUpdate.css'
+import useCheckboxManager from '../js/CheckboxManager';
 
-const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModal2, onOpenOrder2, roleHierarchy ,fetchData,my }) => {
 
+function ModifyOrderModal({ orderData, isOpen, onClose, onUpdate }) {
+
+    // 상태 변수: 상품 목록, 추가된 상품 목록, 각 상품의 수량 관리
+    const [customPrice, setCustomPrice] = useState([]); // 상품 리스트
+    const [addCheckProd, setAddCheckProd] = useState([]); // 추가된 상품 리스트
+    const [quantities, setQuantities] = useState({});    // 각 상품의 수량
+
+    // 상태 변수: 주문 수정 항목 관리
     const [modifyItem, setModifyItem] = useState({
         orderNo: '',
         regDate: '',
-        employee: { employeeName: '' , employeeId : '', authorityGrade : ''},
-        customer: { customerName: '' , customerNo : '' },
+        employee: { employeeName: '', employeeId: '' },
+        customer: { customerName: '', customerNo: '' },
         delDate: '',
         confirmStatus: '',
         remarks: '',
         confirmerId: '',
-        confirmerName:'',
         confirmChangeDate: null,
         orderBList: []
     });
 
-    // 승인 여부 관리 (승인 됐으면 조회만 되게끔 하기 위해 만듦)
-    const [isApproved, setIsApproved] = useState(false);
-
-    // 주문 수정하는 모달창
-    const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
-
-    const openModifyModal2 = () => {
-        const updatedModifyItem = {
-            ...modifyItem,
-            customerNo: modifyItem.customer?.customerNo || ''
-        };
-        setIsModifyModalOpen(true);
-        onOpenModifyModal2(updatedModifyItem);
-    };
-    const closeModifyModal = () => {
-        setIsModifyModalOpen(false);
-    };
-
-    // 임시 저장 모달 관리
-    const [isOrder2Open, setIsOrder2Open] = useState(false);
-
-    // 임시 저장 모달 열기 함수
-    const openOrder2 = (orderData) => {
-        setIsOrder2Open(true);
-    };
-
-    // 임시 저장 모달 닫기 함수
-    const closeOrder2Modal = () => {
-        setIsOrder2Open(false);
-    };
-
-    const handleModifyUpdate = (updatedOrder) => {
-        // 수정된 주문 데이터를 반영하여 modifyItem 상태 업데이트
-        setModifyItem(prev => ({
-            ...prev,
-            ...updatedOrder,  // 모달2에서 전달받은 데이터로 상태 업데이트
-            confirmChangeDate: updatedOrder.confirmChangeDate // 오늘 날짜로 상태 변경일 업데이트
-        }));
-
-        // 필요한 경우, 부모에게도 업데이트된 데이터를 전달
-        if (onUpdate) {
-            onUpdate(updatedOrder);
-        }
-
-        closeModifyModal(); // 모달2 닫기
-    };
-
-//--------------------------------------------------------------------------
- const [orderDetails, setOrderDetails] = useState({
-        orderNo: 0,
-        customerNo: '',
-        employeeId: '',
-        delDate: '',
-        orderB: [
-            {
-                productNo: 0,
-                orderProductQty: 0,
-                product: '',
-                price: 0,
-                priceNo: 0
-            }
-        ]
-    });
-
-    // modifyItem이 업데이트될 때마다 orderDetails와 orderDetailsBList를 업데이트
+    // 수정된 orderBList 디버깅용 useEffect
     useEffect(() => {
-        if (modifyItem) {
-            const updatedOrderDetailsBList = modifyItem.orderBList.map(item => ({
-                productNo: item.productNo,            // 원본 값
-                orderProductQty: item.orderProductQty,                  // 기본값 또는 나중에 업데이트 필요
-                price: item.productPrice ?? 0,        // null을 0으로 대체
-                priceNo: item.price?.priceNo ?? 0  // 추가
+        console.log('Updated orderBList:', modifyItem.orderBList);
+    }, [modifyItem.orderBList]);
 
+
+// 주문 가능한 상품 목록을 위한 체크박스
+    const {
+        allCheck: availableProductsAllCheck,
+        checkItem: availableProductsCheckItem,
+        handleMasterCheckboxChange: handleAvailableProductsMasterCheckboxChange,
+        handleCheckboxChange: handleAvailableProductsCheckboxChange,
+    } = useCheckboxManager(setCustomPrice);
+
+// 선택된 상품 목록을 위한 체크박스
+    const {
+        allCheck: selectedProductsAllCheck,
+        checkItem: selectedProductsCheckItem,
+        handleMasterCheckboxChange: handleSelectedProductsMasterCheckboxChange,
+        handleCheckboxChange: handleSelectedProductsCheckboxChange,
+        setCheckItem: setSelectedProductsCheckItem,
+        showDelete
+    } = useCheckboxManager();
+
+    // orderData 변경 시 수정 항목을 업데이트
+    useEffect(() => {
+        if (orderData) {
+            setModifyItem(orderData);
+        }
+    }, [orderData]);
+
+// 선택한 상품 리스트에서 삭제 처리
+    const handleDelete = () => {
+        const checkDelete = window.confirm('선택한 상품을 목록에서 삭제하시겠습니까?');
+        if (checkDelete) {
+            const newOrderBList = modifyItem.orderBList.filter((_, index) => !selectedProductsCheckItem[index]);
+            setModifyItem(prev => ({
+                ...prev,
+                orderBList: newOrderBList
             }));
-
-            // 상태를 한 번에 업데이트
-            setOrderDetails({
-                orderNo: modifyItem.orderNo,          // 예시: orderNo 추가
-                employeeId: modifyItem.employee.employeeId,
-                customerNo: modifyItem.customer.customerNo,
-                delDate: modifyItem.delDate,
-                orderB: updatedOrderDetailsBList
-            });
-        }
-    }, [modifyItem]);  // modifyItem이 변경될 때마다 호출
-
-    const handleUpdate = async () => {
-        try {
-            console.log('Sending Order Details:', orderDetails); // 전송 전 데이터 확인
-    
-            const response = await axios.post('/order/updateOrder', orderDetails, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-    
-            console.log('Response:', response.data); // 서버 응답 확인
-        } catch (error) {
-            console.error('Error:', error.response ? error.response.data : error.message); // 에러 상세 확인
+            // 체크박스 상태 초기화
+            setSelectedProductsCheckItem({});
         }
     };
-//--------------------------------------------------------------------------
 
 
-
-
-
-
-
-
-
-    // 주문 데이터 가져오기
+    // 고객 번호로 상품 목록을 불러오기
     useEffect(() => {
-        if (isOpen && orderNo) {
-            console.log('useEffect orderNo: '+orderNo); // 망할 디버깅
-            const fetchOrderDetails = async () => {
-                try {
-                    const response = await axios.get(`/order/detail/${orderNo}`);
-                    console.log('Fetched data:', response.data);
-                    console.log('Server response:', JSON.stringify(response.data, null, 2)); // 디버깅
-                    setModifyItem(response.data);
-
-                    const confirmStatus = getConfirmStatus(response.data?.confirmStatus);
-                    if (confirmStatus === '승인') {
-                        setIsApproved(true);
-                    } else {
-                        setIsApproved(false);
-                    }
-                } catch (error) {
-                    console.error('주문 상세 정보 조회 실패:', error.response ? error.response.data : error.message);
-                    alert('주문 상세 정보를 조회하는 중 오류가 발생했습니다.');
-                }
-            };
-            fetchOrderDetails();
+        if (orderData) {
+            const customerNo = orderData.customer?.customerNo;
+            if (customerNo) {
+                fetchCustomerProducts(customerNo);  // 고객 번호로 상품 목록을 불러옴
+            } else {
+                console.error('고객 번호가 없습니다.');
+            }
+            setModifyItem(orderData); // 중복 제거 후 여기에만 설정
         }
-    }, [orderNo, isOpen]);
+    }, [orderData]);
+
+    // 고객에 맞는 상품 리스트를 서버에서 가져오기
+    const fetchCustomerProducts = async (customerNo) => {
+        try {
+            console.log('Fetching products for customerNo:', customerNo);
+
+            const response = await axios.post('/order/getPrice', {
+                inputOrderCustomerNo: parseInt(customerNo, 10)
+            });
+
+            const OrderCustomerData = response.data;
+
+            if (Array.isArray(OrderCustomerData)) {
+                const getOrderCustomer = OrderCustomerData.map(value => ({
+                    salePrice: value.customPrice,
+                    prodNo: value.product.productNo,
+                    prodCat: value.product.productCategory,
+                    prodName: value.product.productName,
+                    prodWriter: value.product.productWriter,
+                    saleStart: value.startDate,
+                    saleEnd: value.endDate,
+                    priceNo: value.priceNo
+                }));
+                setCustomPrice(getOrderCustomer);
+            } else {
+                console.error('상품 목록을 불러오는 중 오류 발생:', OrderCustomerData);
+            }
+        } catch (error) {
+            console.error('fetchCustomerProducts 호출 오류:', error); // 오류 메시지 출력
+            if (error.response) {
+                console.error('서버 응답 오류:', error.response.data); // 서버 응답에 대한 자세한 오류 메시지
+            }
+        }
+    };
 
 
-    // 입력 값 변경 가능한 처리
-    const handleInputChange = (e) => {
-        if (isApproved) return;
-        const { name, value } = e.target;
+    // 주문 수량 변경 처리
+    const handleQuantityChange = (index) => (e) => {
+        // 빈 문자열을 허용하고, 숫자가 아닌 입력을 방지
+        let qty = e.target.value;
+        if (qty !== '' && isNaN(qty)) {
+            return; // 숫자가 아닌 값 입력 방지
+        }
+
+        setModifyItem(prev => {
+            const updatedOrderBList = [...prev.orderBList];
+            updatedOrderBList[index] = {
+                ...updatedOrderBList[index],
+                orderProductQty: qty === '' ? '' : parseInt(qty, 10)
+            };
+            console.log('Updated quantity:', updatedOrderBList); // 디버깅
+            return {
+                ...prev,
+                orderBList: updatedOrderBList
+            };
+        });
+    };
+
+
+    // 검색 필터링 상태 관리
+    const [searchTerm, setSearchTerm] = useState('');
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    // 검색어에 맞는 상품 필터링
+    const filteredProducts = customPrice.filter(product =>
+        product.prodName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+   console.log('현재 confirmStatus:', modifyItem.confirmStatus);
+   console.log('타입:', typeof modifyItem.confirmStatus);
+
+
+
+    // 주문 업데이트 처리 함수 - 수정하기 버튼에 걸려 있는 함수
+    const handleUpdateOrder = async () => {
+        if (!modifyItem.delDate) {
+            alert('납품 요청일을 선택해주세요.');
+            return;
+        }
+
+        if (modifyItem.orderBList.length === 0) {
+            alert('1개 이상의 상품을 선택해주세요.');
+            return;
+        }
+
+        // 빈 문자열이나 0인 수량 체크
+        const invalidQuantities = modifyItem.orderBList.filter(item =>
+            item.orderProductQty === '' || item.orderProductQty === 0
+        );
+
+        if (invalidQuantities.length > 0) {
+            alert('모든 상품의 수량을 1개 이상 입력해주세요.');
+            return;
+        }
+
+        try {
+            const today = new Date();
+            today.setDate(today.getDate() + 1);
+            const todayPlus = today.toISOString().split('T')[0];
+
+            const updatedOrderData = {
+                orderNo: modifyItem.orderNo,
+                delDate: modifyItem.delDate,
+                confirmChangeDate: todayPlus,
+                customerNo: modifyItem.customer.customerNo,
+                employeeId: modifyItem.employee.employeeId,
+                orderBList: modifyItem.orderBList.map(item => ({
+                    productNo: item.product.productNo,
+                    orderProductQty: parseInt(item.orderProductQty, 10),
+                    price: item.price.customPrice,
+                    priceNo: item.priceNo || item.price.priceNo
+                }))
+            };
+
+            const response = await axios.put(`/order/update`, updatedOrderData);
+
+            if (response.status === 200 || response.data) {
+                alert('주문이 성공적으로 업데이트되었습니다.');
+                onUpdate(response.data);  // 부모 컴포넌트로 수정된 데이터 전달
+                onClose();  // 수정 완료 후 수정 모달 닫기
+            } else {
+                alert('주문 업데이트에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('주문 업데이트 중 오류 발생:', error);
+            if (error.response) {
+                console.error('Error response:', error.response.data);
+                console.error('Error status:', error.response.status);
+            }
+            alert('주문 업데이트 중 오류가 발생했습니다.');
+        }
+    };
+    /*수정창 닫고 데이터 들고 상세보기로 ㄱ*/
+
+
+
+// 상품 체크 이벤트 - 체크항목만 checkProd 넣기
+    const handleCheck = (prodList) => (e) => {
+        const {prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo} = prodList;
+        handleAvailableProductsCheckboxChange(e, prodList.index);
+    }
+
+    // 상품 추가 버튼 클릭 시 처리
+    const handleAddProd = () => {
+        const productsToAdd = availableProductsAllCheck ? customPrice : customPrice.filter((_, index) => availableProductsCheckItem[index]); // availableProductsCheckItem 사용
+
+        const newOrderBList = [...modifyItem.orderBList];
+
+        productsToAdd.forEach(product => {
+            if (product && product.prodNo && product.priceNo&& !newOrderBList.some(item => item.product && item.price.priceNo === product.priceNo)) {
+                newOrderBList.push({
+                    product: {
+                        productNo: product.prodNo,
+                        productCategory: product.prodCat,
+                        productName: product.prodName,
+                        productWriter: product.prodWriter
+                    },
+                    orderProductQty: 1,
+                    price: {
+                        priceNo: product.priceNo,
+                        customPrice: product.salePrice,
+                        startDate: product.saleStart,
+                        endDate: product.saleEnd
+                    }
+                });
+            }else{
+                alert('이미 추가한 항목이 존재합니다.');
+
+            }
+        });
+
         setModifyItem(prev => ({
             ...prev,
-            [name]: value
+            orderBList: newOrderBList
         }));
+
+        handleAvailableProductsMasterCheckboxChange({ target: { checked: false } }); // 체크박스 상태 초기화
     };
 
-    // 결재 여부 매핑 처리
-    const getConfirmStatus = (status) => {
-        const trimmedStatus = (status || '').trim();
-        const statusMap = {
-            '임시저장': '임시저장',
-            '승인': '승인',
-            '반려': '반려',
-            '대기': '대기'
-        };
-
-        return statusMap[trimmedStatus] || '대기';
-    };
-
-    // 정렬 상태 관리
+// 정렬 상태 관리
     const [modalSortConfig, setModalSortConfig] = useState({ key: '', direction: 'ascending' });
 
-    // 정렬 함수
+// 정렬 함수
     const sortModalData = (key) => {
         let direction = 'ascending';
         if (modalSortConfig.key === key && modalSortConfig.direction === 'ascending') {
@@ -223,203 +306,142 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
         setModalSortConfig({ key, direction });
     };
 
-// 임시로 만든 승인, 반려 버튼
-    const handleApproval = async (status) => {
-        const message = status === '승인' ? '승인 처리하시겠습니까?' : '반려 처리하시겠습니까?';
+    if (!isOpen) return null;
 
-        if (!window.confirm(message)) {
-            return; // 사용자가 취소를 누르면 함수 종료
-        }
-
-        try {
-            const today = new Date();
-            today.setDate(today.getDate());
-            const todayPlus = today.toISOString().split('T')[0];
-
-            const response = await axios.post('/order/updateApproval', {
-                orderNo: modifyItem.orderNo,
-                confirmStatus: status,
-                remarks: modifyItem.remarks,
-                confirmChangeDate: todayPlus
-            });
-
-            if (response.data.success) {
-                setModifyItem(prev => ({
-                    ...prev,
-                    confirmStatus: status,
-                    confirmChangeDate: todayPlus
-                }));
-                alert(`주문 번호 ${modifyItem.orderNo}, ${status === '승인' ? '승인' : '반려'} 처리되었습니다.`);
-                window.location.reload();
-            } else {
-                console.error('승인/반려 처리 실패');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('처리 중 오류가 발생했습니다. 다시 시도해주세요.');
-        }
-    };
-
-    useEffect(() => {
-        if (modifyItem && modifyItem.confirmStatus) {
-            console.log('confirmStatus:', modifyItem.confirmStatus);
-            console.log('getConfirmStatus:', getConfirmStatus(modifyItem.confirmStatus));
-        } else {
-            console.log('modifyItem or confirmStatus is undefined');
-        }
-    }, [modifyItem]);
-
-    console.log(modifyItem.employee.authorityGrade);
-    console.log(JSON.stringify(modifyItem));
-
-
-    return isOpen ? (
+    return (
         <div className="confirmRegist">
             <div className="fullBody">
                 <div className="form-container">
-                    <button className="close-btn" onClick={onClose}> &times; </button>
+                    <button className="close-btn" onClick={onClose}>&times;</button>
                     <div className="form-header">
-                        <h1>상세 조회</h1>
+                        <h1>주문 수정</h1>
+
+
                         <div className="btns">
-                            <div className="btn-add">
-                                {getConfirmStatus(modifyItem.confirmStatus) === '임시저장' && (
-                                    <>
-                                        <button type="button">삭제</button>
-                                              <button
-                                                                                       type="button"
-                                                                                       onClick={() => {
-                                                                                           if (window.confirm('주문을 수정하시겠습니까?')) {
-                                                                                               if (getConfirmStatus(modifyItem.confirmStatus) === '임시저장') {
-                                                                                                   openOrder2(modifyItem);
-                                                                                               } else {
-                                                                                                   onOpenModifyModal2(modifyItem);
-                                                                                               }
-                                                                                           }
-                                                                                       }}
-                                                                                   >
-                                                                                       수정하기
-                                                                                   </button>
-                                    </>
-                                )}
-                               {['대기', '반려'].includes(getConfirmStatus(modifyItem.confirmStatus)) && (
-                                   <>
-                                              {getConfirmStatus(modifyItem.confirmStatus) === '대기' && (
-                                                  <>
-                                                      {roleHierarchy[my.role] > roleHierarchy[modifyItem.employee.authorityGrade] && (
-                                                          <>
-                                                              <button type="button" onClick={() => {
-                                                                  console.log('반려 버튼 클릭됨');
-                                                                  handleApproval('반려');
-                                                              }}>
-                                                                  반려
-                                                              </button>
-                                                              <button type="button" onClick={() => {
-                                                                  console.log('승인 버튼 클릭됨');
-                                                                  handleApproval('승인');
-                                                              }}>
-                                                                  승인
-                                                              </button>
-                                                          </>
-                                                      )}
-                                              {console.log('Confirm Status:', getConfirmStatus(modifyItem.confirmStatus))}
-                                              {console.log('My Role:', my.role, 'Authority Grade:', modifyItem.employee.authorityGrade)}
-                                          </>
-                                      )}
-
-                                       {my.id === modifyItem.employee.employeeId && (
-                                           <button
-                                               type="button"
-                                               onClick={() => {
-                                                   if (window.confirm('주문을 수정하시겠습니까?')) {
-                                                       if (getConfirmStatus(modifyItem.confirmStatus) === '임시저장') {
-                                                           openOrder2(modifyItem);
-                                                       } else {
-                                                           onOpenModifyModal2(modifyItem);
-                                                       }
-                                                   }
-                                               }}
-                                           >
-                                               수정하기
-                                           </button>
-                                       )}
-                                   </>
-                               )}
-
+                            <div className="btn-add2">
+                                <button onClick={handleUpdateOrder}>수정 완료</button>
                             </div>
                         </div>
+
+
+
                     </div>
-                    <form className={`RegistForm ${isApproved ? 'form-disabled' : ''}`}>
+
+                    <div className="RegistForm">
                         <table className="formTable">
                             <tbody>
                             <tr>
-                                <th><label htmlFor="confirmTitle">주문 번호</label></th>
-                                <td>{modifyItem.orderNo || ''}</td>
-
-                                <th><label htmlFor="customerName">고객명</label></th>
-                                <td>{modifyItem.customer?.customerName || ''}</td>
+                                <th>주문 번호</th>
+                                <td><input type="text" value={modifyItem.orderNo || ''} disabled/></td>
+                                <th>주문 등록일</th>
+                                <td><input type="text" value={modifyItem.regDate ? new Date(modifyItem.regDate).toLocaleDateString('en-CA') : ''} disabled/></td>
                             </tr>
                             <tr>
-                                <th><label htmlFor="confirmTitle">주문 등록일</label></th>
-                                <td>{modifyItem.regDate || ''}</td>
+                                <th>고객명</th>
+                                <td><input value={modifyItem.customer?.customerName || ''} disabled/></td>
+                                <th>납품 요청일</th>
+                                <td>
+                                    <input
+                                        type="date"
+                                        name="delDate"
+                                        value={modifyItem.delDate || ''}
+                                        onChange={(e) => {
+                                            const now = new Date();
+                                            const selectDate = new Date(e.target.value);
 
-                                <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
-                                <td>{modifyItem.delDate || ''}</td>
-
-                                <th colSpan="1"><label htmlFor="confirmTitle">상태 변경일</label></th>
-                                <td>{modifyItem.confirmChangeDate || '정보 없음'}</td>
-                            </tr>
-                            <tr>
-                                <th><label htmlFor="picName">담당자명</label></th>
-                                <td>{modifyItem.employee?.employeeName || ''}</td>
-                                <th><label htmlFor="approver">결재자</label></th>
-                                <td>{modifyItem.confirmerName || '정보 없음'}</td>
-                                <th><label htmlFor="approvalStatus">결재 여부</label></th>
-                                <td>{modifyItem.confirmStatus}</td>
-                                    {/*{(modifyItem.confirmStatus?.trim() === '승인' || modifyItem.confirmStatus?.trim() === '반려') ? (*/}
-                                    {/*    <span>{getConfirmStatus(modifyItem.confirmStatus)}</span>*/}
-                                    {/*) : (*/}
-                                    {/*    <select*/}
-                                    {/*        name="confirmStatus"*/}
-                                    {/*        value={getConfirmStatus(modifyItem.confirmStatus)}*/}
-                                    {/*        onChange={handleInputChange}*/}
-                                    {/*    >*/}
-                                    {/*        <option value="대기">대기</option>*/}
-                                    {/*        <option value="승인">승인</option>*/}
-                                    {/*        <option value="반려">반려</option>*/}
-                                    {/*    </select>*/}
-                                    {/*)}*/}
-
-                            </tr>
-                            </tbody>
-                        </table>
-
-                        <table className="formTable2">
-                            <tbody>
-                            <tr>
-
-                                <th colSpan="1"><label htmlFor="remarks">비고</label></th>
-                                <td colSpan="3">
-                                    {(getConfirmStatus(modifyItem.confirmStatus) === '승인' || getConfirmStatus(modifyItem.confirmStatus) === '반려') ? (
-                                        <span>{modifyItem.remarks || '비고 없음'}</span>
-                                    ) : (
-                                        <textarea
-                                            name="remarks"
-                                            value={modifyItem.remarks || ''}
-                                            onChange={handleInputChange}
-                                        ></textarea>
-                                    )}
+                                            if(selectDate < now ){
+                                                alert(`납품 요청일을 확인해주세요.`);
+                                                return;
+                                            }
+                                            setModifyItem(prev => ({
+                                                ...prev,
+                                                delDate: e.target.value
+                                            })
+                                        )}}
+                                    />
                                 </td>
                             </tr>
+                            <tr>
+                                <th>담당자</th>
+                                <td><input type="text" value={modifyItem.employee?.employeeName || ''} disabled/></td>
+                                <th>결재자</th>
+                                <td><input type="text" value={modifyItem.confirmerId || '정보 없음'} disabled/></td>
+                            </tr>
                             </tbody>
                         </table>
-                    </form>
+                    </div>
 
+                    {/* 도서 검색 및 추가 */}
+                    <div className="bookSearchBox">
+                        <div className="bookSearch">
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                                placeholder="상품 검색"
+                            />
+                            <button type="button" className="btn-common" onClick={handleAddProd}>추가</button>
+                        </div>
+                    </div>
+
+{/* 주문 가능한 상품 목록 */}
                     <div className="RegistFormList">
-                    <div style={{fontWeight: 'bold'}}>총 {modifyItem.orderBList?.length || 0} 건</div>
+                        <div style={{fontWeight: 'bold'}}> 총 {filteredProducts.length} 건</div>
                         <table className="formTableList">
                             <thead>
                             <tr>
-                            <th>No</th>
+                                <th>
+                                    <input
+                                        type="checkbox"
+                                        checked={availableProductsAllCheck}
+                                        onChange={handleAvailableProductsMasterCheckboxChange}
+                                    />
+                                </th>
+                                <th>no</th>
+                                <th>상품 코드</th>
+                                <th>상품 명</th>
+                                <th>저자</th>
+                                <th>판매가</th>
+                                <th>판매 기간</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {filteredProducts.map((prodList, index) => (
+                                <tr key={index} className={availableProductsCheckItem[index] ? 'selected-row' : ''}>
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            checked={availableProductsCheckItem[index] || false}
+                                            onChange={handleCheck({...prodList, index})}
+                                        />
+                                    </td>
+                                    <td style={{display: 'none'}}>{index}</td>
+                                    <td>{index + 1}</td>
+                                    <td>{prodList.prodNo}</td>
+                                    <td>{prodList.prodName}</td>
+                                    <td>{prodList.prodWriter}</td>
+                                    <td>{prodList.salePrice}</td>
+                                    <td>{`${prodList.saleStart} ~ ${prodList.saleEnd}`}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+{/* 선택된 상품 목록*/}
+                    <div className="RegistFormList">
+                        <div style={{fontWeight: 'bold'}}>총 {modifyItem.orderBList?.length || 0} 건</div>
+                        <table className="formTableList">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedProductsAllCheck}
+                                        onChange={handleSelectedProductsMasterCheckboxChange}
+                                    />
+                                </th>
+                                <th>No</th>
                                 <th>상품 카테고리
                                     <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
                                         {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
@@ -435,82 +457,70 @@ const ModifyOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                         {modalSortConfig.key === 'orderProductQty' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                     </button>
                                 </th>
-                                <th>판매가
-                                    <button className="sortBtn" onClick={() => sortModalData('salePrice')}>
-                                        {modalSortConfig.key === 'salePrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                    </button>
-                                </th>
+                                {/*<th>판매가*/}
+                                {/*    <button className="sortBtn" onClick={() => sortModalData('salePrice')}>*/}
+                                {/*        {modalSortConfig.key === 'salePrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}*/}
+                                {/*    </button>*/}
+                                {/*</th>*/}
                                 <th>총 금액
                                     <button className="sortBtn" onClick={() => sortModalData('totalPrice')}>
                                         {modalSortConfig.key === 'totalPrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                     </button>
                                 </th>
-                                <th>판매 기간</th>
+                                <th>판매 시작일</th>
+                                <th>판매 종료일</th>
+                                {(showDelete || (selectedProductsAllCheck && modifyItem.orderBList?.length > 0)) && (
+                                    <button className="delete-btn2 btn-common" onClick={handleDelete}>
+                                        삭제
+                                    </button>
+                                )}
                             </tr>
                             </thead>
                             <tbody>
-                            {modifyItem.orderBList && modifyItem.orderBList.length > 0 ? (
-                                modifyItem.orderBList.map((item, index) => {
-                                    const orderNo = item.orderNo || modifyItem.orderNo;
-                                    const customPrice = item.price?.customPrice || 0;
-                                    const saleStart = item.price?.startDate || '정보 없음';
-                                    const saleEnd = item.price?.endDate || '정보 없음';
-
-                                    return (
-                                        <tr key={index}>
-                                            <td>{index + 1}</td>
-                                            <td>{item.product?.productCategory}</td>
-                                            <td>{item.product?.productName}</td>
-                                            <td>{item.orderProductQty}</td>
-                                            <td>{customPrice}</td>
-                                            <td>{item.orderProductQty * customPrice}</td>
-                                            {/* 총 금액 */}
-                                            <td>{`${saleStart} ~ ${saleEnd}`}</td>
-                                            {/* 판매 기간 */}
-                                        </tr>
-                                    );
-                                })
-                            ) : (
-                                <tr>
-                                    <td colSpan="7">No data available</td>
+                            {modifyItem.orderBList && modifyItem.orderBList.map((item, index) => (
+                                <tr key={index} className={selectedProductsCheckItem[index] ? 'selected-row' : ''}>
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedProductsCheckItem[index] || false}
+                                            onChange={(e) => handleSelectedProductsCheckboxChange(e, index)}
+                                        />
+                                    </td>
+                                    <td style={{display: 'none'}}>{index}</td>
+                                    <td>{index + 1}</td>
+                                    <td>{item.product?.productCategory}</td>
+                                    <td>{item.product?.productName}</td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            value={item.orderProductQty}
+                                            onChange={handleQuantityChange(index)}
+                                        />
+                                    </td>
+                                    {/*<td>{item.price?.customPrice || 0}</td>*/}
+                                    <td>{item.orderProductQty === '' ? 0 : item.orderProductQty * (item.price?.customPrice || 0)}</td>
+                                    <td>{item.price?.startDate || '정보 없음'}</td>
+                                    <td>{item.price?.endDate || '정보 없음'}</td>
                                 </tr>
-                            )}
+                            ))}
                             {modifyItem.orderBList?.length > 0 && (
                                 <tr style={{fontWeight: 'bold'}}>
-                                    <td colSpan="5">합계</td>
-                                    <td colSpan="3">
+                                    <td colSpan="6">합계</td>
+                                    <td colSpan="2">
                                         {modifyItem.orderBList.reduce(
-                                            (total, item) => total + (item.orderProductQty * (item.price?.customPrice || 0)),
+                                            (total, item) => total + (item.orderProductQty === '' ? 0 : item.orderProductQty * (item.price?.customPrice || 0)),
                                             0
-                                        )}
+                                        ).toLocaleString()}원 {/* toLocaleString() : 숫자를 천 단위로 구분하고, 통화 기호 추가 */}
                                     </td>
                                 </tr>
                             )}
                             </tbody>
-
                         </table>
                     </div>
                 </div>
             </div>
-
-            {isOrder2Open && (
-            <Order2
-                orderNo={modifyItem.orderNo}
-                onClose={closeOrder2Modal}
-                initialData={modifyItem}
-            />
-        )}
-
-            {isModifyModalOpen && (
-                <ModifyOrderModal2
-                    orderData={modifyItem}
-                    isOpen={isModifyModalOpen}
-                    onClose={closeModifyModal}
-                    onUpdate={handleModifyUpdate}
-                />
-            )}
         </div>
-    ) : null;
-};
+    );
+}
 
 export default ModifyOrderModal;

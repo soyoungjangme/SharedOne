@@ -241,5 +241,32 @@
         </foreach>
     </insert>
 
+    <!-- 임시 저장 주문 전체 업데이트 -->
+    <update id="updateTempOrder" parameterType="OrderHDTO">
+        UPDATE order_header
+        SET del_date = #{delDate},
+            confirm_change_date = CURRENT_TIMESTAMP,
+            customer_no = #{customerNo},
+            confirmer_id = #{confirmerId},
+            confirm_status = #{confirmStatus},
+            remarks = #{remarks},
+            employee_id = #{employeeId}
+        WHERE order_no = #{orderNo}
+    </update>
+
+    <!-- 임시 저장 주문 상세 삽입 -->
+    <insert id="insertOrderDetails" parameterType="java.util.List">
+        INSERT INTO order_body (order_no, product_no, order_product_qty, price_no, prod_total)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.orderNo}, #{item.productNo}, #{item.orderProductQty}, #{item.priceNo}, #{item.prodTotal})
+        </foreach>
+    </insert>
+
+    <!-- 주문 삭제 쿼리 -->
+    <delete id="deleteOrder" parameterType="long">
+        DELETE FROM order_header
+        WHERE order_no = #{orderNo}
+    </delete>
     <!--유선화 END-->
 </mapper>
