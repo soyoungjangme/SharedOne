@@ -270,7 +270,7 @@
         WHERE header.confirm_status LIKE '%승인%'
           AND header.confirm_change_date IS NOT NULL
         GROUP BY TO_CHAR(header.confirm_change_date, 'YYYY-MM')
-        ORDER BY sales_month;
+        ORDER BY sales_month
     </select>
 
     <select id="getEmployeeRank" resultType="EmployeeRankDTO">

@@ -1,6 +1,7 @@
 import React from 'react';
+import Select from "react-select";
 
-const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSearchBtn, handleSearchResetBtn }) => {
+const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptions, handleSearchBtn, handleSearchResetBtn }) => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setSearchPrice((prev) => ({ ...prev, [name]: value }));
@@ -12,6 +13,10 @@ const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSear
         }
     }
 
+    const handleSearchPriceChange = (name, value) => {
+        setSearchPrice((prev) => ({...prev, productNo: value}));
+    }
+
     return (
         <div className="main-container">
             <div className="filter-containers">
@@ -20,40 +25,23 @@ const SearchForm = ({ searchPrice, setSearchPrice, product, customer, handleSear
                         {/* Product Filter */}
                         <div className="filter-item">
                             <label className="filter-label" htmlFor="product">상품</label>
-                            <input
-                                name="productName"
-                                className="filter-label"
-                                type="text"
-                                list="productDataList"
-                                id="product"
-                                placeholder="상품"
-                                onKeyUp={handleKeyUp}
-                                onChange={handleInputChange}
+                            <Select
+                                name="productNo"
+                                options={productOptions}
+                                placeholder="상품 선택"
+                                onChange={(option) => {handleSearchPriceChange('productNo', option.value)}}
                             />
-                            <datalist id="productDataList">
-                                {product.map((item) => (
-                                    <option value={item.productName} key={item.productNo}></option>
-                                ))}
-                            </datalist>
                         </div>
 
                         {/* Customer Filter */}
                         <div className="filter-item">
                             <label className="filter-label" htmlFor="customer">업체</label>
-                            <input
-                                name="customerName"
-                                className="filter-label"
-                                type="text"
-                                list="customerDataList"
-                                id="customer"
-                                placeholder="고객"
-                                onChange={handleInputChange}
+                            <Select
+                                name="customerNo"
+                                options={customerOptions}
+                                placeholder="고객 선택"
+                                onChange={(option) => handleSearchPriceChange('customerNo', option.value)}
                             />
-                            <datalist id="customerDataList">
-                                {customer.map((item) => (
-                                    <option value={item.customerName} key={item.customerNo}></option>
-                                ))}
-                            </datalist>
                         </div>
 
                         {/* Date Filters */}
