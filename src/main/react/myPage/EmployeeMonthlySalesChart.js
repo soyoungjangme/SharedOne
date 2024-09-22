@@ -5,7 +5,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const MonthlySalesChart = ({salesByMonth}) => {
+const EmployeeMonthlySalesChart = ({salesByMonth}) => {
     console.log(salesByMonth);
 
     const label = [];
