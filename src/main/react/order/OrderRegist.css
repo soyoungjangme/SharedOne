@@ -208,6 +208,57 @@ border: 1px solid #ddd;
 }
 
 
+
+.formTableList2 {
+    width: 100%;
+    margin: 30px 0px;
+    background-color: #ffffff;
+
+}
+
+.formTableList2, .formTableList2 th, .formTableList2 tr, .formTableList2 td {
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+
+}
+
+.formTableList2 th {
+    background: rgb(241, 241, 241);
+    background: linear-gradient(1deg, rgba(241, 241, 241, 1) 0%, rgba(255, 255, 255, 1) 100%);
+
+}
+
+
+
+
+.formTableList2 td {
+    text-align: center;
+    padding: 5px;
+}
+
+
+.formTableList2 th {
+    text-align: center;
+    padding: 5px;
+}
+
+.formTableList2 td > input {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 80%;
+    margin: 0px;
+    padding: 5px;
+}
+
+.formTableList2 td > select {
+    border: 1px solid #ddd;
+    width: 85%;
+    margin: 0px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+
 /* -------------------- */
 
 .modalBtn {

@@ -119,9 +119,7 @@ function Employee() {
         salary: 0,
  /*       employeeManagerId: '',*/
         authorityGrade: '',
-        authorityName: '',
-        page: 1,
-        amount: 10
+        authorityName: ''
     });
 
     // 필터 변경 핸들러
@@ -146,11 +144,7 @@ function Employee() {
             })
                 .then(response => {
                     console.log(response.data);
-                    setEmployee(response.data.pageData);
-                    setCurrentPage(response.data.page);
-                    setTotalItems(response.data.total);
-                    setItemsPerPage(response.data.pageData.length);
-                    setPageCount(response.data.realEnd);
+                    setEmployee(response.data);
                 })
                 .catch(error => console.error('에러에러', error));
         } else {
@@ -381,12 +375,19 @@ useEffect(() => {
                 })
                 .then((response) => {
                     setEmployee(response.data); // 서버 응답 데이터로 Customer 상태 업데이트
-                    alert("등록이 완료되었습니다");
+
                 })
-                .catch((error) => console.error('서버 요청 중 오류 발생', error))
-                .finally(() => setIsVisible(false)); // 요청 완료 후 항상 실행되는 블록
-            window.location.reload();
-            setList([]); // 기존 목록 초기화
+                   .catch(error => {
+                        // Handle error
+                        console.error('등록 실패:', error);
+                    })
+                    .finally(() => {
+                        setIsVisible(false); // Always executed after the request
+                        alert("등록이 완료되었습니다"); // Show alert after visibility is set
+                        window.location.reload();
+                         setList([]); // 기존 목록 초기화
+                    });
+
         } else {
             alert('등록할 항목이 없습니다');
         }
@@ -395,7 +396,8 @@ useEffect(() => {
 
 
     // --- 테이블 정렬 기능
-    const { sortedData, sortData, sortConfig } = useSort(employee);
+    const { sortedData, sortData, sortConfig } = useSort(employee || []);
+
 
     // ---  모달창 띄우는 스크립트
     const [isVisibleDetail, setIsVisibleDetail] = useState(false);
@@ -447,6 +449,25 @@ useEffect(() => {
 const [originalItem, setOriginalItem] = useState({}); // 원래 데이터를 저장할 상태
 
 
+   const [sessionId, setSessionId] = useState('');
+
+    useEffect(() => {
+        const fetchUserId = async () => {
+            try {
+                const response = await axios.get('/employee/user-info');
+                setSessionId(response.data.userId); // userId만 추출
+
+            } catch (error) {
+                console.error("Error fetching user ID:", error);
+            }
+        };
+
+        fetchUserId();
+
+    }, []);
+ console.log("sessionId" +  sessionId);
+
+
 const handleUpdateClick = () => {
     // 급여 유효성 검사
     const trimmedSalary = modifyItem.salary.toString().trim(); // 급여값을 문자열로 변환하고 공백 제거
@@ -473,16 +494,25 @@ const handleUpdateClick = () => {
         setEmployee(response.data);  // 서버 응답 데이터로 Customer 상태 업데이트
         console.log('업데이트 성공:', response.data);
         alert("수정이 완료되었습니다");
+
+
     })
     .catch(error => console.error('서버 요청 중 오류 발생', error))
     .finally(() => {
         setIsModifyModalVisible(false);
-        window.location.reload(); // 모달 숨기기
+        window.location.reload();
+
+         if(goOut === true) {
+          window.location.href = './logout';
+           alert("로그아웃 되었습니다. 다시 로그인 해주세요.");
+           window.location.href = './login.user';
+         }
     });
 };
 
 //  [수정] 모달
 const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
+const [goOut, setGoOut] = useState();
 
 //  [수정] 값 가져오기
    const handleModify = (item) => {
@@ -500,6 +530,10 @@ const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
            authorityGrade: item.authorityGrade
        }));
        setIsModifyModalVisible(true);
+        if (item.authorityGrade !== modifyItem.authorityGrade && sessionId === item.employeeId) {
+                   setGoOut(true);
+                   console.log("아웃`");
+        }
    };
 
    console.log(modifyItem);
@@ -728,7 +762,7 @@ const handleDeletePickClick = () => {
     // 페이지 네이션
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(5); // 페이지당 항목 수
+    const [itemsPerPage] = useState(30); // 페이지당 항목 수
 
     // 전체 페이지 수 계산
     const totalPages = Math.ceil(sortedData.length / itemsPerPage);
@@ -1022,7 +1056,7 @@ const handleDeletePickClick = () => {
                         )}
                         <tr>
                             <td colSpan="11"></td>
-                            <td colSpan="1"> {employee.length} 건</td>
+                            <td colSpan="1"> {currentItems.length} 건</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1117,12 +1151,12 @@ const handleDeletePickClick = () => {
 
 
                                 <div className="btn-add">
-                                    <button id="downloadCsv" className="btn-CSV">CSV 샘플 양식</button>
+                                   {/* <button id="downloadCsv" className="btn-CSV">CSV 샘플 양식</button>
                                     <button id="uploadCsv" className="btn-CSV" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
                                     {isVisibleCSV && (
                                         <input type="file" id="uploadCsvInput" accept=".csv" />)}
 
-                                    <button className="btn-common btn-add-p" onClick={onClickListAdd}> 추가</button>
+                                    <button className="btn-common btn-add-p" onClick={onClickListAdd}> 추가</button>*/}
                                 </div>
                             </div>
 

@@ -45,11 +45,13 @@ public class SecurityConfig {
         .loginProcessingUrl("/loginForm") //로그인 페이지를 가로채 시큐리티가 제공하는 클래스로 로그인을 연결합니다.
 		    .defaultSuccessUrl("/main.do")
         .failureUrl("/login.user?err=true")
+//        .failureHandler(new CustomAuthenticationFailureHandler()) // 커스텀 실패 핸들러 등록
         .and()
         .logout()//로그인 성공시 이동될 URL을 적습니다
         .logoutUrl("/logout")
         .logoutSuccessUrl("/login.user")
         .invalidateHttpSession(true).deleteCookies("JSESSIONID")
+
         .and()
 			  .exceptionHandling()
         .accessDeniedPage("/accessDenied"); //accessDenied

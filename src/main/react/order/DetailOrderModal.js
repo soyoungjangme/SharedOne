@@ -295,7 +295,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                             if (window.confirm('주문을 수정하시겠습니까?')) {
                                                 handleModifyClick();
                                             }
-                                        }}>수정하기
+                                        }}>수정 하기
                                         </button>
                                     </>
                                 )}
@@ -388,23 +388,27 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                         </table>
 
                         <table className="formTable2">
+
+
                             <tbody>
                             <tr>
 
-                                <th colSpan="1"><label htmlFor="remarks">비고</label></th>
-                                <td colSpan="3">
-                                    {(getConfirmStatus(modifyItem.confirmStatus) === '승인' || getConfirmStatus(modifyItem.confirmStatus) === '반려') ? (
-                                        <span>{modifyItem.remarks || '비고 없음'}</span>
-                                    ) : (
-                                        <textarea
-                                            name="remarks"
-                                            value={modifyItem.remarks || ''}
-                                            onChange={handleInputChange}
-                                        ></textarea>
-                                    )}
-                                </td>
-                            </tr>
+                                                           <th colSpan="1"><label htmlFor="remarks">비고</label></th>
+                                                           <td colSpan="3">
+                                                               {(getConfirmStatus(modifyItem.confirmStatus) === '승인' || getConfirmStatus(modifyItem.confirmStatus) === '반려') ? (
+                                                                   <span>{modifyItem.remarks || '비고 없음'}</span>
+                                                               ) : (
+                                                                   <textarea
+                                                                       name="remarks"
+                                                                       value={modifyItem.remarks || ''}
+                                                                       onChange={handleInputChange}
+                                                                   ></textarea>
+                                                               )}
+                                                           </td>
+                                                       </tr>
                             </tbody>
+
+
                         </table>
                     </form>
 

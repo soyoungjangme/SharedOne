@@ -1057,13 +1057,10 @@ function Order() {
                                         <button type="button" onClick={() => {handleRegistOrder("임시저장");}}>
                                             임시 저장
                                         </button>
+                                          <button type="button" onClick={() => {handleRegistOrder("대기"); }} >
+                                                                                    등록하기
+                                                                                </button>
 
-                                    </div>
-                                    <div className="btn-close">
-                                        {/* 등록하기 버튼 */}
-                                        <button type="button" onClick={() => {handleRegistOrder("대기"); }} >
-                                            등록하기
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -1124,7 +1121,8 @@ function Order() {
                             {/*주문 가능한 상품 리스트*/}
                             <div className="RegistFormList">
                                 <div style={{fontWeight: 'bold'}}> 총 {searchProd?.length || 0} 건</div>
-                                <table className="formTableList">
+                                <div className="formTableBookList">
+                                                                                        <table className="formTableList2">
                                     <thead>
                                     <tr>
                                         <th><input type="checkbox" checked={orderListAllCheck} onChange={(e) => handleOrderListMasterCheckboxChange(e)}/></th>
@@ -1151,6 +1149,7 @@ function Order() {
                                     ))}
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
 
                             {/*담아둔 상품 리스트*/}

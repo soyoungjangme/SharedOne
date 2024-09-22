@@ -201,13 +201,13 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onUpdate }) {
         if (status === '반려') {
             console.log('1현재 상태: 반려');
             try {
-                // 주문 업데이트에 필요한 데이터 준비
-                /*const today = new Date();
+/*                // 주문 업데이트에 필요한 데이터 준비
+                const today = new Date();
                 today.setDate(today.getDate() + 1);
                 const todayPlus = today.toISOString().split('T')[0];*/
 
                 const updatedOrderData = {
-                    /*orderNo: modifyItem.orderNo,*/ // 주문번호는 시퀀스생성
+                    orderNo: modifyItem.orderNo,
                     inputDelDate: modifyItem.delDate,
                     inputStatus : "대기", //고정 값
                     /*confirmChangeDate: todayPlus,*/ // 인서트이므로, 상태변경일 ㄴㄴ
@@ -267,6 +267,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onUpdate }) {
                 alert('주문이 성공적으로 업데이트되었습니다.');
                 onUpdate(response.data);  // 부모 컴포넌트로 수정된 데이터 전달
                 onClose();  // 수정 완료 후 수정 모달 닫기
+                 window.location.reload();
             } else {
                 alert('주문 업데이트에 실패했습니다.');
             }
@@ -456,9 +457,10 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onUpdate }) {
                     </div>
 
                     {/* 주문 가능한 상품 목록 */}
-                    <div className="RegistFormList">
                         <div style={{fontWeight: 'bold'}}> 총 {filteredProducts.length} 건</div>
-                        <table className="formTableList">
+
+                         <div className="formTableBookList">
+                           <table className="formTableList2">
                             <thead>
                             <tr>
                                 <th>

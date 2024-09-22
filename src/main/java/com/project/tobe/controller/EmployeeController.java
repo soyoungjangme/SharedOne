@@ -48,14 +48,8 @@ public class EmployeeController {
 
 
   @PostMapping("/employeeSearch")
-  public PageVO<EmployeeDTO> employeePick(@RequestBody EmployeeDTO dto) {
-    Pageable pageable = PageRequest.of(dto.getPage() - 1, dto.getAmount());
-
-    Page<EmployeeDTO> page = employeeService.getPickList(dto, pageable);
-
-    System.out.println(new PageVO<>(page).toString());
-
-    return new PageVO<>(page);
+  public List<EmployeeDTO> employeePick(@RequestBody EmployeeDTO dto) {
+    return employeeService.getPickList(dto);
   }
 
 

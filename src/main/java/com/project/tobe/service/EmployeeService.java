@@ -14,18 +14,18 @@ import java.util.List;
 public interface EmployeeService {
   Employee getUserById(String id);
   EmployeeDetails login(EmployeeDTO dto);
-  public List<EmployeeDTO> getAllList();
-  public Page<EmployeeDTO> getPickList(EmployeeDTO dto, Pageable pageable);
-  public void employeeRegistTest( List<EmployeeTestDTO> dto);
-  public void employeeUpdateMaster(EmployeeTestDTO dto);
-  public void employeeDeleteTest(List<String> employeeIds);
-  public boolean employeeIdCheck(EmployeeDTO dto);
-  public void employeePwChange(EmployeeDTO dto);
-  public AuthorityDto mypageAll(String employeeId);
-  public void employeeDeletePick(String employeeId);
-  public void employeeUpdateMypage(EmployeeDTO dto);
-  public void employeeUpdateMypagePw(EmployeeDTO dto);
-  public EmployeeDTO employeeUserSession(String id);
+   List<EmployeeDTO> getAllList();
+   List<EmployeeDTO> getPickList(EmployeeDTO dto);
+   void employeeRegistTest( List<EmployeeTestDTO> dto);
+   void employeeUpdateMaster(EmployeeTestDTO dto);
+   void employeeDeleteTest(List<String> employeeIds);
+   boolean employeeIdCheck(EmployeeDTO dto);
+   void employeePwChange(EmployeeDTO dto);
+   AuthorityDto mypageAll(String employeeId);
+   void employeeDeletePick(String employeeId);
+   void employeeUpdateMypage(EmployeeDTO dto);
+   void employeeUpdateMypagePw(EmployeeDTO dto);
+   EmployeeDTO employeeUserSession(String id);
 
     List<EmployeeDTO> getManagerList(String id);
 }
