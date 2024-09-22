@@ -630,6 +630,8 @@ function Order() {
     };
 
     const handleCloseModifyTempOrderModal = () => {
+        console.log('Closing the modal...');
+        console.log('isModifyTempOrderModalOpen is now:', isModifyTempOrderModalOpen);  // 상태 확인
         setIsModifyTempOrderModalOpen(false);
     };
 
@@ -639,6 +641,10 @@ function Order() {
 
     // 수정된 주문 데이터 업데이트
     const handleOrderUpdate = (updatedOrder) => {
+        // 삭제된 주문을 목록에서 제거
+        setOrder(prevOrders => prevOrders.filter(order => order.orderNo !== updatedOrder.orderNo));
+        setIsModifyTempOrderModalOpen(false);
+
         // 수정된 주문 데이터를 반영하여 상태 업데이트
         setOrder(prevOrders => {
             const updatedOrders = prevOrders.map(order =>
@@ -653,13 +659,7 @@ function Order() {
         // 최신 데이터를 다시 불러오기
         fetchData();  // 서버에서 새로운 데이터를 가져오는 함수 (선택사항)
 
-        // 모달 상태 업데이트 (일반 주문 수정과 임시 저장 구분)
-        if (updatedOrder.confirmStatus.trim() === '임시저장') {
-            setIsModifyTempOrderModalOpen(false);  // 임시 저장 모달 닫기
-        } else {
-            setIsModifyModalVisible(false);  // 일반 주문 수정 모달 닫기
-        }
-
+        setIsModifyModalVisible(false);  // 일반 주문 수정 모달 닫기
         setIsDetailModalVisible(true);  // 상세보기 모달 다시 열기
 
     };
@@ -1245,6 +1245,7 @@ function Order() {
             )}
 
             {/* 임시 저장 전용 수정 모달 */}
+            {console.log('isModifyTempOrderModalOpen:', isModifyTempOrderModalOpen)}  // 상태 확인
             {isModifyTempOrderModalOpen && (
                 <ModifyTempOrderModal
                     orderNo={selectedOrderData.orderNo}

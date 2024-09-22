@@ -114,9 +114,9 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
         }
     }, [modifyItem.customer.customerNo, delDate]);
 
-    const handleQuantityChange = (index) => (e) => {
+    const handleQuantityChange = (productNo) => (e) => {
         const qty = Number(e.target.value) || 0;
-        setQuantities(prevQuantities => ({ ...prevQuantities, [index]: qty }));
+        setQuantities(prevQuantities => ({ ...prevQuantities, [productNo]: qty }));
     };
 
     const handleTempSave = async () => {
@@ -209,7 +209,12 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
             try {
                 await axios.delete(`/order/delete/${orderNo}`);
                 alert(`주문 번호 ${orderNo} 삭제되었습니다.`);
-                fetchData();
+
+                // Order 컴포넌트에 삭제된 주문 업데이트 반영
+                // fetchData();
+                onUpdate({ orderNo });
+
+                console.log('Closing modal via onClose');
                 onClose();
             } catch (error) {
                 console.error('삭제 중 오류 발생:', error);
@@ -223,8 +228,9 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
             const newCheckProd = [];
             let hasDuplicates = false;
 
+            // 검색된 상품들만 대상으로 처리
             if (orderListAllCheck) {
-                for (const element of customPrice) {
+                for (const element of searchProd) {  // 전체 체크 시 검색된 상품들만 처리
                     if (!existingPriceNos.has(element.priceNo)) {
                         newCheckProd.push({
                             product: element.product,
@@ -243,7 +249,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
             } else {
                 Object.keys(orderListCheckItem).forEach(index => {
                     if (orderListCheckItem[index]) {
-                        const item = customPrice[index];
+                        const item = searchProd[index];  // 검색된 결과에서만 추가
                         if (item && !existingPriceNos.has(item.priceNo)) {
                             newCheckProd.push({
                                 product: item.product,
@@ -268,7 +274,13 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
 
             return [...prevAddCheckProd, ...newCheckProd];
         });
+
+        // 체크박스 상태 초기화
+        setOrderListCheckboxes({});
+        handleOrderListMasterCheckboxChange({ target: { checked: false } });
     };
+
+
 
     const handleAddProdDelete = () => {
         setAddCheckProd(prevAddCheckProd => {
@@ -446,7 +458,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
                                             <input
                                                 type="number"
                                                 value={qty}
-                                                onChange={handleQuantityChange(index)}
+                                                onChange={handleQuantityChange(addProd.product.productNo)}
                                                 placeholder="수량"
                                             />
                                         </td>
