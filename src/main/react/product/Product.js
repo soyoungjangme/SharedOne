@@ -922,7 +922,7 @@ function Product() {
                         <div className="form-container">
                             <button className="close-btn" onClick={handleCloseClick}> &times; </button>
                             <div className="form-header">
-                                <h1>상품등록</h1>
+                                <h1>상품 등록</h1>
                                 <div className="btns">
                                     <div className="btn-add2">
                                         <button className="product-register-btn" onClick={handleSubmit} disabled={productList.length === 0}>등록</button>

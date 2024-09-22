@@ -60,46 +60,61 @@ function MyPage() {
     }
   };
 
-  
 
-   // 아이디 및 비밀번호 문자 검증
-   const validPattern = /^[a-zA-Z0-9!@#$%^&*()_+{}[\]:;"'<>,.?/~`|-]+$/;
+  // 체크 카운트를 계산하는 함수
+  const getCheckCount = (password) => {
+    return [
+      !/(.)\1{2,}/.test(password),  // 3자리 연속 문자 확인
+      password.length >= 5,          // 비밀번호 길이 확인
+      validPattern.test(password)    // 유효한 패턴 확인
+    ].filter(Boolean).length;
+  };
+
+
+
+  // 아이디 및 비밀번호 문자 검증
+  const validPattern = /^[a-zA-Z0-9!@#$%^&*()_+{}[\]:;"'<>,.?/~`|-]+$/;
 
   const handleSubmit = async () => {
     // 1. 모든 입력 필드가 채워졌는지 확인
     if (currentPassword === '' || newPassword === '' || confirmNewPassword === '') {
-      setError('모든 입력 필드를 채워주세요.');
+      setError('비밀번호를 입력해주세요.');
       return;
     }
 
-    // 2. 기존 비밀번호가 일치하는지 확인
+    // 2. 현재 비밀번호가 일치하는지 확인
     const isPasswordValid = await verifyCurrentPassword(currentPassword);
 
     if (!isPasswordValid) {
-      setError('기존 비밀번호가 일치하지 않습니다.');
+      setError('현재 비밀번호가 일치하지 않습니다.');
       return;
     }
 
     // 3. 새로운 비밀번호와 확인 비밀번호가 일치하는지 확인
     if (newPassword !== confirmNewPassword) {
-      setError('새로운 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
-      return;
-    }
-  
-    if(checkCount < 2) {
-      setError('비밀번호 조건을 충족해주세요.');
+      setError('신규 비밀번호가 일치하지 않습니다.');
       return;
     }
 
-    if(!confirm('비밀번호를 변경하시겠씁니까?')) {
+    // 현재 비밀번호와 신규 비밀번호가 같은지 확인
+    if (currentPassword === newPassword) {
+      setError('현재 비밀번호와 동일한 비밀번호로는 변경할 수 없습니다.');
       return;
     }
-  
-    // 비밀번호 변경 처리
+
+    // 비밀번호 유효성 검사 - 3개의 조건을 모두 충족하는지 확인
+    const checkCount = getCheckCount(newPassword);
+
+    if (checkCount < 3) {
+      setError('비밀번호가 요구 조건에 맞지 않습니다.');
+      return;
+    }
+
+    if (!confirm('비밀번호를 변경하시겠습니까?')) {
+      return;
+    }
+
     try {
-      // editData 업데이트
-
-      // 서버에 비밀번호 변경 요청
       await axios.post('/mypage/employeeUpdateMypagePw', { employeePw: newPassword, employeeId: session }, {
         headers: {
           'Content-Type': 'application/json',
@@ -214,9 +229,10 @@ function MyPage() {
     validPattern.test(newPassword)
   ].filter(Boolean).length;
 
+
   return (
     <div>
-      <h1 className="header"><i className="bi bi-tag"></i>마이페이지</h1>
+      <h1 className="header"><i class="bi bi-tag-fill"></i>마이페이지</h1>
       <div className="mypage-main">
         <div className="mypage-table">
           <table>
@@ -332,13 +348,13 @@ function MyPage() {
 
               <div className="password-checks">
                 <p style={{ color: !/(.)\1{2,}/.test(newPassword) ? '#00CC00' : '#FF4D4D' }}>
-                  {!/(.)\1{2,}/.test(newPassword) ? '🟢' : '🔴'} 비밀번호는 3자리 연속된 문자, 숫자를 제한합니다
+                  {!/(.)\1{2,}/.test(newPassword) ? '🟢' : '🔴'} 비밀번호는 3자리 연속된 문자, 숫자를 쓸 수 없습니다.
                 </p>
                 <p style={{ color: validPattern.test(newPassword) ? '#00CC00' : '#FF4D4D' }}>
-                  {validPattern.test(newPassword) ? '🟢' : '🔴'} 비밀번호는 대소문자, 숫자, 특수문자만 가능합니다
+                  {validPattern.test(newPassword) ? '🟢' : '🔴'} 비밀번호는 대소문자, 숫자, 특수문자만 가능합니다.
                 </p>
                 <p style={{ color: newPassword.length >= 5 ? '#00CC00' : '#FF4D4D' }}>
-                  {newPassword.length >= 5 ? '🟢' : '🔴'} 비밀번호는 5자 이상 입력해주세요
+                  {newPassword.length >= 5 ? '🟢' : '🔴'} 비밀번호는 5자 이상입니다.
                 </p>
               </div>
 
@@ -352,7 +368,7 @@ function MyPage() {
                 />
               </div>
 
-              {error && <p style={{ color: 'red', fontSize: '14px'}}>❗️❗️ {error} ❗️❗️</p>}
+              {error && <p style={{ color: 'red', fontSize: '14px' }}> ⚠️ {error}</p>}
 
               <button type="button" className='btn-change-modal' onClick={handleSubmit}>변경</button>
               <button type="button" className='btn-cancel-modal' onClick={closeModal}>취소</button>

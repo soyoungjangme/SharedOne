@@ -173,11 +173,11 @@ public class OrderController {
     }
 
 
-    @PostMapping("/insertBack")
+/*    @PostMapping("/insertBack")
     public void insertBack(@RequestBody OrderUp1DTO orderUp1DTO) {
         System.out.println(orderUp1DTO);
         orderService.insertBack(orderUp1DTO);
-    }
+    }*/
 
     @PutMapping("/temp/{orderNo}")
     public ResponseEntity<?> updateTempOrder(@PathVariable Long orderNo, @RequestBody OrderHDTO orderHDTO) {

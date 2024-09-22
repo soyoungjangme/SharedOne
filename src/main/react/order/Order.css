@@ -481,5 +481,8 @@ tr:nth-child(0){
 .pagination_link:hover {
     background-color: #ddd; /* 호버 시 배경색 변경 */
 }
-
+/*jsy 필터 데이터리스트? css*/
+.filter-item .filter-list {
+    width: 80%;
+}
 

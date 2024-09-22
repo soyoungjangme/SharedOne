@@ -108,7 +108,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    @Transactional
+/*    @Transactional
     @Override
     public void insertBack(OrderUp1DTO orderUp1DTO) {
         // 1. 주문 헤더 삽입
@@ -120,6 +120,7 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.insertBack2(orderUp1DTO.getOrderBList(), orderNo);
     }
+ */
 
     @Transactional
     @Override
