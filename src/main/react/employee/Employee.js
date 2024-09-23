@@ -1163,9 +1163,9 @@ const handleDeletePickClick = () => {
                                    {/* <button id="downloadCsv" className="btn-CSV">CSV 샘플 양식</button>
                                     <button id="uploadCsv" className="btn-CSV" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
                                     {isVisibleCSV && (
-                                        <input type="file" id="uploadCsvInput" accept=".csv" />)}
+                                        <input type="file" id="uploadCsvInput" accept=".csv" />)}*/}
 
-                                    <button className="btn-common btn-add-p" onClick={onClickListAdd}> 추가</button>*/}
+                                    <button className="btn-common btn-add-p" onClick={onClickListAdd}> 추가</button>
                                 </div>
                             </div>
 
