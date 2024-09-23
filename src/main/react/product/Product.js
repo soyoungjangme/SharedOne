@@ -220,6 +220,7 @@ function Product() {
         });
 
         setOrder(filteredData);
+        setCurrentPage(1); // 검색 후 페이지를 첫 번째로 리셋
     };
 
 
@@ -245,6 +246,7 @@ function Product() {
         });
 
         handleSearch(); // 리셋 후 검색 기능 호출
+        setCurrentPage(1); // 리셋 후 페이지를 첫 번째로 이동
     };
 
 
@@ -925,7 +927,7 @@ function Product() {
                                 <h1>상품 등록</h1>
                                 <div className="btns">
                                     <div className="btn-add2">
-                                        <button className="product-register-btn" onClick={handleSubmit} disabled={productList.length === 0}>등록</button>
+                                        <button className="product-register-btn" onClick={handleSubmit} disabled={productList.length === 0}>등록하기</button>
                                     </div>
                                 </div>
                             </div>
