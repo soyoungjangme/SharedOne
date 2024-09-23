@@ -159,6 +159,14 @@ function Customer() {
         setCurrentPage(1);
     };
 
+     // 초기화 후 목록도 리셋
+     useEffect(() => {
+        const isFormReset = Object.values(customerSearch).every(value => value === '');
+        if (isFormReset) {
+            handleSearchCustomer();
+        }
+    }, [customerSearch]);
+
 
 
     // =============================== 고객 등록 부분 ===============================
@@ -1007,11 +1015,11 @@ function Customer() {
                                 <div className="btns">
 
                                     <div className="btn-delete">
-                                        <button type="button" onClick={handleDeleteItem}>삭제</button>
+                                        <button type="button" onClick={handleDeleteItem}>삭제하기</button>
                                     </div>
 
                                     <div className="btn-add2">
-                                        <button type="button" onClick={handleUpdateClick}>수정</button>
+                                        <button type="button" onClick={handleUpdateClick}>수정하기</button>
                                     </div>
                                     <div className="btn-close">
                                         {/* 다른 버튼이 필요한 경우 여기에 추가 */}

@@ -18,32 +18,42 @@ function Page() {
         setPageStart(item.start);
         setPageEnd(item.end);
 
-
         const pages = [];
 
-        // 이전 버튼 추가
+        // 이전 버튼 추가 (첫 번째 페이지에서 비활성화)
         if (prev) {
             pages.push(
-                <p className="prev" key="prev" >
+                <p className="prev" key="prev" onClick={prev ? func : null}>
+                    <strong>{'<'}</strong>
+                </p>
+            );
+        } else {
+            pages.push(
+                <p className="prev disabled" key="prev">
                     <strong>{'<'}</strong>
                 </p>
             );
         }
 
         // 페이지 번호 추가
-        console.log(pageList);
         for (let i = 0; i < pageList.length; i++) {
             pages.push(
-                <p className="number" key={i}>
+                <p className={`number ${page === pageList[i] ? 'active' : ''}`} key={i} onClick={() => setPage(pageList[i])}>
                     <strong>{pageList[i]}</strong>
                 </p>
             )
         }
 
-        // 다음 버튼 추가
+        // 다음 버튼 추가 (마지막 페이지에서 비활성화)
         if (next) {
             pages.push(
-                <p className="next" key="next">
+                <p className="next" key="next" onClick={next ? func : null}>
+                    <strong>{'>'}</strong>
+                </p>
+            );
+        } else {
+            pages.push(
+                <p className="next disabled" key="next">
                     <strong>{'>'}</strong>
                 </p>
             );
@@ -53,7 +63,6 @@ function Page() {
         setPageBody(pages);
     }
 
-// 페이지네이션 이벤트 -> 뒤늦게 그려지기 때문에 부모에 걸고 자식에 위임)
     const pageClick = (e) => {
         let tagName = e.target.tagName;
         if (tagName !== 'P') {
@@ -62,7 +71,7 @@ function Page() {
 
         let className = e.target.className;
         if (className === 'prev') {
-            setPage(pageStart -1);
+            setPage(pageStart - 1);
         }
 
         if (className === 'next') {
@@ -70,8 +79,7 @@ function Page() {
         }
 
         if (className === 'number') {
-            console.log(e.target.firstChild.innerHTML);
-            setPage(e.target.firstChild.innerHTML);
+            setPage(parseInt(e.target.firstChild.innerHTML));
         }
     };
 

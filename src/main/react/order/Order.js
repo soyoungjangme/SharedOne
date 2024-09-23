@@ -514,15 +514,13 @@ function Order() {
 
     //주문등록 - 상품검색
     const [searchTerm, setSearchTerm] = useState('');
+    
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
 
-    useEffect(() => {
-        const handleSearchChange = (e) => {
-            setSearchTerm(e.target.value);
-
-            setAllCheckMod(false);
-            setCheckItemMod(false);
-        };
-    },[searchTerm]);
+        setAllCheckMod(false);
+        setCheckItemMod(false);
+    };
 
 
     const searchProd = customPrice.filter(product =>
