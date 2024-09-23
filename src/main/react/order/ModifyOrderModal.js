@@ -545,6 +545,13 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onUpdate }) {
                     {/* 선택된 상품 목록*/}
                     <div className="RegistFormList">
                         <div style={{fontWeight: 'bold'}}>총 {modifyItem.orderBList?.length || 0} 건</div>
+
+                           {(showDelete || (selectedProductsAllCheck && modifyItem.orderBList?.length > 0)) && (
+                                                            <button className="delete-btn btn-common" onClick={handleDelete}>
+                                                                삭제
+                                                            </button>
+                                                        )}
+
                         <table className="formTableList">
                             <thead>
                             <tr>
@@ -583,11 +590,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onUpdate }) {
                                 </th>
                                 <th>판매 시작일</th>
                                 <th>판매 종료일</th>
-                                {(showDelete || (selectedProductsAllCheck && modifyItem.orderBList?.length > 0)) && (
-                                    <button className="delete-btn2 btn-common" onClick={handleDelete}>
-                                        삭제
-                                    </button>
-                                )}
+
                             </tr>
                             </thead>
                             <tbody>
