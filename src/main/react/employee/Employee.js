@@ -150,6 +150,7 @@ function Employee() {
         } else {
             console.error('[핸들러 작동 잘 함]');
         }
+        setCurrentPage(1);
     };
 
         const handleKeyDown = (event) => {

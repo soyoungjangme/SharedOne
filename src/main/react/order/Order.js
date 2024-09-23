@@ -75,7 +75,7 @@ function Order() {
                     customerN: item.customer.customerName,
                     manager: item.employee.employeeName,
                     status: item.confirmStatus,
-                    regDate: item.regDate,
+                    confirmChangeDate: item.confirmChangeDate,
                     managerId : item.employee.employeeId,
                     managerGrade : item.employee.authorityGrade
                 }));
@@ -124,7 +124,7 @@ function Order() {
             let bValue = b[key];
 
             // 날짜 처리
-            if (key === 'regDate') {
+            if (key === 'confirmChangeDate') {
                 aValue = new Date(aValue);
                 bValue = new Date(bValue);
             }
@@ -156,7 +156,7 @@ function Order() {
     const [prod, setProd] = useState([]);
     const [mycustomer, setMycustomer] = useState([]);
 
-    const [confirmState] = useState(['임시저장', '대기', '승인', '반려']);//결재상태배열
+    const [confirmState] = useState(['임시저장', '대기', '승인', '반려','반려(처리완료)']);//결재상태배열
     const [selectedConfirm, setSelectedConfrim] = useState('');
 
     //상품명 목록 Data
@@ -214,7 +214,7 @@ function Order() {
                 customerN: item.customer.customerName,
                 manager: item.employee.employeeName,
                 status: item.confirmStatus,
-                regDate: item.regDate,
+                confirmChangeDate: item.confirmChangeDate,
                 managerId : item.employee.employeeId,
                 managerGrade : item.employee.authorityGrade
             }))
@@ -223,6 +223,7 @@ function Order() {
         } else {
             console.log('서버로부터 받은 데이터가 배열이 아닙니다.', searchOrderData);
         }
+        setCurrentPage(1);
     };
 
 
@@ -961,9 +962,9 @@ function Order() {
                             </button>
                         </th>
                         <th>
-                            등록 일자
-                            <button className="sortBtn" onClick={() => sortData('regDate')}>
-                                {sortConfig.key === 'regDate' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                            주문 변경일
+                            <button className="sortBtn" onClick={() => sortData('confirmChangeDate')}>
+                                {sortConfig.key === 'confirmChangeDate' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                             </button>
                         </th>
                         <th>
@@ -1001,9 +1002,7 @@ function Order() {
                                     <td className="ellipsis">{item.customerN}</td>
                                     {/* <td className="ellipsis" >{item.managerGrade}</td>*/}
                                     <td>{item.status}</td>
-                                    <td>
-                                        {new Date(item.regDate).toLocaleDateString('en-CA')}
-                                    </td>
+                                    <td>{item.confirmChangeDate}</td>
                                     <td>
                                         <button className="btn-common" onClick={() => handleButtonClick(item)}>
                                             상세보기
@@ -1244,7 +1243,7 @@ function Order() {
             )}
 
             {/* 임시 저장 전용 수정 모달 */}
-            {console.log('isModifyTempOrderModalOpen:', isModifyTempOrderModalOpen)}  // 상태 확인
+            {console.log('isModifyTempOrderModalOpen:', isModifyTempOrderModalOpen)}
             {isModifyTempOrderModalOpen && (
                 <ModifyTempOrderModal
                     orderNo={selectedOrderData.orderNo}
