@@ -47,6 +47,8 @@ public class OrderController {
     @PostMapping("/searchSelect")
     public ResponseEntity<List<OrderHDTO>> searchOrderList(@RequestBody OrderSearchDTO criteria) {
 
+        System.out.println(criteria);
+
         List<OrderHDTO> orders = orderService.getOrder(criteria);
         System.out.println("내 아이디 "+ criteria.getInputMyId());
 

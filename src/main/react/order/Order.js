@@ -909,14 +909,16 @@ function Order() {
     const sendSearchCriteria = async(index) => {
 
         let myId2 = null;
-
+        let myId3 = null;
         if(index === 0){
-            /*myId = getStatusByIndex(index);*/
-            myId2 = "emailTest";
+            myId2 = getStatusByIndex(index);
+            // myId2 = "jsy";
+        }else {
+            myId3 = getStatusByIndex(index);
         }
 
         const res = await axios.post('/order/searchSelect', {
-        inputState: getStatusByIndex(index) || null,
+        inputState: myId3 || null,
         inputMyId: myId2 || null
         }); //{매개변수 : 전달 값}
 
