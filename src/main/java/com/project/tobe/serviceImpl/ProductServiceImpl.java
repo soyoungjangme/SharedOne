@@ -18,4 +18,9 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> getProductList() {
         return productRepository.findByProductYnEquals('Y');
     }
+
+    @Override
+    public String getProductName(Long productNo) {
+        return productRepository.findById(productNo).get().getProductName();
+    }
 }

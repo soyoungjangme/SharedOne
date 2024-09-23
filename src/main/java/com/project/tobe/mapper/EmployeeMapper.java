@@ -26,5 +26,7 @@ public interface EmployeeMapper {
     List<EmployeeDTO> getManagerList(String id);
 
     SalesByMonth getMySalesByMonth(String employeeId);
+
+   String getEmail(String employeeId);
 }
 

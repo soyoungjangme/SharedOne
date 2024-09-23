@@ -19,10 +19,12 @@ public class EmailServiceImpl implements EmailService {
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-        mailMessage.setTo("kjn0406@naver.com");
-        mailMessage.setSubject("메일 전송 테스트");
+        mailMessage.setTo(inDTO.getTargetMail());
+        mailMessage.setSubject(inDTO.getSubject());
         mailMessage.setFrom("coreops365@gmail.com");
-        mailMessage.setText(inDTO.getSubject() + "mail test");
+        mailMessage.setText(inDTO.getBody());
+
+        System.out.println(inDTO.toString());
 
         try {
             mailSender.send(mailMessage);
