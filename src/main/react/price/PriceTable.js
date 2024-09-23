@@ -30,14 +30,14 @@ const PriceTable = ({
                 </th>
                 <th>
                     상품명
-                    <button className="sortBtn" onClick={() => sortData('productNo')}>
-                        {sortConfig.key === 'productNo' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                    <button className="sortBtn" onClick={() => sortData('productName')}>
+                        {sortConfig.key === 'productName' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                     </button>
                 </th>
                 <th>
                     업체명
-                    <button className="sortBtn" onClick={() => sortData('customerNo')}>
-                        {sortConfig.key === 'customerNo' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                    <button className="sortBtn" onClick={() => sortData('customerName')}>
+                        {sortConfig.key === 'customerName' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                     </button>
                 </th>
                 <th>

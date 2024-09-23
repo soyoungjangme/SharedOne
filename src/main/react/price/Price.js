@@ -70,20 +70,9 @@ const Price = () => {
     };
 
     const handleSearchBtn = async () => {
-        await getSearchItems(searchPrice);
+        let copy = {...searchPrice, page: 1};
+        await getSearchItems(copy);
     };
-
-    const handleSearchResetBtn = () => {
-        setSearchPrice({
-            registerDate: '',
-            productNo: '',
-            customerNo: '',
-            startDate: '',
-            endDate: '',
-            page: 1,
-            amount: 30,
-        });
-    }
 
     const getSearchItems = async (item) => {
         console.log(item);
@@ -155,7 +144,6 @@ const Price = () => {
                 productOptions={productOptions}
                 customerOptions={customerOptions}
                 handleSearchBtn={handleSearchBtn}
-                handleSearchResetBtn={handleSearchResetBtn}
             />
             {isChartVisible && <Chart/>}
             <button className="btn-common add" type="button" onClick={handleAddClick}>
