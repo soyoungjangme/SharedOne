@@ -214,6 +214,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose,onClose2, onUpdate }) {
                     inputCustomerNo: modifyItem.customer.customerNo, // 고객 번호 설정
                     inputManager: modifyItem.employee.employeeId, // 직원 ID 설정
                     inputConfirmer: modifyItem.confirmerId, //담당자 ID 설정
+                    employee: modifyItem.employee,
                     orderBList: modifyItem.orderBList.map(item => ({
                         productNo: item.product.productNo,
                         orderProductQty: parseInt(item.orderProductQty, 10),
@@ -248,6 +249,9 @@ function ModifyOrderModal({ orderData, isOpen, onClose,onClose2, onUpdate }) {
 
                     alert(`주문번호 ${orderNo} 등록이 완료되었습니다.`);
 
+                    onClose();
+                    window.location.reload();
+
                     // 기존 주문 상태 '반려(처리완료)'로 업데이트
                     // const today = new Date().toISOString().split('T')[0];
                     const updateApprovalResponse = await axios.post('/order/updateApproval', {
@@ -259,10 +263,11 @@ function ModifyOrderModal({ orderData, isOpen, onClose,onClose2, onUpdate }) {
 
                     if (updateApprovalResponse.data.success) {
                         console.log('기존 주문 상태가 반려(처리완료)로 업데이트되었습니다.');
+                        onClose();
+                        window.location.reload();
                     } else {
                         alert('기존 주문 상태 업데이트에 실패했습니다.');
                     }
-                    onClose();
                 } else {
                     alert('주문 등록을 실패하였습니다.');
                 }
