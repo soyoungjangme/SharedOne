@@ -220,6 +220,7 @@ function Order() {
             }))
 
             setOrder(getSearchOrder);
+            setCurrentPage(1);
         } else {
             console.log('서버로부터 받은 데이터가 배열이 아닙니다.', searchOrderData);
         }
@@ -235,7 +236,9 @@ function Order() {
             inputCustomerNo: '',
             inputManager: '',
             inputState: ''
-        })
+        });
+
+        setCurrentPage(1);
     };
 
     // 초기화 후 목록도 리셋
@@ -697,7 +700,7 @@ function Order() {
     // 페이지네이션 버튼 렌더링
     const renderPageNumbers = () => {
         let pageNumbers = [];
-        const maxButtons = 3; // 고정된 버튼 수
+        const maxButtons = 5; // 고정된 버튼 수
 
         // 맨 처음 페이지 버튼
         pageNumbers.push(
@@ -706,34 +709,36 @@ function Order() {
                 onClick={() => handlePageChange(1)}
                 className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
             >
-        &laquo;&laquo; {/* 두 개의 왼쪽 화살표 */}
-</span>
+                &laquo;&laquo; {/* 두 개의 왼쪽 화살표 */}
+            </span>
         );
 
-// 이전 페이지 버튼
+        // 이전 페이지 버튼
         pageNumbers.push(
             <span
                 key="prev"
-                onClick={() => handlePageChange(currentPage - 1)}
+                onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
                 className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
             >
-&laquo; {/* 왼쪽 화살표 */}
-</span>
+                &laquo; {/* 왼쪽 화살표 */}
+            </span>
         );
 
-// // 항상 첫 페이지 버튼 표시
-// pageNumbers.push(
-//     <span
-//         key={1}
-//         onClick={() => handlePageChange(1)}
-//         className={`pagination_link ${currentPage === 1 ? 'pagination_link_active' : ''}`}
-//     >
-//         1
-//     </span>
-// );
-
-// 6페이지 이상일 때
-        if (totalPages > maxButtons) {
+        // 페이지 수가 4 이하일 경우 모든 페이지 표시
+        if (totalPages <= 4) {
+            for (let i = 1; i <= totalPages; i++) {
+                pageNumbers.push(
+                    <span
+                        key={i}
+                        onClick={() => handlePageChange(i)}
+                        className={`pagination_link ${i === currentPage ? 'pagination_link_active' : ''}`}
+                    >
+                        {i}
+                    </span>
+                );
+            }
+        } else {
+            // 페이지 수가 5 이상일 경우 유동적으로 변경
             let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
             let endPage = startPage + maxButtons - 1;
 
@@ -742,7 +747,7 @@ function Order() {
                 startPage = Math.max(1, endPage - maxButtons + 1);
             }
 
-// 중간 페이지 버튼 추가
+            // 시작 페이지와 끝 페이지에 대한 페이지 버튼 추가
             for (let i = startPage; i <= endPage; i++) {
                 pageNumbers.push(
                     <span
@@ -750,47 +755,51 @@ function Order() {
                         onClick={() => handlePageChange(i)}
                         className={`pagination_link ${i === currentPage ? 'pagination_link_active' : ''}`}
                     >
-{i}
-</span>
+                        {i}
+                    </span>
                 );
             }
 
-// 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'와 마지막 페이지 추가
+            // 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'과 마지막 페이지 표시
             if (endPage < totalPages) {
                 pageNumbers.push(<span className="pagination_link">...</span>);
                 pageNumbers.push(
-                    <span key={totalPages} onClick={() => handlePageChange(totalPages)} className="pagination_link">
-{totalPages}
-</span>
+                    <span
+                        key={totalPages}
+                        onClick={() => handlePageChange(totalPages)}
+                        className={`pagination_link ${currentPage === totalPages ? 'pagination_link_active' : ''}`}
+                    >
+                        {totalPages}
+                    </span>
                 );
             }
         }
 
-// 다음 페이지 버튼
+        // 다음 페이지 버튼
         pageNumbers.push(
             <span
                 key="next"
-                onClick={() => handlePageChange(currentPage + 1)}
+                onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
                 className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
             >
-&raquo; {/* 오른쪽 화살표 */}
-</span>
+                &raquo; {/* 오른쪽 화살표 */}
+            </span>
         );
 
-// 맨 마지막 페이지 버튼
+        // 맨 마지막 페이지 버튼
         pageNumbers.push(
             <span
                 key="last"
                 onClick={() => handlePageChange(totalPages)}
                 className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
             >
-&raquo;&raquo; {/* 두 개의 오른쪽 화살표 */}
-</span>
+                &raquo;&raquo; {/* 두 개의 오른쪽 화살표 */}
+            </span>
         );
 
         return pageNumbers;
     };
-
+    
     const roleHierarchy = { S: 4, A: 3, B: 2, C: 1, D: 0 }; // Define the hierarchy
 
     const handleButtonClick = (item) => {
@@ -1054,10 +1063,10 @@ function Order() {
                                 <div className="btns">
                                     <div className="btn-add2">
                                         {/* 임시 저장 버튼 */}
-                                        <button type="button" onClick={() => {handleRegistOrder("임시저장");}}>
+                                        <button className='btn-add2' type="button" onClick={() => {handleRegistOrder("임시저장");}}>
                                             임시 저장
                                         </button>
-                                          <button type="button" onClick={() => {handleRegistOrder("대기"); }} >
+                                          <button className='btn-add2' type="button" onClick={() => {handleRegistOrder("대기"); }} >
                                                                                     등록하기
                                                                                 </button>
 

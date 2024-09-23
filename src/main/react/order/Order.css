@@ -82,9 +82,7 @@ margin-top: 30px;
     display: block;
 }
 
-.search-btn:hover {
-    background-color: #003561;
-}
+
 
 /* 조회 입력값 초기화 버튼 */
 .reset-btn {
@@ -124,6 +122,12 @@ margin-top: 30px;
     border-radius: 3px;
     cursor: pointer;
 }
+
+.btn-common:hover,
+.search-btn:hover {
+    background-color: #0056b3;
+}
+
 .add {
     float: right;
     margin-bottom: 10px;

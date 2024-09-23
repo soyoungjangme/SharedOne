@@ -81,8 +81,9 @@ border: 1px solid #ccc;
     display: block;
 }
 
-.search-btn:hover {
-    background-color: #003561;
+.search-btn:hover,
+.btn-common:hover {
+    background-color: #0056b3;
 }
 
 /* 조회 입력값 초기화 버튼 */

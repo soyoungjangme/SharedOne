@@ -113,6 +113,7 @@ function Customer() {
                         return aIsEnglish ? -1 : 1;
                     });
                     setCustomer(sortedData); // 정렬된 데이터를 상태에 설정
+                    setCurrentPage(1);
                 })
                 .catch(error => console.error('에러 발생:', error)); // 오류 처리
         } else {
@@ -145,7 +146,8 @@ function Customer() {
             picTel: ''
         });
 
-        handleInputChange(); // 리셋 후 검색 기능 호출
+        handleSearchCustomer(); // 리셋 후 검색 기능 호출
+        setCurrentPage(1);
     };
 
 
@@ -946,7 +948,7 @@ function Customer() {
                             <div className="form-header">
                                 <h1> 고객 등록 </h1>
                                 <div className="btns">
-                                    <button className="btn-customer-add" type="button" onClick={onClickRegistBtn}>등록</button>
+                                    <button className="btn-customer-add" type="button" onClick={onClickRegistBtn}>등록하기</button>
                                 </div>
                             </div>
 
