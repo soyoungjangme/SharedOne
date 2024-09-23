@@ -1,9 +1,13 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Select from "react-select";
 
-const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptions, handleSearchBtn }) => {
+const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptions, handleSearchBtn, getSearchItems }) => {
+    console.log(typeof getSearchItems);
+
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+    const isFirstRender = useRef(true); // 처음 렌더링인지 확인하기 위한 ref
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -27,7 +31,8 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
     const handleSearchResetBtn = () => {
         setSelectedProduct(null);
         setSelectedCustomer(null);
-        setSearchPrice({
+
+        const resetData = {
             registerDate: '',
             productNo: '',
             customerNo: '',
@@ -35,8 +40,20 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
             endDate: '',
             page: 1,
             amount: 30,
-        });
+        };
+        setSearchPrice(resetData);
+        getSearchItems(resetData);
     }
+
+    // useEffect(() => {
+    //     if (isFirstRender.current) {
+    //         // 첫 렌더링일 때는 실행하지 않음
+    //         isFirstRender.current = false;
+    //     } else {
+    //         // 상태 변경이 완료된 후에만 실행
+    //         handleSearchBtn();
+    //     }
+    // }, [searchPrice]);
 
     return (
         <div className="main-container">

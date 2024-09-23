@@ -231,6 +231,10 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
         setModalSortConfig({ key, direction });
     };
 
+
+    const [loading, setLoading] = useState(false); // 로딩 상태 관리
+
+
 // 임시로 만든 승인, 반려 버튼 처리 함수
     const handleApproval = async (status) => {
         const message = status === '승인' ? '승인 처리하시겠습니까?' : '반려 처리하시겠습니까?';
@@ -243,6 +247,8 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
             const today = new Date();
             today.setDate(today.getDate());
             const todayPlus = today.toISOString().split('T')[0];
+
+            setLoading(true);
 
             const response = await axios.post('/order/updateApproval', {
                 orderNo: modifyItem.orderNo,
@@ -266,6 +272,8 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
         } catch (error) {
             console.error('Error:', error);
             alert('처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -282,10 +290,13 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
     console.log(JSON.stringify(modifyItem));
 
 
-    return isOpen ? (
-        <div className="confirmRegist">
-            <div className="fullBody">
-                <div className="form-container">
+    return isOpen ? ( loading ? (
+                <div className="loading-overlay">
+                    <div className="spinner">로딩 중...</div>
+                </div>) : (
+            <div className="confirmRegist">
+                <div className="fullBody">
+                    <div className="form-container">
                     <button className="close-btn" onClick={onClose}> &times; </button>
                     <div className="form-header">
                         <h1>상세 조회</h1>
@@ -497,7 +508,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                 />
             )}
         </div>
-    ) : null;
+    )) : null;
 };
 
 export default DetailOrderModal;
