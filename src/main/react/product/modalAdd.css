@@ -261,7 +261,19 @@
   cursor: pointer;
 }
 
-.btn-add2 button:hover {
+.btn-update button {
+  background-color: #004e90;
+  color: #fff;
+  border: 1px solid #ddd;
+  width: 55px;
+  height: 35px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-add2 button:hover,
+.btn-update:hover {
   background-color: #0056b3;
 }
 

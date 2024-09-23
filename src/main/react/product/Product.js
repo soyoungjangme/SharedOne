@@ -497,6 +497,11 @@ function Product() {
         // 입력값이 비어있는지 확인
         const isInputEmpty = Object.values(modifyItem).some(value => !value);
 
+        // 수정된 내용이 있는지 확인
+        const hasChanges = Object.keys(modifyItem).some(
+            key => modifyItem[key] !== originalItem[key]
+        );
+
         if (!hasChanges) {
             alert('수정한 내용이 없습니다.');
             return;
@@ -525,12 +530,6 @@ function Product() {
         if (!confirm('상품을 수정하시겠습니까?')) {
             return;
         }
-
-        // 수정된 내용이 있는지 확인
-        const hasChanges = Object.keys(modifyItem).some(
-            key => modifyItem[key] !== originalItem[key]
-        );
-
 
         try {
             const response = await fetch('/product/updateProduct', {
@@ -825,7 +824,7 @@ function Product() {
 
                     <div className="button-container">
                         <button type="button" className="reset-btn" onClick={handleReset}>
-                            <i class="bi bi-arrow-clockwise"></i>
+                            <i className="bi bi-arrow-clockwise"></i>
                         </button>
                         <button type="button" className="search-btn" onClick={handleSearch}>
                             <i className="bi bi-search search-icon"></i>
@@ -945,7 +944,6 @@ function Product() {
                                             <th><label htmlFor="productWriter">상품저자</label></th>
                                             <td><input type="text" name="productWriter" value={productForm.productWriter} onChange={handleInputChange} placeholder="상품저자" /></td>
                                         </tr>
-
                                         <tr>
                                             <th><label htmlFor="productCategory">상품카테고리</label></th>
                                             <td><input type="text" name="productCategory" value={productForm.productCategory} onChange={handleInputChange} placeholder="상품카테고리" /></td>
@@ -956,8 +954,8 @@ function Product() {
                                     </tbody>
                                 </table>
 
-                                <button id="downloadCsv">CSV 샘플 양식</button>
-                                <button id="uploadCsv" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
+                                {/* <button id="downloadCsv">CSV 샘플 양식</button>
+                                <button id="uploadCsv" onClick={handleAddClickCSV}>CSV 파일 업로드</button> */}
                                 {isVisibleCSV && (
                                     <input type="file" id="uploadCsvInput" accept=".csv" />
                                 )}
@@ -1037,7 +1035,7 @@ function Product() {
                                         <div className="btn-delete">
                                             <button onClick={handleDeleteItem}>삭제</button>
                                         </div>
-                                        <div className="btn-add2">
+                                        <div className="btn-update">
                                             <button onClick={handleModifySubmit}>수정</button>
                                         </div>
                                         <div className="btn-close"></div>
@@ -1046,31 +1044,29 @@ function Product() {
                                 <div className="RegistForm">
                                     <table className="formTable">
                                         <tr>
-
-
                                             <th colSpan="1"><label htmlFor="productName">상품명</label></th>
                                             <td colSpan="3">
                                                 <input
                                                     type="text"
                                                     name="productName"
                                                     placeholder="상품명"
+                                                    disabled
                                                     value={modifyItem.productName}
                                                     onChange={handleModifyItemChange}
                                                 />
                                             </td>
-
                                             <th colSpan="1"><label htmlFor="productWriter">상품저자</label></th>
                                             <td colSpan="3">
                                                 <input
                                                     type="text"
                                                     name="productWriter"
                                                     placeholder="상품저자"
+                                                    disabled
                                                     value={modifyItem.productWriter}
                                                     onChange={handleModifyItemChange}
                                                 />
                                             </td>
                                         </tr>
-
                                         <tr>
                                             <th colSpan="1"><label htmlFor="productCategory">상품카테고리</label></th>
                                             <td colSpan="3">
@@ -1078,11 +1074,11 @@ function Product() {
                                                     type="text"
                                                     name="productCategory"
                                                     placeholder="상품카테고리"
+                                                    disabled
                                                     value={modifyItem.productCategory}
                                                     onChange={handleModifyItemChange}
                                                 />
                                             </td>
-
                                             <th colSpan="1"><label htmlFor="productPrice">상품원가</label></th>
                                             <td colSpan="3">
                                                 <input
@@ -1094,7 +1090,6 @@ function Product() {
                                                 />
                                             </td>
                                         </tr>
-
                                     </table>
                                 </div>
                             </div>
