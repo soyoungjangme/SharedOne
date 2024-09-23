@@ -40,7 +40,6 @@ public class EmployeeController {
 
   @GetMapping("/employeeALL")
   public List<EmployeeDTO> employeeALL() {
-    List<EmployeeDTO> emploList = employeeService.getAllList();
     return employeeService.getAllList();
   }
 
