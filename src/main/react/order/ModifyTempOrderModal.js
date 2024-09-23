@@ -27,6 +27,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
     const [searchTerm, setSearchTerm] = useState('');
     const [orderListCheckboxes, setOrderListCheckboxes] = useState({});
     const [addedListCheckboxes, setAddedListCheckboxes] = useState({});
+    const [loading, setLoading] = useState(false); // 로딩 상태 관리
 
     useEffect(() => {
         if (isOpen && orderNo) {
@@ -116,12 +117,9 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
     }, [modifyItem.customer.customerNo, delDate]);
 
     // 수량
-    const handleQuantityChange = (index) => (e) => {
+    const handleQuantityChange = (priceNo) => (e) => {
         const qty = Number(e.target.value) || 0;
-        setQuantities(prevQuantities => ({
-            ...prevQuantities,
-            [index]: qty
-        }));
+        setQuantities(prevQuantities => ({ ...prevQuantities, [priceNo]: qty }));
     };
 
     // 주문 임시저장 처리
@@ -195,6 +193,8 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                 prodTotal: (quantities[index] || 0) * addProd.price.customPrice
             }));
 
+            setLoading(true);
+
             await axios.put(`/order/temp/${modifyItem.orderNo}`, {
                 ...modifyItem,
                 delDate: delDate,
@@ -210,6 +210,8 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
         } catch (error) {
             console.error('임시 저장 중 오류 발생:', error.response?.data || error.message);
             alert('임시 저장 중 오류가 발생했습니다: ' + (error.response?.data || error.message));
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -353,7 +355,10 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
         product.product.productName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    return isOpen ? (
+    return isOpen ? ( loading ? (
+        <div className="loading-overlay">
+            <div className="spinner">로딩 중...</div>
+        </div>) : (
         <div className="confirmRegist">
             <div className="fullBody">
                 <div className="form-container">
@@ -480,7 +485,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                             </thead>
                             <tbody>
                             {addCheckProd.map((addProd, index) => {
-                                const qty = quantities[index] || 0;
+                                const qty = quantities[addProd.price.priceNo] || 0;
                                 return (
                                     <tr key={index}>
                                         <td><input type="checkbox" checked={orderAddCheckItem[index] || false}
@@ -490,12 +495,8 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                                         <td>{addProd.product.productCategory}</td>
                                         <td>{addProd.product.productName}</td>
                                         <td>
-                                            <input
-                                                type="number"
-                                                value={quantities[index] || 0}
-                                                onChange={handleQuantityChange(index)}
-                                                placeholder="수량"
-                                            />
+                                            <input type="number" id={`prodQty_${addProd.price.priceNo}`} value={qty}
+                                                   onChange={handleQuantityChange(addProd.price.priceNo)} placeholder="수량"/>
                                         </td>
 
                                         <td>{addProd.price.customPrice * qty}</td>
@@ -519,7 +520,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                 </div>
             </div>
         </div>
-    ) : null;
+    )) : null;
 };
 
 export default ModifyTempOrderModal;

@@ -144,6 +144,7 @@ const Price = () => {
                 productOptions={productOptions}
                 customerOptions={customerOptions}
                 handleSearchBtn={handleSearchBtn}
+                getSearchItems={getSearchItems}
             />
             {isChartVisible && <Chart/>}
             <button className="btn-common add" type="button" onClick={handleAddClick}>

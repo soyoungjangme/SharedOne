@@ -17,4 +17,5 @@ public class OrderSearchDTO { //주문관리- 조건에서 들어오는 매개�
     private String inputManager;
     private String inputCustomerName;
     private String inputState;
+    private String inputMyId;
 }
