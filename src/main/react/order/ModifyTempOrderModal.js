@@ -258,6 +258,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
             } else {
                 Object.keys(orderListCheckItem).forEach(index => {
                     if (orderListCheckItem[index]) {
+                        // const item = customPrice[index];
                         const item = searchProd[index];
                         if (item && !existingPriceNos.has(item.priceNo)) {
                             newCheckProd.push({
@@ -282,8 +283,9 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
             }
 
             // 수량 초기화
+            // 새로 추가된 상품들의 수량을 1로 설정하고, 기존 수량은 그대로 유지
             const resetQuantities = newCheckProd.reduce((acc, _, index) => {
-                acc[index] = 0; // 기본값 0으로 설정
+                acc[prevAddCheckProd.length + index] = 1; // 새로 추가된 상품의 기본 수량을 1로 설정
                 return acc;
             }, {});
 
@@ -308,6 +310,11 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
             if(!orderAddAllCheck){
                 const checkedIndexes = Object.keys(orderAddCheckItem).filter(key => orderAddCheckItem[key]);
                 const checkedPriceNos = checkedIndexes.map(index => prevAddCheckProd[index].price.priceNo);
+
+                // 체크박스 상태 초기화
+                setOrderListCheckboxes({});
+                handleOrderAddMasterCheckboxChange({ target: { checked: false } });
+
                 return prevAddCheckProd.filter(item => !checkedPriceNos.includes(item.price.priceNo));
             } else {
                 if(prevAddCheckProd.length > 0){

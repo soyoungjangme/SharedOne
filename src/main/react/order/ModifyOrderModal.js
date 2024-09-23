@@ -262,11 +262,9 @@ function ModifyOrderModal({ orderData, isOpen, onClose,onClose2, onUpdate }) {
                     } else {
                         alert('기존 주문 상태 업데이트에 실패했습니다.');
                     }
-
                     onClose();
                 } else {
                     alert('주문 등록을 실패하였습니다.');
-
                 }
             } catch (error) {  // 디버깅
                 console.error('주문 업데이트 중 오류 발생:', error);
