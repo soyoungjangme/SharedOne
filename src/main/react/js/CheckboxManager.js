@@ -49,6 +49,8 @@ function useCheckboxManager() {
         }
     };
 
+    
+
    const handleDelete = () => {
        const itemsToDelete = Object.keys(checkItem).filter(id => checkItem[id]);
        console.log("선택된 삭제 항목:", itemsToDelete);

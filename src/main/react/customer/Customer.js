@@ -54,7 +54,6 @@ function Customer() {
         postNum: '',
         businessRegistrationNo: '',
         nation: '',
-        dealType: '',
         picName: '',
         picEmail: '',
         picTel: '',
@@ -174,7 +173,6 @@ function Customer() {
         postNum: '',
         businessRegistrationNo: '',
         nation: '',
-        dealType: '',
         picName: '',
         picEmail: '',
         picTel: '',
@@ -195,7 +193,7 @@ function Customer() {
         // 필수 입력값 확인
         if (!regist.customerName || !regist.customerTel || !regist.customerAddr ||
             !regist.postNum || !regist.businessRegistrationNo || !regist.nation ||
-            !regist.dealType || !regist.picName || !regist.picEmail || !regist.picTel) {
+            !regist.picName || !regist.picEmail || !regist.picTel) {
             alert('고객 정보를 모두 입력해야 합니다.');
             return;
         }
@@ -252,7 +250,6 @@ function Customer() {
                     postNum: '',
                     businessRegistrationNo: '',
                     nation: '',
-                    dealType: '',
                     picName: '',
                     picEmail: '',
                     picTel: '',
@@ -330,7 +327,6 @@ function Customer() {
         postNum: '',
         businessRegistrationNo: '',
         nation: '',
-        dealType: '',
         picName: '',
         picEmail: '',
         picTel: '',
@@ -368,7 +364,7 @@ function Customer() {
         // 필수 입력값 확인
         if (!modifyItem.customerName || !modifyItem.customerTel || !modifyItem.customerAddr ||
             !modifyItem.postNum || !modifyItem.businessRegistrationNo || !modifyItem.nation ||
-            !modifyItem.dealType || !modifyItem.picName || !modifyItem.picEmail || !modifyItem.picTel) {
+            !modifyItem.picName || !modifyItem.picEmail || !modifyItem.picTel) {
             alert('고객 정보를 모두 입력해야 합니다.');
             return;
         }
@@ -540,7 +536,7 @@ function Customer() {
     // =============================== 페이지 네이션 ===============================
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(5); // 페이지당 항목 수
+    const [itemsPerPage] = useState(30); // 페이지당 항목 수
 
     // 전체 페이지 수 계산
     const totalPages = Math.ceil(sortedData.length / itemsPerPage);
@@ -668,7 +664,7 @@ function Customer() {
         <div>
 
             <div className='pageHeader'>
-                <h1><i class="bi bi-people-fill"></i>고객 관리</h1>
+                <h1><i className="bi bi-people-fill"></i>고객 관리</h1>
             </div>
 
             <div className="main-container">
@@ -801,27 +797,12 @@ function Customer() {
                                 />
                             </div>
 
-                            {/* <div className="filter-item">
-                                <label className="filter-label" htmlFor="dealType">거래 유형</label>
-                                <select
-                                    id="dealType"
-                                    className="filter-input"
-                                    onChange={handleInputChange}
-                                    value={customerSearch.dealType}
-                                    required
-                                >
-                                    <option value="" disabled>거래 유형 선택</option>
-                                    <option value="B2B">B2B</option>
-                                    <option value="B2C">B2C</option>
-                                    <option value="C2C">C2C</option>
-                                </select>
-                            </div> */}
                         </div>
                     </div>
 
                     <div className="button-container">
                         <button type="button" className="reset-btn" onClick={handleReset}>
-                            <i class="bi bi-arrow-clockwise"></i>
+                            <i className="bi bi-arrow-clockwise"></i>
                         </button>
                         <button type="button" className="search-btn" onClick={handleSearchCustomer}>
                             <i className="bi bi-search search-icon"></i>
@@ -868,11 +849,6 @@ function Customer() {
                             <th>국가
                                 <button className="sortBtn" onClick={() => sortData('nation')}>
                                     {sortConfig.key === 'nation' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                </button>
-                            </th>
-                            <th>거래유형
-                                <button className="sortBtn" onClick={() => sortData('dealType')}>
-                                    {sortConfig.key === 'dealType' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                 </button>
                             </th>
                             <th>담당자명
@@ -923,7 +899,6 @@ function Customer() {
                                         <td>{item.postNum}</td>
                                         <td>{item.businessRegistrationNo}</td>
                                         <td>{item.nation}</td>
-                                        <td>{item.dealType}</td>
                                         <td>{item.picName}</td>
                                         <td>{item.picEmail}</td>
                                         <td>{item.picTel}</td>
@@ -966,16 +941,11 @@ function Customer() {
                                 <table className="formTable">
                                     <tbody>
                                         <tr>
-                                            <th><label htmlFor="customerName">고객명</label></th>
-                                            <td><input type="text" placeholder="고객명" id="customerName" name="customerName" value={regist.customerName} onChange={handleInputAddChange} /></td>
-
-                                            <th><label htmlFor="customerTel">고객연락처</label></th>
-                                            <td><input type="text" placeholder="고객연락처" id="customerTel" name="customerTel" value={regist.customerTel} onChange={handleInputAddChange} /></td>
-
-                                            <th><label htmlFor="businessRegistrationNo">사업자등록번호</label></th>
-                                            <td><input type="text" placeholder="사업자등록번호" id="businessRegistrationNo" name="businessRegistrationNo" value={regist.businessRegistrationNo} onChange={handleInputAddChange} /></td>
+                                            <th colSpan="1"><label htmlFor="customerName">고객명</label></th>
+                                            <td colSpan="2"><input type="text" placeholder="고객명" id="customerName" name="customerName" value={regist.customerName} onChange={handleInputAddChange} /></td>
+                                            <th colSpan="1"><label htmlFor="customerTel">고객연락처</label></th>
+                                            <td colSpan="2"><input type="text" placeholder="고객연락처" id="customerTel" name="customerTel" value={regist.customerTel} onChange={handleInputAddChange} /></td>
                                         </tr>
-
                                         <tr>
                                             <th colSpan="1"><label htmlFor="customerAddr">고객주소</label></th>
                                             <td colSpan="5">
@@ -983,18 +953,14 @@ function Customer() {
                                                 <button className="btn-addr-find" type="button" onClick={openAddressModal}>주소찾기</button>
                                             </td>
                                         </tr>
-
                                         <tr>
                                             <th><label htmlFor="postNum">우편번호</label></th>
                                             <td><input type="text" placeholder="우편번호" id="postNum" name="postNum" value={regist.postNum} readOnly /></td>
-
+                                            <th><label htmlFor="businessRegistrationNo">사업자등록번호</label></th>
+                                            <td><input type="text" placeholder="사업자등록번호" id="businessRegistrationNo" name="businessRegistrationNo" value={regist.businessRegistrationNo} onChange={handleInputAddChange} /></td>
                                             <th><label htmlFor="nation">국가</label></th>
                                             <td><input type="text" placeholder="국가" id="nation" name="nation" value={regist.nation} onChange={handleInputAddChange} /></td>
-
-                                            <th><label htmlFor="dealType">거래유형</label></th>
-                                            <td><input type="text" placeholder="거래유형" id="dealType" name="dealType" value={regist.dealType} onChange={handleInputAddChange} /></td>
                                         </tr>
-
                                         <tr>
                                             <th colSpan="1"><label htmlFor="picName">담당자</label></th>
                                             <td colSpan="5">
@@ -1008,56 +974,8 @@ function Customer() {
                                         </tr>
                                     </tbody>
                                 </table>
-
                             </div>
-                            {/* 
-                            <div className="btn-add">
-                                <button className="btn-common btn-add-p" onClick={onClickListAdd}> 추가</button>
-                            </div>
-
-                            <div className="RegistFormList">
-                                <div style={{ fontWeight: 'bold' }}> 총 N 건</div>
-                                <table className="formTableList">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>고객명</th>
-                                            <th>고객연락처</th>
-                                            <th>사업자등록번호</th>
-                                            <th>고객주소</th>
-                                            <th>우편번호</th>
-                                            <th>국가</th>
-                                            <th>거래유형</th>
-                                            <th>담당자명</th>
-                                            <th>담당자이메일</th>
-                                            <th>담당자연락처</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {list.length > 0 ? list.map((item, index) => (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td>{item.customerName}</td>
-                                                <td>{item.customerTel}</td>
-                                                <td>{item.businessRegistrationNo}</td>
-                                                <td>{item.customerAddr}</td>
-                                                <td>{item.postNum}</td>
-                                                <td>{item.nation}</td>
-                                                <td>{item.dealType}</td>
-                                                <td>{item.picName}</td>
-                                                <td>{item.picEmail}</td>
-                                                <td>{item.picTel}</td>
-                                            </tr>
-                                        )) : (
-                                            <tr>
-                                                <td colSpan="11">추가된 고객이 없습니다.</td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-
-                            </div> */}
-
+                          
                             {/* 주소 모달 */}
                             {isAddressModalVisible && (
                                 <div className="confirmRegist">
@@ -1103,20 +1021,12 @@ function Customer() {
                             <div className="RegistForm">
                                 <table className="formTable">
                                     <tbody>
-
                                         <tr>
-                                            <th><label htmlFor="customerName">고객명</label></th>
-                                            <td><input type="text" placeholder="고객명" id="customerName" name="customerName" value={modifyItem.customerName || ''} onChange={handleModifyItemChange} /></td>
-
-                                            <th><label htmlFor="customerTel">고객연락처</label></th>
-                                            <td><input type="text" placeholder="고객연락처" id="customerTel" name="customerTel" value={modifyItem.customerTel || ''} onChange={handleModifyItemChange} /></td>
-
-                                            <th><label htmlFor="businessRegistrationNo">사업자등록번호</label></th>
-                                            <td><input type="text" placeholder="사업자등록번호" id="businessRegistrationNo" name="businessRegistrationNo" value={modifyItem.businessRegistrationNo || ''} onChange={handleModifyItemChange} /></td>
-
-
+                                            <th colSpan="1"><label htmlFor="customerName">고객명</label></th>
+                                            <td colSpan="2"><input type="text" placeholder="고객명" id="customerName" name="customerName" value={modifyItem.customerName || ''} onChange={handleModifyItemChange} /></td>
+                                            <th colSpan="1"><label htmlFor="customerTel">고객연락처</label></th>
+                                            <td colSpan="2"><input type="text" placeholder="고객연락처" id="customerTel" name="customerTel" value={modifyItem.customerTel || ''} onChange={handleModifyItemChange} /></td>
                                         </tr>
-
                                         <tr>
                                             <th colSpan="1"> <label htmlFor="customerAddr">고객주소</label></th>
                                             <td colSpan="5">
@@ -1124,20 +1034,14 @@ function Customer() {
                                                 <button className="btn-addr-find" type="button" onClick={openAddressModal}>주소찾기</button>
                                             </td>
                                         </tr>
-
                                         <tr>
                                             <th><label htmlFor="postNum">우편번호</label></th>
-                                            <td>
-                                                <input type="text" placeholder="우편번호" id="postNum" name="postNum" value={modifyItem.postNum || ''} readOnly />
-                                            </td>
-
+                                            <td><input type="text" placeholder="우편번호" id="postNum" name="postNum" value={modifyItem.postNum || ''} readOnly /></td>
+                                            <th><label htmlFor="businessRegistrationNo">사업자등록번호</label></th>
+                                            <td><input type="text" placeholder="사업자등록번호" id="businessRegistrationNo" name="businessRegistrationNo" value={modifyItem.businessRegistrationNo || ''} onChange={handleModifyItemChange} /></td>
                                             <th><label htmlFor="nation">국가</label></th>
                                             <td><input type="text" placeholder="국가" id="nation" name="nation" value={modifyItem.nation || ''} onChange={handleModifyItemChange} /></td>
-
-                                            <th><label htmlFor="dealType">거래유형</label></th>
-                                            <td><input type="text" placeholder="거래유형" id="dealType" name="dealType" value={modifyItem.dealType || ''} onChange={handleModifyItemChange} /></td>
                                         </tr>
-
                                         <tr>
                                             <th colSpan="1"><label htmlFor="picName">담당자</label></th>
                                             <td colSpan="5">
@@ -1152,7 +1056,6 @@ function Customer() {
                                                 />
                                             </td>
                                         </tr>
-
                                     </tbody>
                                 </table>
                             </div>

@@ -26,12 +26,33 @@ function Product() {
         checkItem: checkItemModal,
         showDelete: showDeleteModal,
         handleMasterCheckboxChange: handleMasterCheckboxChangeModal,
-        handleCheckboxChange: handleCheckboxChangeModal,
         handleDelete: handleDeleteModal,
         setCheckItem: setCheckItemModal,
         setAllCheck: setAllCheckModal,
         setShowDelete: setShowDeleteModal
     } = useCheckboxManager();
+
+    const handleCheckboxChangeModal = (index) => {
+        setCheckItemModal((prevCheckItemModal) => {
+            const updatedCheckItemModal = {
+                ...prevCheckItemModal,
+                [index]: !prevCheckItemModal[index]
+            };
+
+            // 항목이 하나라도 선택된 경우 삭제 버튼을 표시
+            const hasCheckedItems = Object.values(updatedCheckItemModal).some(checked => checked);
+            setShowDeleteModal(hasCheckedItems);
+
+            return updatedCheckItemModal;
+        });
+
+        // 모든 항목이 선택되지 않은 경우 전체 선택 체크박스를 해제
+        if (!checkItemModal[index]) {
+            setAllCheckModal(false);
+        }
+    };
+
+
 
     const [product, setProduct] = useState([]); // 리스트 데이터를 저장할 state
 
@@ -497,6 +518,14 @@ function Product() {
         // 입력값이 비어있는지 확인
         const isInputEmpty = Object.values(modifyItem).some(value => !value);
 
+        // 수정된 내용이 있는지 확인 (공백 제거 및 대소문자 통일 후 비교)
+        const hasChanges = Object.keys(modifyItem).some((key) => {
+            const originalValue = normalizeString(originalItem[key]?.toString());
+            const modifiedValue = normalizeString(modifyItem[key]?.toString());
+
+            return originalValue !== modifiedValue;
+        });
+
         if (!hasChanges) {
             alert('수정한 내용이 없습니다.');
             return;
@@ -525,12 +554,6 @@ function Product() {
         if (!confirm('상품을 수정하시겠습니까?')) {
             return;
         }
-
-        // 수정된 내용이 있는지 확인
-        const hasChanges = Object.keys(modifyItem).some(
-            key => modifyItem[key] !== originalItem[key]
-        );
-
 
         try {
             const response = await fetch('/product/updateProduct', {
@@ -598,7 +621,7 @@ function Product() {
     // =============================== 페이지 네이션 ===============================
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(5); // 페이지당 항목 수
+    const [itemsPerPage] = useState(30); // 페이지당 항목 수
 
     // 전체 페이지 수 계산
     const totalPages = Math.ceil(order.length / itemsPerPage);
@@ -825,7 +848,7 @@ function Product() {
 
                     <div className="button-container">
                         <button type="button" className="reset-btn" onClick={handleReset}>
-                            <i class="bi bi-arrow-clockwise"></i>
+                            <i className="bi bi-arrow-clockwise"></i>
                         </button>
                         <button type="button" className="search-btn" onClick={handleSearch}>
                             <i className="bi bi-search search-icon"></i>
@@ -933,7 +956,9 @@ function Product() {
                             </div>
 
                             <div className="RegistForm">
-
+                                {showDeleteModal && (
+                                    <button className='delete-btn-modal' onClick={() => { handleDeleteClickModal(); handleDeleteModal(); }}>삭제</button>
+                                )}
                                 <table className="formTable">
                                     <tbody>
                                         <tr>
@@ -943,7 +968,6 @@ function Product() {
                                             <th><label htmlFor="productWriter">상품저자</label></th>
                                             <td><input type="text" name="productWriter" value={productForm.productWriter} onChange={handleInputChange} placeholder="상품저자" /></td>
                                         </tr>
-
                                         <tr>
                                             <th><label htmlFor="productCategory">상품카테고리</label></th>
                                             <td><input type="text" name="productCategory" value={productForm.productCategory} onChange={handleInputChange} placeholder="상품카테고리" /></td>
@@ -954,11 +978,11 @@ function Product() {
                                     </tbody>
                                 </table>
 
-                          {/*      <button id="downloadCsv">CSV 샘플 양식</button>
-                                <button id="uploadCsv" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
+                                {/* <button id="downloadCsv">CSV 샘플 양식</button>
+                                <button id="uploadCsv" onClick={handleAddClickCSV}>CSV 파일 업로드</button> */}
                                 {isVisibleCSV && (
                                     <input type="file" id="uploadCsvInput" accept=".csv" />
-                                )}*/}
+                                )}
 
                                 <div className="btn-add">
                                     <button className='product-add-btn' onClick={handleAddProduct}>추가</button>
@@ -967,11 +991,6 @@ function Product() {
 
                             <div className="RegistFormList">
                                 <div style={{ fontWeight: 'bold' }}> 총 {productList.length} 건</div>
-
-                                    {showDeleteModal && (
-                                                                    <button className='delete-btn-modal' onClick={() => { handleDeleteClickModal(); handleDeleteModal(); }}>삭제</button>
-                                                                )}
-
                                 <table className="formTableList">
                                     <thead>
                                         <tr>
@@ -1026,7 +1045,6 @@ function Product() {
 
 
 
-
             {/* ---------------------- 수정 모달창 ----------------------*/}
             {
                 isModifyModalVisible && (
@@ -1040,7 +1058,7 @@ function Product() {
                                         <div className="btn-delete">
                                             <button onClick={handleDeleteItem}>삭제</button>
                                         </div>
-                                        <div className="btn-add2">
+                                        <div className="btn-update">
                                             <button onClick={handleModifySubmit}>수정</button>
                                         </div>
                                         <div className="btn-close"></div>
@@ -1049,33 +1067,29 @@ function Product() {
                                 <div className="RegistForm">
                                     <table className="formTable">
                                         <tr>
-
-
                                             <th colSpan="1"><label htmlFor="productName">상품명</label></th>
                                             <td colSpan="3">
                                                 <input
                                                     type="text"
                                                     name="productName"
                                                     placeholder="상품명"
+                                                    disabled
                                                     value={modifyItem.productName}
                                                     onChange={handleModifyItemChange}
-                                                    disabled
                                                 />
                                             </td>
-
                                             <th colSpan="1"><label htmlFor="productWriter">상품저자</label></th>
                                             <td colSpan="3">
                                                 <input
                                                     type="text"
                                                     name="productWriter"
                                                     placeholder="상품저자"
+                                                    disabled
                                                     value={modifyItem.productWriter}
                                                     onChange={handleModifyItemChange}
-                                                    disabled
                                                 />
                                             </td>
                                         </tr>
-
                                         <tr>
                                             <th colSpan="1"><label htmlFor="productCategory">상품카테고리</label></th>
                                             <td colSpan="3">
@@ -1083,12 +1097,11 @@ function Product() {
                                                     type="text"
                                                     name="productCategory"
                                                     placeholder="상품카테고리"
+                                                    disabled
                                                     value={modifyItem.productCategory}
                                                     onChange={handleModifyItemChange}
-                                                    disabled
                                                 />
                                             </td>
-
                                             <th colSpan="1"><label htmlFor="productPrice">상품원가</label></th>
                                             <td colSpan="3">
                                                 <input
@@ -1100,13 +1113,11 @@ function Product() {
                                                 />
                                             </td>
                                         </tr>
-
                                     </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 )
             }
             {/* 모달창의 끝  */}

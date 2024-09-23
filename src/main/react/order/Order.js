@@ -682,7 +682,7 @@ function Order() {
     // =============================================== 페이지 네이션
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(5); // 페이지당 항목 수
+    const [itemsPerPage] = useState(30); // 페이지당 항목 수
 
     // 전체 페이지 수 계산
     const totalPages = Math.ceil(order.length / itemsPerPage);
