@@ -1,9 +1,6 @@
 package com.project.tobe.mapper;
 
-import com.project.tobe.dto.AuthorityDto;
-import com.project.tobe.dto.EmployeeDTO;
-import com.project.tobe.dto.EmployeeTestDTO;
-import com.project.tobe.dto.RequestList;
+import com.project.tobe.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -27,5 +24,7 @@ public interface EmployeeMapper {
    void employeeUpdateMypagePw(EmployeeDTO dto);
    EmployeeDTO employeeUserSession(String id);
     List<EmployeeDTO> getManagerList(String id);
+
+    SalesByMonth getMySalesByMonth(String employeeId);
 }
 

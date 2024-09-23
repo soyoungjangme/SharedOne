@@ -8,7 +8,7 @@ body {
   background-color: #f5f5f5;
   margin: 0;
   padding: 0;
-} 
+}
 
 .header {
   color: black;
@@ -100,7 +100,11 @@ body {
 .mypage-chart {
   /* 부모 요소 안에서 일정비율 차지 */
   flex: 1;
+  
+  
   width: 50%;
+  height: 500px;
+
 }
 
 .modal {

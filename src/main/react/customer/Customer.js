@@ -7,6 +7,7 @@ import './Customer.css'
 import './modalAdd.css'
 import './modalDetail.css'
 import AddressInput from './AddressInput';
+import Select from "react-select";
 
 function Customer() {
 
@@ -24,13 +25,22 @@ function Customer() {
 
     // 메인 리스트
     const [customer, setCustomer] = useState([]);
+    const [employee, setEmployee] = useState([]);
 
-    useEffect(() => {
-        axios.get('/customer/customerAll')  // Spring Boot 엔드포인트와 동일한 URL로 요청
+    useEffect(async () => {
+        await axios.get('/customer/customerAll')  // Spring Boot 엔드포인트와 동일한 URL로 요청
             .then(response => setCustomer(response.data))  // 응답 데이터를 상태로 설정
             .catch(error => console.error('Error fetching Customer data:', error));
+
+        let {data} = await axios.get('/employee/employeeALL');
+        setEmployee(data.map((item) => ({value: item, label: item.employeeName + ' / ' +  item.employeeEmail + ' / ' + item.employeeTel})));
     }, []);
 
+
+    const handleEmployeeSelectChange = (item, isAdd) => {
+        if (isAdd) setRegist((prev) => ({...prev, picName: item.employeeName, picEmail: item.employeeEmail, picTel: item.employeeTel}));
+        else setModifyItem((prev) => ({...prev, picName: item.employeeName, picEmail: item.employeeEmail, picTel: item.employeeTel}));
+    }
 
 
     // =============================== 고객 조회 부분 ===============================
@@ -113,6 +123,7 @@ function Customer() {
                         return aIsEnglish ? -1 : 1;
                     });
                     setCustomer(sortedData); // 정렬된 데이터를 상태에 설정
+                    setCurrentPage(1);
                 })
                 .catch(error => console.error('에러 발생:', error)); // 오류 처리
         } else {
@@ -145,7 +156,8 @@ function Customer() {
             picTel: ''
         });
 
-        handleInputChange(); // 리셋 후 검색 기능 호출
+        handleSearchCustomer(); // 리셋 후 검색 기능 호출
+        setCurrentPage(1);
     };
 
 
@@ -946,7 +958,7 @@ function Customer() {
                             <div className="form-header">
                                 <h1> 고객 등록 </h1>
                                 <div className="btns">
-                                    <button className="btn-customer-add" type="button" onClick={onClickRegistBtn}>등록</button>
+                                    <button className="btn-customer-add" type="button" onClick={onClickRegistBtn}>등록하기</button>
                                 </div>
                             </div>
 
@@ -984,14 +996,15 @@ function Customer() {
                                         </tr>
 
                                         <tr>
-                                            <th><label htmlFor="picName">담당자명</label></th>
-                                            <td><input type="text" placeholder="담당자명" id="picName" name="picName" value={regist.picName} onChange={handleInputAddChange} /></td>
-
-                                            <th><label htmlFor="picEmail">담당자이메일</label></th>
-                                            <td><input type="text" placeholder="담당자이메일" id="picEmail" name="picEmail" value={regist.picEmail} onChange={handleInputAddChange} /></td>
-
-                                            <th><label htmlFor="picTel">담당자연락처</label></th>
-                                            <td><input type="text" placeholder="담당자연락처" id="picTel" name="picTel" value={regist.picTel} onChange={handleInputAddChange} /></td>
+                                            <th colSpan="1"><label htmlFor="picName">담당자</label></th>
+                                            <td colSpan="5">
+                                                <Select
+                                                name="employee"
+                                                options={employee}
+                                                placeholder="담당자 선택"
+                                                onChange={(option) => {handleEmployeeSelectChange(option.value, true)}}
+                                                />
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1126,14 +1139,18 @@ function Customer() {
                                         </tr>
 
                                         <tr>
-                                            <th><label htmlFor="picName">담당자명</label></th>
-                                            <td><input type="text" placeholder="담당자명" id="picName" name="picName" value={modifyItem.picName || ''} onChange={handleModifyItemChange} /></td>
-
-                                            <th><label htmlFor="picEmail">담당자이메일</label></th>
-                                            <td><input type="text" placeholder="담당자이메일" id="picEmail" name="picEmail" value={modifyItem.picEmail || ''} onChange={handleModifyItemChange} /></td>
-
-                                            <th><label htmlFor="picTel">담당자연락처</label></th>
-                                            <td><input type="text" placeholder="담당자연락처" id="picTel" name="picTel" value={modifyItem.picTel || ''} onChange={handleModifyItemChange} /></td>
+                                            <th colSpan="1"><label htmlFor="picName">담당자</label></th>
+                                            <td colSpan="5">
+                                                <Select
+                                                    name="employee"
+                                                    defaultValue={employee.filter(item => item.value.employeeEmail === modifyItem.picEmail)}
+                                                    options={employee}
+                                                    placeholder="담당자 선택"
+                                                    onChange={(option) => {
+                                                        handleEmployeeSelectChange(option.value, false)
+                                                    }}
+                                                />
+                                            </td>
                                         </tr>
 
                                     </tbody>
@@ -1147,7 +1164,7 @@ function Customer() {
                             <div className="fullBody">
                                 <div className="form-container">
                                     <button className="close-btn" onClick={closeAddressModal}>
-                                        &times;
+                                    &times;
                                     </button>
                                     <div className="form-header">
                                         <h1>주소 입력</h1>

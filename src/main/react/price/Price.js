@@ -4,19 +4,16 @@ import Chart from '../js/Chart';
 import SearchForm from './SearchForm';
 import PriceTable from './PriceTable';
 import AddPriceModal from './AddPriceModal';
-import ModifyPriceModal from './ModifyPriceModal';
-import DetailModal from './DetailModal';
-import Pagination from '../js/Pagination';
 import useCheckboxManager from '../js/CheckboxManager';
 import useSort from '../js/useSort';
+import ModalDetail from "../js/ModalDetail";
+import RenderPageNumbers from "../js/RenderPageNumbers";
 import ReactDOM from "react-dom/client";
 
 import './Price.css';
 import '../js/modalAdd.css';
 import '../js/Pagination.css';
 import '../js/RenderPageNumbers.css';
-import ModalDetail from "../js/ModalDetail";
-import RenderPageNumbers from "../js/RenderPageNumbers";
 
 const Price = () => {
     const [price, setPrice] = useState([]);
@@ -89,6 +86,7 @@ const Price = () => {
     }
 
     const getSearchItems = async (item) => {
+        console.log(item);
         const { data } = await axios.post('/price/search', item, {
             headers: {
                 'content-type': 'application/json',
