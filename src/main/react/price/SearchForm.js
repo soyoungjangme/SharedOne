@@ -14,7 +14,7 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
     }
 
     const handleSearchPriceChange = (name, value) => {
-        setSearchPrice((prev) => ({...prev, productNo: value}));
+        setSearchPrice((prev) => ({...prev, [name]: value}));
     }
 
     return (
@@ -26,6 +26,7 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
                         <div className="filter-item">
                             <label className="filter-label" htmlFor="product">상품</label>
                             <Select
+                                className="filter-input"
                                 name="productNo"
                                 options={productOptions}
                                 placeholder="상품 선택"
@@ -37,10 +38,11 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
                         <div className="filter-item">
                             <label className="filter-label" htmlFor="customer">업체</label>
                             <Select
+                                className="filter-input"
                                 name="customerNo"
                                 options={customerOptions}
                                 placeholder="고객 선택"
-                                onChange={(option) => handleSearchPriceChange('customerNo', option.value)}
+                                onChange={(option) => handleSearchPriceChange('customerNo', option.value.customerNo)}
                             />
                         </div>
 

@@ -1,15 +1,12 @@
 package com.project.tobe.serviceImpl;
 
 
-import com.project.tobe.dto.AuthorityDto;
-import com.project.tobe.dto.EmployeeDTO;
-import com.project.tobe.dto.EmployeeTestDTO;
+import com.project.tobe.dto.*;
 import com.project.tobe.entity.Employee;
 import com.project.tobe.mapper.EmployeeMapper;
 import com.project.tobe.repository.EmployeeRepository;
 import com.project.tobe.security.EmployeeDetails;
 import com.project.tobe.service.EmployeeService;
-import com.project.tobe.dto.RequestList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -168,6 +165,11 @@ public class EmployeeServiceImpl implements EmployeeService {
   @Override
     public List<EmployeeDTO> getManagerList(String id) {
         return employeeMapper.getManagerList(id);
+    }
+
+    @Override
+    public SalesByMonth getMySalesByMonth(String employeeId) {
+        return employeeMapper.getMySalesByMonth(employeeId);
     }
 
 

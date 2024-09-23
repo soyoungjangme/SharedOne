@@ -44,14 +44,14 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
         QCustomer customer = QCustomer.customer;
 
         Optional<LocalDateTime> registerDate = Optional.ofNullable(dto.getRegisterDate());
-        Optional<String> productName = Optional.ofNullable(dto.getProductName());
-        Optional<String> customerName = Optional.ofNullable(dto.getCustomerName());
+        Optional<Long> productNo = Optional.ofNullable(dto.getProductNo().length() > 0 ? Long.valueOf(dto.getProductNo()) : null);
+        Optional<Long> customerNo = Optional.ofNullable(dto.getCustomerNo().length() > 0 ? Long.valueOf(dto.getCustomerNo()) : null);
         Optional<LocalDate> startDate = Optional.ofNullable(dto.getStartDate());
         Optional<LocalDate> endDate = Optional.ofNullable(dto.getEndDate());
 
         registerDate.ifPresent(localDateTime -> builder.and(price.registerDate.eq(localDateTime)));
-        productName.filter(s -> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.product.productName.contains(s)));
-        customerName.filter(s -> !s.trim().isEmpty()).ifPresent(s -> builder.and(price.customer.customerName.contains(s)));
+        productNo.ifPresent(s -> builder.and(price.product.productNo.eq(s)));
+        customerNo.ifPresent(s -> builder.and(price.customer.customerNo.eq(s)));
         startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
         endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
         builder.and(price.activated.eq(Y));
