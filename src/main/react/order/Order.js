@@ -831,6 +831,16 @@ function Order() {
                     alert("접근 권한이 없습니다.");
                 }
                 break;
+            case '반려(처리완료)':
+                console.log('반려(처리완료)');
+                console.log(roleHierarchy[my.role]);
+                console.log(roleHierarchy[item.managerGrade]);
+                if ((roleHierarchy[my.role] > roleHierarchy[item.managerGrade])  || isManager) {
+                    handleDetailView(item.orderNo);
+                } else {
+                    alert("접근 권한이 없습니다.");
+                }
+                break;
             default:
                 console.log('Unknown status');
                 break;
@@ -1240,6 +1250,7 @@ function Order() {
                     isOpen={isModifyModalVisible}
                     onClose={handleCloseModifyModal}
                     onUpdate={handleOrderUpdate}
+                    onClose2={handleModifyCloseClick}
                 />
             )}
 
@@ -1252,6 +1263,7 @@ function Order() {
                     onClose={handleCloseModifyTempOrderModal}
                     fetchData={fetchData}
                     onUpdate={handleOrderUpdate}
+                    onClose2={handleModifyCloseClick}
                 />
             )}
         </div>

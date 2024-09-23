@@ -5,7 +5,7 @@ import './Order.css';
 import './OrderRegist.css';
 import useCheckboxManager from "../js/CheckboxManager";
 
-const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate }) => {
+const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, onUpdate }) => {
     const [modifyItem, setModifyItem] = useState({
         orderNo: '',
         regDate: '',
@@ -79,6 +79,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
         fetchConfirmerList();
     }, []);
 
+    // 고객 변경
     const handleCustomerChange = (e) => {
         setModifyItem(prev => ({
             ...prev,
@@ -114,6 +115,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
         }
     }, [modifyItem.customer.customerNo, delDate]);
 
+    // 수량
     const handleQuantityChange = (index) => (e) => {
         const qty = Number(e.target.value) || 0;
         setQuantities(prevQuantities => ({
@@ -122,7 +124,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
         }));
     };
 
-
+    // 주문 임시저장 처리
     const handleTempSave = async () => {
         if (addCheckProd.length === 0) {
             alert("상품을 추가해주세요.");
@@ -164,12 +166,13 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
             }
             fetchData();
             onClose();
+            onClose2();
         } catch (error) {
             console.error('임시 저장 중 오류 발생:', error.response?.data || error.message);
             alert('임시 저장 중 오류가 발생했습니다: ' + (error.response?.data || error.message));
         }
     };
-
+    // 주문 등록 처리
     const handleSubmit = async () => {
         if (addCheckProd.length === 0) {
             alert("상품을 추가해주세요.");
@@ -202,12 +205,14 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
             onUpdate({ ...modifyItem, orderBList }); // 업데이트된 데이터를 콜백으로 전달
             fetchData();
             onClose();
+            onClose2();
         } catch (error) {
             console.error('임시 저장 중 오류 발생:', error.response?.data || error.message);
             alert('임시 저장 중 오류가 발생했습니다: ' + (error.response?.data || error.message));
         }
     };
 
+    // 임시저장 삭제
     const handleDeleteOrder = async () => {
         if (window.confirm('주문을 삭제하시겠습니까?')) {
             try {
@@ -217,15 +222,15 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
                 // Order 컴포넌트에 삭제된 주문 업데이트 반영
                 // fetchData();
                 onUpdate({ orderNo });
-
-                console.log('Closing modal via onClose');
                 onClose();
+                onClose2();
             } catch (error) {
                 console.error('삭제 중 오류 발생:', error);
             }
         }
     };
 
+    // 추가 버튼
     const handleAddProd = () => {
         setAddCheckProd(prevAddCheckProd => {
             const existingPriceNos = new Set(prevAddCheckProd.map(item => item.price.priceNo));
@@ -297,7 +302,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
 
 
 
-
+    // 체크박스 삭제
     const handleAddProdDelete = () => {
         setAddCheckProd(prevAddCheckProd => {
             if(!orderAddAllCheck){
@@ -315,6 +320,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose, fetchData, onUpdate })
         });
     };
 
+    // 체크박스
     const {
         allCheck: orderListAllCheck,
         checkItem: orderListCheckItem,
