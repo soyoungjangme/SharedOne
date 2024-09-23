@@ -38,6 +38,11 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
         });
     }
 
+
+
+
+
+
     return (
         <div className="main-container">
             <div className="filter-containers">

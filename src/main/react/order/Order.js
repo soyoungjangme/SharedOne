@@ -515,14 +515,14 @@ function Order() {
     //주문등록 - 상품검색
     const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
+
         const handleSearchChange = (e) => {
             setSearchTerm(e.target.value);
 
             setAllCheckMod(false);
             setCheckItemMod(false);
         };
-    },[searchTerm]);
+
 
 
     const searchProd = customPrice.filter(product =>
@@ -1012,6 +1012,12 @@ function Order() {
                  >
                   승인
                  </button>
+                  <button
+                                    className={`btn ${selectedIndex === 4 ? "selected" : ""}`}
+                                    onClick={() => handleButtonClick2(4)}
+                                  >
+                                   승인
+                                  </button>
                </div>
 
                 <table className="seacrh-table">

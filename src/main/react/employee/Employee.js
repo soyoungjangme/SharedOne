@@ -174,6 +174,13 @@ function Employee() {
             handleSearchEmployee();
             setCurrentPage(1);
         }
+    // 초기화 후 목록도 리셋
+    useEffect(() => {
+        const isFormReset = Object.values(employee).every(value => value === '');
+        if (isFormReset) {
+            handleSearchEmployee();
+        }
+    }, [employee]);
 
 
 
@@ -911,32 +918,32 @@ const handleDeletePickClick = () => {
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeId" >직원아이디</label>
-                                <input  onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeId" placeholder="" onChange={handleInputChange} value={emSearch.employeeId} required />
+                                <input  onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeId" placeholder="직원 아이디" onChange={handleInputChange} value={emSearch.employeeId} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeName">직원이름</label>
-                                <input onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeName" placeholder="" onChange={handleInputChange} value={emSearch.employeeName} r required />
+                                <input onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeName" placeholder="직원 이름" onChange={handleInputChange} value={emSearch.employeeName} r required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeTel">직원전화번호</label>
-                                <input     onKeyDown={handleKeyDown}className="filter-input" type="text" id="employeeTel" placeholder="" onChange={handleInputChange} value={emSearch.employeeTel} required />
+                                <input     onKeyDown={handleKeyDown}className="filter-input" type="text" id="employeeTel" placeholder="직원 전화번호" onChange={handleInputChange} value={emSearch.employeeTel} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeEmail">직원이메일</label>
-                                <input    onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeEmail" placeholder="" onChange={handleInputChange} value={emSearch.employeeEmail} required />
+                                <input    onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeEmail" placeholder="직원 이메일" onChange={handleInputChange} value={emSearch.employeeEmail} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeAddr">주소</label>
-                                <input     onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeAddr" placeholder="" onChange={handleInputChange} value={emSearch.employeeAddr} required />
+                                <input     onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeAddr" placeholder="주소" onChange={handleInputChange} value={emSearch.employeeAddr} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="hireDate">입사일</label>
-                                <input     onKeyDown={handleKeyDown}  className="filter-input" type="date" id="hireDate" placeholder="" onChange={handleInputChange} value={emSearch.hireDate} required />
+                                <input     onKeyDown={handleKeyDown}  className="filter-input" type="date" id="hireDate" placeholder="입사일" onChange={handleInputChange} value={emSearch.hireDate} required />
                             </div>
 
 
