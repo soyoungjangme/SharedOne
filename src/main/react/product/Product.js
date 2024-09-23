@@ -933,9 +933,7 @@ function Product() {
                             </div>
 
                             <div className="RegistForm">
-                                {showDeleteModal && (
-                                    <button className='delete-btn-modal' onClick={() => { handleDeleteClickModal(); handleDeleteModal(); }}>삭제</button>
-                                )}
+
                                 <table className="formTable">
                                     <tbody>
                                         <tr>
@@ -956,11 +954,11 @@ function Product() {
                                     </tbody>
                                 </table>
 
-                                <button id="downloadCsv">CSV 샘플 양식</button>
+                          {/*      <button id="downloadCsv">CSV 샘플 양식</button>
                                 <button id="uploadCsv" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
                                 {isVisibleCSV && (
                                     <input type="file" id="uploadCsvInput" accept=".csv" />
-                                )}
+                                )}*/}
 
                                 <div className="btn-add">
                                     <button className='product-add-btn' onClick={handleAddProduct}>추가</button>
@@ -969,6 +967,11 @@ function Product() {
 
                             <div className="RegistFormList">
                                 <div style={{ fontWeight: 'bold' }}> 총 {productList.length} 건</div>
+
+                                    {showDeleteModal && (
+                                                                    <button className='delete-btn-modal' onClick={() => { handleDeleteClickModal(); handleDeleteModal(); }}>삭제</button>
+                                                                )}
+
                                 <table className="formTableList">
                                     <thead>
                                         <tr>
@@ -1056,6 +1059,7 @@ function Product() {
                                                     placeholder="상품명"
                                                     value={modifyItem.productName}
                                                     onChange={handleModifyItemChange}
+                                                    disabled
                                                 />
                                             </td>
 
@@ -1067,6 +1071,7 @@ function Product() {
                                                     placeholder="상품저자"
                                                     value={modifyItem.productWriter}
                                                     onChange={handleModifyItemChange}
+                                                    disabled
                                                 />
                                             </td>
                                         </tr>
@@ -1080,6 +1085,7 @@ function Product() {
                                                     placeholder="상품카테고리"
                                                     value={modifyItem.productCategory}
                                                     onChange={handleModifyItemChange}
+                                                    disabled
                                                 />
                                             </td>
 

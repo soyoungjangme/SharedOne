@@ -405,8 +405,7 @@ tr:nth-child(0){
 .delete-btn-modal {
     width: 65px;
     height: 25px;
-    position: absolute;
-    top: 222px;
+    margin-top : 10px;
     border: 1px solid #ddd;
     background-color: #004e90;
     color: white;
