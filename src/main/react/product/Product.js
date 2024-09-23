@@ -270,6 +270,15 @@ function Product() {
         setCurrentPage(1); // 리셋 후 페이지를 첫 번째로 이동
     };
 
+    // 초기화 후 목록도 리셋
+    useEffect(() => {
+        const isFormReset = Object.values(filters).every(value => value === '');
+        if (isFormReset) {
+            handleSearch();
+        }
+    }, [filters]);
+    
+
 
 
     // ========================= 상품 등록 모달 =========================
@@ -1056,10 +1065,10 @@ function Product() {
                                     <h1>상품 수정</h1>
                                     <div className="btns">
                                         <div className="btn-delete">
-                                            <button onClick={handleDeleteItem}>삭제</button>
+                                            <button onClick={handleDeleteItem}>삭제하기</button>
                                         </div>
                                         <div className="btn-update">
-                                            <button onClick={handleModifySubmit}>수정</button>
+                                            <button onClick={handleModifySubmit}>수정하기</button>
                                         </div>
                                         <div className="btn-close"></div>
                                     </div>

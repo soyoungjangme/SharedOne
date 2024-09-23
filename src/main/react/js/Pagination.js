@@ -1,4 +1,3 @@
-// Pagination.js
 import React from "react";
 import ReactPaginate from "react-paginate";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
@@ -18,6 +17,9 @@ const Pagination = ({ pageCount, onPageChange, currentPage, total }) => {
             containerClassName={"pagination"}
             pageLinkClassName={"pagination_link"}
             activeLinkClassName={"pagination_link_active"}
+            previousLinkClassName={currentPage === 1 ? "disabled" : "pagination_link"}
+            nextLinkClassName={currentPage === pageCount ? "disabled" : "pagination_link"}
+            disabledClassName={"disabled"}
         />
     );
 };

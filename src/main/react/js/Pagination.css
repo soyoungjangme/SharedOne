@@ -13,6 +13,27 @@
     border-radius: 0.3rem;
 }
 
+.pagination_link:hover {
+    background-color: #ddd;
+}
+
+.pagination_link_active {
+    background-color: #bbb;
+    color: #fefefe;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.pagination_link {
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.3rem;
+    outline: none;
+    user-select: none;
+}
+
 .pagination_link_active {
     background-color: #bbb;
     color: #fefefe;
