@@ -452,6 +452,7 @@ function Order() {
     };
 
 
+    const [loading, setLoading] = useState(false); // 로딩 상태 관리
 
     //등록하기 & 임시저장
     const handleRegistOrder = async (orderStatus) => {
@@ -488,13 +489,15 @@ function Order() {
                 };
             });
 
+            setLoading(true);
+
             const response = await axios.post('/order/registOrder',{ // insert into oh
                 inputDelDate: delDate || null,//납품요청일
                 inputCustomerNo: registCustomer || null,//주문고객번호
                 inputManager: my.id || null,
                 inputConfirmer: modifyItem.confirmerId || null, //결재자
                 inputStatus: orderStatus,
-                orderBList //ob데이터 배열 전달
+                orderBList: orderBList //ob데이터 배열 전달
             });
 
             const orderNo = response.data; // 서버에서 받은 주문 번호
@@ -507,6 +510,8 @@ function Order() {
             }
         } catch (error) {
             console.error("주문등록 중 오류발생", error);
+        } finally {
+            setLoading(false);
         }
         window.location.reload();
 
@@ -514,6 +519,12 @@ function Order() {
 
     //주문등록 - 상품검색
     const [searchTerm, setSearchTerm] = useState('');
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+
+        setAllCheckMod(false);
+        setCheckItemMod(false);
+    };
 
     useEffect(() => {
         const handleSearchChange = (e) => {
@@ -1123,7 +1134,10 @@ function Order() {
             {/* 여기 아래는 모달이다. */}
 
             {/*jsy 주문등록 모달창 시작*/}
-            {isVisible && (
+            {isVisible &&  ( loading ? (
+                <div className="loading-overlay">
+                    <div className="spinner">로딩 중...</div>
+                </div>) : (
                 <div className="confirmRegist">
                     <div className="fullBody">
                         <div className="form-container">
@@ -1298,7 +1312,7 @@ function Order() {
                     </div>
                 </div>
 
-            )}
+            ))}
             {/* 모달창의 끝  */}
 
             {/* 상세보기 모달 */}
