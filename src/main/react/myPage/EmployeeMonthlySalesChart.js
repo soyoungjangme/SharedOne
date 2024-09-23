@@ -1,21 +1,40 @@
 // src/components/MonthlySalesChart.js
-import React, {useEffect, useState} from 'react';
+import React, { useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const EmployeeMonthlySalesChart = ({salesByMonth}) => {
+const MonthlySalesChart = ({ salesByMonth }) => {
     console.log(salesByMonth);
 
     const label = [];
     const chartData = [];
 
+    
+    // useEffect(() => {
+    //     salesByMonth.forEach(item => {
+    //         label.push(item.salesMonth);
+    //         chartData.push(item.totalSales);
+    //     });
+    //     console.log(label);
+    //     console.log(chartData);
+    // }, [salesByMonth]);
+
+
+    //이 코드로
+    //차트 부분이 오류나서 아래코드로 사용해보는중
     useEffect(() => {
-        salesByMonth.forEach(item => {label.push(item.salesMonth); chartData.push(item.totalSales)});
+        if (salesByMonth) {
+            salesByMonth.forEach(item => {
+                label.push(item.salesMonth);
+                chartData.push(item.totalSales);
+            });
+        }
         console.log(label);
         console.log(chartData);
-    }, []);
+    }, [salesByMonth]);
+    
 
     const data = {
         labels: label,
@@ -29,7 +48,8 @@ const EmployeeMonthlySalesChart = ({salesByMonth}) => {
 
     const options = {
         responsive: true,
-        maintainAspectRatio: false,
+        //차트 비율 유지하기
+        maintainAspectRatio: true,
         scales: {
             x: {
                 grid: { display: false },
