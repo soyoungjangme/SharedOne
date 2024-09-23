@@ -201,4 +201,7 @@
         ORDER BY TO_CHAR(header.confirm_change_date, 'YYYY-MM')
     </select>
 
+    <select id="getEmail" resultType="string">
+        select employee_email from employee where employee_id=#{employeeId}
+    </select>
 </mapper>

@@ -1,6 +1,7 @@
 package com.project.tobe.controller;
 
 import com.opencsv.exceptions.CsvValidationException;
+import com.project.tobe.dto.EmailDTO;
 import com.project.tobe.service.CustomerService;
 import com.project.tobe.dto.CustomerDTO;
 import com.project.tobe.dto.PriceProductCustomerDTO;
@@ -52,13 +53,7 @@ public class PriceController {
         map.put("productList", productList);
         map.put("customerList", customerList);
 
-//        System.out.println(customerList);
-//
-//        try {
-//            emailService.sendMailReject(new EmailDTO());
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
+        System.out.println(customerList);
 
         return map;
     }
