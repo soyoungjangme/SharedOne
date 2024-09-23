@@ -48,8 +48,9 @@ const MonthlySalesChart = ({ salesByMonth }) => {
 
     const options = {
         responsive: true,
+
         //차트 비율 유지하기
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         scales: {
             x: {
                 grid: { display: false },

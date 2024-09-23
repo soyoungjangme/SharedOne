@@ -347,7 +347,7 @@ function MyPage() {
             {/* <i className="bi bi-graph-up"></i>  */}
             <i className="bi bi-bar-chart-line-fill"></i>
             이번 달 실적</h2>
-          <div className='test123'>
+          <div>
             <EmployeeMonthlySalesChart />
           </div>
         </div>
