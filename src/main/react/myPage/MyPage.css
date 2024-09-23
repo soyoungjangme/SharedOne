@@ -1,143 +1,166 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
-
-body {
-  font-family: "Noto Sans KR", sans-serif;
+*{
   margin: 0;
   padding: 0;
 }
 
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  color: #004e90;
+  font-size: 20px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #004e90;
+  padding-bottom: 10px;
+}
+.my-page-header {
+  color: black;
+  border-bottom: none;
+  font-size: 2em;
+
+}
+
 .mypage-main {
   display: flex;
-  justify-content: center;
-  margin: 30px;
+  justify-content: space-between;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
 
 .mypage-table {
-  width: 50%;
-  padding: 20px;
-  border-radius: 2px;
-  background-color: #ffffff;
-  margin-right: 30px;
-}
-
-.header i {
-  margin-right: 10px;
-}
-
-.mypage-chart {
-
-  width: 50%;
-  height: 300px;
-}
-
-.mypage-table>tr,
-td,
-th {
-  border: 1px solid #ddd;
+  flex: 1;
+  margin-right: 20px;
 }
 
 .mypage-table table {
-  font-size: 0.8em;
   width: 100%;
   border-collapse: collapse;
 }
 
-.mypage-table tr td:nth-child(1) {
-  text-align: center;
-  font-weight: bold;
-  background: rgb(241, 241, 241);
-
+.mypage-table th, .mypage-table td {
+  padding: 12px;
+  text-align: left;
 }
 
-.mypage-table td {
-  text-align: center;
-  padding: 10px;
-  height: 30%;
-  vertical-align: middle;
-}
-
-.mypage-table .form-actions {
-  text-align: center;
-  padding-top: 10px;
-  display: flex;
-  gap: 3%;
-  flex-direction: row-reverse;
-
-}
-
-
-/* .form-actions{
-   display: flex;
- gap: 5%;
- flex-direction: row-reverse;
- }*/
-.pw-btn {
-  padding: 6px 12px;
-  border: 1px solid #004e90;
+.mypage-table th {
   background-color: #004e90;
   color: white;
-  font-size: 14px;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.mypage-table select {
-  text-align: center;
-  width: 60%;
-  height: 25px;
-  border: 1px solid #ddd;
-
-}
-
-.mypage-table #hireDate {
-  text-align: center;
-  width: 60%;
-  height: 25px;
-  border: 1px solid #ddd;
-
 }
 
 .mypage-table input {
-  text-align: center;
-  border: 1px solid #ddd;
-  width: 60%;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-
-.mypage-table .form-actions button {
-  padding: 6px 12px;
-  border: 1px solid #004e90;
+.pw-btn {
   background-color: #004e90;
   color: white;
-  font-size: 14px;
-  border-radius: 3px;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
   cursor: pointer;
 }
 
-.mypage-table .form-actions .submit-btn {
+.pw-btn:hover {
+  background-color: #00376b;
+}
+
+.form-actions {
+  margin-top: 20px;
+  display: flex;
+    flex-direction: row-reverse;
+}
+
+.submit-btn, .cancel-btn {
   background-color: #004e90;
   color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
-.mypage-table .form-actions .cancel-btn {
-  background-color: #bbb;
+.submit-btn:hover, .cancel-btn:hover {
+  background-color: #00376b;
+}
+
+.mypage-chart {
+  flex: 1;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  width: 400px;
+}
+
+.modal-content h2 {
+  color: #004e90;
+}
+
+.close {
+  cursor: pointer;
+  float: right;
+  font-size: 20px;
+}
+
+.btn-change-modal, .btn-cancel-modal {
+  background-color: #004e90;
   color: white;
   border: none;
+  border-radius: 4px;
+  padding: 10px;
+  cursor: pointer;
 }
 
-.pw-btn:hover,
-.mypage-table .form-actions button:hover,
-.mypage-table .form-actions .submit-btn:hover {
-  background-color: #0056b3;
+.btn-change-modal:hover, .btn-cancel-modal:hover {
+  background-color: #00376b;
 }
 
-.mypage-table .form-actions .cancel-btn:hover {
-  background-color: #ccc;
+.password-check-indicators {
+  display: flex;
+  margin: 10px 0;
 }
 
+.check-item {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #004e90;
+  border-radius: 50%;
+  margin-right: 10px;
+}
 
+.check-item.active {
+  background-color: #004e90;
+}
 
-.submit-btn {
-  float: right;
+.check-item.yellow {
+  background-color: yellow;
+}
+
+.test123 {
+  height: 500px;
 }
