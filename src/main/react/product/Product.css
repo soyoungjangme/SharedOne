@@ -402,16 +402,6 @@ tr:nth-child(0){
     position: relative;
 }
 
-.delete-btn-modal {
-    width: 65px;
-    height: 25px;
-    margin-top : 10px;
-    border: 1px solid #ddd;
-    background-color: #004e90;
-    color: white;
-    border-radius: 2px;
-    cursor: pointer;
-}
 
 /*  sort */
 .sortBtn {
@@ -445,7 +435,6 @@ tr:nth-child(0){
 .product-register-btn:hover,
 .product-add-btn:hover,
 .delete-btn-main:hover,
-.delete-btn-modal:hover,
 .search-btn:hover {
     background-color: #0056b3;
 }

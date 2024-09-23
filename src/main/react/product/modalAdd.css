@@ -111,7 +111,7 @@
 
 .formTableList {
   width: 100%;
-  margin: 30px 0px;
+  margin: 50px 0 30px 0;
   background-color: #ffffff;
 
 }
@@ -272,11 +272,27 @@
   cursor: pointer;
 }
 
+.delete-btn-modal {
+  background-color: #004e90;
+  color: #fff;
+  border: 1px solid #ddd;
+  width: 55px;
+  height: 35px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  position: absolute;
+  top: 205px;
+}
+
+
 .btn-add2 button:hover,
-.btn-update:hover {
+.btn-update:hover,
+.delete-btn-modal:hover {
   background-color: #0056b3;
 }
 
 .btn-delete button:hover {
   background-color: #ccc;
 }
+

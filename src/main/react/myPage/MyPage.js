@@ -275,7 +275,7 @@ function MyPage() {
       <div className="mypage-main">
         <div className="mypage-table">
 
-          <h2 className="header"><i className="bi bi-bar-chart-line-fill"></i>내 정보</h2>
+          <h2 className="header">내 정보</h2>
           
           <table>
             <tbody>
@@ -285,9 +285,9 @@ function MyPage() {
               </tr>
               <tr>
                 <td><label htmlFor="employeePw">비밀번호</label></td>
-
-                <td>
-                  <button class="pw-btn" onClick={openModal}>비밀번호 변경</button>
+                <td className="password-row">
+                  <input type="password" id="employeePw" name="employeePw" value="**************" disabled />
+                  <button className="pw-btn" onClick={openModal}>비밀번호 변경</button>
                 </td>
               </tr>
               <tr>
