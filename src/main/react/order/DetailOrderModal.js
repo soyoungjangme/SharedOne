@@ -248,7 +248,8 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                 orderNo: modifyItem.orderNo,
                 confirmStatus: status,
                 remarks: modifyItem.remarks,
-                confirmChangeDate: todayPlus
+                confirmChangeDate: todayPlus,
+                employee : modifyItem.employee
             });
 
             if (response.data.success) {

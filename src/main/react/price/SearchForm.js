@@ -1,7 +1,10 @@
-import React from 'react';
+import React, {useRef, useState} from 'react';
 import Select from "react-select";
 
-const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptions, handleSearchBtn, handleSearchResetBtn }) => {
+const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptions, handleSearchBtn }) => {
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setSearchPrice((prev) => ({ ...prev, [name]: value }));
@@ -13,8 +16,26 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
         }
     }
 
-    const handleSearchPriceChange = (name, value) => {
-        setSearchPrice((prev) => ({...prev, [name]: value}));
+    const handleSearchPriceChange = (name, item) => {
+        if (name === 'productNo') setSelectedProduct(item);
+        if (name === 'customerNo') setSelectedCustomer(item);
+
+        console.log(selectedProduct);
+        setSearchPrice((prev) => ({...prev, [name]: item.value}));
+    }
+
+    const handleSearchResetBtn = () => {
+        setSelectedProduct(null);
+        setSelectedCustomer(null);
+        setSearchPrice({
+            registerDate: '',
+            productNo: '',
+            customerNo: '',
+            startDate: '',
+            endDate: '',
+            page: 1,
+            amount: 30,
+        });
     }
 
     return (
@@ -26,11 +47,12 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
                         <div className="filter-item">
                             <label className="filter-label" htmlFor="product">상품</label>
                             <Select
+                                value={selectedProduct}
                                 className="filter-input"
                                 name="productNo"
                                 options={productOptions}
                                 placeholder="상품 선택"
-                                onChange={(option) => {handleSearchPriceChange('productNo', option.value)}}
+                                onChange={(option) => {handleSearchPriceChange('productNo', option)}}
                             />
                         </div>
 
@@ -38,11 +60,12 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
                         <div className="filter-item">
                             <label className="filter-label" htmlFor="customer">업체</label>
                             <Select
+                                value={selectedCustomer}
                                 className="filter-input"
                                 name="customerNo"
                                 options={customerOptions}
                                 placeholder="고객 선택"
-                                onChange={(option) => handleSearchPriceChange('customerNo', option.value.customerNo)}
+                                onChange={(option) => handleSearchPriceChange('customerNo', option)}
                             />
                         </div>
 
@@ -86,7 +109,7 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
                 </div>
                 <div className="button-container">
                     <button type="button" className="reset-btn" onClick={handleSearchResetBtn}>
-                        <i class="bi bi-arrow-clockwise"></i>
+                        <i className="bi bi-arrow-clockwise"></i>
                     </button>
                     <button type="button" className="search-btn" onClick={handleSearchBtn}>
                         <i className="bi bi-search search-icon"></i>

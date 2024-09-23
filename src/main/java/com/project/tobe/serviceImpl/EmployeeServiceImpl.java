@@ -172,5 +172,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeMapper.getMySalesByMonth(employeeId);
     }
 
+  @Override
+  public String getEmail(String employeeId) {
+    return employeeMapper.getEmail(employeeId);
+  }
+
 
 }

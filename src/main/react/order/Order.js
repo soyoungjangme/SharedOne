@@ -859,6 +859,10 @@ function Order() {
 
 
 
+
+
+
+
     return (
         <div>
 
@@ -946,6 +950,7 @@ function Order() {
                         </button>
                     </div>
                 </div>
+
 
                 <button className="btn-common add" type="button" onClick={handleAddClick}>
                     주문 등록
@@ -1140,8 +1145,8 @@ function Order() {
                             <div className="RegistFormList">
                                 <div style={{fontWeight: 'bold'}}> 총 {searchProd?.length || 0} 건</div>
                                 <div className="formTableBookList">
-                                                                                        <table className="formTableList2">
-                                    <thead>
+                                 <table className="formTableList2" >
+                                    <thead className="formTableList2thead">
                                     <tr>
                                         <th><input type="checkbox" checked={orderListAllCheck} onChange={(e) => handleOrderListMasterCheckboxChange(e)}/></th>
                                         <th>no</th>

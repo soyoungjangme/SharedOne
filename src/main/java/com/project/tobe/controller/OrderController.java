@@ -4,8 +4,7 @@ import com.project.tobe.dto.*;
 import com.project.tobe.entity.Employee;
 import com.project.tobe.entity.OrderH;
 import com.project.tobe.security.EmployeeDetails;
-import com.project.tobe.service.EmployeeService;
-import com.project.tobe.service.OrderService;
+import com.project.tobe.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -27,6 +26,16 @@ public class OrderController {
     @Autowired
     @Qualifier("employeeService")
     private EmployeeService employeeService;
+
+    @Autowired
+    @Qualifier("customerService")
+    private CustomerService customerService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private EmailService emailService;
 
     //jsy초기 목록 호출
     @GetMapping("/orderList")
@@ -64,6 +73,35 @@ public class OrderController {
     @PostMapping("/registOrder")
     public ResponseEntity<Long> registOrder(@RequestBody OrderRegistDTO request) {
         Long orderNo = orderService.registOrder(request);
+        String managerEmail = employeeService.getEmail(request.getInputConfirmer());
+        String employeeEmail = employeeService.getEmail(request.getInputManager());
+        String customer = customerService.getCustomerName(request.getInputCustomerNo());
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("납품요청일 : ").append(request.getInputDelDate()).append("\n");
+        sb.append("고객 : ").append(customer).append("\n");
+        sb.append("담당자 메일 : ").append(employeeEmail).append("\n");
+
+        for (OrderBDTO dto : request.getOrderBList()) {
+            String productName = productService.getProductName(dto.getProductNo());
+
+            sb.append("\n");
+            sb.append("상품명 : ").append(productName).append("\n");
+            sb.append("상품 수량 : ").append(dto.getOrderProductQty()).append("\n");
+            sb.append("상품 총 가격 : ").append(dto.getProdTotal()).append("\n");
+        }
+
+        EmailDTO emailDTO = EmailDTO.builder()
+                .targetMail(managerEmail)
+                .subject("주문번호 " + orderNo.toString() + " 결재 요청 드립니다.")
+                .body(sb.toString())
+                .build();
+
+        try {
+            emailService.sendMailReject(emailDTO);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         return ResponseEntity.ok(orderNo);
     }
@@ -84,11 +122,11 @@ public class OrderController {
     }
 
     @GetMapping("/getMyRole")
-    public String getMyRole(Authentication authentication){
+    public String getMyRole(Authentication authentication) {
         String userRole = "";
 
-        if(authentication != null) { //인증이 되지않았다면 null입니다.
-            EmployeeDetails user = (EmployeeDetails)authentication.getPrincipal(); //인증객체 안에 principal값을 얻으면 유저객체가 나옵니다.
+        if (authentication != null) { //인증이 되지않았다면 null입니다.
+            EmployeeDetails user = (EmployeeDetails) authentication.getPrincipal(); //인증객체 안에 principal값을 얻으면 유저객체가 나옵니다.
             userRole = user.getUserAuthorityGrade();
 
             System.out.println("------------------권한" + user.getUserAuthorityGrade());
@@ -125,7 +163,7 @@ public class OrderController {
 */
 
 
-/* 유선화 START */
+    /* 유선화 START */
 // 주문 상세 정보 조회
     @GetMapping("/detail/{orderNo}")
     public ResponseEntity<OrderHDTO> getOrderDetail(@PathVariable Long orderNo) {
@@ -141,6 +179,7 @@ public class OrderController {
     // 결재 여부에 따른 업데이트
     @PostMapping("/updateApproval")
     public ResponseEntity<?> updateApproval(@RequestBody OrderHDTO orderHDTO) {
+        EmployeeDTO employeeDTO = orderHDTO.getEmployee();
         boolean updated = orderService.updateApproval(
                 orderHDTO.getOrderNo(),
                 orderHDTO.getConfirmStatus(),
@@ -148,6 +187,19 @@ public class OrderController {
                 orderHDTO.getRemarks()
         );
         if (updated) {
+            String employeeEmail = employeeService.getEmail(employeeDTO.getEmployeeId());
+            EmailDTO dto = EmailDTO.builder()
+                    .targetMail(employeeEmail)
+                    .subject("주문번호 " + orderHDTO.getOrderNo() + " 결과 : " + orderHDTO.getConfirmStatus())
+                    .body("주문번호 " + orderHDTO.getOrderNo() + " 번 " + orderHDTO.getConfirmStatus() + "되었습니다.")
+                    .build();
+
+            try {
+                emailService.sendMailReject(dto);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
             return ResponseEntity.ok().body(Map.of("success", true));
         } else {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "업데이트 실패!!"));
@@ -216,7 +268,7 @@ public class OrderController {
         Map<String, Object> map = new HashMap<>();
 
         EmployeeRankDTO top = orderService.getTopOfMonth();
-        List<SalesByMonth> salesByMonth= orderService.getSalesByMonth();
+        List<SalesByMonth> salesByMonth = orderService.getSalesByMonth();
         List<EmployeeRankDTO> employeeRank = orderService.getEmployeeRank();
         List<ProductSaleRank> productRank = orderService.getProductRank();
 

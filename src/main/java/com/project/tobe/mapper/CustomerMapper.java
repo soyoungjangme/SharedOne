@@ -14,4 +14,5 @@ public interface CustomerMapper {
     public void customerUpdateTest(CustomerDTO dto);
     public void customerDeleteTest(List<String> customerIds);
 
+    String getCustomerName(Long inputCustomerNo);
 }

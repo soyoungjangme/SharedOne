@@ -106,4 +106,8 @@
             CAST(#{customerNo} AS bigint)
         </foreach>
     </update>
+
+    <select id="getCustomerName" resultType="string">
+        select customer_name from customer where customer_no = #{inputCustomerNo}
+    </select>
 </mapper>

@@ -301,8 +301,6 @@ tr:nth-child(0){
 }
 
 .search-table th:nth-child(1),
-.search-table th:nth-child(2),
-.search-table td:nth-child(3),
 .search-table td:nth-child(1) {
     text-align: center;
 }

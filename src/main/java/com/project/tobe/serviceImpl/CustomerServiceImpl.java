@@ -46,6 +46,10 @@ public class CustomerServiceImpl implements CustomerService {
         customerMapper.customerDeleteTest(customerIds);
     }
 
+    @Override
+    public String getCustomerName(Long inputCustomerNo) {
+        return customerMapper.getCustomerName(inputCustomerNo);
+    }
 
 
 }

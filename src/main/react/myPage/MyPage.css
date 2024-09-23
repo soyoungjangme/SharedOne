@@ -16,28 +16,36 @@
   margin-bottom: 20px;
   border-bottom: 1px solid black;
   padding-bottom: 10px;
+      margin-bottom: 30px;
 }
 
 .my-page-header {
   color: black;
   border-bottom: none;
-  font-size: 2em;
-  margin: 20px 0 60px 0;
+  font-size:1.8em;
+      margin-top: 27px;
+
 }
 
 .mypage-main {
-  display: flex;
-  justify-content: space-between;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+ gap: 5%;
+     display: flex;
+     justify-content: space-between;
+     background: white;
+     border-radius: 8px;
+     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+     padding: 40px;
+     font-size : 0.9em;
 }
+
+.header  .bi {
+    margin-right: 10px;
+        margin-bottom: 30px;
+    }
 
 .mypage-table {
   flex: 1;
   margin-right: 20px;
-  padding: 30px;
 }
 
 .mypage-table table {
@@ -49,6 +57,7 @@
 .mypage-table td {
   padding: 12px;
   text-align: left;
+      font-weight: bold;
 }
 
 .mypage-table th {
@@ -61,6 +70,7 @@
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  padding-left: 12px;
 }
 
 .password-row {
@@ -72,7 +82,7 @@
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  width: 73%;
+  width: 74%;
   margin-right: 10px;
 }
 
@@ -126,10 +136,15 @@
 .mypage-chart {
   /* 부모 요소 안에서 일정비율 차지 */
   flex: 1;
+  
+
   width: 50%;
-  height: 700px;
-  padding: 30px;
+  height: 650px;
+
 }
+
+.mypage-chart > canvas {
+ margin-top: 16%;}
 
 .modal {
   position: fixed;

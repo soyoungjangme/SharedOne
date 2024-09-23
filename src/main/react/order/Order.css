@@ -10,11 +10,27 @@ body {
 .formTableBookList {
 margin-top: 30px;
         height: auto;
-     max-height: 372px;
+     max-height: 367px;
      overflow: auto;
      min-width: 100%;
      margin-bottom: 30px;
-     border-bottom: 1px solid #ddd;
+
+border-bottom: 1px solid #ddd;
+}
+
+.formTableList {
+      border-collapse: separate;
+         border-spacing: 0;
+         }
+
+.formTableList2thead {
+  position : sticky;
+  top : 0px;
+  border-top: 1px solid red;
+}
+
+.formTableList2thead.active {
+  background-color: lightblue;
 }
 
 .filter-containers {
@@ -247,7 +263,7 @@ h2 {
     margin-top: 100px;
     position: relative;
 }
-.seacrh-table, th, td {
+.seacrh-table th, .seacrh-table td {
     border: 1px solid #ddd;
 }
 
