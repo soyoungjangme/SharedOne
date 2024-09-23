@@ -11,10 +11,10 @@ body {
 }
 
 .header {
-  color: #004e90;
+  color: black;
   font-size: 20px;
   margin-bottom: 20px;
-  border-bottom: 2px solid #004e90;
+  border-bottom: 1px solid black;
   padding-bottom: 10px;
 }
 .my-page-header {
