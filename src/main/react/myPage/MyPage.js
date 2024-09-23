@@ -163,20 +163,20 @@ function MyPage() {
 
 
   // 메인 리스트 가져오기 axios
-  useEffect(() => {
-    let {data} = axios.get('/mypage/mypageSession')
+  useEffect(async () => {
+    let {data} = await axios.get('/mypage/mypageSession')
       .then(response => setSession(response.data))
       .catch(error => console.error('Error', error));
 
     // 월별 실적 가져오기
-    axios.get('/mypage/getMySalesByMonth?employeeId=' + data).then(respponse => setSalesByMonth(respponse.data));
+    await axios.get('/mypage/getMySalesByMonth?employeeId=' + data).then(respponse => setSalesByMonth(respponse.data));
   }, []);
 
   // 차트 월별 데이터 저장 변수
   const [salesByMonth, setSalesByMonth] = useState([]);
 
   // session 상태가 변경될 때마다 editData 업데이트
-  useEffect(async () => {
+  useEffect( () => {
     if (session) {
       setEditData(prevData => ({
         ...prevData,

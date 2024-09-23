@@ -11,10 +11,12 @@ const EmployeeMonthlySalesChart = ({salesByMonth}) => {
     const label = [];
     const chartData = [];
 
-    useEffect(() => {
+    const setData = () => {
         if (salesByMonth !== null) salesByMonth.forEach(item => {label.push(item.salesMonth); chartData.push(item.totalSales)});
-        console.log(label);
-        console.log(chartData);
+    }
+
+    useEffect(() => {
+        setData();
     }, []);
 
     const data = {
