@@ -7,7 +7,7 @@ import './OrderModalUpdate.css'
 import useCheckboxManager from '../js/CheckboxManager';
 
 
-function ModifyOrderModal({ orderData, isOpen, onClose, onUpdate }) {
+function ModifyOrderModal({ orderData, isOpen, onClose,onClose2, onUpdate }) {
 
     // 상태 변수: 상품 목록, 추가된 상품 목록, 각 상품의 수량 관리
     const [customPrice, setCustomPrice] = useState([]); // 상품 리스트
@@ -308,6 +308,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onUpdate }) {
                 alert('주문이 성공적으로 업데이트되었습니다.');
                 onUpdate(response.data);  // 부모 컴포넌트로 수정된 데이터 전달
                 onClose();  // 수정 완료 후 수정 모달 닫기
+                onClose2();
                  window.location.reload();
             } else {
                 alert('주문 업데이트에 실패했습니다.');
@@ -545,6 +546,13 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onUpdate }) {
                     {/* 선택된 상품 목록*/}
                     <div className="RegistFormList">
                         <div style={{fontWeight: 'bold'}}>총 {modifyItem.orderBList?.length || 0} 건</div>
+
+                           {(showDelete || (selectedProductsAllCheck && modifyItem.orderBList?.length > 0)) && (
+                                                            <button className="delete-btn btn-common" onClick={handleDelete}>
+                                                                삭제
+                                                            </button>
+                                                        )}
+
                         <table className="formTableList">
                             <thead>
                             <tr>
@@ -583,11 +591,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onUpdate }) {
                                 </th>
                                 <th>판매 시작일</th>
                                 <th>판매 종료일</th>
-                                {(showDelete || (selectedProductsAllCheck && modifyItem.orderBList?.length > 0)) && (
-                                    <button className="delete-btn2 btn-common" onClick={handleDelete}>
-                                        삭제
-                                    </button>
-                                )}
+
                             </tr>
                             </thead>
                             <tbody>
