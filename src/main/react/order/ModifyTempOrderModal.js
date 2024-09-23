@@ -116,12 +116,9 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
     }, [modifyItem.customer.customerNo, delDate]);
 
     // 수량
-    const handleQuantityChange = (index) => (e) => {
+    const handleQuantityChange = (priceNo) => (e) => {
         const qty = Number(e.target.value) || 0;
-        setQuantities(prevQuantities => ({
-            ...prevQuantities,
-            [index]: qty
-        }));
+        setQuantities(prevQuantities => ({ ...prevQuantities, [priceNo]: qty }));
     };
 
     // 주문 임시저장 처리
@@ -480,7 +477,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                             </thead>
                             <tbody>
                             {addCheckProd.map((addProd, index) => {
-                                const qty = quantities[index] || 0;
+                                const qty = quantities[addProd.price.priceNo] || 0;
                                 return (
                                     <tr key={index}>
                                         <td><input type="checkbox" checked={orderAddCheckItem[index] || false}
@@ -490,12 +487,8 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                                         <td>{addProd.product.productCategory}</td>
                                         <td>{addProd.product.productName}</td>
                                         <td>
-                                            <input
-                                                type="number"
-                                                value={quantities[index] || 0}
-                                                onChange={handleQuantityChange(index)}
-                                                placeholder="수량"
-                                            />
+                                            <input type="number" id={`prodQty_${addProd.price.priceNo}`} value={qty}
+                                                   onChange={handleQuantityChange(addProd.price.priceNo)} placeholder="수량"/>
                                         </td>
 
                                         <td>{addProd.price.customPrice * qty}</td>
