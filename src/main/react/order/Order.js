@@ -446,9 +446,9 @@ function Order() {
 
     //상품 수량
     const [quantities, setQuantities] = useState({});
-    const handleQuantityChange = (index) => (e) => {
+    const handleQuantityChange = (priceNo) => (e) => {
         const qty = Number(e.target.value) || 0;
-        setQuantities(prevQuantities => ({ ...prevQuantities, [index]: qty }));
+        setQuantities(prevQuantities => ({ ...prevQuantities, [priceNo]: qty }));
     };
 
 
@@ -463,7 +463,7 @@ function Order() {
             if (orderStatus === "대기") {
                 const hasInvalidQty = addCheckProd.some((_, index) => {
                     console.log("qty: ", quantities);
-                    const qty = quantities[index] || 0;
+                    const qty = quantities[quantities.priceNo] || 0;
                     return qty <= 0;
                 });
 
@@ -477,7 +477,7 @@ function Order() {
             const orderBList = addCheckProd.map((addProd, index) => {
                 const orderProdNo = addProd.prodNo || 0; // 상품번호
                 const orderPriceNo = addProd.priceNo || 0; // 판매가 번호
-                const orderProdQty = quantities[index] || 0; // 각 상품에 맞는 수량 가져오기
+                const orderProdQty = quantities[addProd.priceNo] || 0; // 각 상품에 맞는 수량 가져오기
                 const orderProdTotal = orderProdQty * addProd.salePrice; // 수량 * 판매가
 
                 return {
@@ -514,9 +514,16 @@ function Order() {
 
     //주문등록 - 상품검색
     const [searchTerm, setSearchTerm] = useState('');
-    const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value);
-    };
+
+    useEffect(() => {
+        const handleSearchChange = (e) => {
+            setSearchTerm(e.target.value);
+
+            setAllCheckMod(false);
+            setCheckItemMod(false);
+        };
+    },[searchTerm]);
+
 
     const searchProd = customPrice.filter(product =>
         product.prodName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -524,32 +531,43 @@ function Order() {
 
     // 추가리스트 선택 삭제
     const handleAddProdDelete = () => {
-        setQuantities({}); //수량 기록 초기화
 
         setAddCheckProd(prevAddCheckProd => {
-            let newAddCheckProd = prevAddCheckProd;
 
-            if(!orderAddAllCheck){
+            if (!orderAddAllCheck) {
+                // 체크된 항목의 인덱스 추출
+                const checkedIndexes = Object.keys(orderAddCheckItem).filter(priceNo => orderAddCheckItem[priceNo]);
 
-                const checkedIndexes = Object.keys(orderAddCheckItem).filter(key => orderAddCheckItem[key]);//체크된 항목의 인덱스를 추출
+                // 해당 인덱스의 priceNo 추출
+                const checkedPriceNos = checkedIndexes.map(index => prevAddCheckProd[index].priceNo);
 
-                const checkedPriceNos = checkedIndexes.map(index => prevAddCheckProd[index].priceNo);//해당 인덱스의 priceNo를 추출
+                // 체크되지 않은 항목만 남기기
+                const newAddCheckProd = prevAddCheckProd.filter(item => !checkedPriceNos.includes(item.priceNo));
 
-                const newAddCheckProd = prevAddCheckProd.filter(item => !checkedPriceNos.includes(item.priceNo)); //체크 안한 것만 남기기
+                // 삭제된 항목들의 수량을 0으로 초기화
+                setQuantities(prevQuantities => {
+                    const updatedQuantities = { ...prevQuantities };
+                    checkedPriceNos.forEach(priceNo => {
+                        updatedQuantities[priceNo] = 0; // 삭제된 항목의 수량만 0으로 설정
+                    });
+                    return updatedQuantities;
+                });
 
-                return newAddCheckProd; //개별 삭제 후 반환
+                return newAddCheckProd; // 개별 삭제 후 반환
 
-            }else {
-                if(addCheckProd.length > 0){
-                    return []; //전체 삭제
-                }else{
+            } else {
+                // 전체 삭제 처리
+                if (addCheckProd.length > 0) {
+                    setQuantities({}); // 전체 삭제 시 수량도 전체 초기화
+                    return []; // 전체 삭제
+                } else {
                     alert(`삭제할 항목이 없습니다.`);
-                    return prevAddCheckProd; //이전 상태 유지
+                    return prevAddCheckProd; // 이전 상태 유지
                 }
             }
-
         });
     };
+
 
 
 
@@ -624,6 +642,7 @@ function Order() {
 
     const handleCloseModifyModal = () => {
         setIsModifyModalVisible(false);
+        console.log('Closing the modal...');
     };
 
     // 임시 저장 모달 열기
@@ -858,8 +877,14 @@ function Order() {
     };
 
 
+// ------------------------------------ 멀티 셀렉트
 
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
+  // 버튼 클릭 시 해당 인덱스를 선택
+  const handleButtonClick2 = (index) => {
+    setSelectedIndex(index);
+  };
 
 
 
@@ -956,6 +981,40 @@ function Order() {
                     주문 등록
                 </button>
 
+
+            <div className="multi-select">
+                 <button
+                   className={`btn ${selectedIndex === 0 ? "selected" : ""}`}
+                   onClick={() => handleButtonClick2(0)}
+                 >
+                   내 글 보기
+                 </button>
+                 <button
+                   className={`btn ${selectedIndex === 1 ? "selected" : ""}`}
+                   onClick={() => handleButtonClick2(1)}
+                 >
+                  임시저장
+                 </button>
+                 <button
+                   className={`btn ${selectedIndex === 2 ? "selected" : ""}`}
+                   onClick={() => handleButtonClick2(2)}
+                 >
+                   대기
+                 </button>
+                 <button
+                   className={`btn ${selectedIndex === 3 ? "selected" : ""}`}
+                   onClick={() => handleButtonClick2(3)}
+                 >
+                   반려
+                 </button>
+                 <button
+                   className={`btn ${selectedIndex === 4 ? "selected" : ""}`}
+                   onClick={() => handleButtonClick2(4)}
+                 >
+                  승인
+                 </button>
+               </div>
+
                 <table className="seacrh-table">
                     {showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}
                     <thead>
@@ -993,9 +1052,9 @@ function Order() {
                         </th>
                         <th>
                             주문 상세
-                            <button className="sortBtn" onClick={() => sortData('details')}>
+                            {/*<button className="sortBtn" onClick={() => sortData('details')}>
                                 {sortConfig.key === 'details' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                            </button>
+                            </button>*/}
                         </th>
 
 
@@ -1198,10 +1257,11 @@ function Order() {
                                     </thead>
                                     <tbody>
                                     {addCheckProd.map((addProd, index) => {
-                                        console.log(`렌더링 중: 상품명 = ${addProd.prodName}, 수량 = ${quantities[index] || 0}`);
-                                        const qty = quantities[index] || 0; // index에 맞는 수량 가져옴
+                                        const qty = quantities[addProd.priceNo] || 0; // index에 맞는 수량 가져옴
+                                        console.log(`렌더링 중: 상품명 = ${addProd.prodName}, 수량 = ${quantities[addProd.priceNo] || 0}`);
+
                                         return (
-                                            <tr key={index} className={orderAddCheckItem[index] ? 'selected-row' : ''}>
+                                            <tr key={index} className={orderAddCheckItem[addProd.priceNo] ? 'selected-row' : ''}>
                                                 <td><input type="checkbox" id="checkProdList"
                                                            checked={orderAddCheckItem[index] || false}
                                                            onChange={(e) => handleOrderAddCheckboxChange(e)}/></td>
@@ -1210,8 +1270,8 @@ function Order() {
                                                 <td>{addProd.prodCat}</td>
                                                 <td>{addProd.prodName}</td>
                                                 <td>
-                                                    <input type="number" id={`prodQty_${index}`} value={qty}
-                                                           onChange={handleQuantityChange(index)} placeholder="수량"/>
+                                                    <input type="number" id={`prodQty_${addProd.priceNo}`} value={qty}
+                                                           onChange={handleQuantityChange(addProd.priceNo)} placeholder="수량"/>
                                                 </td>
                                                 <td>{addProd.salePrice * qty}</td>
                                                 <td>{addProd.saleStart}</td>
@@ -1223,7 +1283,7 @@ function Order() {
                                         <td colSpan="5"> 합계</td>
                                         <td colSpan="3">
                                             {addCheckProd.reduce((total, addProd, index) => {
-                                                const qty = quantities[index] || 0; //수량
+                                                const qty = quantities[addProd.priceNo] || 0; //수량
                                                 return total + (addProd.salePrice * qty);
                                             },0).toLocaleString()}원 {/*toLocaleString() : 숫자를 천 단위로 구분하고, 통화 기호 추가*/}
                                         </td>

@@ -167,6 +167,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
             fetchData();
             onClose();
             onClose2();
+            window.location.reload();
         } catch (error) {
             console.error('임시 저장 중 오류 발생:', error.response?.data || error.message);
             alert('임시 저장 중 오류가 발생했습니다: ' + (error.response?.data || error.message));
