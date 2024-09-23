@@ -642,6 +642,7 @@ function Order() {
 
     const handleCloseModifyModal = () => {
         setIsModifyModalVisible(false);
+        console.log('Closing the modal...');
     };
 
     // 임시 저장 모달 열기
