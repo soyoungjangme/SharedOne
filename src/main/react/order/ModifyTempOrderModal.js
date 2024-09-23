@@ -420,7 +420,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                         <div style={{fontWeight: 'bold'}}>고객별 주문 가능한 상품 리스트 (총 {searchProd.length}건)</div>
                          <div className="formTableBookList">
                                                         <table className="formTableList2">
-                            <thead>
+                                  <thead className="formTableList2thead">
                             <tr>
                                 <th><input type="checkbox" checked={orderListAllCheck}
                                            onChange={(e) => handleOrderListMasterCheckboxChange(e)}/></th>
