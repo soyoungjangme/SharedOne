@@ -876,8 +876,14 @@ function Order() {
     };
 
 
+// ------------------------------------ 멀티 셀렉트
 
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
+  // 버튼 클릭 시 해당 인덱스를 선택
+  const handleButtonClick2 = (index) => {
+    setSelectedIndex(index);
+  };
 
 
 
@@ -973,6 +979,40 @@ function Order() {
                 <button className="btn-common add" type="button" onClick={handleAddClick}>
                     주문 등록
                 </button>
+
+
+            <div className="multi-select">
+                 <button
+                   className={`btn ${selectedIndex === 0 ? "selected" : ""}`}
+                   onClick={() => handleButtonClick2(0)}
+                 >
+                   내 글 보기
+                 </button>
+                 <button
+                   className={`btn ${selectedIndex === 1 ? "selected" : ""}`}
+                   onClick={() => handleButtonClick2(1)}
+                 >
+                  임시저장
+                 </button>
+                 <button
+                   className={`btn ${selectedIndex === 2 ? "selected" : ""}`}
+                   onClick={() => handleButtonClick2(2)}
+                 >
+                   대기
+                 </button>
+                 <button
+                   className={`btn ${selectedIndex === 3 ? "selected" : ""}`}
+                   onClick={() => handleButtonClick2(3)}
+                 >
+                   반려
+                 </button>
+                 <button
+                   className={`btn ${selectedIndex === 4 ? "selected" : ""}`}
+                   onClick={() => handleButtonClick2(4)}
+                 >
+                  승인
+                 </button>
+               </div>
 
                 <table className="seacrh-table">
                     {showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}
