@@ -204,10 +204,12 @@ function Employee() {
             [name]: value,
         }));
 
+
    if (name === 'employeeId' && value !== test.employeeId) {
                  setIdResult(false);
                  setButtonColor('#939393');
         }
+
 
         console.log(test);
     };
@@ -216,16 +218,14 @@ function Employee() {
 const validateInputs = () => {
   const { employeeId, residentNum, salary, employeeTel ,authorityGrade, employeePw , employeeEmail} = test; // 상태에서 값을 가져옵니다
 
+
+
+
   if (isObjectEmpty(test)) {
     alert('모든 값을 입력하세요.');
     return false;
   }
 
-  // 아이디 유효성 검사
-  if (employeeId.length < 5) {
-    alert('아이디는 5자 이상 입력해주세요.');
-    return false;
-  }
 
   // 비밀번호 유효성 검사
   if (employeePw.length < 5) {
@@ -325,14 +325,26 @@ const onClickListAdd = () => {
  const [buttonColor, setButtonColor] = useState('#939393');
 
   const IdCheck = async () => {
+  const { employeeId, residentNum, salary, employeeTel ,authorityGrade, employeePw , employeeEmail} = test; // 상태에서 값을 가져옵니다
 
-    const validPattern = /^[a-zA-Z0-9!@#$%^&*()_+{}[\]:;"'<>,.?/~`|-]+$/;
-    if (!validPattern.test(test.employeeId)) {
-      alert('아이디는 대소문자, 숫자, 특수문자만 가능합니다.');
-      return;
-    }
+      const validPattern2 = /^[A-Za-z0-9]+$/; // 대소문자 및 숫자만 허용
+
+        // 아이디 유효성 검사
+        if (!validPattern2.test(employeeId)) {
+          alert('아이디는 대소문자와 숫자만 사용할 수 있습니다.');
+          return;
+        }
+        if (employeeId.length < 5) {
+          alert('아이디는 5자 이상 입력해주세요.');
+          return;
+        }
+
 
     try {
+
+
+
+
       const response = await axios.post('/employee/employeeIdCheck',{employeeId : test.employeeId}, {
        headers: { 'Content-Type': 'application/json' }
       });
@@ -1163,9 +1175,9 @@ const handleDeletePickClick = () => {
                                    {/* <button id="downloadCsv" className="btn-CSV">CSV 샘플 양식</button>
                                     <button id="uploadCsv" className="btn-CSV" onClick={handleAddClickCSV}>CSV 파일 업로드</button>
                                     {isVisibleCSV && (
-                                        <input type="file" id="uploadCsvInput" accept=".csv" />)}
+                                        <input type="file" id="uploadCsvInput" accept=".csv" />)}*/}
 
-                                    <button className="btn-common btn-add-p" onClick={onClickListAdd}> 추가</button>*/}
+                                    <button className="btn-common btn-add-p" onClick={onClickListAdd}> 추가</button>
                                 </div>
                             </div>
 

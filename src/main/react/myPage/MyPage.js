@@ -28,8 +28,37 @@ function MyPage() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  console.log(currentPassword);
+  //   // 세션 정보 가져오기
+  //   useEffect(() => {
+  //     const fetchSession = async () => {
+  //         try {
+  //             const response = await axios.get('/mypage/mypageSession');
+  //             setSession(response.data);
+  //         } catch (error) {
+  //             console.error('Error fetching session:', error);
+  //         }
+  //     };
+  //     fetchSession();
+  // }, []);
 
+  // // 사용자 정보 가져오기
+  // useEffect(() => {
+  //     if (session) {
+  //         const fetchMypageData = async () => {
+  //             try {
+  //                 const response = await axios.post('/mypage/mypageAll', null, { params: { employeeId: session } });
+  //                 setMypageAll(response.data);
+  //                 setEditData(response.data);
+  //             } catch (error) {
+  //                 console.error('Error fetching employee data:', error);
+  //             }
+  //         };
+  //         fetchMypageData();
+  //     }
+  // }, [session]);
+
+
+  console.log(currentPassword);
   console.log(newPassword);
   console.log(mypageAll.employeePw);
 
@@ -134,20 +163,20 @@ function MyPage() {
 
 
   // 메인 리스트 가져오기 axios
-  useEffect(() => {
-    let {data} = axios.get('/mypage/mypageSession')
+  useEffect(async () => {
+    let {data} = await axios.get('/mypage/mypageSession')
       .then(response => setSession(response.data))
       .catch(error => console.error('Error', error));
 
     // 월별 실적 가져오기
-    axios.get('/mypage/getMySalesByMonth?employeeId=' + data).then(respponse => setSalesByMonth(respponse.data));
+    await axios.get('/mypage/getMySalesByMonth?employeeId=' + data).then(respponse => setSalesByMonth(respponse.data));
   }, []);
 
   // 차트 월별 데이터 저장 변수
   const [salesByMonth, setSalesByMonth] = useState([]);
 
   // session 상태가 변경될 때마다 editData 업데이트
-  useEffect(async () => {
+  useEffect( () => {
     if (session) {
       setEditData(prevData => ({
         ...prevData,
@@ -242,63 +271,70 @@ function MyPage() {
 
   return (
     <div>
-      <h1 className="header"><i class="bi bi-tag-fill"></i>마이페이지</h1>
+      <h1 className="header my-page-header"><i className="bi bi-tag-fill"></i>마이페이지</h1>
       <div className="mypage-main">
         <div className="mypage-table">
-          <table>
-            <tr>
-              <td><label htmlFor="employeeId">아이디</label></td>
-              <td><input type="text" id="employeeId" name="employeeId" value={mypageAll.employeeId || ''} disabled /></td>
-            </tr>
-            <tr>
-              <td><label htmlFor="employeePw">비밀번호</label></td>
 
-              <td>
-                <button class="pw-btn" onClick={openModal}>비밀번호 변경</button>
-              </td>
-            </tr>
-            <tr>
-              <td><label htmlFor="employeeName">이름</label></td>
-              <td><input type="text" id="employeeName" name="employeeName" value={mypageAll.employeeName || ''} disabled /></td>
-            </tr>
-            <tr>
-              <td><label htmlFor="phone">전화번호</label></td>
-              <td><input type="tel" id="phone" name="employeeTel" value={editData.employeeTel || ''} disabled={!isEditing} onChange={handleInputChange} /></td>
-            </tr>
-            <tr>
-              <td><label htmlFor="email">이메일</label></td>
-              <td><input type="email" id="email" name="employeeEmail" value={editData.employeeEmail || ''} disabled={!isEditing} onChange={handleInputChange} /></td>
-            </tr>
-            <tr>
-              <td><label htmlFor="address">주소</label></td>
-              <td><input type="text" id="address" name="employeeAddr" value={editData.employeeAddr || ''} disabled={!isEditing} onChange={handleInputChange} /></td>
-            </tr>
-            <tr>
-              <td><label htmlFor="residentNum">주민번호</label></td>
-              <td>  <input
-                type="text"
-                id="residentNum"
-                name="residentNum"
-                value={maskSSN(mypageAll.residentNum) || ''}
-                disabled
-              /></td>
-            </tr>
-            <tr>
-              <td><label htmlFor="hireDate">입사일</label></td>
-              <td><input type="date" id="hireDate" name="hireDate" value={mypageAll.hireDate || ''} disabled /></td>
-            </tr>
-            <tr>
-              <td><label htmlFor="salary">급여</label></td>
-              <td><input type="number" id="salary" name="salary" value={mypageAll.salary || ''} disabled /></td>
-            </tr>
-            <tr>
-              <td><label htmlFor="supervisor">직속상사</label></td>
-              <td><input type="text" id="supervisor" name="employeeManagerId" value={mypageAll.employeeManagerId || ''} disabled /></td>
-            </tr>
-            <tr>
-              <td><label htmlFor="role">권한</label></td>
-              <td><input type="text" id="role" name="authorityName" value={mypageAll.authorityName || ''} disabled /></td>
-            </tr>
+          <h2 className="header"><i className="bi bi-bar-chart-line-fill"></i>내 정보</h2>
+          
+          <table>
+            <tbody>
+              <tr>
+                <td><label htmlFor="employeeId">아이디</label></td>
+                <td><input type="text" id="employeeId" name="employeeId" value={mypageAll.employeeId || ''} disabled /></td>
+              </tr>
+              <tr>
+                <td><label htmlFor="employeePw">비밀번호</label></td>
+
+                <td>
+                  <button class="pw-btn" onClick={openModal}>비밀번호 변경</button>
+                </td>
+              </tr>
+              <tr>
+                <td><label htmlFor="employeeName">이름</label></td>
+                <td><input type="text" id="employeeName" name="employeeName" value={mypageAll.employeeName || ''} disabled /></td>
+              </tr>
+              <tr>
+                <td><label htmlFor="phone">전화번호</label></td>
+                <td><input type="tel" id="phone" name="employeeTel" value={editData.employeeTel || ''} disabled={!isEditing} onChange={handleInputChange} /></td>
+              </tr>
+              <tr>
+                <td><label htmlFor="email">이메일</label></td>
+                <td><input type="email" id="email" name="employeeEmail" value={editData.employeeEmail || ''} disabled={!isEditing} onChange={handleInputChange} /></td>
+              </tr>
+              <tr>
+                <td><label htmlFor="address">주소</label></td>
+                <td><input type="text" id="address" name="employeeAddr" value={editData.employeeAddr || ''} disabled={!isEditing} onChange={handleInputChange} /></td>
+              </tr>
+              <tr>
+                <td><label htmlFor="residentNum">주민번호</label></td>
+                <td>  <input
+                  type="text"
+                  id="residentNum"
+                  name="residentNum"
+                  value={maskSSN(mypageAll.residentNum) || ''}
+                  disabled
+                /></td>
+              </tr>
+              <tr>
+                <td><label htmlFor="hireDate">입사일</label></td>
+                <td><input type="date" id="hireDate" name="hireDate" value={mypageAll.hireDate || ''} disabled /></td>
+              </tr>
+              <tr>
+                <td><label htmlFor="salary">급여</label></td>
+                <td><input type="number" id="salary" name="salary" value={mypageAll.salary || ''} disabled /></td>
+              </tr>
+              <tr>
+                <td><label htmlFor="supervisor">직속상사</label></td>
+                <td><input type="text" id="supervisor" name="employeeManagerId" value={mypageAll.employeeManagerId || ''} disabled /></td>
+              </tr>
+              <tr>
+                <td><label htmlFor="role">권한</label></td>
+                <td><input type="text" id="role" name="authorityName" value={mypageAll.authorityName || ''} disabled /></td>
+              </tr>
+            </tbody>
+
+
           </table>
 
           <div className="form-actions">
@@ -316,7 +352,7 @@ function MyPage() {
         <div className="mypage-chart">
           <h2 className="header">
             {/* <i className="bi bi-graph-up"></i>  */}
-            <i class="bi bi-bar-chart-line-fill"></i>
+            <i className="bi bi-bar-chart-line-fill"></i>
             이번 달 실적</h2>
           <EmployeeMonthlySalesChart salesByMonth={salesByMonth}/>
         </div>

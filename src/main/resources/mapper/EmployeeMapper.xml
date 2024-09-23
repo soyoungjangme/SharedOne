@@ -196,9 +196,9 @@
              ON header.order_no = body.order_no
         WHERE header.confirm_status LIKE '%승인%'
           AND header.confirm_change_date IS NOT NULL
-        AND header.employee_id=#{employeeId}
+          AND header.employee_id = #{employeeId}
         GROUP BY TO_CHAR(header.confirm_change_date, 'YYYY-MM')
-        ORDER BY sales_month
+        ORDER BY TO_CHAR(header.confirm_change_date, 'YYYY-MM')
     </select>
 
 </mapper>
