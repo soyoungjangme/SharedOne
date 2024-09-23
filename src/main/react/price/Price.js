@@ -86,6 +86,7 @@ const Price = () => {
     }
 
     const getSearchItems = async (item) => {
+        console.log(item);
         const { data } = await axios.post('/price/search', item, {
             headers: {
                 'content-type': 'application/json',

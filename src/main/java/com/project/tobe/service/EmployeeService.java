@@ -1,9 +1,6 @@
 package com.project.tobe.service;
 
-import com.project.tobe.dto.AuthorityDto;
-import com.project.tobe.dto.EmployeeDTO;
-import com.project.tobe.dto.EmployeeSearchDTO;
-import com.project.tobe.dto.EmployeeTestDTO;
+import com.project.tobe.dto.*;
 import com.project.tobe.entity.Employee;
 import com.project.tobe.security.EmployeeDetails;
 import org.springframework.data.domain.Page;
@@ -28,4 +25,6 @@ public interface EmployeeService {
    EmployeeDTO employeeUserSession(String id);
 
     List<EmployeeDTO> getManagerList(String id);
+
+    SalesByMonth getMySalesByMonth(String employeeId);
 }

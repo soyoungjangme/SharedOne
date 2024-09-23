@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from "react-dom/client";
 import './MyPage.css';
-import MonthlySalesChart from '../main/MonthlySalesChart';
 import axios from 'axios';
 import './MyPage_password.css';
 import EmployeeMonthlySalesChart from "./EmployeeMonthlySalesChart";
@@ -136,18 +135,28 @@ function MyPage() {
 
   // 메인 리스트 가져오기 axios
   useEffect(() => {
-    axios.get('/mypage/mypageSession')
+    let {data} = axios.get('/mypage/mypageSession')
       .then(response => setSession(response.data))
       .catch(error => console.error('Error', error));
+
+    // 월별 실적 가져오기
+    axios.get('/mypage/getMySalesByMonth?employeeId=' + data).then(respponse => setSalesByMonth(respponse.data));
   }, []);
 
+  // 차트 월별 데이터 저장 변수
+  const [salesByMonth, setSalesByMonth] = useState([]);
+
   // session 상태가 변경될 때마다 editData 업데이트
-  useEffect(() => {
+  useEffect(async () => {
     if (session) {
       setEditData(prevData => ({
         ...prevData,
         employeeId: session
       }));
+
+      // 월별 실적 가져오기
+      // let {data} = axios.get('/mypage/getMySalesByMonth?employeeId=' + session);
+      // setSalesByMonth(data);
     }
   }, [session]);
 
@@ -309,7 +318,7 @@ function MyPage() {
             {/* <i className="bi bi-graph-up"></i>  */}
             <i class="bi bi-bar-chart-line-fill"></i>
             이번 달 실적</h2>
-          <EmployeeMonthlySalesChart />
+          <EmployeeMonthlySalesChart salesByMonth={salesByMonth}/>
         </div>
       </div>
 

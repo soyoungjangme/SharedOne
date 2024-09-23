@@ -12,7 +12,7 @@ const EmployeeMonthlySalesChart = ({salesByMonth}) => {
     const chartData = [];
 
     useEffect(() => {
-        salesByMonth.forEach(item => {label.push(item.salesMonth); chartData.push(item.totalSales)});
+        if (salesByMonth !== null) salesByMonth.forEach(item => {label.push(item.salesMonth); chartData.push(item.totalSales)});
         console.log(label);
         console.log(chartData);
     }, []);
@@ -49,4 +49,4 @@ const EmployeeMonthlySalesChart = ({salesByMonth}) => {
     return <Bar data={data} options={options} />;
 };
 
-export default MonthlySalesChart;
+export default EmployeeMonthlySalesChart;
