@@ -355,7 +355,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                             </tr>
                             <tr>
                                 <th><label htmlFor="confirmTitle">주문 등록일</label></th>
-                                <td>{modifyItem.regDate || ''}</td>
+                                <td>{new Date(modifyItem.regDate).toLocaleDateString('en-CA') || ''}</td>
 
                                 <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
                                 <td>{modifyItem.delDate || ''}</td>

@@ -206,6 +206,7 @@
     height: 35px;
     border-radius: 2px;
     font-weight: bold;
+    cursor: pointer;
 }
 
 .btn-add2 button {
@@ -218,9 +219,16 @@
     border: 1px solid #ddd;
     width: 90px;
     height: 35px;
-    border-radius: 2px;
+    border-radius: 5px;
     font-weight: bold;
+    cursor: pointer;
 }
+
+.btn-add button:hover,
+.btn-add2 button:hover {
+    background-color: #0056b3;
+}
+
 
 .btn-add1 button {
     background-color: #bbb;

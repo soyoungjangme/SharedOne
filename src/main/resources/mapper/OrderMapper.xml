@@ -8,7 +8,7 @@
     <!-- jsy주문 전체 조회 -->
     <select id="getOrder" resultMap="GetOrderResultMap">
         select oh.order_no, c.customer_name, emp.employee_name,
-        oh.confirm_status, oh.reg_date, emp.employee_id, emp.authority_grade
+        oh.confirm_status, oh.confirm_change_date, emp.employee_id, emp.authority_grade
         from order_header oh
         join employee emp on emp.employee_id = oh.employee_id
         join customer c on c.customer_no = oh.customer_no
@@ -34,12 +34,12 @@
                 and oh.confirm_status = #{inputState}
             </if>
         </where>
-        order by oh.reg_date desc
+        order by oh.confirm_change_date desc
     </select>
 
     <resultMap id="GetOrderResultMap" type="OrderHDTO">
         <result column="order_no" property="orderNo"/> <!-- 주문번호 -->
-        <result column="reg_date" property="regDate"/> <!-- 작성일 -->
+        <result column="confirm_change_date" property="confirmChangeDate"/> <!-- 작성일 -->
         <result column="confirm_status" property="confirmStatus"/> <!-- 결재상태 -->
         <association property="employee" javaType="EmployeeDTO">
             <result column="employee_name" property="employeeName"/> <!-- 담당자명 -->

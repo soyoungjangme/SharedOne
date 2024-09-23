@@ -150,6 +150,7 @@ function Employee() {
         } else {
             console.error('[핸들러 작동 잘 함]');
         }
+        setCurrentPage(1);
     };
 
         const handleKeyDown = (event) => {
@@ -170,6 +171,8 @@ function Employee() {
                 hireDate: '',
                 authorityGrade: ''
             })
+            handleSearchEmployee();
+            setCurrentPage(1);
         }
 
 
@@ -762,7 +765,7 @@ const handleDeletePickClick = () => {
     // 페이지 네이션
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(30); // 페이지당 항목 수
+    const [itemsPerPage] = useState(5); // 페이지당 항목 수
 
     // 전체 페이지 수 계산
     const totalPages = Math.ceil(sortedData.length / itemsPerPage);
@@ -783,7 +786,7 @@ const handleDeletePickClick = () => {
     // 페이지네이션 버튼 렌더링
     const renderPageNumbers = () => {
         let pageNumbers = [];
-        const maxButtons = 3; // 고정된 버튼 수
+        const maxButtons = 5; // 고정된 버튼 수
 
         // 맨 처음 페이지 버튼
         pageNumbers.push(
@@ -800,26 +803,28 @@ const handleDeletePickClick = () => {
         pageNumbers.push(
             <span
                 key="prev"
-                onClick={() => handlePageChange(currentPage - 1)}
+                onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
                 className={`pagination_link ${currentPage === 1 ? 'disabled' : ''}`}
             >
                 &laquo; {/* 왼쪽 화살표 */}
             </span>
         );
 
-        // // 항상 첫 페이지 버튼 표시
-        // pageNumbers.push(
-        //     <span
-        //         key={1}
-        //         onClick={() => handlePageChange(1)}
-        //         className={`pagination_link ${currentPage === 1 ? 'pagination_link_active' : ''}`}
-        //     >
-        //         1
-        //     </span>
-        // );
-
-        // 6페이지 이상일 때
-        if (totalPages > maxButtons) {
+        // 페이지 수가 4 이하일 경우 모든 페이지 표시
+        if (totalPages <= 4) {
+            for (let i = 1; i <= totalPages; i++) {
+                pageNumbers.push(
+                    <span
+                        key={i}
+                        onClick={() => handlePageChange(i)}
+                        className={`pagination_link ${i === currentPage ? 'pagination_link_active' : ''}`}
+                    >
+                        {i}
+                    </span>
+                );
+            }
+        } else {
+            // 페이지 수가 5 이상일 경우 유동적으로 변경
             let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
             let endPage = startPage + maxButtons - 1;
 
@@ -828,7 +833,7 @@ const handleDeletePickClick = () => {
                 startPage = Math.max(1, endPage - maxButtons + 1);
             }
 
-            // 중간 페이지 버튼 추가
+            // 시작 페이지와 끝 페이지에 대한 페이지 버튼 추가
             for (let i = startPage; i <= endPage; i++) {
                 pageNumbers.push(
                     <span
@@ -841,11 +846,15 @@ const handleDeletePickClick = () => {
                 );
             }
 
-            // 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'와 마지막 페이지 추가
+            // 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'과 마지막 페이지 표시
             if (endPage < totalPages) {
                 pageNumbers.push(<span className="pagination_link">...</span>);
                 pageNumbers.push(
-                    <span key={totalPages} onClick={() => handlePageChange(totalPages)} className="pagination_link">
+                    <span
+                        key={totalPages}
+                        onClick={() => handlePageChange(totalPages)}
+                        className={`pagination_link ${currentPage === totalPages ? 'pagination_link_active' : ''}`}
+                    >
                         {totalPages}
                     </span>
                 );
@@ -856,7 +865,7 @@ const handleDeletePickClick = () => {
         pageNumbers.push(
             <span
                 key="next"
-                onClick={() => handlePageChange(currentPage + 1)}
+                onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
                 className={`pagination_link ${currentPage === totalPages ? 'disabled' : ''}`}
             >
                 &raquo; {/* 오른쪽 화살표 */}
