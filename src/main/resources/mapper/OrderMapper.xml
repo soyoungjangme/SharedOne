@@ -33,6 +33,9 @@
             <if test="inputState != null">
                 and oh.confirm_status = #{inputState}
             </if>
+            <if test="inputMyId != null and inputMyId != ''">
+                and emp.employee_id = #{inputMyId}
+            </if>
         </where>
         order by oh.confirm_change_date desc
     </select>

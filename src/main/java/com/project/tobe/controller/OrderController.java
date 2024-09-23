@@ -46,7 +46,11 @@ public class OrderController {
     //jsy주문 조건 별 조회
     @PostMapping("/searchSelect")
     public ResponseEntity<List<OrderHDTO>> searchOrderList(@RequestBody OrderSearchDTO criteria) {
+
         List<OrderHDTO> orders = orderService.getOrder(criteria);
+        System.out.println("내 아이디 "+ criteria.getInputMyId());
+
+        System.out.println(ResponseEntity.ok(orders));
         return ResponseEntity.ok(orders);
     }
 

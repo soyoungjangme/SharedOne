@@ -515,14 +515,12 @@ function Order() {
     //주문등록 - 상품검색
     const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
-        const handleSearchChange = (e) => {
-            setSearchTerm(e.target.value);
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
 
-            setAllCheckMod(false);
-            setCheckItemMod(false);
-        };
-    },[searchTerm]);
+        setAllCheckMod(false);
+        setCheckItemMod(false);
+    };
 
 
     const searchProd = customPrice.filter(product =>
@@ -819,7 +817,7 @@ function Order() {
 
         return pageNumbers;
     };
-    
+
     const roleHierarchy = { S: 4, A: 3, B: 2, C: 1, D: 0 }; // Define the hierarchy
 
     const handleButtonClick = (item) => {
@@ -881,11 +879,69 @@ function Order() {
 
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
-  // 버튼 클릭 시 해당 인덱스를 선택
-  const handleButtonClick2 = (index) => {
-    setSelectedIndex(index);
-  };
 
+    // Handle button click to update selected index and send the corresponding value
+    const handleButtonClick2 = (index) => {
+        setSelectedIndex(index);
+        sendSearchCriteria(index);
+    };
+
+    // Send a POST request with the selected order status
+    const sendSearchCriteria = async(index) => {
+
+        let myId2 = null;
+
+        if(index === 0){
+            /*myId = getStatusByIndex(index);*/
+            myId2 = "emailTest";
+        }
+
+        const res = await axios.post('/order/searchSelect', {
+        inputState: getStatusByIndex(index) || null,
+        inputMyId: myId2 || null
+        }); //{매개변수 : 전달 값}
+
+        const confirmRes = res.data;
+        console.log(confirmRes);
+
+        if (Array.isArray(confirmRes)) {
+            const getConfirmRes = confirmRes.map(item => ({ //res.data.map안된다는 소리
+                orderNo: item.orderNo,
+                customerN: item.customer.customerName,
+                manager: item.employee.employeeName,
+                status: item.confirmStatus,
+                confirmChangeDate: item.confirmChangeDate,
+                managerId : item.employee.employeeId,
+                managerGrade : item.employee.authorityGrade
+            }))
+
+            setOrder(getConfirmRes);
+            setCurrentPage(1);
+        } else {
+            console.log('서버로부터 받은 데이터가 배열이 아닙니다.', confirmRes);
+        }
+        setCurrentPage(1);
+    };
+
+
+    const getStatusByIndex = (index) => {
+        switch (index) {
+            case 0:
+                return my.id; // 내 글 보기 (세션 my.id)
+            case 1:
+                return "임시저장"; // 임시저장
+            case 2:
+                return "대기"; // 대기
+            case 3:
+                return "반려"; // 반려
+            case 4:
+                return "반려(처리완료)"; // 반려(처리완료)
+            case 5:
+                return "승인"; // 승인
+            default:
+                return "";
+        }
+    };
 
 
     return (
@@ -911,9 +967,9 @@ function Order() {
                             </div>
 
                             <div className="filter-item">
-                                <label className="filter-label" htmlFor="mycustomer">고객 명</label>
+                                <label className="filter-label" htmlFor="mycustomer">고객명</label>
                                 <input className="filter-input" type="text" id="mycustomer" value={form.mycustomer || ''}
-                                       onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} placeholder="고객 명" required/>
+                                       onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} placeholder="고객명" required/>
 
                                 {/*<select id="mycustomer" className="filter-input" value={form.mycustomer || ''}
                                         onChange={handleChange}>
@@ -933,9 +989,9 @@ function Order() {
                             </div>
 
                             <div className="filter-item">
-                                <label className="filter-label" htmlFor="prod">상품 명</label>
+                                <label className="filter-label" htmlFor="prod">상품명</label>
                                 <input className="filter-input" type="text" id="prod" value={form.prod || ''}
-                                       onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} placeholder="상품 명" required/>
+                                       onChange={handleChange} onKeyDown={(e) => { if(e.key ==="Enter") {handleSearchBtn();} }} placeholder="상품명" required/>
 
 
 
@@ -1007,9 +1063,15 @@ function Order() {
                  >
                    반려
                  </button>
+                <button
+                className={`btn ${selectedIndex === 4 ? "selected" : ""}`}
+                onClick={() => handleButtonClick2(4)}
+                >
+                    반려(처리완료)
+                </button>
                  <button
-                   className={`btn ${selectedIndex === 4 ? "selected" : ""}`}
-                   onClick={() => handleButtonClick2(4)}
+                   className={`btn ${selectedIndex === 5 ? "selected" : ""}`}
+                   onClick={() => handleButtonClick2(5)}
                  >
                   승인
                  </button>
