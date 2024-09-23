@@ -468,7 +468,13 @@ function Order() {
                     return qty <= 0;
                 });
 
-                if (!registCustomer || !delDate || hasInvalidQty || !addCheckProd.length || !modifyItem.confirmerId) {
+                if (!registCustomer || !delDate || !hasInvalidQty || !addCheckProd.length || !modifyItem.confirmerId) {
+                    console.log(registCustomer);
+                    console.log(delDate);
+                    console.log(hasInvalidQty);
+                    console.log(addCheckProd);
+                    console.log(modifyItem);
+
                     alert("모두 입력해 주세요.");
                     return;
                 }

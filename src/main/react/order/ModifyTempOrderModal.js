@@ -27,6 +27,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
     const [searchTerm, setSearchTerm] = useState('');
     const [orderListCheckboxes, setOrderListCheckboxes] = useState({});
     const [addedListCheckboxes, setAddedListCheckboxes] = useState({});
+    const [loading, setLoading] = useState(false); // 로딩 상태 관리
 
     useEffect(() => {
         if (isOpen && orderNo) {
@@ -194,6 +195,8 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                 prodTotal: (quantities[index] || 0) * addProd.price.customPrice
             }));
 
+            setLoading(true);
+
             await axios.put(`/order/temp/${modifyItem.orderNo}`, {
                 ...modifyItem,
                 delDate: delDate,
@@ -209,6 +212,8 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
         } catch (error) {
             console.error('임시 저장 중 오류 발생:', error.response?.data || error.message);
             alert('임시 저장 중 오류가 발생했습니다: ' + (error.response?.data || error.message));
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -352,7 +357,10 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
         product.product.productName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    return isOpen ? (
+    return isOpen ? ( loading ? (
+        <div className="loading-overlay">
+            <div className="spinner">로딩 중...</div>
+        </div>) : (
         <div className="confirmRegist">
             <div className="fullBody">
                 <div className="form-container">
@@ -518,7 +526,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                 </div>
             </div>
         </div>
-    ) : null;
+    )) : null;
 };
 
 export default ModifyTempOrderModal;
