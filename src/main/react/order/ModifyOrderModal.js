@@ -503,7 +503,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose,onClose2, onUpdate }) {
 
                          <div className="formTableBookList">
                            <table className="formTableList2">
-                            <thead>
+                               <thead className="formTableList2thead">
                             <tr>
                                 <th>
                                     <input
