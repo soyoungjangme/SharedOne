@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -19,7 +20,7 @@ public interface OrderMapper {
     OrderHDTO getOrderDetail(Long orderNo); // 상세 조회
     int updateApproval(@Param("orderNo") Long orderNo,
                        @Param("confirmStatus") String confirmStatus,
-                       @Param("confirmChangeDate") LocalDate confirmChangeDate,
+                       @Param("confirmChangeDate") LocalDateTime confirmChangeDate,
                        @Param("remarks") String remarks);
     void updateOrderHeader(OrderUp1DTO orderUp1DTO);
     void deleteOrderDetails(Long orderNo);

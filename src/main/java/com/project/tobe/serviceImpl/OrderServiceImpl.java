@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
 // 결재 여부 업데이트
     @Override
     @Transactional
-    public boolean updateApproval(Long orderNo, String confirmStatus, LocalDate confirmChangeDate, String remarks) {
+    public boolean updateApproval(Long orderNo, String confirmStatus, LocalDateTime confirmChangeDate, String remarks) {
         try {
             int updatedRows = orderMapper.updateApproval(orderNo, confirmStatus, confirmChangeDate, remarks);
             return updatedRows > 0;
