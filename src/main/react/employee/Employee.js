@@ -917,7 +917,7 @@ const handleDeletePickClick = () => {
     return (
 
         <div>
-            <h1><i class="bi bi-person-lines-fill"></i> 직원 관리 </h1>
+            <h1><i className="bi bi-person-lines-fill"></i> 직원 관리 </h1>
             <div className="main-container">
                 <div className="filter-containers">
                     <div className="filter-container">
@@ -975,7 +975,7 @@ const handleDeletePickClick = () => {
 
                     <div className="button-container">
                         <button type="button" className="reset-btn" onClick={handleReset}>
-                            <i class="bi bi-arrow-clockwise"></i>
+                            <i className="bi bi-arrow-clockwise"></i>
                         </button>
                         <button type="button" className="search-btn" onClick={handleSearchEmployee}><i
                             className="bi bi-search search-icon"></i>
