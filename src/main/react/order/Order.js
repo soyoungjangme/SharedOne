@@ -515,23 +515,13 @@ function Order() {
     //주문등록 - 상품검색
     const [searchTerm, setSearchTerm] = useState('');
 
-<<<<<<< HEAD
 
-        const handleSearchChange = (e) => {
-            setSearchTerm(e.target.value);
-
-            setAllCheckMod(false);
-            setCheckItemMod(false);
-        };
-
-=======
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
 
         setAllCheckMod(false);
         setCheckItemMod(false);
     };
->>>>>>> main
 
 
     const searchProd = customPrice.filter(product =>
