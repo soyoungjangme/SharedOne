@@ -1082,7 +1082,6 @@ function Product() {
                                                     type="text"
                                                     name="productName"
                                                     placeholder="상품명"
-                                                    disabled
                                                     value={modifyItem.productName}
                                                     onChange={handleModifyItemChange}
                                                 />
@@ -1093,7 +1092,6 @@ function Product() {
                                                     type="text"
                                                     name="productWriter"
                                                     placeholder="상품저자"
-                                                    disabled
                                                     value={modifyItem.productWriter}
                                                     onChange={handleModifyItemChange}
                                                 />
@@ -1106,7 +1104,6 @@ function Product() {
                                                     type="text"
                                                     name="productCategory"
                                                     placeholder="상품카테고리"
-                                                    disabled
                                                     value={modifyItem.productCategory}
                                                     onChange={handleModifyItemChange}
                                                 />
