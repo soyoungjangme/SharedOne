@@ -360,7 +360,7 @@ function MyPage() {
             {/* <i className="bi bi-graph-up"></i>  */}
             <i className="bi bi-bar-chart-line-fill"></i>
             이번 달 실적</h2>
-          <EmployeeMonthlySalesChart salesByMonth={salesByMonth}/>
+          {/*<EmployeeMonthlySalesChart salesByMonth={salesByMonth}/>*/}
         </div>
       </div>
 
