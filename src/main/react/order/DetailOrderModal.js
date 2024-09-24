@@ -5,19 +5,19 @@ import './OrderModalDetail.css'
 import axios from 'axios';
 import Select from "react-select";
 
-const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModal, onOpenModifyTempOrderModal ,roleHierarchy ,fetchData,my }) => {
+const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModal, onOpenModifyTempOrderModal, roleHierarchy, fetchData, my }) => {
 
     // 수정할 주문 항목의 초기 상태 설정
     const [modifyItem, setModifyItem] = useState({
         orderNo: '',
         regDate: '',
-        employee: { employeeName: '' , employeeId : '', authorityGrade : ''},
-        customer: { customerName: '' , customerNo : '' },
+        employee: { employeeName: '', employeeId: '', authorityGrade: '' },
+        customer: { customerName: '', customerNo: '' },
         delDate: '',
         confirmStatus: '',
         remarks: '',
         confirmerId: '',
-        confirmerName:'',
+        confirmerName: '',
         confirmChangeDate: null,
         orderBList: []
     });
@@ -62,7 +62,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
         }
     };
 
-//---------------------------------------혜주님이 쓴 것-----------------------------------
+    //---------------------------------------혜주님이 쓴 것-----------------------------------
 
     // 상세보기 화면을 위한 주문 상태 초기값 설정
     const [orderDetails, setOrderDetails] = useState({
@@ -117,7 +117,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
             console.error('Error:', error.response ? error.response.data : error.message); // 에러 상세 확인
         }
     };
-//--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
 
 
 
@@ -142,7 +142,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
     // 주문 데이터를 서버에서 불러오는 함수
     useEffect(() => {
         if (isOpen && orderNo) {
-            console.log('useEffect orderNo: '+orderNo); // 망할 디버깅
+            console.log('useEffect orderNo: ' + orderNo); // 망할 디버깅
             const fetchOrderDetails = async () => {
                 try {
                     const response = await axios.get(`/order/detail/${orderNo}`);
@@ -233,7 +233,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
     const [loading, setLoading] = useState(false); // 로딩 상태 관리
 
 
-// 임시로 만든 승인, 반려 버튼 처리 함수
+    // 임시로 만든 승인, 반려 버튼 처리 함수
     const handleApproval = async (status) => {
         const message = status === '승인' ? '승인 처리하시겠습니까?' : '반려 처리하시겠습니까?';
 
@@ -253,7 +253,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                 confirmStatus: status,
                 remarks: modifyItem.remarks,
                 confirmChangeDate: todayPlus,
-                employee : modifyItem.employee
+                employee: modifyItem.employee
             });
 
             if (response.data.success) {
@@ -288,13 +288,25 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
     console.log(JSON.stringify(modifyItem));
 
 
-    return isOpen ? ( loading ? (
-                <div className="loading-overlay">
-                    <div className="spinner">로딩 중...</div>
-                </div>) : (
-            <div className="confirmRegist">
-                <div className="fullBody">
-                    <div className="form-container">
+    return isOpen ? (loading ? (
+        <div className="loading-overlay">
+            <div className="spinner">
+                <div class="item">
+                    <div class="loader1"></div>
+                </div>
+
+                {/* <div class="item">
+                    <div class="loader2"></div>
+                </div> */}
+
+                {/* <div class="item">
+                    <div class="loader3"></div>
+                </div> */}
+            </div>
+        </div>) : (
+        <div className="confirmRegist">
+            <div className="fullBody">
+                <div className="form-container">
                     <button className="close-btn" onClick={onClose}> &times; </button>
                     <div className="form-header">
                         <h1>상세 조회</h1>
@@ -400,110 +412,110 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
 
                         <table className="formTable2">
                             <tbody>{/*조건 변경*/}
-                            {(getConfirmStatus(modifyItem.confirmStatus) !== '승인' && getConfirmStatus(modifyItem.confirmStatus) !== '임시저장') && (
-                                <tr>
-                                    <th colSpan="1"><label htmlFor="remarks">비고</label></th>
-                                    <td colSpan="3">
-                                        <textarea
-                                            name="remarks"
-                                            value={modifyItem.remarks || ''}
-                                            onChange={handleInputChange}
-                                            disabled={getConfirmStatus(modifyItem.confirmStatus) === '반려'}
-                                        ></textarea>
-                                    </td>
+                                {(getConfirmStatus(modifyItem.confirmStatus) !== '승인' && getConfirmStatus(modifyItem.confirmStatus) !== '임시저장') && (
+                                    <tr>
+                                        <th colSpan="1"><label htmlFor="remarks">비고</label></th>
+                                        <td colSpan="3">
+                                            <textarea
+                                                name="remarks"
+                                                value={modifyItem.remarks || ''}
+                                                onChange={handleInputChange}
+                                                disabled={getConfirmStatus(modifyItem.confirmStatus) === '반려'}
+                                            ></textarea>
+                                        </td>
 
-                                    {/*<td colSpan="3">*/}
-                                    {/*    {['반려', '반려(처리완료)', '대기'].includes(getConfirmStatus(modifyItem.confirmStatus)) ? (*/}
-                                    {/*        <div>{modifyItem.remarks || '비고 없음'}</div>*/}
-                                    {/*    ) : (*/}
-                                    {/*        <textarea*/}
-                                    {/*            name="remarks"*/}
-                                    {/*            value={modifyItem.remarks || ''}*/}
-                                    {/*            onChange={handleInputChange}*/}
-                                    {/*        ></textarea>*/}
-                                    {/*    )}*/}
-                                    {/*</td>*/}
+                                        {/*<td colSpan="3">*/}
+                                        {/*    {['반려', '반려(처리완료)', '대기'].includes(getConfirmStatus(modifyItem.confirmStatus)) ? (*/}
+                                        {/*        <div>{modifyItem.remarks || '비고 없음'}</div>*/}
+                                        {/*    ) : (*/}
+                                        {/*        <textarea*/}
+                                        {/*            name="remarks"*/}
+                                        {/*            value={modifyItem.remarks || ''}*/}
+                                        {/*            onChange={handleInputChange}*/}
+                                        {/*        ></textarea>*/}
+                                        {/*    )}*/}
+                                        {/*</td>*/}
 
-                                </tr>
-                            )}
+                                    </tr>
+                                )}
 
                             </tbody>
 
                         </table>
                     </form>
 
-                        <div className="RegistFormList">
-                            <div style={{fontWeight: 'bold'}}>총 {modifyItem.orderBList?.length || 0} 건</div>
-                            <table className="formTableList">
-                                <thead>
+                    <div className="RegistFormList">
+                        <div style={{ fontWeight: 'bold' }}>총 {modifyItem.orderBList?.length || 0} 건</div>
+                        <table className="formTableList">
+                            <thead>
                                 <tr>
                                     <th>No</th>
                                     <th>상품 카테고리
                                         <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
                                             {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                    </button>
-                                </th>
-                                <th>상품명
-                                    <button className="sortBtn" onClick={() => sortModalData('productName')}>
-                                        {modalSortConfig.key === 'productName' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                    </button>
-                                </th>
-                                <th>상품 수량
-                                    <button className="sortBtn" onClick={() => sortModalData('orderProductQty')}>
-                                        {modalSortConfig.key === 'orderProductQty' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                    </button>
-                                </th>
-                                <th>판매가
-                                    <button className="sortBtn" onClick={() => sortModalData('salePrice')}>
-                                        {modalSortConfig.key === 'salePrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                    </button>
-                                </th>
-                                <th>총 금액
-                                    <button className="sortBtn" onClick={() => sortModalData('totalPrice')}>
-                                        {modalSortConfig.key === 'totalPrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                    </button>
-                                </th>
-                                <th>판매 기간</th>
-                            </tr>
+                                        </button>
+                                    </th>
+                                    <th>상품명
+                                        <button className="sortBtn" onClick={() => sortModalData('productName')}>
+                                            {modalSortConfig.key === 'productName' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                        </button>
+                                    </th>
+                                    <th>상품 수량
+                                        <button className="sortBtn" onClick={() => sortModalData('orderProductQty')}>
+                                            {modalSortConfig.key === 'orderProductQty' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                        </button>
+                                    </th>
+                                    <th>판매가
+                                        <button className="sortBtn" onClick={() => sortModalData('salePrice')}>
+                                            {modalSortConfig.key === 'salePrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                        </button>
+                                    </th>
+                                    <th>총 금액
+                                        <button className="sortBtn" onClick={() => sortModalData('totalPrice')}>
+                                            {modalSortConfig.key === 'totalPrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                        </button>
+                                    </th>
+                                    <th>판매 기간</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            {modifyItem.orderBList && modifyItem.orderBList.length > 0 ? (
-                                modifyItem.orderBList.map((item, index) => {
-                                    const orderNo = item.orderNo || modifyItem.orderNo;
-                                    const customPrice = item.price?.customPrice || 0;
-                                    const saleStart = item.price?.startDate || '정보 없음';
-                                    const saleEnd = item.price?.endDate || '정보 없음';
+                                {modifyItem.orderBList && modifyItem.orderBList.length > 0 ? (
+                                    modifyItem.orderBList.map((item, index) => {
+                                        const orderNo = item.orderNo || modifyItem.orderNo;
+                                        const customPrice = item.price?.customPrice || 0;
+                                        const saleStart = item.price?.startDate || '정보 없음';
+                                        const saleEnd = item.price?.endDate || '정보 없음';
 
-                                    return (
-                                        <tr key={index}>
-                                            <td>{index + 1}</td>
-                                            <td>{item.product?.productCategory}</td>
-                                            <td>{item.product?.productName}</td>
-                                            <td>{item.orderProductQty > 0 ? item.orderProductQty : 0}</td> {/* 수량이 0일 경우 확인 */}
-                                            <td>{customPrice}</td>
-                                            <td>{item.orderProductQty * customPrice}</td>
-                                            {/* 총 금액 */}
-                                            <td>{`${saleStart} ~ ${saleEnd}`}</td>
-                                            {/* 판매 기간 */}
-                                        </tr>
-                                    );
-                                })
-                            ) : (
-                                <tr>
-                                    <td colSpan="7">No data available</td>
-                                </tr>
-                            )}
-                            {modifyItem.orderBList?.length > 0 && (
-                                <tr style={{fontWeight: 'bold'}}>
-                                    <td colSpan="5">합계</td>
-                                    <td colSpan="3">
-                                        {modifyItem.orderBList.reduce(
-                                            (total, item) => total + (item.orderProductQty * (item.price?.customPrice || 0)),
-                                            0
-                                        ).toLocaleString()}원 {/* toLocaleString() : 숫자를 천 단위로 구분하고, 통화 기호 추가 */}
-                                    </td>
-                                </tr>
-                            )}
+                                        return (
+                                            <tr key={index}>
+                                                <td>{index + 1}</td>
+                                                <td>{item.product?.productCategory}</td>
+                                                <td>{item.product?.productName}</td>
+                                                <td>{item.orderProductQty > 0 ? item.orderProductQty : 0}</td> {/* 수량이 0일 경우 확인 */}
+                                                <td>{customPrice}</td>
+                                                <td>{item.orderProductQty * customPrice}</td>
+                                                {/* 총 금액 */}
+                                                <td>{`${saleStart} ~ ${saleEnd}`}</td>
+                                                {/* 판매 기간 */}
+                                            </tr>
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td colSpan="7">No data available</td>
+                                    </tr>
+                                )}
+                                {modifyItem.orderBList?.length > 0 && (
+                                    <tr style={{ fontWeight: 'bold' }}>
+                                        <td colSpan="5">합계</td>
+                                        <td colSpan="3">
+                                            {modifyItem.orderBList.reduce(
+                                                (total, item) => total + (item.orderProductQty * (item.price?.customPrice || 0)),
+                                                0
+                                            ).toLocaleString()}원 {/* toLocaleString() : 숫자를 천 단위로 구분하고, 통화 기호 추가 */}
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
 
                         </table>

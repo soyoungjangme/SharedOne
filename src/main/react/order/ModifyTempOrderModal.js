@@ -175,8 +175,8 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                 orderNo: modifyItem.orderNo,
                 productNo: addProd.product.productNo,
                 priceNo: addProd.price.priceNo,
-                orderProductQty: quantities[index] || 0,
-                prodTotal: (quantities[index] || 0) * addProd.price.customPrice
+                orderProductQty: quantities[addProd.price.priceNo] || 0,
+                prodTotal: (quantities[addProd.price.priceNo] || 0) * addProd.price.customPrice
             }));
 
             setLoading(true);
@@ -378,7 +378,19 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
 
     return isOpen ? ( loading ? (
         <div className="loading-overlay">
-            <div className="spinner">로딩 중...</div>
+
+             <div class="item">
+                <div class="loader1"></div>
+            </div>
+
+            {/* <div class="item">
+                <div class="loader2"></div>
+            </div> */}
+
+            {/* <div class="item">
+                <div class="loader3"></div>
+            </div> */}
+            
         </div>) : (
         <div className="confirmRegist">
             <div className="fullBody">
@@ -417,10 +429,10 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                                                            const now = new Date();
                                                            const selectDate = new Date(e.target.value);
 
-                                                           // if(selectDate < now ){
-                                                           //     alert(`납품 요청일을 확인해주세요.`);
-                                                           //     return;
-                                                           // }
+                                                           if(selectDate < now ){
+                                                               alert(`납품 요청일을 확인해주세요.`);
+                                                               return;
+                                                           }
 
                                                            setDelDate(e.target.value);
                                                        }}/>

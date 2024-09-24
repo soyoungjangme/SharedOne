@@ -1,4 +1,3 @@
-
 .fullBody {
     padding: 0;
     height: 100%;
@@ -62,7 +61,9 @@
 /* ------------------ */
 
 
-.formTable, .formTable tr, .formTable td {
+.formTable,
+.formTable tr,
+.formTable td {
     border: 1px solid #ddd;
     border-collapse: collapse;
 }
@@ -71,7 +72,10 @@
     background: rgb(241, 241, 241);
     background: linear-gradient(1deg, rgba(241, 241, 241, 1) 0%, rgba(255, 255, 255, 1) 100%);
 }
-.formTable2, .formTable2 tr, .formTable2 td {
+
+.formTable2,
+.formTable2 tr,
+.formTable2 td {
     border: 1px solid #ddd;
     border-collapse: collapse;
 }
@@ -88,6 +92,7 @@
 
 
 }
+
 .formTable2 {
     width: 60%;
     margin: 30px 0px;
@@ -96,18 +101,20 @@
 }
 
 
-.formTable td , formTable2 td {
+.formTable td,
+formTable2 td {
     text-align: center;
     padding: 5px;
 }
 
 
-.formTable th , formTable2 th {
+.formTable th,
+formTable2 th {
     text-align: center;
     padding: 5px;
 }
 
-.formTable td > input {
+.formTable td>input {
     border: 1px solid #ddd;
     border-radius: 5px;
     width: 80%;
@@ -116,7 +123,7 @@
 }
 
 
-.formTable2 td > input {
+.formTable2 td>input {
     border: 1px solid #ddd;
     border-radius: 5px;
     width: 80%;
@@ -124,7 +131,7 @@
     padding: 5px;
 }
 
-.formTable td > select {
+.formTable td>select {
     border: 1px solid #ddd;
     width: 85%;
     margin: 0px;
@@ -132,25 +139,24 @@
     border-radius: 5px;
 }
 
-.formTable2 td > select {
+.formTable2 td>select {
     border: 1px solid #ddd;
     width: 85%;
     margin: 0px;
     padding: 5px;
     border-radius: 5px;
 }
-.formTable2  td > textarea {
-width : 100%;
-height : 100%;
-border: 1px solid #ddd;
+
+.formTable2 td>textarea {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ddd;
 }
 
 
 /* -------------------- */
 
-.RegistFormList {
-
-}
+.RegistFormList {}
 
 
 .formTableList {
@@ -160,7 +166,10 @@ border: 1px solid #ddd;
 
 }
 
-.formTableList, .formTableList th, .formTableList tr, .formTableList td {
+.formTableList,
+.formTableList th,
+.formTableList tr,
+.formTableList td {
     border: 1px solid #ddd;
     border-collapse: collapse;
 
@@ -191,7 +200,7 @@ border: 1px solid #ddd;
     padding: 5px;
 }
 
-.formTableList td > input {
+.formTableList td>input {
     border: 1px solid #ddd;
     border-radius: 5px;
     width: 80%;
@@ -199,7 +208,7 @@ border: 1px solid #ddd;
     padding: 5px;
 }
 
-.formTableList td > select {
+.formTableList td>select {
     border: 1px solid #ddd;
     width: 85%;
     margin: 0px;
@@ -212,15 +221,16 @@ border: 1px solid #ddd;
 .formTableList2 {
     width: 100%;
     background-color: #ffffff;
-   border-collapse: separate;
-         border-spacing: 0;
+    border-collapse: separate;
+    border-spacing: 0;
 
 }
 
-.formTableList2 th, .formTableList2 td {
-        border-top: 1px solid #ddd;
-        border-left: 1px solid #ddd;
-    }
+.formTableList2 th,
+.formTableList2 td {
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+}
 
 .formTableList2 th {
     background: rgb(241, 241, 241);
@@ -242,7 +252,7 @@ border: 1px solid #ddd;
     padding: 5px;
 }
 
-.formTableList2 td > input {
+.formTableList2 td>input {
     border: 1px solid #ddd;
     border-radius: 5px;
     width: 80%;
@@ -250,7 +260,7 @@ border: 1px solid #ddd;
     padding: 5px;
 }
 
-.formTableList2 td > select {
+.formTableList2 td>select {
     border: 1px solid #ddd;
     width: 85%;
     margin: 0px;
@@ -272,7 +282,8 @@ border: 1px solid #ddd;
 }
 
 
-.btn-add, .btn-close {
+.btn-add,
+.btn-close {
     grid-column: span 6;
     cursor: pointer;
 }
@@ -313,15 +324,15 @@ border: 1px solid #ddd;
 }
 
 .btn-close button {
- background-color: #004e90;
-     color: #fff;
-     /* background: rgb(241, 241, 241); */
-     /* background: linear-gradient(1deg, rgba(241, 241, 241, 1) 0%, rgba(255, 255, 255, 1) 100%); */
-     border: 1px solid #ddd;
-     width: 90px;
-     height: 35px;
-     border-radius: 2px;
-     font-weight: bold;
+    background-color: #004e90;
+    color: #fff;
+    /* background: rgb(241, 241, 241); */
+    /* background: linear-gradient(1deg, rgba(241, 241, 241, 1) 0%, rgba(255, 255, 255, 1) 100%); */
+    border: 1px solid #ddd;
+    width: 90px;
+    height: 35px;
+    border-radius: 2px;
+    font-weight: bold;
 }
 
 .close-btn {
@@ -343,58 +354,56 @@ border: 1px solid #ddd;
     margin-right: 3px;
 }
 
-.btn-load {
+.btn-load {}
 
-
-}
-
-.bookSearchBox{
+.bookSearchBox {
     float: right;
     width: 40%;
     position: relative;
-    }
+}
 
-    .bookSearch {
-        display: flex;
-        width: 100%;
-        height: 34px;
-        gap : 10px;
-    }
+.bookSearch {
+    display: flex;
+    width: 100%;
+    height: 34px;
+    gap: 10px;
+}
 
-    .bookResultList {
+.bookResultList {
     border: 1px solid #ddd;
     background: #fff;
     display: none;
     position: absolute;
     top: 33px;
-   left: 0px;
-       width: 79%;
+    left: 0px;
+    width: 79%;
     height: 150px;
     overflow: auto;
-    }
+}
 
 
-.bookResultList > ul , li {
+.bookResultList>ul,
+li {
     list-style: none;
-    }
+}
 
-    .bookResultList > ul {
-margin: 0px;
-padding : 0px;
-        }
+.bookResultList>ul {
+    margin: 0px;
+    padding: 0px;
+}
 
-    .bookResultList > ul  li {
-        border-bottom: 1px solid #ddd;
-        padding: 8px;
-    }
+.bookResultList>ul li {
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
+}
 
-    .bookResultList > ul li p {
-           margin: 0px 0px 0px 12px;
-        }
+.bookResultList>ul li p {
+    margin: 0px 0px 0px 12px;
+}
 
-    .bookResultList > ul  li:hover {
-      background-color: rgba(200, 230, 255, 0.366);
-    }
+.bookResultList>ul li:hover {
+    background-color: rgba(200, 230, 255, 0.366);
+}
 
 .bookSearch input {
     border-radius: 2px;
@@ -402,12 +411,12 @@ padding : 0px;
     width: 100%;
 }
 
-    .bookSearch button {
-       width: 22%;
-        height: 34px;
-            font-size: 15px;
-            font-weight: bold;
-    }
+.bookSearch button {
+    width: 22%;
+    height: 34px;
+    font-size: 15px;
+    font-weight: bold;
+}
 
 
 .loading-overlay {
@@ -416,15 +425,140 @@ padding : 0px;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.8); /* 반투명 배경 */
+    background-color: rgba(255, 255, 255, 0.8);
+    /* 반투명 배경 */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999; /* 버튼과 상호작용하지 못하도록 최상위로 올림 */
+    z-index: 9999;
+    /* 버튼과 상호작용하지 못하도록 최상위로 올림 */
 }
 
 .spinner {
     font-size: 24px;
     font-weight: bold;
     color: #000;
+}
+
+.loader1 {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    position: relative;
+    animation: loader10-uba7e1836 0.9s ease alternate infinite;
+    animation-delay: 0.36s;
+    top: 50%;
+    margin: -42px auto 0;
+}
+
+.loader1::after,
+.loader1::before {
+    content: '';
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    animation: loader10-uba7e1836 0.9s ease alternate infinite;
+}
+
+.loader1::before {
+    left: -40px;
+    animation-delay: 0.18s;
+}
+
+.loader1::after {
+    right: -40px;
+    animation-delay: 0.54s;
+}
+
+@keyframes loader10-uba7e1836 {
+    0% {
+        box-shadow: 0 28px 0 -28px #0052ec;
+    }
+
+    100% {
+        box-shadow: 0 28px 0 #0052ec;
+    }
+}
+
+
+.loader2 {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    position: relative;
+    animation: loader07-u04c322d6 1s linear infinite;
+    top: 50%;
+    margin: -8px auto 0;
+}
+
+@keyframes loader07-u04c322d6 {
+    0% {
+        box-shadow: 0 -27px 0 0 rgba(0, 82, 236, 0.05), 19px -19px 0 0 rgba(0, 82, 236, 0.1), 27px 0 0 0 rgba(0, 82, 236, 0.2), 19px 19px 0 0 rgba(0, 82, 236, 0.3), 0 27px 0 0 rgba(0, 82, 236, 0.4), -19px 19px 0 0 rgba(0, 82, 236, 0.6), -27px 0 0 0 rgba(0, 82, 236, 0.8), -19px -19px 0 0 #0052ec;
+    }
+
+    12.5% {
+        box-shadow: 0 -27px 0 0 #0052ec, 19px -19px 0 0 rgba(0, 82, 236, 0.05), 27px 0 0 0 rgba(0, 82, 236, 0.1), 19px 19px 0 0 rgba(0, 82, 236, 0.2), 0 27px 0 0 rgba(0, 82, 236, 0.3), -19px 19px 0 0 rgba(0, 82, 236, 0.4), -27px 0 0 0 rgba(0, 82, 236, 0.6), -19px -19px 0 0 rgba(0, 82, 236, 0.8);
+    }
+
+    25% {
+        box-shadow: 0 -27px 0 0 rgba(0, 82, 236, 0.8), 19px -19px 0 0 #0052ec, 27px 0 0 0 rgba(0, 82, 236, 0.05), 19px 19px 0 0 rgba(0, 82, 236, 0.1), 0 27px 0 0 rgba(0, 82, 236, 0.2), -19px 19px 0 0 rgba(0, 82, 236, 0.3), -27px 0 0 0 rgba(0, 82, 236, 0.4), -19px -19px 0 0 rgba(0, 82, 236, 0.6);
+    }
+
+    37.5% {
+        box-shadow: 0 -27px 0 0 rgba(0, 82, 236, 0.6), 19px -19px 0 0 rgba(0, 82, 236, 0.8), 27px 0 0 0 #0052ec, 19px 19px 0 0 rgba(0, 82, 236, 0.05), 0 27px 0 0 rgba(0, 82, 236, 0.1), -19px 19px 0 0 rgba(0, 82, 236, 0.2), -27px 0 0 0 rgba(0, 82, 236, 0.3), -19px -19px 0 0 rgba(0, 82, 236, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 -27px 0 0 rgba(0, 82, 236, 0.4), 19px -19px 0 0 rgba(0, 82, 236, 0.6), 27px 0 0 0 rgba(0, 82, 236, 0.8), 19px 19px 0 0 #0052ec, 0 27px 0 0 rgba(0, 82, 236, 0.05), -19px 19px 0 0 rgba(0, 82, 236, 0.1), -27px 0 0 0 rgba(0, 82, 236, 0.2), -19px -19px 0 0 rgba(0, 82, 236, 0.3);
+    }
+
+    62.5% {
+        box-shadow: 0 -27px 0 0 rgba(0, 82, 236, 0.3), 19px -19px 0 0 rgba(0, 82, 236, 0.4), 27px 0 0 0 rgba(0, 82, 236, 0.6), 19px 19px 0 0 rgba(0, 82, 236, 0.8), 0 27px 0 0 #0052ec, -19px 19px 0 0 rgba(0, 82, 236, 0.05), -27px 0 0 0 rgba(0, 82, 236, 0.1), -19px -19px 0 0 rgba(0, 82, 236, 0.2);
+    }
+
+    75% {
+        box-shadow: 0 -27px 0 0 rgba(0, 82, 236, 0.2), 19px -19px 0 0 rgba(0, 82, 236, 0.3), 27px 0 0 0 rgba(0, 82, 236, 0.4), 19px 19px 0 0 rgba(0, 82, 236, 0.6), 0 27px 0 0 rgba(0, 82, 236, 0.8), -19px 19px 0 0 #0052ec, -27px 0 0 0 rgba(0, 82, 236, 0.05), -19px -19px 0 0 rgba(0, 82, 236, 0.1);
+    }
+
+    87.5% {
+        box-shadow: 0 -27px 0 0 rgba(0, 82, 236, 0.1), 19px -19px 0 0 rgba(0, 82, 236, 0.2), 27px 0 0 0 rgba(0, 82, 236, 0.3), 19px 19px 0 0 rgba(0, 82, 236, 0.4), 0 27px 0 0 rgba(0, 82, 236, 0.6), -19px 19px 0 0 rgba(0, 82, 236, 0.8), -27px 0 0 0 #0052ec, -19px -19px 0 0 rgba(0, 82, 236, 0.05);
+    }
+
+    100% {
+        box-shadow: 0 -27px 0 0 rgba(0, 82, 236, 0.05), 19px -19px 0 0 rgba(0, 82, 236, 0.1), 27px 0 0 0 rgba(0, 82, 236, 0.2), 19px 19px 0 0 rgba(0, 82, 236, 0.3), 0 27px 0 0 rgba(0, 82, 236, 0.4), -19px 19px 0 0 rgba(0, 82, 236, 0.6), -27px 0 0 0 rgba(0, 82, 236, 0.8), -19px -19px 0 0 #0052ec;
+    }
+}
+
+
+.loader3 {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: relative;
+    animation: loader12-u6338d783 2s linear alternate infinite;
+    top: 50%;
+    margin: -50px auto 0;
+}
+
+@keyframes loader12-u6338d783 {
+    0% {
+        box-shadow: -60px 40px 0 2px #0052ec, -30px 40px 0 0 rgba(0, 82, 236, 0.2), 0 40px 0 0 rgba(0, 82, 236, 0.2), 30px 40px 0 0 rgba(0, 82, 236, 0.2), 60px 40px 0 0 rgba(0, 82, 236, 0.2);
+    }
+
+    25% {
+        box-shadow: -60px 40px 0 0 rgba(0, 82, 236, 0.2), -30px 40px 0 2px #0052ec, 0 40px 0 0 rgba(0, 82, 236, 0.2), 30px 40px 0 0 rgba(0, 82, 236, 0.2), 60px 40px 0 0 rgba(0, 82, 236, 0.2);
+    }
+
+    50% {
+        box-shadow: -60px 40px 0 0 rgba(0, 82, 236, 0.2), -30px 40px 0 0 rgba(0, 82, 236, 0.2), 0 40px 0 2px #0052ec, 30px 40px 0 0 rgba(0, 82, 236, 0.2), 60px 40px 0 0 rgba(0, 82, 236, 0.2);
+    }
+
+    75% {
+        box-shadow: -60px 40px 0 0 rgba(0, 82, 236, 0.2), -30px 40px 0 0 rgba(0, 82, 236, 0.2), 0 40px 0 0 rgba(0, 82, 236, 0.2), 30px 40px 0 2px #0052ec, 60px 40px 0 0 rgba(0, 82, 236, 0.2);
+    }
+
+    100% {
+        box-shadow: -60px 40px 0 0 rgba(0, 82, 236, 0.2), -30px 40px 0 0 rgba(0, 82, 236, 0.2), 0 40px 0 0 rgba(0, 82, 236, 0.2), 30px 40px 0 0 rgba(0, 82, 236, 0.2), 60px 40px 0 2px #0052ec;
+    }
 }
