@@ -99,12 +99,17 @@ function Employee() {
         authorityName: ''
     }]);
 
-    // 메인 리스트 가져오기 axios
-    useEffect(() => {
-        axios.get('/employee/employeeALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
-            .then(response => setEmployee(response.data))  // 응답 데이터를 상태로 설정
-            .catch(error => console.error('Error fetching Customer data:', error));
-    }, []);
+const fetchEmployeeList = () => {
+    axios.get('/employee/employeeALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
+        .then(response => setEmployee(response.data))  // 응답 데이터를 상태로 설정
+        .catch(error => console.error('Error fetching Employee data:', error));
+};
+
+// useEffect to fetch employee list when the component mounts
+useEffect(() => {
+    fetchEmployeeList();  // Initial data fetching
+}, []);
+
 
     // 검색,필터 기능
     let [emSearch, setEmSearch] = useState({
@@ -174,6 +179,13 @@ function Employee() {
             handleSearchEmployee();
             setCurrentPage(1);
         }
+    // 초기화 후 목록도 리셋
+    useEffect(() => {
+        const isFormReset = Object.values(employee).every(value => value === '');
+        if (isFormReset) {
+            handleSearchEmployee();
+        }
+    }, [employee]);
 
 
 
@@ -401,6 +413,7 @@ useEffect(() => {
                         alert("등록이 완료되었습니다"); // Show alert after visibility is set
                         window.location.reload();
                          setList([]); // 기존 목록 초기화
+                               fetchEmployeeList();
                     });
 
         } else {
@@ -515,7 +528,8 @@ const handleUpdateClick = () => {
     .catch(error => console.error('서버 요청 중 오류 발생', error))
     .finally(() => {
         setIsModifyModalVisible(false);
-        window.location.reload();
+        fetchEmployeeList();
+    /*    window.location.reload();*/
 
          if(goOut === true) {
           window.location.href = './logout';
@@ -601,6 +615,7 @@ const [goOut, setGoOut] = useState();
             .then(response => {
                 console.log('삭제 요청 성공', response.data);
                 alert("비밀번호가 초기화 되었습니다.");
+  fetchEmployeeList();
             })
             .catch(error => {
                 console.error('서버 요청 중 오류 발생', error);
@@ -911,32 +926,32 @@ const handleDeletePickClick = () => {
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeId" >직원아이디</label>
-                                <input  onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeId" placeholder="" onChange={handleInputChange} value={emSearch.employeeId} required />
+                                <input  onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeId" placeholder="직원 아이디" onChange={handleInputChange} value={emSearch.employeeId} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeName">직원이름</label>
-                                <input onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeName" placeholder="" onChange={handleInputChange} value={emSearch.employeeName} r required />
+                                <input onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeName" placeholder="직원 이름" onChange={handleInputChange} value={emSearch.employeeName} r required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeTel">직원전화번호</label>
-                                <input     onKeyDown={handleKeyDown}className="filter-input" type="text" id="employeeTel" placeholder="" onChange={handleInputChange} value={emSearch.employeeTel} required />
+                                <input     onKeyDown={handleKeyDown}className="filter-input" type="text" id="employeeTel" placeholder="직원 전화번호" onChange={handleInputChange} value={emSearch.employeeTel} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeEmail">직원이메일</label>
-                                <input    onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeEmail" placeholder="" onChange={handleInputChange} value={emSearch.employeeEmail} required />
+                                <input    onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeEmail" placeholder="직원 이메일" onChange={handleInputChange} value={emSearch.employeeEmail} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="employeeAddr">주소</label>
-                                <input     onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeAddr" placeholder="" onChange={handleInputChange} value={emSearch.employeeAddr} required />
+                                <input     onKeyDown={handleKeyDown} className="filter-input" type="text" id="employeeAddr" placeholder="주소" onChange={handleInputChange} value={emSearch.employeeAddr} required />
                             </div>
 
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="hireDate">입사일</label>
-                                <input     onKeyDown={handleKeyDown}  className="filter-input" type="date" id="hireDate" placeholder="" onChange={handleInputChange} value={emSearch.hireDate} required />
+                                <input     onKeyDown={handleKeyDown}  className="filter-input" type="date" id="hireDate" placeholder="입사일" onChange={handleInputChange} value={emSearch.hireDate} required />
                             </div>
 
 
