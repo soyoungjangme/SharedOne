@@ -14,6 +14,11 @@ const PriceTable = ({
 
     console.log(totalItems);
 
+     // 상품원가를 포맷팅하는 함수
+     const formatPrice = (price) => {
+        return price ? Number(price).toLocaleString() : '';
+    };
+
     return (
         <table className="search-table" style={{marginTop: '50px'}}>
             {showDelete && <button className="delete-btn btn-common" onClick={handleDelete}>삭제</button>}
@@ -80,7 +85,7 @@ const PriceTable = ({
                             <i className="bi bi-search details"
                                onClick={() => handleAddClickDetail('customer', item.customerNo)}/>
                         </td>
-                        <td>{item.customPrice}</td>
+                        <td>{formatPrice(item.customPrice)}</td>
                         <td>{item.discount}</td>
                         <td>{item.startDate}</td>
                         <td>{item.endDate}</td>
