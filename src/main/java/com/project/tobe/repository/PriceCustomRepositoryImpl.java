@@ -67,7 +67,6 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
                                 customer.customerNo,
                                 customer.customerName,
                                 price.customPrice,
-                                price.currency,
                                 price.discount,
                                 price.startDate,
                                 price.endDate
@@ -95,7 +94,6 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
                                 customer.customerNo,
                                 customer.customerName,
                                 price.customPrice,
-                                price.currency,
                                 price.discount,
                                 price.startDate,
                                 price.endDate
@@ -150,9 +148,6 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
         );
         Optional.ofNullable(dto.getDiscount()).ifPresent(discount ->
                 updateQuery.set(price.discount, discount)
-        );
-        Optional.ofNullable(dto.getCurrency()).ifPresent(currency ->
-                updateQuery.set(price.currency, currency)
         );
 
         updateQuery.execute();

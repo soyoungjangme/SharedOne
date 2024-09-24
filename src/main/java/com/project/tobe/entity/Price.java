@@ -31,7 +31,6 @@ public class Price {
     @Column(name = "register_date", columnDefinition = "timestamp")
     private LocalDateTime registerDate;
     private Double customPrice;
-    private String currency;
     private Double discount;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -59,7 +58,6 @@ public class Price {
     ) {
         this.registerDate = registerDate;
         this.customPrice = customPrice;
-        this.currency = currency;
         this.discount = discount;
         this.startDate = startDate;
         this.endDate = endDate;
