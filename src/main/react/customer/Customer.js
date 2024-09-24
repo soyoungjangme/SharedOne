@@ -448,7 +448,7 @@ function Customer() {
     // 삭제 기능 구현
     const handleDeleteItem = () => {
         const customerNo = modifyItem.customerNo; // 수정하는 고객의 ID 가져오기
-        if (window.confirm('삭제하시겠습니까?')) {
+        if (window.confirm('고객을 삭제하시겠습니까?')) {
             axios.post('/customer/customerDelete', [customerNo], {
                 headers: {
                     'Content-Type': 'application/json'
@@ -486,7 +486,7 @@ function Customer() {
 
     //삭제 기능
     const handleDeleteClick = () => {
-        if (window.confirm('삭제하시겠습니까?')) {
+        if (window.confirm('선택한 고객을 삭제하시겠습니까?')) {
             axios.post('/customer/customerDelete', checkedIds, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -495,7 +495,7 @@ function Customer() {
                 .then(response => {
                     console.log('삭제 요청 성공', response.data);
                     const deletedCount = checkedIds.length;
-                    alert(`${deletedCount}개 항목이 삭제되었습니다.`);
+                    alert(`총 ${deletedCount}개 고객이 삭제되었습니다.`);
                     window.location.reload();
                 })
                 .catch(error => {
@@ -504,7 +504,6 @@ function Customer() {
                 });
         }
     };
-
 
 
 
