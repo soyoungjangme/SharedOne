@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from "react-dom/client";
 import './MyPage.css';
 import axios from 'axios';
-import './MyPage-password.css';
+import './MyPagePassword.css';
 import EmployeeMonthlySalesChart from "./EmployeeMonthlySalesChart";
 
 

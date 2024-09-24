@@ -52,10 +52,7 @@ function Product() {
         }
     };
 
-
-
     const [product, setProduct] = useState([]); // 리스트 데이터를 저장할 state
-
 
     // 서버에서 데이터 가져오기
     const fetchData = async () => {
@@ -73,6 +70,57 @@ function Product() {
         fetchData(); // 컴포넌트가 처음 마운트될 때 데이터 가져오기
     }, []);
 
+
+
+    // 카테고리 목록을 상수로 관리
+    const PRODUCT_CATEGORIES = [
+        { id: 'FICTION', name: '소설' },
+        { id: 'NONFICTION', name: '논픽션' },
+        { id: 'SCIENCE', name: '과학' },
+        { id: 'ART', name: '예술/건축' },
+        { id: 'LITERATURE', name: '문학' },
+        { id: 'HISTORY', name: '역사' },
+        { id: 'PHILOSOPHY', name: '철학' },
+        { id: 'POETRY', name: '시' },
+        { id: 'EDUCATION', name: '교육' },
+        { id: 'CHILDREN', name: '아동' },
+        { id: 'SELFHELP', name: '자기계발' },
+        { id: 'BIOGRAPHY', name: '전기/자서전' },
+        { id: 'HEALTH', name: '건강/의학' },
+        { id: 'COOKING', name: '요리' },
+        { id: 'TRAVEL', name: '여행' },
+        { id: 'BUSINESS', name: '비즈니스/경제' },
+        { id: 'TECHNOLOGY', name: '기술/IT' },
+        { id: 'LAW', name: '법률' },
+        { id: 'RELIGION', name: '종교' },
+        { id: 'SPORTS', name: '스포츠' },
+        { id: 'MATH', name: '수학' },
+        { id: 'POLITICS', name: '정치/사회' },
+        { id: 'PSYCHOLOGY', name: '심리학' },
+        { id: 'LANGUAGE', name: '언어' },
+        { id: 'MUSIC', name: '음악' },
+        { id: 'GARDENING', name: '정원/원예' },
+        { id: 'PARENTING', name: '육아' },
+        { id: 'FANTASY', name: '판타지' },
+        { id: 'MYSTERY', name: '추리/미스터리' },
+        { id: 'SCIENCE_FICTION', name: '과학소설(SF)' },
+        { id: 'HORROR', name: '공포' },
+        { id: 'ROMANCE', name: '로맨스' },
+        { id: 'GRAPHIC_NOVEL', name: '그래픽노블' },
+        { id: 'DRAMA', name: '희곡/드라마' },
+        { id: 'ANTHOLOGY', name: '선집/옴니버스' },
+        { id: 'REFERENCE', name: '참고서적' },
+        { id: 'ESSAY', name: '수필' },
+        { id: 'DIARY', name: '일기' },
+        { id: 'ENCYCLOPEDIA', name: '백과사전' },
+        { id: 'GUIDEBOOK', name: '가이드북' }
+    ];
+
+    // 카테고리 id로 name을 찾는 함수
+    const getCategoryNameById = (categoryId) => {
+        const category = PRODUCT_CATEGORIES.find(cat => cat.id === categoryId);
+        return category ? category.name : '알 수 없는 카테고리';
+    };
 
 
     // ========================= 테이블 정렬 부분 =========================
@@ -189,11 +237,15 @@ function Product() {
         maxPrice: '', // 초기값 추가
         priceComparison: '', // 가격 비교 상태도 초기화
     });
+
     const handleFilterChange = (e) => {
         const { id, value } = e.target;
 
+        // 입력값에서 콤마 제거
+        const numericValue = value.replace(/,/g, '');
+
         // 상품원가, 최소가격, 최대가격 입력값이 음수일 경우 처리
-        if ((id === 'productPrice' || id === 'minPrice' || id === 'maxPrice') && value < 0) {
+        if ((id === 'productPrice' || id === 'minPrice' || id === 'maxPrice') && numericValue < 0) {
             setFilters(prevFilters => ({
                 ...prevFilters,
                 [id]: 0 // 음수를 입력하면 0으로 변경
@@ -201,10 +253,16 @@ function Product() {
         } else {
             setFilters(prevFilters => ({
                 ...prevFilters,
-                [id]: value
+                [id]: numericValue // 숫자 형태 유지
             }));
         }
     };
+
+    // 상품원가를 포맷팅하는 함수
+    const formatPrice = (price) => {
+        return price ? Number(price).toLocaleString() : '';
+    };
+
 
 
     //공백 제거, 대소문자 통일
@@ -277,7 +335,7 @@ function Product() {
             handleSearch();
         }
     }, [filters]);
-    
+
 
 
 
@@ -294,22 +352,28 @@ function Product() {
     });
     const [productList, setProductList] = useState([]);
 
-    // 상품 정보 입력 처리
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
+   // 상품 정보 입력 처리
+const handleInputChange = (e) => {
+    const { name, value } = e.target;
 
-        if (name === 'productPrice' && value < 0) {
-            setProductForm({
-                ...productForm,
-                [name]: 0
-            });
-        } else {
-            setProductForm({
-                ...productForm,
-                [name]: value
-            });
-        }
-    };
+    if (name === 'productPrice') {
+        // 입력값에서 숫자만 유지하고 콤마 추가
+        const numericValue = value.replace(/,/g, '').replace(/\D/g, '');
+        const formattedValue = formatPrice(numericValue);
+
+        setProductForm({
+            ...productForm,
+            [name]: numericValue // 실제 값은 숫자만 유지
+        });
+
+        e.target.value = formattedValue; // 화면에 표시할 값 콤마 추가된 상태로
+    } else {
+        setProductForm({
+            ...productForm,
+            [name]: value
+        });
+    }
+};
 
     // 모달 열기
     const handleAddClick = () => {
@@ -401,7 +465,10 @@ function Product() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(product),
+                    body: JSON.stringify({
+                        ...product,
+                        productPrice: Number(product.productPrice), 
+                    }),
                 })
             ));
 
@@ -507,74 +574,80 @@ function Product() {
 
     const handleModifyItemChange = (e) => {
         const { name, value } = e.target;
-
-        //상품원가 입력값이 음수일 경우
-        if (name === 'productPrice' && value < 0) {
+    
+        if (name === 'productPrice') {
+            // 입력값에서 숫자만 유지하고 콤마 추가
+            const numericValue = value.replace(/,/g, '').replace(/\D/g, '');
+            const formattedValue = formatPrice(numericValue); // 가격 포맷팅 재사용
+    
             setModifyItem((prevItem) => ({
                 ...prevItem,
-                [name]: 0, //음수 입력시 0으로 바뀜
+                [name]: numericValue // 실제 값은 숫자만 유지
             }));
+    
+            e.target.value = formattedValue; // 화면에 표시할 값 콤마 추가된 상태로
         } else {
             setModifyItem((prevItem) => ({
                 ...prevItem,
                 [name]: value,
             }));
         }
-
     };
 
     const handleModifySubmit = async () => {
         // 입력값이 비어있는지 확인
         const isInputEmpty = Object.values(modifyItem).some(value => !value);
-
-        // 수정된 내용이 있는지 확인 (공백 제거 및 대소문자 통일 후 비교)
+    
+        // 수정된 내용이 있는지 확인
         const hasChanges = Object.keys(modifyItem).some((key) => {
             const originalValue = normalizeString(originalItem[key]?.toString());
             const modifiedValue = normalizeString(modifyItem[key]?.toString());
-
+    
             return originalValue !== modifiedValue;
         });
-
+    
         if (!hasChanges) {
             alert('수정한 내용이 없습니다.');
             return;
         }
-
+    
         if (isInputEmpty) {
             alert('상품 정보를 모두 입력해야 합니다.');
             return;
         }
-
-        // 공백 제거 및 대소문자 통일 후 중복 확인
+    
         const normalizedProductName = normalizeString(modifyItem.productName);
-
-        // 등록된 상품 중 productYn = 'Y'인 데이터와 중복 확인
+    
+        // 중복 체크
         const isDuplicate = product.some(item =>
-            normalizeString(item.productName) === normalizedProductName && // 공백 제거 및 대소문자 통일 후 비교
+            normalizeString(item.productName) === normalizedProductName &&
             item.productYn === 'Y' &&
-            normalizeString(item.productName) !== normalizeString(originalItem.productName) // 자기 자신과는 비교하지 않음
+            normalizeString(item.productName) !== normalizeString(originalItem.productName)
         );
-
+    
         if (isDuplicate) {
             alert('이미 존재하는 상품명입니다.');
             return;
         }
-
+    
         if (!confirm('상품을 수정하시겠습니까?')) {
             return;
         }
-
+    
         try {
             const response = await fetch('/product/updateProduct', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ...modifyItem, productName: normalizedProductName }), // 공백 제거 및 대소문자 통일된 값 전송
+                body: JSON.stringify({
+                    ...modifyItem,
+                    productName: normalizedProductName,
+                    productPrice: parseFloat(modifyItem.productPrice) // 숫자 값으로 전송
+                }),
             });
-
+    
             if (response.ok) {
-                const result = await response.json();
                 alert('상품이 수정되었습니다.');
                 setIsModifyModalVisible(false);
                 setProductList([]); // 리스트 초기화
@@ -587,7 +660,6 @@ function Product() {
             alert('서버 오류가 발생했습니다.');
         }
     };
-
     // 삭제 처리 함수
     const handleDeleteItem = async () => {
         if (!confirm('상품을 삭제하시겠습니까?')) {
@@ -625,8 +697,6 @@ function Product() {
 
 
 
-
-
     // =============================== 페이지 네이션 ===============================
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -652,7 +722,6 @@ function Product() {
     const renderPageNumbers = () => {
         let pageNumbers = [];
         const maxButtons = 5; // 고정된 버튼 수
-
         // 맨 처음 페이지 버튼
         pageNumbers.push(
             <span
@@ -663,7 +732,6 @@ function Product() {
                 &laquo;&laquo; {/* 두 개의 왼쪽 화살표 */}
             </span>
         );
-
         // 이전 페이지 버튼
         pageNumbers.push(
             <span
@@ -674,7 +742,6 @@ function Product() {
                 &laquo; {/* 왼쪽 화살표 */}
             </span>
         );
-
         // 페이지 수가 4 이하일 경우 모든 페이지 표시
         if (totalPages <= 4) {
             for (let i = 1; i <= totalPages; i++) {
@@ -697,7 +764,6 @@ function Product() {
                 endPage = totalPages;
                 startPage = Math.max(1, endPage - maxButtons + 1);
             }
-
             // 시작 페이지와 끝 페이지에 대한 페이지 버튼 추가
             for (let i = startPage; i <= endPage; i++) {
                 pageNumbers.push(
@@ -710,7 +776,6 @@ function Product() {
                     </span>
                 );
             }
-
             // 마지막 페이지가 현재 페이지 + 1보다 큰 경우 '...'과 마지막 페이지 표시
             if (endPage < totalPages) {
                 pageNumbers.push(<span className="pagination_link">...</span>);
@@ -725,7 +790,6 @@ function Product() {
                 );
             }
         }
-
         // 다음 페이지 버튼
         pageNumbers.push(
             <span
@@ -751,13 +815,11 @@ function Product() {
         return pageNumbers;
     };
 
-
     return (
         <div>
-
             <div className="pageHeader"><h1>
-                <i className="bi bi-cart-check-fill"></i> 상품 관리</h1></div>
-
+                <i className="bi bi-cart-check-fill"></i> 상품 관리</h1>
+            </div>
             <div className="main-container">
                 <div className='filter-containers'>
                     <div className="filter-container">
@@ -788,57 +850,55 @@ function Product() {
                             </div>
                             <div className="filter-item">
                                 <label className="filter-label" htmlFor="productCategory">상품카테고리</label>
-                                <input
+                                <select
                                     className="filter-input"
-                                    type="text"
                                     id="productCategory"
-                                    placeholder="상품카테고리"
                                     value={filters.productCategory}
                                     onChange={handleFilterChange}
-                                    onKeyDown={handleKeyDown}
-                                />
+                                >
+                                    <option value="">카테고리 선택</option>
+                                    {PRODUCT_CATEGORIES.map(category => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div className="filter-item full-width">
                                 <label className="filter-label full-label" htmlFor="productPrice">상품원가</label>
                                 <div className="filter-input-group">
-                                    {/* 가격 비교 조건에 따라 인풋 필드를 다르게 표시 */}
                                     {filters.priceComparison === 'range' ? (
                                         <>
                                             <input
                                                 className="filter-input"
-                                                type="number"
+                                                type="text" // 숫자 타입을 text로 변경
                                                 id="minPrice"
                                                 placeholder="최소가격"
-                                                min={0}
-                                                value={filters.minPrice}
+                                                value={formatPrice(filters.minPrice)} // 포맷팅된 가격 표시
                                                 onChange={handleFilterChange}
                                                 onKeyDown={handleKeyDown}
                                             />
                                             <input
                                                 className="filter-input"
-                                                type="number"
+                                                type="text" // 숫자 타입을 text로 변경
                                                 id="maxPrice"
                                                 placeholder="최대가격"
-                                                min={0}
-                                                value={filters.maxPrice}
+                                                value={formatPrice(filters.maxPrice)} // 포맷팅된 가격 표시
                                                 onChange={handleFilterChange}
                                                 onKeyDown={handleKeyDown}
                                             />
                                         </>
                                     ) : (
-                                        // 구간 이외의 조건에서는 기본 상품원가 필드만 표시
                                         <input
                                             className="filter-input"
-                                            type="number"
+                                            type="text" // 숫자 타입을 text로 변경
                                             id="productPrice"
                                             placeholder="상품원가"
-                                            min={0}
-                                            value={filters.productPrice}
+                                            value={formatPrice(filters.productPrice)} // 포맷팅된 가격 표시
                                             onChange={handleFilterChange}
                                             onKeyDown={handleKeyDown}
                                         />
                                     )}
-
                                     <select
                                         id="priceComparison"
                                         value={filters.priceComparison}
@@ -852,9 +912,7 @@ function Product() {
                                 </div>
                             </div>
                         </div>
-
                     </div>
-
                     <div className="button-container">
                         <button type="button" className="reset-btn" onClick={handleReset}>
                             <i className="bi bi-arrow-clockwise"></i>
@@ -863,7 +921,6 @@ function Product() {
                             <i className="bi bi-search search-icon"></i>
                         </button>
                     </div>
-
                 </div>
 
                 <button className="filter-button" id="add" type="button" onClick={handleAddClick}>상품 등록</button>
@@ -916,8 +973,9 @@ function Product() {
                                             <td>{globalIndex}</td> {/* 여기에서 globalIndex 사용 */}
                                             <td>{item.productName}</td>
                                             <td>{item.productWriter}</td>
-                                            <td>{item.productCategory}</td>
-                                            <td>{item.productPrice}</td>
+                                            <td>{getCategoryNameById(item.productCategory)}</td>
+                                            <td>{formatPrice(item.productPrice)}</td>
+
                                         </tr>
                                     );
                                 }
@@ -945,9 +1003,6 @@ function Product() {
             <div className="pagination">
                 {renderPageNumbers()}
             </div>
-
-
-
 
             {/* ---------------------- 상품 등록 모달 ----------------------*/}
             {isVisible && (
@@ -979,10 +1034,31 @@ function Product() {
                                         </tr>
                                         <tr>
                                             <th><label htmlFor="productCategory">상품카테고리</label></th>
-                                            <td><input type="text" name="productCategory" value={productForm.productCategory} onChange={handleInputChange} placeholder="상품카테고리" /></td>
-
+                                            <td>
+                                                <select
+                                                    name="productCategory"
+                                                    value={productForm.productCategory}
+                                                    onChange={handleInputChange}
+                                                >
+                                                    <option value="">카테고리 선택</option>
+                                                    {PRODUCT_CATEGORIES.map(category => (
+                                                        <option key={category.id} value={category.id}>
+                                                            {category.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </td>
                                             <th><label htmlFor="productPrice">상품원가</label></th>
-                                            <td><input type="number" name="productPrice" value={productForm.productPrice} onChange={handleInputChange} placeholder="상품원가" /></td>
+                                            <td>
+    <input
+        type="text"
+        name="productPrice"
+        value={productForm.productPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} // 콤마 추가
+        onChange={handleInputChange}
+        placeholder="상품원가"
+    />
+</td>
+
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1034,8 +1110,8 @@ function Product() {
                                                 <td>{index + 1}</td>
                                                 <td>{item.productName}</td>
                                                 <td>{item.productWriter}</td>
-                                                <td>{item.productCategory}</td>
-                                                <td>{item.productPrice}</td>
+                                                <td>{getCategoryNameById(item.productCategory)}</td>
+                                                <td>{formatPrice(item.productPrice)}</td>
                                             </tr>
                                         ))}
                                         <tr style={{ fontWeight: 'bold' }}>
@@ -1051,8 +1127,6 @@ function Product() {
                     </div>
                 </div>
             )}
-
-
 
             {/* ---------------------- 수정 모달창 ----------------------*/}
             {
@@ -1076,51 +1150,53 @@ function Product() {
                                 <div className="RegistForm">
                                     <table className="formTable">
                                         <tr>
-                                            <th colSpan="1"><label htmlFor="productName">상품명</label></th>
-                                            <td colSpan="3">
+                                            <th><label htmlFor="productName">상품명</label></th>
+                                            <td>
                                                 <input
                                                     type="text"
                                                     name="productName"
                                                     placeholder="상품명"
-                                                    disabled
                                                     value={modifyItem.productName}
                                                     onChange={handleModifyItemChange}
                                                 />
                                             </td>
-                                            <th colSpan="1"><label htmlFor="productWriter">상품저자</label></th>
-                                            <td colSpan="3">
+                                            <th><label htmlFor="productWriter">상품저자</label></th>
+                                            <td>
                                                 <input
                                                     type="text"
                                                     name="productWriter"
                                                     placeholder="상품저자"
-                                                    disabled
                                                     value={modifyItem.productWriter}
                                                     onChange={handleModifyItemChange}
                                                 />
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th colSpan="1"><label htmlFor="productCategory">상품카테고리</label></th>
-                                            <td colSpan="3">
-                                                <input
-                                                    type="text"
+                                            <th><label htmlFor="productCategory">상품카테고리</label></th>
+                                            <td>
+                                                <select
                                                     name="productCategory"
-                                                    placeholder="상품카테고리"
-                                                    disabled
                                                     value={modifyItem.productCategory}
-                                                    onChange={handleModifyItemChange}
-                                                />
+                                                    onChange={handleModifyItemChange} // 수정 핸들러 사용
+                                                >
+                                                    <option value="">카테고리 선택</option>
+                                                    {PRODUCT_CATEGORIES.map(category => (
+                                                        <option key={category.id} value={category.id}>
+                                                            {category.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
                                             </td>
-                                            <th colSpan="1"><label htmlFor="productPrice">상품원가</label></th>
-                                            <td colSpan="3">
-                                                <input
-                                                    type="text"
-                                                    name="productPrice"
-                                                    placeholder="상품원가"
-                                                    value={modifyItem.productPrice}
-                                                    onChange={handleModifyItemChange}
-                                                />
-                                            </td>
+                                            <th><label htmlFor="productPrice">상품원가</label></th>
+                                            <td>
+                                            <input
+                                        type="text"
+                                        name="productPrice"
+                                        placeholder="상품원가"
+                                        value={formatPrice(modifyItem.productPrice)} 
+                                        onChange={handleModifyItemChange}
+                                    />
+                                        </td>
                                         </tr>
                                     </table>
                                 </div>
