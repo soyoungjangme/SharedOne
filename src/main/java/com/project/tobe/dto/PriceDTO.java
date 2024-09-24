@@ -1,5 +1,6 @@
 package com.project.tobe.dto;
 
+import com.project.tobe.util.constants.YesNo;
 import lombok.*;
 
 import java.sql.Timestamp;
@@ -23,6 +24,7 @@ public class PriceDTO {
     private Double discount;
     private LocalDate startDate;
     private LocalDate endDate;
+    private String activated;
 
     private int page = 1;
     private int amount = 50;
