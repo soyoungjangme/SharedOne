@@ -37,9 +37,6 @@
             <if test="nation != '' and nation != null">
                 AND nation LIKE CONCAT('%', #{nation}, '%')
             </if>
-            <if test="dealType != '' and dealType != null">
-                AND deal_type LIKE CONCAT('%', #{dealType}, '%')
-            </if>
             <if test="picName != '' and picName != null">
                 AND pic_name LIKE CONCAT('%', #{picName}, '%')
             </if>
@@ -65,7 +62,6 @@
         post_num,
         business_registration_no,
         nation,
-        deal_type,
         pic_name,
         pic_email,
         pic_tel,
@@ -73,7 +69,7 @@
         )
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.customerName}, #{item.customerAddr}, #{item.customerTel}, #{item.postNum}, #{item.businessRegistrationNo}, #{item.nation}, #{item.dealType}, #{item.picName}, #{item.picEmail}, #{item.picTel}, #{item.activated})
+            (#{item.customerName}, #{item.customerAddr}, #{item.customerTel}, #{item.postNum}, #{item.businessRegistrationNo}, #{item.nation}, #{item.picName}, #{item.picEmail}, #{item.picTel}, #{item.activated})
         </foreach>
     </insert>
 
@@ -91,7 +87,6 @@
         post_num = #{postNum},
         business_registration_no = #{businessRegistrationNo},
         nation = #{nation},
-        deal_type = #{dealType},
         pic_name = #{picName},
         pic_email = #{picEmail},
         pic_tel = #{picTel}

@@ -20,7 +20,6 @@ public class PriceDTO {
     private String customerNo;
     private String customerName;
     private Double customPrice;
-    private String currency;
     private Double discount;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -32,7 +31,6 @@ public class PriceDTO {
         this.productNo = productNo;
         this.customerNo = customerNo;
         this.customPrice = customPrice;
-        this.currency = currency;
         this.discount = discount;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -43,7 +41,6 @@ public class PriceDTO {
         this.productNo = productNo;
         this.customerNo = customerNo;
         this.customPrice = customPrice;
-        this.currency = currency;
         this.discount = discount;
         this.startDate = startDate;
         this.endDate = endDate;
