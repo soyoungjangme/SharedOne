@@ -898,6 +898,11 @@ function Order() {
 
     const [selectedIndex, setSelectedIndex] = useState(-1);
 
+    // 선택 초기화 핸들러
+    const handleResetSelection = () => {
+        setSelectedIndex(-1);
+        sendSearchCriteria(-1); // 선택 초기화에 따른 서버 요청
+    };
 
     // Handle button click to update selected index and send the corresponding value
     const handleButtonClick2 = (index) => {
@@ -963,6 +968,7 @@ function Order() {
                 return "";
         }
     };
+
 
 
     return (
@@ -1060,6 +1066,12 @@ function Order() {
 
 
                 <div className="multi-select">
+                    <button
+                        className="btn reset" // 스타일 추가 가능
+                        onClick={handleResetSelection}
+                    >
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
                     <button
                         className={`btn ${selectedIndex === 0 ? "selected" : ""}`}
                         onClick={() => handleButtonClick2(0)}
@@ -1213,7 +1225,7 @@ function Order() {
             {/* 여기 아래는 모달이다. */}
 
             {/*jsy 주문등록 모달창 시작*/}
-            {isVisible && (true ? (
+            {isVisible && (loading ? (
                 <div className="loading-overlay">
                     <div className="spinner">
 
@@ -1224,7 +1236,7 @@ function Order() {
                             <p className="error-code">홈 화면으로 이동</p>
                         </div> */}
 
-                        <div className="error-container">
+                        {/* <div className="error-container">
                             <div className="error-icon">
                                 <div className="exclamation-mark">!</div>
                             </div>
@@ -1235,12 +1247,12 @@ function Order() {
                             <p className="error-link">
                                 <a href="#">홈 화면으로 이동</a>
                             </p>
-                        </div>
-
-
-                        {/* <div class="item">
-                            <div class="loader1"></div>
                         </div> */}
+
+
+                        <div class="item">
+                            <div class="loader1"></div>
+                        </div>
 
                         {/* <div class="item">
                             <div class="loader2"></div>
