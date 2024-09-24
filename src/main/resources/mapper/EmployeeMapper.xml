@@ -9,7 +9,7 @@
         from employee e
                  join authority a
                       on e.authority_grade = a.authority_grade
-        where e.empl_yn = 'y'
+        where e.empl_yn = 'Y'
         ORDER BY
         CASE e.authority_grade
         WHEN 'S' THEN 1
@@ -27,7 +27,7 @@
         join authority a
         on e.authority_grade = a.authority_grade
         <where>
-            e.empl_yn = 'y'
+            e.empl_yn = 'Y'
             <if test="employeeId != '' and employeeId != null">
                 AND e.employee_id LIKE CONCAT('%', #{employeeId}, '%')
             </if>
@@ -88,7 +88,7 @@
             (#{employee.employeeId}, #{employee.employeePw}, #{employee.employeeName},
             #{employee.employeeTel}, #{employee.employeeEmail}, #{employee.employeeAddr},
             #{employee.residentNum}, #{employee.hireDate}, #{employee.salary},
-            #{employee.employeeManagerId}, #{employee.authorityGrade},'y')
+            #{employee.employeeManagerId}, #{employee.authorityGrade},'Y')
         </foreach>
     </insert>
 
@@ -135,7 +135,7 @@
 
     <update id="employeeDeletePick" parameterType="String">
         UPDATE employee
-        SET empl_yn     = 'n',
+        SET empl_yn     = 'N',
             employee_id = CONCAT('del-', employee_id)
         WHERE employee_id = #{employeeId}
     </update>
@@ -175,7 +175,7 @@
     <![CDATA[
         select *
         from employee
-        where empl_yn = 'y'
+        where empl_yn = 'Y'
           and (
             authority_grade = 'S' or
             authority_grade < (select authority_grade
