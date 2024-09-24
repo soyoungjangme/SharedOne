@@ -13,6 +13,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/mypage")
 public class MypageController {
@@ -44,8 +48,9 @@ public class MypageController {
   }
 
   @GetMapping("/mypageSession")
-  public String mypageSession(Authentication authentication) {
+  public Map<String, Object> mypageSession(Authentication authentication) {
     String userId = "";
+    Map<String, Object> map = new HashMap<>();
 
     if (authentication != null) { //인증이 되지않았다면 null입니다.
       EmployeeDetails user = (EmployeeDetails) authentication.getPrincipal(); //인증객체 안에 principal값을 얻으면 유저객체가 나옵니다.
@@ -53,10 +58,12 @@ public class MypageController {
 
       System.out.println("------------------권한" + user.getUserAuthorityGrade());
       System.out.println(userId);
+      map.put("userId", userId);
+
+      List<SalesByMonth> mySalesByMonth = employeeService.getMySalesByMonth(userId);
+      map.put("salesByMonth", mySalesByMonth);
     }
-
-
-    return userId;
+    return map;
 
   }
 
@@ -74,7 +81,7 @@ public class MypageController {
   }
 
   @GetMapping("/getMySalesByMonth")
-  public SalesByMonth getMySalesByMonth(@RequestParam("employeeId") String employeeId) {
+  public List<SalesByMonth> getMySalesByMonth(@RequestParam("employeeId") String employeeId) {
     return employeeService.getMySalesByMonth(employeeId);
   }
 }

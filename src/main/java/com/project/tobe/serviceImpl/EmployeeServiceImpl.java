@@ -168,7 +168,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public SalesByMonth getMySalesByMonth(String employeeId) {
+    public List<SalesByMonth> getMySalesByMonth(String employeeId) {
         return employeeMapper.getMySalesByMonth(employeeId);
     }
 
