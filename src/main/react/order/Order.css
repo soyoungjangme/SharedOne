@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
 
 body {
@@ -28,13 +29,14 @@ body {
 }
 
 .btn.selected {
-    border-color: #999;
-    background-color: rgba(200, 230, 255, 0.366);
-    color: black;
+  border-color: #999;
+  background-color: rgba(200, 230, 255, 0.366);
+  color: black;
+      border: 2px solid #417bad;
 }
 
 .btn:hover {
-    background-color: #eee;
+  background-color:rgba(200, 230, 255, 0.366);
 
 }
 
@@ -775,7 +777,7 @@ td {
 
 
 
-/* 
+/*
 .error-container {
     text-align: center;
     padding: 20px;

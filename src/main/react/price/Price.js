@@ -151,15 +151,10 @@ const Price = () => {
                 판매가 등록
             </button>
             <PriceTable
+                totalItems={totalItems}
                 currentPage={currentPage}
                 amount={searchPrice.amount}
                 price={sortedData}
-                checkItem={checkItem}
-                setCheckItem={setCheckItem}
-                allCheck={allCheck}
-                handleCheckboxChange={handleCheckboxChange}
-                handleMasterCheckboxChange={handleMasterCheckboxChange}
-                handleModify={handleModify}
                 handleAddClickDetail={handleAddClickDetail}
                 sortData={sortData}
                 sortConfig={sortConfig}

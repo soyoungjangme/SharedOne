@@ -3,19 +3,17 @@ import React from 'react';
 const PriceTable = ({
     currentPage,
     amount,
+    totalItems,
                         price,
-                        checkItem,
-                        setCheckItem,
-                        allCheck,
-                        handleCheckboxChange,
-                        handleMasterCheckboxChange,
-                        handleModify,
                         handleAddClickDetail,
                         sortData,
                         sortConfig,
                         showDelete,
                         handleDelete
                     }) => {
+
+    console.log(totalItems);
+
     return (
         <table className="search-table" style={{marginTop: '50px'}}>
             {showDelete && <button className="delete-btn btn-common" onClick={handleDelete}>삭제</button>}
@@ -75,9 +73,7 @@ const PriceTable = ({
             <tbody>
             {price.length > 0 ? (
                 price.map((item, index) => (
-                    <tr key={index} onDoubleClick={() => {
-                        handleModify(item)
-                    }}>
+                    <tr key={index} >
                         <td>{((currentPage-1)*amount) + index + 1}</td>
                         <td>{item.registerDate.substring(0, 10)}</td>
                         <td>
@@ -111,7 +107,7 @@ const PriceTable = ({
             )}
             <tr>
                 <td colSpan="8"></td>
-                <td colSpan="1"> {price.length} 건</td>
+                <td colSpan="1"> {totalItems} 건</td>
             </tr>
             </tbody>
         </table>

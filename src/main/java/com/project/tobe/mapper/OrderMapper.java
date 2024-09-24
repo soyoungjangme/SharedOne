@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface OrderMapper {
     List<OrderHDTO> getOrder(OrderSearchDTO criteria); //jsy 조건조회
-    List<PriceDTO> getPrice(@Param("iocn") Integer iocn, @Param("delDate") String delDate); //jsy 주문등록 판매가 가져오기
+    List<PriceDTO> getPrice(@Param("iocn") Long iocn, @Param("delDate") String delDate); //jsy 주문등록 판매가 가져오기
     void registOrderH(OrderHDTO hdto); //jsy 주문 등록하기 - 헤더
     void registOrderB(List<OrderBDTO> list); //jsy 주문 등록하기 - 바디
     String getMyName(String myId); //이름 얻기
