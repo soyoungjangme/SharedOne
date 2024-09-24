@@ -62,15 +62,18 @@ public class OrderController {
         String inputOrderCustomerNo = request.get("inputOrderCustomerNo"); //문자열로 단일객체 받아서
         String delDate = request.get("inputOrderDelDate");
 
-        List<PriceDTO> customPrice;
+        System.out.println(inputOrderCustomerNo);
+        System.out.println(delDate);
 
         if (inputOrderCustomerNo == null || inputOrderCustomerNo.isEmpty()) { //고객명 선택x
-            customPrice = new ArrayList<>(); //빈 리스ㅡㅌ 반환
+            return ResponseEntity.ok(new ArrayList<>()); //빈 리스ㅡㅌ 반환
 
-        } else { //고객명 데이터 들어있으면
-            Integer iocn = Integer.parseInt(inputOrderCustomerNo); //데이터 정수변환
-            customPrice = orderService.getPrice(iocn, delDate);
         }
+
+        Long iocn = Long.parseLong(inputOrderCustomerNo); //데이터 정수변환
+        List<PriceDTO> customPrice = orderService.getPrice(iocn, delDate);
+
+        System.out.println(customPrice);
 
         return ResponseEntity.ok(customPrice);
     }

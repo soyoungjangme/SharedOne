@@ -75,12 +75,12 @@
         from price
         join product p on p.product_no=price.product_no
         join customer c on c.customer_no=price.customer_no
-        join order_header oh on oh.customer_no = c.customer_no
         where price.activated = 'Y'
-        and c.customer_no = #{iocn}
+          and p.product_yn = 'Y'
+        and price.customer_no = #{iocn}
         and price.end_date &gt; now()
         <if test="delDate != null">
-            and (#{delDate}::date) &lt; price.end_date
+            and (#{delDate}::date) between price.start_date and price.end_date
         </if>
     </select>
 
