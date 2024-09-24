@@ -368,45 +368,45 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                     <form className={`RegistForm ${isApproved ? 'form-disabled' : ''}`}>
                         <table className="formTable">
                             <tbody>
-                                <tr>
-                                    <th><label htmlFor="confirmTitle">주문 번호</label></th>
-                                    <td>{modifyItem.orderNo || ''}</td>
+                            <tr>
+                                <th><label htmlFor="confirmTitle">주문 번호</label></th>
+                                <td>{modifyItem.orderNo || ''}</td>
 
-                                    <th><label htmlFor="customerName">고객명</label></th>
-                                    <td>{modifyItem.customer?.customerName || ''}</td>
-                                </tr>
-                                <tr>
-                                    <th><label htmlFor="confirmTitle">주문 등록일</label></th>
-                                    <td>{new Date(modifyItem.regDate).toLocaleDateString('en-CA') || ''}</td>
+                                <th><label htmlFor="customerName">고객명</label></th>
+                                <td>{modifyItem.customer?.customerName || ''}</td>
+                            </tr>
+                            <tr>
+                                <th><label htmlFor="confirmTitle">주문 등록일</label></th>
+                                <td>{new Date(modifyItem.regDate).toLocaleDateString('en-CA') || ''}</td>
 
-                                    <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
-                                    <td>{modifyItem.delDate || ''}</td>
+                                <th colSpan="1"><label htmlFor="delDate">납품 요청일</label></th>
+                                <td>{modifyItem.delDate || ''}</td>
 
-                                    <th colSpan="1"><label htmlFor="confirmTitle">상태 변경일</label></th>
-                                    <td>{modifyItem.confirmChangeDate || '정보 없음'}</td>
-                                </tr>
-                                <tr>
-                                    <th><label htmlFor="picName">담당자명</label></th>
-                                    <td>{modifyItem.employee?.employeeName || ''}</td>
-                                    <th><label htmlFor="approver">결재자</label></th>
-                                    <td>{modifyItem.confirmerName || '정보 없음'}</td>
-                                    <th><label htmlFor="approvalStatus">결재 여부</label></th>
-                                    <td>{modifyItem.confirmStatus}</td>
-                                    {/*{(modifyItem.confirmStatus?.trim() === '승인' || modifyItem.confirmStatus?.trim() === '반려') ? (*/}
-                                    {/*    <span>{getConfirmStatus(modifyItem.confirmStatus)}</span>*/}
-                                    {/*) : (*/}
-                                    {/*    <select*/}
-                                    {/*        name="confirmStatus"*/}
-                                    {/*        value={getConfirmStatus(modifyItem.confirmStatus)}*/}
-                                    {/*        onChange={handleInputChange}*/}
-                                    {/*    >*/}
-                                    {/*        <option value="대기">대기</option>*/}
-                                    {/*        <option value="승인">승인</option>*/}
-                                    {/*        <option value="반려">반려</option>*/}
-                                    {/*    </select>*/}
-                                    {/*)}*/}
+                                <th colSpan="1"><label htmlFor="confirmTitle">상태 변경일</label></th>
+                                <td>{new Date(modifyItem.confirmChangeDate).toLocaleDateString('en-CA') || '정보 없음'}</td>
+                            </tr>
+                            <tr>
+                                <th><label htmlFor="picName">담당자명</label></th>
+                                <td>{modifyItem.employee?.employeeName || ''}</td>
+                                <th><label htmlFor="approver">결재자</label></th>
+                                <td>{modifyItem.confirmerName || '정보 없음'}</td>
+                                <th><label htmlFor="approvalStatus">결재 여부</label></th>
+                                <td>{modifyItem.confirmStatus}</td>
+                                {/*{(modifyItem.confirmStatus?.trim() === '승인' || modifyItem.confirmStatus?.trim() === '반려') ? (*/}
+                                {/*    <span>{getConfirmStatus(modifyItem.confirmStatus)}</span>*/}
+                                {/*) : (*/}
+                                {/*    <select*/}
+                                {/*        name="confirmStatus"*/}
+                                {/*        value={getConfirmStatus(modifyItem.confirmStatus)}*/}
+                                {/*        onChange={handleInputChange}*/}
+                                {/*    >*/}
+                                {/*        <option value="대기">대기</option>*/}
+                                {/*        <option value="승인">승인</option>*/}
+                                {/*        <option value="반려">반려</option>*/}
+                                {/*    </select>*/}
+                                {/*)}*/}
 
-                                </tr>
+                            </tr>
                             </tbody>
                         </table>
 
