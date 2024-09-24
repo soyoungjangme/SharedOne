@@ -37,10 +37,11 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                     setModifyItem(response.data);
                     setDelDate(response.data.delDate);
                     setAddCheckProd(response.data.orderBList);
-                    // 기존 수량 설정
+
+                    // 기존 수량을 productNo나 priceNo로 설정
                     const initialQuantities = {};
-                    response.data.orderBList.forEach((item, index) => {
-                        initialQuantities[index] = item.orderProductQty;
+                    response.data.orderBList.forEach((item) => {
+                        initialQuantities[item.price.priceNo] = item.orderProductQty;
                     });
                     setQuantities(initialQuantities);
                 } catch (error) {
@@ -51,6 +52,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
             fetchOrderDetails();
         }
     }, [orderNo, isOpen]);
+
 
     useEffect(() => {
         const fetchCustomerList = async () => {
@@ -124,33 +126,20 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
 
     // 주문 임시저장 처리
     const handleTempSave = async () => {
-        if (addCheckProd.length === 0) {
-            alert("상품을 추가해주세요.");
-            return;
-        }
+        const orderBList = addCheckProd.map((addProd, index) => ({
+            orderNo: modifyItem.orderNo,
+            productNo: addProd.product.productNo,
+            priceNo: addProd.price.priceNo,
+            orderProductQty: quantities[addProd.price.priceNo] || 0, // 수량
+            prodTotal: (quantities[addProd.price.priceNo] || 0) * addProd.price.customPrice
+        }));
 
-        const InvalidQty = addCheckProd.some((_, index) => quantities[index] <= 0);
-        if (InvalidQty) {
-            alert("수량은 0개 이상이어야 합니다.");
-            return;
-        }
+        console.log('서버로 전송할 데이터 (임시 저장):', {
+            ...modifyItem,
+            orderBList
+        });  // 전송 전 데이터 확인
 
         try {
-            const orderBList = addCheckProd.map((addProd, index) => ({
-                orderNo: modifyItem.orderNo,
-                productNo: addProd.product.productNo,
-                priceNo: addProd.price.priceNo,
-                orderProductQty: quantities[index] || 0,
-                prodTotal: (quantities[index] || 0) * addProd.price.customPrice
-            }));
-
-            console.log('Sending data:', {
-                ...modifyItem,
-                delDate: delDate,
-                confirmStatus: '임시저장',
-                orderBList: orderBList
-            });  // 전송 데이터 로깅
-
             await axios.put(`/order/temp/${modifyItem.orderNo}`, {
                 ...modifyItem,
                 delDate: delDate,
@@ -158,10 +147,6 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                 orderBList: orderBList
             });
             alert(`주문 번호 ${modifyItem.orderNo} 임시 저장되었습니다.`);
-            // 업데이트된 데이터를 전달하여 상세보기 창에 반영
-            if (onUpdate) {
-                onUpdate(modifyItem); // 업데이트된 데이터를 콜백으로 전달
-            }
             fetchData();
             onClose();
             onClose2();
@@ -171,6 +156,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
             alert('임시 저장 중 오류가 발생했습니다: ' + (error.response?.data || error.message));
         }
     };
+
     // 주문 등록 처리
     const handleSubmit = async () => {
         if (addCheckProd.length === 0) {
@@ -207,6 +193,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
             fetchData();
             onClose();
             onClose2();
+            window.location.reload();
         } catch (error) {
             console.error('임시 저장 중 오류 발생:', error.response?.data || error.message);
             alert('임시 저장 중 오류가 발생했습니다: ' + (error.response?.data || error.message));
@@ -240,9 +227,8 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
             const newCheckProd = [];
             let hasDuplicates = false;
 
-            // 검색된 상품들만 대상으로 처리
             if (orderListAllCheck) {
-                for (const element of searchProd) {
+                searchProd.forEach(element => {
                     if (!existingPriceNos.has(element.priceNo)) {
                         newCheckProd.push({
                             product: element.product,
@@ -257,11 +243,10 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                     } else {
                         hasDuplicates = true;
                     }
-                }
+                });
             } else {
                 Object.keys(orderListCheckItem).forEach(index => {
                     if (orderListCheckItem[index]) {
-                        // const item = customPrice[index];
                         const item = searchProd[index];
                         if (item && !existingPriceNos.has(item.priceNo)) {
                             newCheckProd.push({
@@ -285,10 +270,9 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                 alert('이미 추가된 항목이 있습니다.');
             }
 
-            // 수량 초기화
-            // 새로 추가된 상품들의 수량을 1로 설정하고, 기존 수량은 그대로 유지
+            // 새로 추가된 상품의 수량을 1로 설정
             const resetQuantities = newCheckProd.reduce((acc, _, index) => {
-                acc[prevAddCheckProd.length + index] = 1; // 새로 추가된 상품의 기본 수량을 1로 설정
+                acc[prevAddCheckProd.length + index] = 1;
                 return acc;
             }, {});
 
@@ -300,7 +284,6 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
             return [...prevAddCheckProd, ...newCheckProd];
         });
 
-        // 체크박스 상태 초기화
         setOrderListCheckboxes({});
         handleOrderListMasterCheckboxChange({ target: { checked: false } });
     };
@@ -308,26 +291,56 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
 
 
     // 체크박스 삭제
+    // const handleAddProdDelete = () => {
+    //     setAddCheckProd(prevAddCheckProd => {
+    //         if(!orderAddAllCheck){
+    //             const checkedIndexes = Object.keys(orderAddCheckItem).filter(key => orderAddCheckItem[key]);
+    //             const checkedPriceNos = checkedIndexes.map(index => prevAddCheckProd[index].price.priceNo);
+    //
+    //             // 체크박스 상태 초기화
+    //             setOrderListCheckboxes({});
+    //             handleOrderAddMasterCheckboxChange({ target: { checked: false } });
+    //
+    //             return prevAddCheckProd.filter(item => !checkedPriceNos.includes(item.price.priceNo));
+    //         } else {
+    //             if(prevAddCheckProd.length > 0){
+    //                 return []; // 전체 삭제
+    //             } else {
+    //                 alert(`삭제할 항목이 없습니다.`);
+    //                 return prevAddCheckProd; // 이전 상태 유지
+    //             }
+    //         }
+    //     });
+    // };
+
     const handleAddProdDelete = () => {
         setAddCheckProd(prevAddCheckProd => {
-            if(!orderAddAllCheck){
+            if (!orderAddAllCheck) {
                 const checkedIndexes = Object.keys(orderAddCheckItem).filter(key => orderAddCheckItem[key]);
                 const checkedPriceNos = checkedIndexes.map(index => prevAddCheckProd[index].price.priceNo);
 
-                // 체크박스 상태 초기화
-                setOrderListCheckboxes({});
-                handleOrderAddMasterCheckboxChange({ target: { checked: false } });
+                // 삭제된 상품의 수량만 제거
+                setQuantities(prevQuantities => {
+                    const newQuantities = { ...prevQuantities };
+                    checkedIndexes.forEach(index => delete newQuantities[prevAddCheckProd[index].price.priceNo]);
+                    return newQuantities;
+                });
 
                 return prevAddCheckProd.filter(item => !checkedPriceNos.includes(item.price.priceNo));
             } else {
-                if(prevAddCheckProd.length > 0){
-                    return []; // 전체 삭제
+                if (prevAddCheckProd.length > 0) {
+                    // 모든 상품을 삭제할 때 수량 초기화
+                    setQuantities({});
+                    return [];
                 } else {
                     alert(`삭제할 항목이 없습니다.`);
-                    return prevAddCheckProd; // 이전 상태 유지
+                    return prevAddCheckProd;
                 }
             }
         });
+
+        setOrderListCheckboxes({});
+        handleOrderAddMasterCheckboxChange({ target: { checked: false } });
     };
 
     // 체크박스
@@ -347,8 +360,16 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
         handleDelete: handleOrderAddDelete
     } = useCheckboxManager(setAddCheckProd);
 
+    // const handleSearchChange = (e) => {
+    //     setSearchTerm(e.target.value);
+    // };
+
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
+
+        // 검색 시 체크박스를 초기화
+        setOrderListCheckboxes({});
+        handleOrderListMasterCheckboxChange({ target: { checked: false } });
     };
 
     const searchProd = customPrice.filter(product =>
@@ -396,10 +417,10 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                                                            const now = new Date();
                                                            const selectDate = new Date(e.target.value);
 
-                                                           if(selectDate < now ){
-                                                               alert(`납품 요청일을 확인해주세요.`);
-                                                               return;
-                                                           }
+                                                           // if(selectDate < now ){
+                                                           //     alert(`납품 요청일을 확인해주세요.`);
+                                                           //     return;
+                                                           // }
 
                                                            setDelDate(e.target.value);
                                                        }}/>
@@ -498,7 +519,6 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                                             <input type="number" id={`prodQty_${addProd.price.priceNo}`} value={qty}
                                                    onChange={handleQuantityChange(addProd.price.priceNo)} placeholder="수량"/>
                                         </td>
-
                                         <td>{addProd.price.customPrice * qty}</td>
                                         <td>{addProd.price.startDate}</td>
                                         <td>{addProd.price.endDate}</td>

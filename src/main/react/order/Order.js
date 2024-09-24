@@ -348,10 +348,10 @@ function Order() {
     useEffect(() => {
 
         const now = new Date();
-        if(new Date(delDate) < now){
-            alert("납품요청일을 확인해주십시오.")
-            return setDelDate('');
-        }
+        // if(new Date(delDate) < now){
+        //     alert("납품요청일을 확인해주십시오.")
+        //     return setDelDate('');
+        // }
 
         if (registCustomer) {
             const fetchPrice = async () => {
