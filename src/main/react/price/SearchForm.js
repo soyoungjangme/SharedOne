@@ -65,6 +65,7 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
                             <label className="filter-label" htmlFor="product">상품</label>
                             <Select
                                 value={selectedProduct}
+                                id="product"
                                 className="filter-input"
                                 name="productNo"
                                 options={productOptions}
@@ -77,6 +78,7 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
                         <div className="filter-item">
                             <label className="filter-label" htmlFor="customer">업체</label>
                             <Select
+                                id="customer"
                                 value={selectedCustomer}
                                 className="filter-input"
                                 name="customerNo"
