@@ -85,23 +85,21 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
     useEffect(() => {
         if (modifyItem) {
             const updatedOrderDetailsBList = modifyItem.orderBList.map(item => ({
-                productNo: item.productNo,            // 원본 값
-                orderProductQty: item.orderProductQty,                  // 기본값 또는 나중에 업데이트 필요
-                price: item.productPrice ?? 0,        // null을 0으로 대체
-                priceNo: item.price?.priceNo ?? 0  // 추가
-
+                productNo: item.productNo,           // 원본 값
+                orderProductQty: item.orderProductQty || 0, // 수량 값이 없으면 0으로 설정
+                price: item.price?.customPrice || 0, // 가격이 없으면 0으로 설정
+                priceNo: item.price?.priceNo || 0    // priceNo가 없으면 0으로 설정
             }));
 
-            // 상태를 한 번에 업데이트
             setOrderDetails({
-                orderNo: modifyItem.orderNo,          // 예시: orderNo 추가
+                orderNo: modifyItem.orderNo,        // 주문 번호
                 employeeId: modifyItem.employee.employeeId,
                 customerNo: modifyItem.customer.customerNo,
                 delDate: modifyItem.delDate,
                 orderB: updatedOrderDetailsBList
             });
         }
-    }, [modifyItem]);  // modifyItem이 변경될 때마다 호출
+    }, [modifyItem]);
 
     // 주문 수정 데이터를 서버로 전송하는 함수
     const handleUpdate = async () => {
@@ -410,8 +408,22 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                             name="remarks"
                                             value={modifyItem.remarks || ''}
                                             onChange={handleInputChange}
+                                            disabled={getConfirmStatus(modifyItem.confirmStatus) === '반려'}
                                         ></textarea>
                                     </td>
+
+                                    {/*<td colSpan="3">*/}
+                                    {/*    {['반려', '반려(처리완료)', '대기'].includes(getConfirmStatus(modifyItem.confirmStatus)) ? (*/}
+                                    {/*        <div>{modifyItem.remarks || '비고 없음'}</div>*/}
+                                    {/*    ) : (*/}
+                                    {/*        <textarea*/}
+                                    {/*            name="remarks"*/}
+                                    {/*            value={modifyItem.remarks || ''}*/}
+                                    {/*            onChange={handleInputChange}*/}
+                                    {/*        ></textarea>*/}
+                                    {/*    )}*/}
+                                    {/*</td>*/}
+
                                 </tr>
                             )}
 
@@ -420,15 +432,15 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                         </table>
                     </form>
 
-                    <div className="RegistFormList">
-                        <div style={{fontWeight: 'bold'}}>총 {modifyItem.orderBList?.length || 0} 건</div>
-                        <table className="formTableList">
-                            <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>상품 카테고리
-                                    <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
-                                        {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                        <div className="RegistFormList">
+                            <div style={{fontWeight: 'bold'}}>총 {modifyItem.orderBList?.length || 0} 건</div>
+                            <table className="formTableList">
+                                <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>상품 카테고리
+                                        <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
+                                            {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                     </button>
                                 </th>
                                 <th>상품명
@@ -467,7 +479,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                             <td>{index + 1}</td>
                                             <td>{item.product?.productCategory}</td>
                                             <td>{item.product?.productName}</td>
-                                            <td>{item.orderProductQty}</td>
+                                            <td>{item.orderProductQty > 0 ? item.orderProductQty : 0}</td> {/* 수량이 0일 경우 확인 */}
                                             <td>{customPrice}</td>
                                             <td>{item.orderProductQty * customPrice}</td>
                                             {/* 총 금액 */}

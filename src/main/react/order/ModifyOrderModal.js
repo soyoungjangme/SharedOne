@@ -160,6 +160,14 @@ function ModifyOrderModal({ orderData, isOpen, onClose,onClose2, onUpdate }) {
 
     // 검색 필터링 상태 관리
     const [searchTerm, setSearchTerm] = useState('');
+
+    useEffect(() => {
+        // 검색어가 변경될 때 체크박스 상태 초기화
+        setAllCheckCustomPrice(false);
+        setCheckItemCustomPrice({});
+    }, [searchTerm]);  // searchTerm이 변경될 때마다 실행
+
+
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
@@ -465,10 +473,11 @@ function ModifyOrderModal({ orderData, isOpen, onClose,onClose2, onUpdate }) {
                                             const now = new Date();
                                             const selectDate = new Date(e.target.value);
 
-                                            if(selectDate < now ){
-                                                alert(`납품 요청일을 확인해주세요.`);
-                                                return;
-                                            }
+                                            // if(selectDate < now ){
+                                            //     alert(`납품 요청일을 확인해주세요.`);
+                                            //     return;
+                                            // }
+
                                             setModifyItem(prev => ({
                                                     ...prev,
                                                     delDate: e.target.value,
