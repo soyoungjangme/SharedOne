@@ -8,29 +8,59 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const EmployeeMonthlySalesChart = ({salesByMonth}) => {
     console.log(salesByMonth);
 
-    const label = [];
-    const chartData = [];
-
-    const setData = () => {
-        if (salesByMonth !== null) salesByMonth.forEach(item => {label.push(item.salesMonth); chartData.push(item.totalSales)});
-    }
-
-    useEffect(() => {
-        setData();
-    }, []);
-
-    const data = {
-        labels: label,
+    const [chartData, setChartData] = useState({
+        labels: [],
         datasets: [{
             label: '매출액',
-            data: chartData,
+            data: [],
             backgroundColor: '#004e90',
             hoverBackgroundColor: '#0056b3',
             borderRadius: 5,
             borderWidth: 2,
             borderColor: '#003d80',
         }]
-    };
+    });
+
+    const setData = () => {
+        const labels = [];
+        const data = [];
+
+        salesByMonth.forEach(item => {
+            console.log(item); labels.push(item.salesMonth); data.push(item.totalSales);
+        });
+
+        console.log(labels);
+        console.log(data);
+
+        setChartData((prev) => ({
+            ...prev,
+            labels: labels, // labels 값 업데이트
+            datasets: [{
+                ...prev.datasets[0],
+                data: data // datasets의 data 값 업데이트
+            }]
+        }));
+
+        console.log(chartData);
+    }
+
+    useEffect(() => {
+        console.log(salesByMonth);
+        setData();
+    }, [salesByMonth]);
+
+    // const data = {
+    //     labels: salesByMonth.map((item) => item.salesMonth),
+    //     datasets: [{
+    //         label: '매출액',
+    //         data: salesByMonth.map((item) => item.monthlySales),
+    //         backgroundColor: '#004e90',
+    //         hoverBackgroundColor: '#0056b3',
+    //         borderRadius: 5,
+    //         borderWidth: 2,
+    //         borderColor: '#003d80',
+    //     }]
+    // };
 
     const options = {
         responsive: true,
@@ -69,7 +99,7 @@ const EmployeeMonthlySalesChart = ({salesByMonth}) => {
             marginTop: '70px',
             padding: '20px'
         }}>
-            <Bar data={data} options={options} /> {/* Bar 컴포넌트 렌더링 */}
+            <Bar data={chartData} options={options} /> {/* Bar 컴포넌트 렌더링 */}
         </div>
     );
 };
