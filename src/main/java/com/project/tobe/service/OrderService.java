@@ -3,6 +3,7 @@ package com.project.tobe.service;
 import com.project.tobe.dto.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderService {
@@ -15,7 +16,7 @@ public interface OrderService {
 
     /*유선화 START*/
     OrderHDTO getOrderDetail(Long orderNo); // 상세 조회
-    boolean updateApproval(Long orderNo, String confirmStatus, LocalDate confirmChangeDate, String remarks);
+    boolean updateApproval(Long orderNo, String confirmStatus, LocalDateTime confirmChangeDate, String remarks);
     OrderHDTO updateOrder(OrderUp1DTO orderUp1DTO);
 /*
     void insertBack(OrderUp1DTO orderUp1DTO);

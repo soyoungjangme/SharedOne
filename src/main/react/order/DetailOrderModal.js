@@ -232,6 +232,10 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
 
     const [loading, setLoading] = useState(false); // 로딩 상태 관리
 
+    const today = new Date();
+    today.setDate(today.getDate());
+    const todayPlus = today.toISOString(); // 시, 분, 초까지 포함된 ISO 형식
+    console.log(todayPlus);
 
     // 임시로 만든 승인, 반려 버튼 처리 함수
     const handleApproval = async (status) => {
@@ -242,9 +246,6 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
         }
 
         try {
-            const today = new Date();
-            today.setDate(today.getDate());
-            const todayPlus = today.toISOString().split('T')[0];
 
             setLoading(true);
 

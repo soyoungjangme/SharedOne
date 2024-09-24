@@ -1049,10 +1049,13 @@ function Customer() {
                                         <tr>
                                             <th><label htmlFor="postNum">우편번호</label></th>
                                             <td><input type="text" placeholder="우편번호" id="postNum" name="postNum" value={modifyItem.postNum || ''} readOnly /></td>
-                                            <th><label htmlFor="businessRegistrationNo">사업자등록번호</label></th>
-                                            <td><input type="text" placeholder="사업자등록번호" id="businessRegistrationNo" name="businessRegistrationNo" value={modifyItem.businessRegistrationNo || ''} onChange={handleModifyItemChange} /></td>
+                                           
                                             <th><label htmlFor="nation">국가</label></th>
                                             <td><input type="text" placeholder="국가" id="nation" name="nation" value={modifyItem.nation || ''} onChange={handleModifyItemChange} /></td>
+                                        
+                                            <th><label htmlFor="businessRegistrationNo">사업자등록번호</label></th>
+                                            <td><input type="text" placeholder="사업자등록번호" id="businessRegistrationNo" name="businessRegistrationNo" value={modifyItem.businessRegistrationNo || ''} onChange={handleModifyItemChange} /></td>
+                                            
                                         </tr>
                                         <tr>
                                             <th colSpan="1"><label htmlFor="picName">담당자</label></th>
