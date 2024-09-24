@@ -371,7 +371,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                                 <td>{modifyItem.delDate || ''}</td>
 
                                 <th colSpan="1"><label htmlFor="confirmTitle">상태 변경일</label></th>
-                                <td>{modifyItem.confirmChangeDate || '정보 없음'}</td>
+                                <td>{new Date(modifyItem.confirmChangeDate).toLocaleDateString('en-CA') || '정보 없음'}</td>
                             </tr>
                             <tr>
                                 <th><label htmlFor="picName">담당자명</label></th>
