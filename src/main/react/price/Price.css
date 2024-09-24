@@ -477,3 +477,7 @@ tr:nth-child(0){
     background-color: #5271ff;
     color: white;
 }
+
+.bi-emoji-tear {
+    margin: 0 0 -3px 2px;
+}
