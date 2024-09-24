@@ -209,10 +209,11 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
         if (status === '반려') {
             console.log('1현재 상태: 반려');
             try {
-                /*                // 주문 업데이트에 필요한 데이터 준비
-                                const today = new Date();
-                                today.setDate(today.getDate() + 1);
-                                const todayPlus = today.toISOString().split('T')[0];*/
+                // 주문 업데이트에 필요한 데이터 준비
+                const today = new Date();
+                today.setDate(today.getDate());
+                const todayPlus = today.toISOString(); // 시, 분, 초까지 포함된 ISO 형식
+                console.log(todayPlus);
 
                 const updatedOrderData = {
                     orderNo: modifyItem.orderNo,
@@ -294,9 +295,10 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
 
             try {
                 const today = new Date();
-                today.setDate(today.getDate() + 1);
-                const todayPlus = today.toISOString().split('T')[0];
+                today.setDate(today.getDate());
 
+                const todayPlus = today.toISOString(); // 시, 분, 초까지 포함된 ISO 형식
+                console.log(todayPlus);
                 const updatedOrderData = {
                     orderNo: modifyItem.orderNo,
                     delDate: modifyItem.delDate,

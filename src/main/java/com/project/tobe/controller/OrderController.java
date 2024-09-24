@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -195,7 +196,7 @@ public class OrderController {
         boolean updated = orderService.updateApproval(
                 orderHDTO.getOrderNo(),
                 orderHDTO.getConfirmStatus(),
-                LocalDate.now(),
+                LocalDateTime.now(),
                 orderHDTO.getRemarks()
         );
         if (updated) {
