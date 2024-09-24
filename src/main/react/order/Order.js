@@ -464,9 +464,13 @@ function Order() {
             if (orderStatus === "대기") {
                 const hasInvalidQty = addCheckProd.some((_, index) => {
                     console.log("qty: ", quantities);
+                    console.log(quantities[quantities.priceNo]);
                     const qty = quantities[quantities.priceNo] || 0;
-                    return qty <= 0;
+                    console.log(qty);
+                    return qty > 0;
                 });
+
+                console.log(hasInvalidQty);
 
                 if (!registCustomer || !delDate || !hasInvalidQty || !addCheckProd.length || !modifyItem.confirmerId) {
                     console.log(registCustomer);
