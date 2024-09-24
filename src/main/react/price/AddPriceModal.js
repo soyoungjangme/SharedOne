@@ -75,6 +75,10 @@ const AddPriceModal = ({
             alert('판매가 적용 기한을 선택해 주세요.');
             return;
         }
+        if (insertPrice.startDate > insertPrice.endDate) {
+            alert('시작 일이 종료 일을 넘을 수 없습니다.');
+            return;
+        }
 
         console.log(insertPrice);
 

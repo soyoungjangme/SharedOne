@@ -1,7 +1,6 @@
 package com.project.tobe.serviceImpl;
 
 import com.project.tobe.dto.*;
-import com.project.tobe.entity.OrderH;
 import com.project.tobe.mapper.OrderMapper;
 import com.project.tobe.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +25,7 @@ public class OrderServiceImpl implements OrderService {
 
     //jsy 주문등록 - 고객 별 판매가 리스트
     @Override
-    public List<PriceDTO> getPrice(Integer iocn, String delDate) {
+    public List<PriceDTO> getPrice(Long iocn, String delDate) {
         return orderMapper.getPrice(iocn, delDate);
     }
 

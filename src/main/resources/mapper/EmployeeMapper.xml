@@ -125,7 +125,7 @@
 
     <update id="employeeDeleteTest" parameterType="java.util.List">
         UPDATE employee
-        SET empl_yn = 'n',
+        SET empl_yn = 'N',
         employee_id = CONCAT('del-', employee_id)
         WHERE employee_id IN
         <foreach collection="list" item="employeeId" open="(" separator="," close=")">
