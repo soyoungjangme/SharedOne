@@ -24,10 +24,11 @@ const EmployeeMonthlySalesChart = ({salesByMonth}) => {
         datasets: [{
             label: '매출액',
             data: chartData,
-            backgroundColor: '#0056b3', // 바의 기본 배경 색상
-            borderRadius: 5, // 바의 모서리 둥글기
-            borderWidth: 2, // 테두리 두께
-            borderColor: '#003d80', // 테두리 색상
+            backgroundColor: '#004e90',
+            hoverBackgroundColor: '#0056b3',
+            borderRadius: 5,
+            borderWidth: 2,
+            borderColor: '#003d80',
         }]
     };
 

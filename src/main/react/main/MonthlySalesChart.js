@@ -22,7 +22,8 @@ const MonthlySalesChart = ({salesByMonth}) => {
         datasets: [{
             label: '매출액',
             data: chartData,
-            backgroundColor: '#0056b3',
+            backgroundColor: '#004e90',
+            hoverBackgroundColor: '#0056b3',
             borderRadius: 3,
         }]
     };
