@@ -530,7 +530,6 @@ const handleUpdateClick = () => {
         setIsModifyModalVisible(false);
         fetchEmployeeList();
     /*    window.location.reload();*/
-
          if(goOut === true) {
           window.location.href = './logout';
            alert("로그아웃 되었습니다. 다시 로그인 해주세요.");
