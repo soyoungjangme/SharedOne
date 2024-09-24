@@ -40,7 +40,7 @@ const AddPriceModal = ({
         productNo: '',
         customerNo: '',
         customPrice: '',
-        currency: '',
+        // currency: '',
         discount: '',
         startDate: '',
         endDate: ''
@@ -63,10 +63,10 @@ const AddPriceModal = ({
             alert('가격을 입력해 주세요.');
             return;
         }
-        if (insertPrice.currency === '') {
-            alert('화폐 통화를 입력해 주세요.');
-            return;
-        }
+        // if (insertPrice.currency === '') {
+        //     alert('화폐 통화를 입력해 주세요.');
+        //     return;
+        // }
         if (insertPrice.startDate === '') {
             alert('판매가 적용 시작일을 선택해 주세요.');
             return;
@@ -139,7 +139,7 @@ const AddPriceModal = ({
             productNo: '',
             customerNo: '',
             customPrice: '',
-            currency: '',
+            // currency: '',
             discount: '',
             startDate: '',
             endDate: ''
@@ -190,29 +190,29 @@ const AddPriceModal = ({
                                 </td>
                             </tr>
                             <tr>
-                                <th><label htmlFor="registCustomPrice">가격</label></th>
-                                <td><input name="customPrice" type="number" placeholder="필드 입력"
+                                <th colSpan="1"><label htmlFor="registCustomPrice">가격</label></th>
+                                <td colSpan="3"><input name="customPrice" type="number" placeholder="필드 입력"
                                            id="registCustomPrice"
                                            value={insertPrice.customPrice} onChange={(e) => {
                                     handleCustomPriceChange(e.target.value)
                                 }}/></td>
 
-                                <th><label htmlFor="registDiscount">할인율(%)</label></th>
-                                <td><input name="discount" type="number" placeholder="필드 입력" id="registDiscount"
+                                <th colSpan="1"><label htmlFor="registDiscount">할인율(%)</label></th>
+                                <td colSpan="3"><input name="discount" type="number" placeholder="필드 입력" id="registDiscount"
                                            value={insertPrice.discount} onChange={(e) => {
                                     handleDiscountChange(e.target.value)
                                 }}/></td>
 
-                                <th><label htmlFor="registCurrency">통화</label></th>
-                                <td>
-                                    <Select
-                                        id="registCurrency"
-                                        value={selectedCurrency}
-                                        onChange={handleChange}
-                                        options={currencyOptions}
-                                        placeholder="화폐 통화 선택"
-                                    />
-                                </td>
+                                {/*<th><label htmlFor="registCurrency">통화</label></th>*/}
+                                {/*<td>*/}
+                                {/*    <Select*/}
+                                {/*        id="registCurrency"*/}
+                                {/*        value={selectedCurrency}*/}
+                                {/*        onChange={handleChange}*/}
+                                {/*        options={currencyOptions}*/}
+                                {/*        placeholder="화폐 통화 선택"*/}
+                                {/*    />*/}
+                                {/*</td>*/}
                             </tr>
                             <tr>
                                 <th colSpan="1"><label htmlFor="registStartDate">시작일</label></th>

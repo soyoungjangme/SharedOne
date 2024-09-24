@@ -20,7 +20,6 @@ public class PriceProductCustomerDTO {
     private Long customerNo;
     private String customerName;
     private Double customPrice;
-    private String currency;
     private Double discount;
     private LocalDate startDate;
     private LocalDate endDate;

@@ -47,6 +47,8 @@ public class OrderController {
     @PostMapping("/searchSelect")
     public ResponseEntity<List<OrderHDTO>> searchOrderList(@RequestBody OrderSearchDTO criteria) {
 
+        System.out.println(criteria);
+
         List<OrderHDTO> orders = orderService.getOrder(criteria);
         System.out.println("내 아이디 "+ criteria.getInputMyId());
 
@@ -77,34 +79,37 @@ public class OrderController {
     @PostMapping("/registOrder")
     public ResponseEntity<Long> registOrder(@RequestBody OrderRegistDTO request) {
         Long orderNo = orderService.registOrder(request);
-        String managerEmail = employeeService.getEmail(request.getInputConfirmer());
-        String employeeEmail = employeeService.getEmail(request.getInputManager());
-        String customer = customerService.getCustomerName(request.getInputCustomerNo());
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("납품요청일 : ").append(request.getInputDelDate()).append("\n");
-        sb.append("고객 : ").append(customer).append("\n");
-        sb.append("담당자 메일 : ").append(employeeEmail).append("\n");
+        if (request.getInputStatus().equals("대기")) {
+            String managerEmail = employeeService.getEmail(request.getInputConfirmer());
+            String employeeEmail = employeeService.getEmail(request.getInputManager());
+            String customer = customerService.getCustomerName(request.getInputCustomerNo());
 
-        for (OrderBDTO dto : request.getOrderBList()) {
-            String productName = productService.getProductName(dto.getProductNo());
+            StringBuilder sb = new StringBuilder();
+            sb.append("납품요청일 : ").append(request.getInputDelDate()).append("\n");
+            sb.append("고객 : ").append(customer).append("\n");
+            sb.append("담당자 메일 : ").append(employeeEmail).append("\n");
 
-            sb.append("\n");
-            sb.append("상품명 : ").append(productName).append("\n");
-            sb.append("상품 수량 : ").append(dto.getOrderProductQty()).append("\n");
-            sb.append("상품 총 가격 : ").append(dto.getProdTotal()).append("\n");
-        }
+            for (OrderBDTO dto : request.getOrderBList()) {
+                String productName = productService.getProductName(dto.getProductNo());
 
-        EmailDTO emailDTO = EmailDTO.builder()
-                .targetMail(managerEmail)
-                .subject("주문번호 " + orderNo.toString() + " 결재 요청 드립니다.")
-                .body(sb.toString())
-                .build();
+                sb.append("\n");
+                sb.append("상품명 : ").append(productName).append("\n");
+                sb.append("상품 수량 : ").append(dto.getOrderProductQty()).append("\n");
+                sb.append("상품 총 가격 : ").append(dto.getProdTotal()).append("\n");
+            }
 
-        try {
-            emailService.sendMailReject(emailDTO);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            EmailDTO emailDTO = EmailDTO.builder()
+                    .targetMail(managerEmail)
+                    .subject("주문번호 " + orderNo.toString() + " 결재 요청 드립니다.")
+                    .body(sb.toString())
+                    .build();
+
+            try {
+                emailService.sendMailReject(emailDTO);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         return ResponseEntity.ok(orderNo);
@@ -242,6 +247,39 @@ public class OrderController {
 
         try {
             OrderHDTO updatedOrder = orderService.updateTempOrder(orderHDTO);
+
+            if (orderHDTO.getConfirmStatus().equals("대기")) {
+                String managerEmail = employeeService.getEmail(orderHDTO.getConfirmerId());
+                String employeeEmail = employeeService.getEmail(orderHDTO.getEmployeeId());
+                String customer = customerService.getCustomerName(orderHDTO.getCustomerNo());
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("납품요청일 : ").append(orderHDTO.getDelDate()).append("\n");
+                sb.append("고객 : ").append(customer).append("\n");
+                sb.append("담당자 메일 : ").append(employeeEmail).append("\n");
+
+                for (OrderBDTO dto : orderHDTO.getOrderBList()) {
+                    String productName = productService.getProductName(dto.getProductNo());
+
+                    sb.append("\n");
+                    sb.append("상품명 : ").append(productName).append("\n");
+                    sb.append("상품 수량 : ").append(dto.getOrderProductQty()).append("\n");
+                    sb.append("상품 총 가격 : ").append(dto.getProdTotal()).append("\n");
+                }
+
+                EmailDTO emailDTO = EmailDTO.builder()
+                        .targetMail(managerEmail)
+                        .subject("주문번호 " + orderNo.toString() + " 결재 요청 드립니다.")
+                        .body(sb.toString())
+                        .build();
+
+                try {
+                    emailService.sendMailReject(emailDTO);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             return ResponseEntity.ok(updatedOrder);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

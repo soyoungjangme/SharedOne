@@ -89,9 +89,7 @@ option:hover {
     display: block;
 }
 
-.search-btn:hover {
-    background-color: #003561;
-}
+
 
 /* 입력값 초기화 버튼 디자인 */
 .reset-btn {
@@ -131,6 +129,12 @@ option:hover {
     border-radius: 3px;
     cursor: pointer;
 }
+
+.search-btn:hover, 
+.btn-common:hover {
+    background-color: #0056b3;
+}
+
 .add {
     float: right;
     margin-bottom: 10px;
