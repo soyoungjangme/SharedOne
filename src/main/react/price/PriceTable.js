@@ -45,12 +45,6 @@ const PriceTable = ({
                     </button>
                 </th>
                 <th>
-                    통화
-                    <button className="sortBtn" onClick={() => sortData('currency')}>
-                        {sortConfig.key === 'currency' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                    </button>
-                </th>
-                <th>
                     할인율(%)
                     <button className="sortBtn" onClick={() => sortData('discount')}>
                         {sortConfig.key === 'discount' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
@@ -87,7 +81,6 @@ const PriceTable = ({
                                onClick={() => handleAddClickDetail('customer', item.customerNo)}/>
                         </td>
                         <td>{item.customPrice}</td>
-                        <td>{item.currency}</td>
                         <td>{item.discount}</td>
                         <td>{item.startDate}</td>
                         <td>{item.endDate}</td>
@@ -106,7 +99,7 @@ const PriceTable = ({
                 </tr>
             )}
             <tr>
-                <td colSpan="8"></td>
+                <td colSpan="7"></td>
                 <td colSpan="1"> {totalItems} 건</td>
             </tr>
             </tbody>

@@ -172,9 +172,7 @@ function MyPage() {
 
   // 메인 리스트 가져오기 axios
   useEffect(async () => {
-    let {data} = await axios.get('/mypage/mypageSession')
-      .then(response => setSession(response.data))
-      .catch(error => console.error('Error', error));
+    let {data} = await axios.get('/mypage/mypageSession');
 
     // 월별 실적 가져오기
     await axios.get('/mypage/getMySalesByMonth?employeeId=' + data).then(respponse => setSalesByMonth(respponse.data));

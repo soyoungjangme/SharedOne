@@ -18,7 +18,7 @@ const TopSalesTable = ({data}) => {
                 // JSX를 반환하는 부분에 return이 생략되었기 때문에 아래처럼 수정해야 합니다
                 <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{'employeeName' in item ? item.employeeName : item.productName}</td>
+                    <td>{Object.keys(item).includes('employeeName') ? item.employeeName : item.productName}</td>
                     <td>{item.monthlySales}</td>
                 </tr>
             ))}
