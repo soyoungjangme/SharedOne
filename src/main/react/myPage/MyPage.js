@@ -26,7 +26,15 @@ function MyPage() {
 
   // Handle modal open/close
   const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () =>  {
+    setIsModalOpen(false);
+
+    // 비번 에러메시지, 입력필드 초기화
+    setError('');
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmNewPassword('');
+  }
 
   //   // 세션 정보 가져오기
   //   useEffect(() => {

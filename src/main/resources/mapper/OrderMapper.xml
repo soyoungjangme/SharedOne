@@ -236,18 +236,7 @@
     </insert>
 
 
-<!--    <insert id="insertBack1" useGeneratedKeys="true" keyProperty="orderNo" parameterType="OrderUp1DTO">
-        INSERT INTO order_header (reg_date, del_date, confirm_status, customer_no, employee_id)
-        VALUES (CURRENT_TIMESTAMP, #{delDate}, '대기', #{customerNo}, #{employeeId})
-    </insert>
 
-    <insert id="insertBack2" parameterType="map">
-        INSERT INTO order_body (order_no, product_no, order_product_qty, price_no)
-        VALUES
-        <foreach collection="orderBList" item="orderBody" separator=",">
-            (#{orderNo}, #{orderBody.productNo}, #{orderBody.orderProductQty}, #{orderBody.priceNo})
-        </foreach>
-    </insert>-->
 
     <!-- 임시 저장 주문 전체 업데이트 -->
     <update id="updateTempOrder" parameterType="OrderHDTO">

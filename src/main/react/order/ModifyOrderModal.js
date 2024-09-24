@@ -490,10 +490,10 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
                                             const now = new Date();
                                             const selectDate = new Date(e.target.value);
 
-                                            // if(selectDate < now ){
-                                            //     alert(`납품 요청일을 확인해주세요.`);
-                                            //     return;
-                                            // }
+                                            if(selectDate < now ){
+                                                alert(`납품 요청일을 확인해주세요.`);
+                                                return;
+                                            }
 
                                             setModifyItem(prev => ({
                                                     ...prev,

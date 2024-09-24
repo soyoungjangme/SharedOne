@@ -462,17 +462,16 @@ function Order() {
 
             //데이터 유효성 검사(등록하기)
             if (orderStatus === "대기") {
-                const hasInvalidQty = addCheckProd.some((_, index) => {
-                    console.log("qty: ", quantities);
-                    console.log(quantities[quantities.priceNo]);
-                    const qty = quantities[quantities.priceNo] || 0;
-                    console.log(qty);
-                    return qty > 0;
-                });
+                const hasInvalidQty = addCheckProd.some((product, index) => {
+                    const qty = quantities[product.priceNo] || 0; // product의 priceNo를 이용해 수량을 가져옴
 
-                console.log(hasInvalidQty);
+                    console.log(`상품 ID: ${product.priceNo}, 수량: ${qty}`);
 
-                if (!registCustomer || !delDate || !hasInvalidQty || !addCheckProd.length || !modifyItem.confirmerId) {
+                    return qty <= 0; // 수량이 0 이하인 경우
+                }
+            );
+
+                if (!registCustomer || !delDate || hasInvalidQty || !addCheckProd.length || !modifyItem.confirmerId) {
                     console.log(registCustomer);
                     console.log(delDate);
                     console.log(hasInvalidQty);
@@ -1183,7 +1182,7 @@ function Order() {
                                     <td className="ellipsis">{item.customerN}</td>
                                     {/* <td className="ellipsis" >{item.managerGrade}</td>*/}
                                     <td>{item.status}</td>
-                                    <td>{item.confirmChangeDate}</td>
+                                    <td>{new Date(item.confirmChangeDate).toLocaleDateString('en-CA')}</td>
                                     <td>
                                         <button className="btn-common" onClick={() => handleButtonClick(item)}>
                                             상세보기

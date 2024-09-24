@@ -175,8 +175,8 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                 orderNo: modifyItem.orderNo,
                 productNo: addProd.product.productNo,
                 priceNo: addProd.price.priceNo,
-                orderProductQty: quantities[index] || 0,
-                prodTotal: (quantities[index] || 0) * addProd.price.customPrice
+                orderProductQty: quantities[addProd.price.priceNo] || 0,
+                prodTotal: (quantities[addProd.price.priceNo] || 0) * addProd.price.customPrice
             }));
 
             setLoading(true);
@@ -429,10 +429,10 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                                                            const now = new Date();
                                                            const selectDate = new Date(e.target.value);
 
-                                                           // if(selectDate < now ){
-                                                           //     alert(`납품 요청일을 확인해주세요.`);
-                                                           //     return;
-                                                           // }
+                                                           if(selectDate < now ){
+                                                               alert(`납품 요청일을 확인해주세요.`);
+                                                               return;
+                                                           }
 
                                                            setDelDate(e.target.value);
                                                        }}/>

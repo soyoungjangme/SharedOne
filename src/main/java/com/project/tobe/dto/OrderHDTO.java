@@ -21,7 +21,7 @@ public class OrderHDTO {
     private Date delDate; //납품일
     private Long customerNo;//고객번호
     private String confirmStatus; // 임시저장, 대기, 반려, 승인 4가지 있음
-    private LocalDate confirmChangeDate; //결재상태변경일
+    private LocalDateTime confirmChangeDate; //결재상태변경일
     private String remarks; //반려사유
     private String employeeId; //담당자 아이디
     private String confirmerId; //결재자 아이디
