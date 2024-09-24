@@ -99,12 +99,17 @@ function Employee() {
         authorityName: ''
     }]);
 
-    // 메인 리스트 가져오기 axios
-    useEffect(() => {
-        axios.get('/employee/employeeALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
-            .then(response => setEmployee(response.data))  // 응답 데이터를 상태로 설정
-            .catch(error => console.error('Error fetching Customer data:', error));
-    }, []);
+const fetchEmployeeList = () => {
+    axios.get('/employee/employeeALL')  // Spring Boot 엔드포인트와 동일한 URL로 요청
+        .then(response => setEmployee(response.data))  // 응답 데이터를 상태로 설정
+        .catch(error => console.error('Error fetching Employee data:', error));
+};
+
+// useEffect to fetch employee list when the component mounts
+useEffect(() => {
+    fetchEmployeeList();  // Initial data fetching
+}, []);
+
 
     // 검색,필터 기능
     let [emSearch, setEmSearch] = useState({
@@ -408,6 +413,7 @@ useEffect(() => {
                         alert("등록이 완료되었습니다"); // Show alert after visibility is set
                         window.location.reload();
                          setList([]); // 기존 목록 초기화
+                               fetchEmployeeList();
                     });
 
         } else {
@@ -522,7 +528,8 @@ const handleUpdateClick = () => {
     .catch(error => console.error('서버 요청 중 오류 발생', error))
     .finally(() => {
         setIsModifyModalVisible(false);
-        window.location.reload();
+        fetchEmployeeList();
+    /*    window.location.reload();*/
 
          if(goOut === true) {
           window.location.href = './logout';
@@ -608,6 +615,7 @@ const [goOut, setGoOut] = useState();
             .then(response => {
                 console.log('삭제 요청 성공', response.data);
                 alert("비밀번호가 초기화 되었습니다.");
+  fetchEmployeeList();
             })
             .catch(error => {
                 console.error('서버 요청 중 오류 발생', error);
