@@ -432,6 +432,8 @@ function ModifyOrderModal({ orderData, isOpen, onClose,onClose2, onUpdate }) {
 
     if (!isOpen) return null;
 
+    
+
     return (
         <div className="confirmRegist">
             <div className="fullBody">
