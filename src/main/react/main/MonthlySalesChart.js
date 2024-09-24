@@ -12,7 +12,7 @@ const MonthlySalesChart = ({salesByMonth}) => {
     const chartData = [];
 
     useEffect(() => {
-        salesByMonth.forEach(item => {label.push(item.salesMonth); chartData.push(item.totalSales)});
+        salesByMonth.forEach(item => {label.push(item.salesMonth); chartData.push(item.totalSales / 100000)});
         console.log(label);
         console.log(chartData);
     }, []);

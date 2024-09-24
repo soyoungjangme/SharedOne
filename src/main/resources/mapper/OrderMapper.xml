@@ -321,7 +321,7 @@
     <select id="getProductRank" resultType="ProductSaleRank">
         SELECT p.product_no,
                p.product_name,
-               SUM(coalesce(body.prod_total, 0)) AS total_sales
+               SUM(coalesce(body.prod_total, 0)) AS monthly_sales
         FROM product p
                  JOIN order_body body ON p.product_no = body.product_no
                  JOIN order_header header ON body.order_no = header.order_no
@@ -329,7 +329,7 @@
           AND header.confirm_change_date BETWEEN date_trunc('month', current_date)::date
             AND date_trunc('month', current_date + interval '1 months')::date - 1
         GROUP BY p.product_no, p.product_name
-        ORDER BY total_sales DESC
+        ORDER BY monthly_sales DESC
         LIMIT 10;
 
     </select>
