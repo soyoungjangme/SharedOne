@@ -378,7 +378,19 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
 
     return isOpen ? ( loading ? (
         <div className="loading-overlay">
-            <div className="spinner">로딩 중...</div>
+
+             <div class="item">
+                <div class="loader1"></div>
+            </div>
+
+            {/* <div class="item">
+                <div class="loader2"></div>
+            </div> */}
+
+            {/* <div class="item">
+                <div class="loader3"></div>
+            </div> */}
+            
         </div>) : (
         <div className="confirmRegist">
             <div className="fullBody">

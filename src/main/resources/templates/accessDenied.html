@@ -1,42 +1,71 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>접근 거부</title>
   <style>
     body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        background-color: #f8f9fa;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f8f9fa;
     }
+
     .container {
-        text-align: center;
-        padding: 20px;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        background-color: #ffffff;
+      text-align: center;
+      padding: 20px;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      background-color: #ffffff;
     }
+
     h1 {
-        color: #dc3545;
-        font-size: 2rem;
-        margin-bottom: 10px;
+      color: #dc3545;
+      font-size: 2rem;
+      margin-bottom: 10px;
     }
+
     p {
-        color: #6c757d;
-        font-size: 1.2rem;
+      color: #6c757d;
+      font-size: 1.2rem;
     }
   </style>
 </head>
+
 <body>
-<div class="container">
-  <h1>접근 거부</h1>
-  <p>이 페이지에 대한 접근 권한이 없습니다.</p>
-  <a href="./main.do"> 홈 화면으로 이동</a>
-</div>
+
+  <div class="container">
+
+    <!-- <div className="error-container">
+      <div className="error-icon"></div>
+      <h1>접근 불가</h1>
+      <p>이 페이지에 대한 접근 권한이 없습니다.</p>
+      <p className="error-code">홈 화면으로 이동</p>
+    </div> -->
+
+    <div className="error-container">
+      <div className="error-icon">
+        <div className="exclamation-mark">!</div>
+      </div>
+      <h1>접근 불가</h1>
+      <p className="error-description">
+        이 페이지에 대한 접근 권한이 없습니다.
+      </p>
+      <p className="error-link">
+        <a href="#">홈 화면으로 이동</a>
+      </p>
+    </div>
+
+    <!-- <h1>접근 거부</h1>
+    <p>이 페이지에 대한 접근 권한이 없습니다.</p>
+    <a href="./main.do"> 홈 화면으로 이동</a> -->
+
+  </div>
+
 </body>
 </html>
