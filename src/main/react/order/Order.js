@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from "react-dom/client";
 import './Order.css'
 import './OrderRegist.css'
@@ -156,7 +156,7 @@ function Order() {
     const [prod, setProd] = useState([]);
     const [mycustomer, setMycustomer] = useState([]);
 
-    const [confirmState] = useState(['임시저장', '대기', '승인', '반려','반려(처리완료)']);//결재상태배열
+    const [confirmState] = useState(['임시저장', '대기', '승인', '반려', '반려(처리완료)']);//결재상태배열
     const [selectedConfirm, setSelectedConfrim] = useState('');
 
     //상품명 목록 Data
@@ -183,7 +183,7 @@ function Order() {
     const [form, setForm] = useState({});
 
     const handleChange = (e) => {
-        let copy = {...form, [e.target.id]: e.target.value};
+        let copy = { ...form, [e.target.id]: e.target.value };
         setForm(copy);
     }
 
@@ -193,9 +193,9 @@ function Order() {
         const date = form.date || null;
         const orderNo = form.orderNo ? form.orderNo.replace(/\s+/g, '') : null;
         const prod = form.prod || null;
-        const mycustomer = form.mycustomer|| null;
+        const mycustomer = form.mycustomer || null;
         const manager = form.manager ? form.manager.replace(/\s+/g, '') : null;
-        const status = form.selectedConfirm|| null;
+        const status = form.selectedConfirm || null;
 
         const res = await axios.post('/order/searchSelect', {
             inputDate: date,
@@ -898,6 +898,11 @@ function Order() {
 
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
+    // 선택 초기화 핸들러
+    const handleResetSelection = () => {
+        setSelectedIndex(-1);
+        sendSearchCriteria(-1); // 선택 초기화에 따른 서버 요청
+    };
 
     // Handle button click to update selected index and send the corresponding value
     const handleButtonClick2 = (index) => {
@@ -1059,44 +1064,50 @@ function Order() {
                 </button>
 
 
-            <div className="multi-select">
-                 <button
-                   className={`btn ${selectedIndex === 0 ? "selected" : ""}`}
-                   onClick={() => handleButtonClick2(0)}
-                 >
-                   내 글 보기
-                 </button>
-                 <button
-                   className={`btn ${selectedIndex === 1 ? "selected" : ""}`}
-                   onClick={() => handleButtonClick2(1)}
-                 >
-                  임시저장
-                 </button>
-                 <button
-                   className={`btn ${selectedIndex === 2 ? "selected" : ""}`}
-                   onClick={() => handleButtonClick2(2)}
-                 >
-                   대기
-                 </button>
-                 <button
-                   className={`btn ${selectedIndex === 3 ? "selected" : ""}`}
-                   onClick={() => handleButtonClick2(3)}
-                 >
-                   반려
-                 </button>
-                <button
-                className={`btn ${selectedIndex === 4 ? "selected" : ""}`}
-                onClick={() => handleButtonClick2(4)}
-                >
-                    반려(처리완료)
-                </button>
-                 <button
-                   className={`btn ${selectedIndex === 5 ? "selected" : ""}`}
-                   onClick={() => handleButtonClick2(5)}
-                 >
-                  승인
-                 </button>
-               </div>
+                <div className="multi-select">
+                    <button
+                        className="btn reset" // 스타일 추가 가능
+                        onClick={handleResetSelection}
+                    >
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <button
+                        className={`btn ${selectedIndex === 0 ? "selected" : ""}`}
+                        onClick={() => handleButtonClick2(0)}
+                    >
+                        내 글 보기
+                    </button>
+                    <button
+                        className={`btn ${selectedIndex === 1 ? "selected" : ""}`}
+                        onClick={() => handleButtonClick2(1)}
+                    >
+                        임시저장
+                    </button>
+                    <button
+                        className={`btn ${selectedIndex === 2 ? "selected" : ""}`}
+                        onClick={() => handleButtonClick2(2)}
+                    >
+                        대기
+                    </button>
+                    <button
+                        className={`btn ${selectedIndex === 3 ? "selected" : ""}`}
+                        onClick={() => handleButtonClick2(3)}
+                    >
+                        반려
+                    </button>
+                    <button
+                        className={`btn ${selectedIndex === 4 ? "selected" : ""}`}
+                        onClick={() => handleButtonClick2(4)}
+                    >
+                        반려(처리완료)
+                    </button>
+                    <button
+                        className={`btn ${selectedIndex === 5 ? "selected" : ""}`}
+                        onClick={() => handleButtonClick2(5)}
+                    >
+                        승인
+                    </button>
+                </div>
 
                 <table className="seacrh-table">
                     {showDelete && <button className='delete-btn' onClick={handleDelete}>삭제</button>}
@@ -1209,7 +1220,41 @@ function Order() {
             {/*jsy 주문등록 모달창 시작*/}
             {isVisible &&  ( loading ? (
                 <div className="loading-overlay">
-                    <div className="spinner">로딩 중...</div>
+                    <div className="spinner">
+
+                        {/* <div className="error-container">
+                            <div className="error-icon"></div>
+                            <h1>접근 불가</h1>
+                            <p>이 페이지에 대한 접근 권한이 없습니다.</p>
+                            <p className="error-code">홈 화면으로 이동</p>
+                        </div> */}
+
+                        {/* <div className="error-container">
+                            <div className="error-icon">
+                                <div className="exclamation-mark">!</div>
+                            </div>
+                            <h1>접근 불가</h1>
+                            <p className="error-description">
+                                이 페이지에 대한 접근 권한이 없습니다.
+                            </p>
+                            <p className="error-link">
+                                <a href="#">홈 화면으로 이동</a>
+                            </p>
+                        </div> */}
+
+
+                        <div class="item">
+                            <div class="loader1"></div>
+                        </div>
+
+                        {/* <div class="item">
+                            <div class="loader2"></div>
+                        </div> */}
+
+                        {/* <div class="item">
+                            <div class="loader3"></div>
+                        </div> */}
+                    </div>
                 </div>) : (
                 <div className="confirmRegist">
                     <div className="fullBody">
