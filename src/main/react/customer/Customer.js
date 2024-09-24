@@ -159,6 +159,14 @@ function Customer() {
         setCurrentPage(1);
     };
 
+     // 초기화 후 목록도 리셋
+     useEffect(() => {
+        const isFormReset = Object.values(customerSearch).every(value => value === '');
+        if (isFormReset) {
+            handleSearchCustomer();
+        }
+    }, [customerSearch]);
+
 
 
     // =============================== 고객 등록 부분 ===============================
@@ -943,7 +951,7 @@ function Customer() {
                                         <tr>
                                             <th colSpan="1"><label htmlFor="customerName">고객명</label></th>
                                             <td colSpan="2"><input type="text" placeholder="고객명" id="customerName" name="customerName" value={regist.customerName} onChange={handleInputAddChange} /></td>
-                                            <th colSpan="1"><label htmlFor="customerTel">고객연락처</label></th>
+                                            <th style={{width: "10%"}} colSpan="1"><label htmlFor="customerTel">고객연락처</label></th>
                                             <td colSpan="2"><input type="text" placeholder="고객연락처" id="customerTel" name="customerTel" value={regist.customerTel} onChange={handleInputAddChange} /></td>
                                         </tr>
                                         <tr>
@@ -956,10 +964,10 @@ function Customer() {
                                         <tr>
                                             <th><label htmlFor="postNum">우편번호</label></th>
                                             <td><input type="text" placeholder="우편번호" id="postNum" name="postNum" value={regist.postNum} readOnly /></td>
-                                            <th><label htmlFor="businessRegistrationNo">사업자등록번호</label></th>
-                                            <td><input type="text" placeholder="사업자등록번호" id="businessRegistrationNo" name="businessRegistrationNo" value={regist.businessRegistrationNo} onChange={handleInputAddChange} /></td>
                                             <th><label htmlFor="nation">국가</label></th>
                                             <td><input type="text" placeholder="국가" id="nation" name="nation" value={regist.nation} onChange={handleInputAddChange} /></td>
+                                            <th><label htmlFor="businessRegistrationNo">사업자등록번호</label></th>
+                                            <td><input type="text" placeholder="사업자등록번호" id="businessRegistrationNo" name="businessRegistrationNo" value={regist.businessRegistrationNo} onChange={handleInputAddChange} /></td>
                                         </tr>
                                         <tr>
                                             <th colSpan="1"><label htmlFor="picName">담당자</label></th>
@@ -1007,11 +1015,11 @@ function Customer() {
                                 <div className="btns">
 
                                     <div className="btn-delete">
-                                        <button type="button" onClick={handleDeleteItem}>삭제</button>
+                                        <button type="button" onClick={handleDeleteItem}>삭제하기</button>
                                     </div>
 
                                     <div className="btn-add2">
-                                        <button type="button" onClick={handleUpdateClick}>수정</button>
+                                        <button type="button" onClick={handleUpdateClick}>수정하기</button>
                                     </div>
                                     <div className="btn-close">
                                         {/* 다른 버튼이 필요한 경우 여기에 추가 */}
@@ -1024,7 +1032,7 @@ function Customer() {
                                         <tr>
                                             <th colSpan="1"><label htmlFor="customerName">고객명</label></th>
                                             <td colSpan="2"><input type="text" placeholder="고객명" id="customerName" name="customerName" value={modifyItem.customerName || ''} onChange={handleModifyItemChange} /></td>
-                                            <th colSpan="1"><label htmlFor="customerTel">고객연락처</label></th>
+                                            <th style={{width: "10%"}} colSpan="1"><label htmlFor="customerTel">고객연락처</label></th>
                                             <td colSpan="2"><input type="text" placeholder="고객연락처" id="customerTel" name="customerTel" value={modifyItem.customerTel || ''} onChange={handleModifyItemChange} /></td>
                                         </tr>
                                         <tr>
