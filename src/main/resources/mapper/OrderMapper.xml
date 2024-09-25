@@ -271,13 +271,17 @@
         WHERE order_no = #{orderNo} and oh_no = #{ohNo}
     </update>
 
-    <!-- 임시 저장 주문 상세 삽입 -->
+    <!-- 임시 저장 주문 상세 삽입 및 중복 시 업데이트 처리 -->
     <insert id="insertOrderDetails" parameterType="java.util.List">
         INSERT INTO order_body (oh_no, order_no, product_no, order_product_qty, prod_total)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.ohNo}, #{item.orderNo}, #{item.productNo}, #{item.orderProductQty}, #{item.prodTotal})
         </foreach>
+        ON CONFLICT (oh_no, order_no, product_no)
+        DO UPDATE SET
+        order_product_qty = EXCLUDED.order_product_qty,
+        prod_total = EXCLUDED.prod_total
     </insert>
 
     <!-- 주문 삭제 쿼리 -->
