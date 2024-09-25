@@ -137,7 +137,6 @@ public class PriceServiceImpl implements PriceService {
     // oldPrice를 분할하여 list에 삽입하는 함수
     private void splitOldPrice(List<Price> list, Price newPrice, Price oldPrice, int index) {
         Price priceLeft = Price.builder()
-                .priceNo(oldPrice.getPriceNo())
                 .registerDate(oldPrice.getRegisterDate())
                 .product(oldPrice.getProduct())
                 .customer(oldPrice.getCustomer())
@@ -164,6 +163,10 @@ public class PriceServiceImpl implements PriceService {
 
         list.set(index, priceLeft);
         list.add(index + 1, priceRight);
+
+        // 기존 값 비활성화 후 저장
+        oldPrice.setActivated(YesNo.N);
+        priceRepository.save(oldPrice);
     }
 
     // oldPrice가 newPrice의 범위에 완전히 포함되는지 확인하는 함수
@@ -179,6 +182,19 @@ public class PriceServiceImpl implements PriceService {
 
     // newPrice와 oldPrice의 날짜가 겹칠 경우 oldPrice를 조정하는 함수
     private void adjustOldPriceForOverlap(Price newPrice, Price oldPrice) {
+        Price priceCopy = Price.builder()
+                .registerDate(oldPrice.getRegisterDate())
+                .product(oldPrice.getProduct())
+                .customer(oldPrice.getCustomer())
+                .customPrice(oldPrice.getCustomPrice())
+                .discount(oldPrice.getDiscount())
+                .startDate(oldPrice.getStartDate())
+                .endDate(oldPrice.getEndDate())
+                .activated(YesNo.N)
+                .build();
+
+        priceRepository.save(priceCopy);
+
         if ((oldPrice.getStartDate().isAfter(newPrice.getStartDate()) || oldPrice.getStartDate().isEqual(newPrice.getStartDate())) &&
                 (oldPrice.getEndDate().isAfter(newPrice.getEndDate()) || oldPrice.getEndDate().isEqual(newPrice.getEndDate()))) {
             oldPrice.setStartDate(newPrice.getEndDate().plusDays(1));
