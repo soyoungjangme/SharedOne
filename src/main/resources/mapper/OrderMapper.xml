@@ -262,7 +262,7 @@
             confirm_status = #{confirmStatus},
             remarks = #{remarks},
             employee_id = #{employeeId}
-        WHERE order_no = #{orderNo} and oh_no = {ohNo}
+        WHERE order_no = #{orderNo} and oh_no = #{ohNo}
     </update>
 
     <!-- 임시 저장 주문 상세 삽입 -->
