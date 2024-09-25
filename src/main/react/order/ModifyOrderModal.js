@@ -241,6 +241,8 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
                     console.log(`Item ${index} Price Object:`, item.price);
                 });
 
+                setLoading(true);
+
                 const response = await axios.post('/order/registOrder', updatedOrderData);
                 const { orderNo, ohNo } = response.data;
 
@@ -284,6 +286,8 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
                 } else {
                     console.error('Axios request error:', error.message);  // 네트워크 오류나 기타 문제를 확인
                 }
+            } finally {
+                setLoading(false);
             }
 
         } else if (status === '대기') {
