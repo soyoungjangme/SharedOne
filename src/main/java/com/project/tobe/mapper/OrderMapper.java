@@ -24,8 +24,8 @@ public interface OrderMapper {
                        @Param("confirmChangeDate") LocalDateTime confirmChangeDate,
                        @Param("remarks") String remarks);
     void updateOrderHeader(OrderUp1DTO orderUp1DTO);
-    void deleteOrderDetails(Long orderNo);
-    void insertOrderDetail(@Param("orderNo") Long orderNo, @Param("detail") OrderUp2DTO detail);
+    void deleteOrderDetails(Long ohNo);
+    void insertOrderDetail(@Param("ohNo") Long ohNo, @Param("detail") OrderUp2DTO detail);
 
     /*
     void insertBack1(OrderUp1DTO orderUp1DTO);
@@ -33,7 +33,7 @@ public interface OrderMapper {
     */
     int updateTempOrder(OrderHDTO orderHDTO);
     int insertOrderDetails(List<OrderBDTO> orderBList);
-    int deleteOrder(@Param("orderNo") Long orderNo);
+    int deleteOrder(@Param("ohNo") Long ohNo);
     /*유선화 END*/
 
     EmployeeRankDTO getEmployeeTopOfMonth();

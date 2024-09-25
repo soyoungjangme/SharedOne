@@ -142,7 +142,7 @@ const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchDat
         });  // 전송 전 데이터 확인
 
         try {
-            await axios.put(`/order/temp/${modifyItem.orderNo}`, {
+            await axios.put(`/order/temp/${modifyItem.ohNo}`, {
                 ...modifyItem,
                 delDate: delDate,
                 confirmStatus: '임시저장',
@@ -203,24 +203,28 @@ const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchDat
         } finally {
             setLoading(false);
         }
+        window.location.reload();
+
     };
 
     // 임시저장 삭제
     const handleDeleteOrder = async () => {
         if (window.confirm('주문을 삭제하시겠습니까?')) {
             try {
-                await axios.delete(`/order/delete/${orderNo}`);
+                await axios.delete(`/order/delete/${ohNo}`);
                 alert(`주문 번호 ${orderNo} 삭제되었습니다.`);
 
                 // Order 컴포넌트에 삭제된 주문 업데이트 반영
-                // fetchData();
-                onUpdate({ orderNo });
+                fetchData();
+                onUpdate({ ohNo });
                 onClose();
                 onClose2();
             } catch (error) {
                 console.error('삭제 중 오류 발생:', error);
             }
         }
+        window.location.reload();
+
     };
 
     // 추가 버튼
@@ -544,7 +548,7 @@ const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchDat
                                 <td colSpan="5">합계</td>
                                 <td colSpan="3">
                                     {addCheckProd.reduce((total, addProd, index) => {
-                                        const qty = quantities[index] || 0;
+                                        const qty = quantities[addProd.price.priceNo] || 0;
                                         return total + (addProd.price.customPrice * qty);
                                     }, 0).toLocaleString()} 원
                                 </td>

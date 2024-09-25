@@ -297,10 +297,10 @@ public class OrderController {
         }
     }
 
-    @DeleteMapping("/delete/{orderNo}")
-    public ResponseEntity<?> deleteOrder(@PathVariable Long orderNo) {
+    @DeleteMapping("/delete/{ohNo}")
+    public ResponseEntity<?> deleteOrder(@PathVariable Long ohNo) {
         try {
-            boolean isDeleted = orderService.deleteOrder(orderNo);
+            boolean isDeleted = orderService.deleteOrder(ohNo);
             if (isDeleted) {
                 return ResponseEntity.ok("주문이 삭제되었습니다.");
             } else {

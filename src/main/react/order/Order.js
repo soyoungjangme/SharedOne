@@ -189,6 +189,8 @@ function Order() {
 
     // 검색 버튼 클릭 시 서버로 검색 조건 전송
     const handleSearchBtn = async () => {
+        setSelectedIndex(false); //내글보기 쪽 필터 초기화
+
         //서버로 데이터 보내기
         const date = form.date || null;
         const orderNo = form.orderNo ? form.orderNo.replace(/\s+/g, '') : null;
