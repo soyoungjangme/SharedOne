@@ -104,11 +104,13 @@ public class PriceServiceImpl implements PriceService {
                 // oldPrice가 newPrice를 완전히 포함하는 경우
                 if (isOldPriceContainingNewPrice(newPrice, oldPrice)) {
                     splitOldPrice(list, newPrice, oldPrice, j);
+                    continue;
                 }
 
                 // oldPrice가 newPrice의 범위 안에 완전히 포함되는 경우
                 if (isOldPriceContainedWithinNewPrice(newPrice, oldPrice)) {
                     deactivateOldPrice(oldPrice);
+                    continue;
                 }
 
                 // newPrice가 oldPrice의 중간에 걸쳐있는 경우
@@ -117,6 +119,7 @@ public class PriceServiceImpl implements PriceService {
                 // oldPrice가 자체적으로 비활성화되는 경우
                 if (isStartDateAfterEndDate(oldPrice)) {
                     deactivateOldPrice(oldPrice);
+                    continue;
                 }
 
                 list.set(j, oldPrice);
