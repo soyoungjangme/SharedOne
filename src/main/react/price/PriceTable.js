@@ -14,7 +14,7 @@ const PriceTable = ({
 
     console.log(totalItems);
 
-     // 상품원가를 포맷팅하는 함수
+     // 판매가를 포맷팅하는 함수
      const formatPrice = (price) => {
         return price ? Number(price).toLocaleString() : '';
     };

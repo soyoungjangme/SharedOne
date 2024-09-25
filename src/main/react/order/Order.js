@@ -254,6 +254,10 @@ function Order() {
     }, [form]);
 
 
+    // 포맷팅하는 함수
+    const formatPrice = (price) => {
+        return price ? Number(price).toLocaleString() : '';
+    };
 
     /*---------------jsy조건 끝---------------*/
 
@@ -1349,7 +1353,7 @@ function Order() {
                                             <td>{prodList.prodNo}</td>
                                             <td>{prodList.prodName}</td>
                                             <td>{prodList.prodWriter}</td>
-                                            <td>{prodList.salePrice}</td>
+                                            <td>{formatPrice(prodList.salePrice)}</td>
                                             <td>{prodList.saleStart} ~ {prodList.saleEnd}</td>
                                         </tr>
                                     ))}
@@ -1397,7 +1401,7 @@ function Order() {
                                                     <input type="number" id={`prodQty_${addProd.priceNo}`} value={qty}
                                                            onChange={handleQuantityChange(addProd.priceNo)} placeholder="수량"/>
                                                 </td>
-                                                <td>{addProd.salePrice * qty}</td>
+                                                <td>{formatPrice(addProd.salePrice * qty)}</td>
                                                 <td>{addProd.saleStart}</td>
                                                 <td>{addProd.saleEnd}</td>
                                             </tr>

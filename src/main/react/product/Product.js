@@ -993,7 +993,7 @@ const handleInputChange = (e) => {
                             </tr>
                         )}
                         <tr>
-                            <td colSpan="5">합계</td>
+                            <td colSpan="5"></td>
                             <td colSpan="1">{visibleCount}건</td>
                         </tr>
                     </tbody>
