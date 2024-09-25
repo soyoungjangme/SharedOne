@@ -3,13 +3,12 @@ import axios from 'axios';
 import Select from 'react-select';
 import './Price.css';
 import '../js/modalAdd.css';
+import {formatPrice} from "../js/util";
 
 const AddPriceModal = ({
     isVisible,
-    setIsVisible,
     product,
     customer,
-    fetchData,
     handleCloseClick
 }) => {
     // 전 세계 주요 화폐 코드 및 이름 목록
@@ -197,7 +196,7 @@ const AddPriceModal = ({
                                             type="text"
                                             placeholder="필드 입력"
                                             id="registCustomPrice"
-                                            value={String(insertPrice.customPrice).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} // 문자열로 변환하여 3자리마다 콤마 추가
+                                            value={formatPrice(insertPrice.customPrice)} // 문자열로 변환하여 3자리마다 콤마 추가
                                             onChange={(e) => {
                                                 handleCustomPriceChange(e.target.value);
                                             }}

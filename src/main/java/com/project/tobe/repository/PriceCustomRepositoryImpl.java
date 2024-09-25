@@ -48,13 +48,14 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
         Optional<Long> customerNo = Optional.ofNullable(dto.getCustomerNo().length() > 0 ? Long.valueOf(dto.getCustomerNo()) : null);
         Optional<LocalDate> startDate = Optional.ofNullable(dto.getStartDate());
         Optional<LocalDate> endDate = Optional.ofNullable(dto.getEndDate());
+        Optional<YesNo> activated = Optional.ofNullable(dto.getActivated());
 
         registerDate.ifPresent(localDateTime -> builder.and(price.registerDate.eq(localDateTime)));
         productNo.ifPresent(s -> builder.and(price.product.productNo.eq(s)));
         customerNo.ifPresent(s -> builder.and(price.customer.customerNo.eq(s)));
         startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
         endDate.ifPresent(localDate -> builder.and(price.endDate.before(localDate)));
-        builder.and(price.activated.eq(Y));
+        activated.ifPresent(act -> builder.and(price.activated.eq(act)));
 
         List<PriceProductCustomerDTO> list = jpaQueryFactory
                 .select(
@@ -69,7 +70,8 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
                                 price.customPrice,
                                 price.discount,
                                 price.startDate,
-                                price.endDate
+                                price.endDate,
+                                price.activated
                         )
                 )
                 .from(price)
@@ -96,7 +98,8 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
                                 price.customPrice,
                                 price.discount,
                                 price.startDate,
-                                price.endDate
+                                price.endDate,
+                                price.activated
                         )
                 )
                 .from(price)
