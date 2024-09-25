@@ -20,7 +20,11 @@ function useSort(data) {
         setSortConfig({ key, direction });
     };
 
-    return { sortedData, sortData, sortConfig };
+    const getSortDirection = () => {
+        return sortConfig.direction === 'ascending' ? '▲' : '▼';
+    }
+
+    return { sortedData, sortData, sortConfig, getSortDirection };
 }
 
 export default useSort;
