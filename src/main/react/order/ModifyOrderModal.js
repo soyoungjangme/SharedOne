@@ -1,13 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Order.css';
 import './OrderRegist.css';
 import './OrderModalDetail.css';
 import './OrderModalUpdate.css'
 import useCheckboxManager from '../js/CheckboxManager';
+import { formatPrice } from '../js/util';
 
 
-function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
+function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
 
     // 상태 변수: 상품 목록, 추가된 상품 목록, 각 상품의 수량 관리
     const [customPrice, setCustomPrice] = useState([]); // 상품 리스트
@@ -18,11 +19,11 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
 
     // 상태 변수: 주문 수정 항목 관리
     const [modifyItem, setModifyItem] = useState({
-        ohNo:'',
+        ohNo: '',
         orderNo: '',
         regDate: '',
-        employee: {employeeName: '', employeeId: ''},
-        customer: {customerName: '', customerNo: ''},
+        employee: { employeeName: '', employeeId: '' },
+        customer: { customerName: '', customerNo: '' },
         delDate: '',
         confirmStatus: '',
         confirmerName: '',
@@ -38,7 +39,7 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
     }, [modifyItem.orderBList]);
 
 
-// 주문 가능한 상품 목록을 위한 체크박스
+    // 주문 가능한 상품 목록을 위한 체크박스
     const {
         allCheck: availableProductsAllCheck,
         checkItem: availableProductsCheckItem,
@@ -49,7 +50,7 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
         setShowDelete: setShowDeleteCustomPrice
     } = useCheckboxManager(setCustomPrice);
 
-// 선택된 상품 목록을 위한 체크박스
+    // 선택된 상품 목록을 위한 체크박스
     const {
         allCheck: selectedProductsAllCheck,
         checkItem: selectedProductsCheckItem,
@@ -66,7 +67,7 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
         }
     }, [orderData]);
 
-// 선택한 상품 리스트에서 삭제 처리
+    // 선택한 상품 리스트에서 삭제 처리
     const handleDelete = () => {
         const checkDelete = window.confirm('선택한 상품을 목록에서 삭제하시겠습니까?');
         if (checkDelete) {
@@ -211,16 +212,10 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
             console.log('1현재 상태: 반려');
             try {
                 // 주문 업데이트에 필요한 데이터 준비
-                const today = new Date();
-                today.setDate(today.getDate());
-                const todayPlus = today.toISOString(); // 시, 분, 초까지 포함된 ISO 형식
-                console.log(todayPlus);
-
                 const updatedOrderData = {
                     inputOrderNo: modifyItem.orderNo,
                     inputDelDate: modifyItem.delDate,
                     inputStatus: "대기", //고정 값
-                    /*confirmChangeDate: todayPlus,*/ // 인서트이므로, 상태변경일 ㄴㄴ
                     inputCustomerNo: modifyItem.customer.customerNo, // 고객 번호 설정
                     inputManager: modifyItem.employee.employeeId, // 직원 ID 설정
                     inputConfirmer: modifyItem.confirmerId, //담당자 ID 설정
@@ -249,9 +244,9 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
                 setLoading(true);
 
                 const response = await axios.post('/order/registOrder', updatedOrderData);
-                const {orderNo, ohNo} = response.data;
+                const { orderNo, ohNo } = response.data;
 
-                if (response.status === 200 || response.data ) {
+                if (response.status === 200 || response.data) {
                     // 상태를 '반려(처리완료)'로 업데이트
                     /*setModifyItem(prev => ({
                         ...prev,
@@ -299,26 +294,26 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
             console.log('2현재 상태: 대기');
 
             try {
-                const today = new Date();
-                today.setDate(today.getDate());
-
-                const todayPlus = today.toISOString(); // 시, 분, 초까지 포함된 ISO 형식
-                console.log(todayPlus);
                 const updatedOrderData = {
                     ohNo: modifyItem.ohNo,
                     orderNo: modifyItem.orderNo,
                     delDate: modifyItem.delDate,
-                    confirmChangeDate: todayPlus,
+                    confirmChangeDate: new Date().toISOString().slice(0, 19),
                     customerNo: modifyItem.customer.customerNo,
                     employeeId: modifyItem.employee.employeeId,
-                    orderBList: modifyItem.orderBList.map(item => ({
-                        productNo: item.product.productNo,
-                        orderProductQty: parseInt(item.orderProductQty, 10),
-                        price: item.price.customPrice,
-                        priceNo: item.priceNo || item.price.priceNo,
-                        prodTotal: parseInt(item.orderProductQty, 10) * item.price.customPrice
-                    }))
+                    orderBList: modifyItem.orderBList.map(item => {
+                        console.log('처리 중인 item:', JSON.stringify(item, null, 2));
+                        return {
+                            productNo: item.product.productNo,
+                            orderProductQty: parseInt(item.orderProductQty, 10),
+                            price: item.price.customPrice,
+                            priceNo: item.price.priceNo,
+                            prodTotal: parseInt(item.orderProductQty, 10) * item.price.customPrice
+                        };
+                    })
                 };
+                console.log('orderNo:', modifyItem.orderNo);
+                console.log('서버로 보내는 데이터:', JSON.stringify(updatedOrderData, null, 2));
                 setLoading(true);
 
                 const response = await axios.put(`/order/update`, updatedOrderData);
@@ -347,9 +342,9 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
     };
 
 
-// 상품 체크 이벤트 - 체크항목만 checkProd 넣기
+    // 상품 체크 이벤트 - 체크항목만 checkProd 넣기
     const handleCheck = (prodList) => (e) => {
-        const {prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo} = prodList;
+        const { prodNo, prodCat, prodName, salePrice, saleStart, saleEnd, priceNo } = prodList;
         handleAvailableProductsCheckboxChange(e, prodList.index);
     }
 
@@ -395,14 +390,14 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
             orderBList: newOrderBList,
         }));
 
-        handleAvailableProductsMasterCheckboxChange({target: {checked: false}}); // 체크박스 상태 초기화
+        handleAvailableProductsMasterCheckboxChange({ target: { checked: false } }); // 체크박스 상태 초기화
     };
 
 
-// 정렬 상태 관리
-    const [modalSortConfig, setModalSortConfig] = useState({key: '', direction: 'ascending'});
+    // 정렬 상태 관리
+    const [modalSortConfig, setModalSortConfig] = useState({ key: '', direction: 'ascending' });
 
-// 정렬 함수
+    // 정렬 함수
     const sortModalData = (key) => {
         let direction = 'ascending';
         if (modalSortConfig.key === key && modalSortConfig.direction === 'ascending') {
@@ -434,8 +429,8 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
             return 0;
         });
 
-        setModifyItem({...modifyItem, orderBList: sortedData});
-        setModalSortConfig({key, direction});
+        setModifyItem({ ...modifyItem, orderBList: sortedData });
+        setModalSortConfig({ key, direction });
     };
 
     if (!isOpen) return null;
@@ -477,48 +472,48 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
                     <div className="RegistForm">
                         <table className="formTable">
                             <tbody>
-                            <tr>
-                                <th>주문 번호</th>
-                                <td><input type="text" value={modifyItem.orderNo || ''} disabled/></td>
-                                <th>주문 등록일</th>
-                                <td><input type="text"
-                                           value={modifyItem.regDate ? new Date(modifyItem.regDate).toLocaleDateString('en-CA') : ''}
-                                           disabled/></td>
-                            </tr>
-                            <tr>
-                                <th>고객명</th>
-                                <td><input value={modifyItem.customer?.customerName || ''} disabled/></td>
-                                <th>납품 요청일</th>
-                                <td>
-                                    <input
-                                        type="date"
-                                        name="delDate"
-                                        value={modifyItem.delDate || ''}
-                                        onChange={(e) => {
-                                            const now = new Date();
-                                            const selectDate = new Date(e.target.value);
+                                <tr>
+                                    <th>주문 번호</th>
+                                    <td><input type="text" value={modifyItem.orderNo || ''} disabled /></td>
+                                    <th>주문 등록일</th>
+                                    <td><input type="text"
+                                        value={modifyItem.regDate ? new Date(modifyItem.regDate).toLocaleDateString('en-CA') : ''}
+                                        disabled /></td>
+                                </tr>
+                                <tr>
+                                    <th>고객명</th>
+                                    <td><input value={modifyItem.customer?.customerName || ''} disabled /></td>
+                                    <th>납품 요청일</th>
+                                    <td>
+                                        <input
+                                            type="date"
+                                            name="delDate"
+                                            value={modifyItem.delDate || ''}
+                                            onChange={(e) => {
+                                                const now = new Date();
+                                                const selectDate = new Date(e.target.value);
 
-                                            if(selectDate < now ){
-                                                alert(`납품 요청일을 확인해주세요.`);
-                                                return;
-                                            }
+                                                if (selectDate < now) {
+                                                    alert(`납품 요청일을 확인해주세요.`);
+                                                    return;
+                                                }
 
-                                            setModifyItem(prev => ({
+                                                setModifyItem(prev => ({
                                                     ...prev,
                                                     delDate: e.target.value,
                                                     orderBList: []
                                                 })
-                                            )
-                                        }}
-                                    />
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>담당자</th>
-                                <td><input type="text" value={modifyItem.employee?.employeeName || ''} disabled/></td>
-                                <th>결재자</th>
-                                <td><input type="text" value={modifyItem.confirmerName || '정보 없음'} disabled/></td>
-                            </tr>
+                                                )
+                                            }}
+                                        />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>담당자</th>
+                                    <td><input type="text" value={modifyItem.employee?.employeeName || ''} disabled /></td>
+                                    <th>결재자</th>
+                                    <td><input type="text" value={modifyItem.confirmerName || '정보 없음'} disabled /></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -537,53 +532,53 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
                     </div>
 
                     {/* 주문 가능한 상품 목록 */}
-                    <div style={{fontWeight: 'bold'}}> 총 {filteredProducts.length} 건</div>
+                    <div style={{ fontWeight: 'bold' }}> 총 {filteredProducts.length} 건</div>
 
                     <div className="formTableBookList">
                         <table className="formTableList2">
                             <thead className="formTableList2thead">
-                            <tr>
-                                <th>
-                                    <input
-                                        type="checkbox"
-                                        checked={availableProductsAllCheck}
-                                        onChange={handleAvailableProductsMasterCheckboxChange}
-                                    />
-                                </th>
-                                <th>no</th>
-                                <th>상품 코드</th>
-                                <th>상품 명</th>
-                                <th>저자</th>
-                                <th>판매가</th>
-                                <th>판매 기간</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {filteredProducts.map((prodList, index) => (
-                                <tr key={index} className={availableProductsCheckItem[index] ? 'selected-row' : ''}>
-                                    <td>
+                                <tr>
+                                    <th>
                                         <input
                                             type="checkbox"
-                                            checked={availableProductsCheckItem[index] || false}
-                                            onChange={handleCheck({...prodList, index})}
+                                            checked={availableProductsAllCheck}
+                                            onChange={handleAvailableProductsMasterCheckboxChange}
                                         />
-                                    </td>
-                                    <td style={{display: 'none'}}>{index}</td>
-                                    <td>{index + 1}</td>
-                                    <td>{prodList.prodNo}</td>
-                                    <td>{prodList.prodName}</td>
-                                    <td>{prodList.prodWriter}</td>
-                                    <td>{prodList.salePrice}</td>
-                                    <td>{`${prodList.saleStart} ~ ${prodList.saleEnd}`}</td>
+                                    </th>
+                                    <th>no</th>
+                                    <th>상품 코드</th>
+                                    <th>상품 명</th>
+                                    <th>저자</th>
+                                    <th>판매가</th>
+                                    <th>판매 기간</th>
                                 </tr>
-                            ))}
+                            </thead>
+                            <tbody>
+                                {filteredProducts.map((prodList, index) => (
+                                    <tr key={index} className={availableProductsCheckItem[index] ? 'selected-row' : ''}>
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={availableProductsCheckItem[index] || false}
+                                                onChange={handleCheck({ ...prodList, index })}
+                                            />
+                                        </td>
+                                        <td style={{ display: 'none' }}>{index}</td>
+                                        <td>{index + 1}</td>
+                                        <td>{prodList.prodNo}</td>
+                                        <td>{prodList.prodName}</td>
+                                        <td>{prodList.prodWriter}</td>
+                                        <td>{formatPrice(prodList.salePrice)}</td>
+                                        <td>{`${prodList.saleStart} ~ ${prodList.saleEnd}`}</td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
 
                     {/* 선택된 상품 목록*/}
                     <div className="RegistFormList">
-                        <div style={{fontWeight: 'bold'}}>총 {modifyItem.orderBList?.length || 0} 건</div>
+                        <div style={{ fontWeight: 'bold' }}>총 {modifyItem.orderBList?.length || 0} 건</div>
 
                         {(showDelete || (selectedProductsAllCheck && modifyItem.orderBList?.length > 0)) && (
                             <button className="delete-btn btn-common" onClick={handleDelete}>
@@ -593,83 +588,83 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
 
                         <table className="formTableList">
                             <thead>
-                            <tr>
-                                <th>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedProductsAllCheck}
-                                        onChange={handleSelectedProductsMasterCheckboxChange}
-                                    />
-                                </th>
-                                <th>No</th>
-                                <th>상품 카테고리
-                                    <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
-                                        {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                    </button>
-                                </th>
-                                <th>상품명
-                                    <button className="sortBtn" onClick={() => sortModalData('productName')}>
-                                        {modalSortConfig.key === 'productName' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                    </button>
-                                </th>
-                                <th>상품 수량
-                                    <button className="sortBtn" onClick={() => sortModalData('orderProductQty')}>
-                                        {modalSortConfig.key === 'orderProductQty' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                    </button>
-                                </th>
-                                {/*<th>판매가*/}
-                                {/*    <button className="sortBtn" onClick={() => sortModalData('salePrice')}>*/}
-                                {/*        {modalSortConfig.key === 'salePrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}*/}
-                                {/*    </button>*/}
-                                {/*</th>*/}
-                                <th>총 금액
-                                    <button className="sortBtn" onClick={() => sortModalData('totalPrice')}>
-                                        {modalSortConfig.key === 'totalPrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                                    </button>
-                                </th>
-                                <th>판매 시작일</th>
-                                <th>판매 종료일</th>
-
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {modifyItem.orderBList && modifyItem.orderBList.map((item, index) => (
-                                <tr key={index} className={selectedProductsCheckItem[index] ? 'selected-row' : ''}>
-                                    <td>
+                                <tr>
+                                    <th>
                                         <input
                                             type="checkbox"
-                                            checked={selectedProductsCheckItem[index] || false}
-                                            onChange={(e) => handleSelectedProductsCheckboxChange(e, index)}
+                                            checked={selectedProductsAllCheck}
+                                            onChange={handleSelectedProductsMasterCheckboxChange}
                                         />
-                                    </td>
-                                    <td style={{display: 'none'}}>{index}</td>
-                                    <td>{index + 1}</td>
-                                    <td>{item.product?.productCategory}</td>
-                                    <td>{item.product?.productName}</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            value={item.orderProductQty}
-                                            onChange={handleQuantityChange(index)}
-                                        />
-                                    </td>
-                                    {/*<td>{item.price?.customPrice || 0}</td>*/}
-                                    <td>{item.orderProductQty === '' ? 0 : item.orderProductQty * (item.price?.customPrice || 0)}</td>
-                                    <td>{item.price?.startDate || '정보 없음'}</td>
-                                    <td>{item.price?.endDate || '정보 없음'}</td>
+                                    </th>
+                                    <th>No</th>
+                                    <th>상품 카테고리
+                                        <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
+                                            {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                        </button>
+                                    </th>
+                                    <th>상품명
+                                        <button className="sortBtn" onClick={() => sortModalData('productName')}>
+                                            {modalSortConfig.key === 'productName' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                        </button>
+                                    </th>
+                                    <th>상품 수량
+                                        <button className="sortBtn" onClick={() => sortModalData('orderProductQty')}>
+                                            {modalSortConfig.key === 'orderProductQty' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                        </button>
+                                    </th>
+                                    {/*<th>판매가*/}
+                                    {/*    <button className="sortBtn" onClick={() => sortModalData('salePrice')}>*/}
+                                    {/*        {modalSortConfig.key === 'salePrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}*/}
+                                    {/*    </button>*/}
+                                    {/*</th>*/}
+                                    <th>총 금액
+                                        <button className="sortBtn" onClick={() => sortModalData('totalPrice')}>
+                                            {modalSortConfig.key === 'totalPrice' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                                        </button>
+                                    </th>
+                                    <th>판매 시작일</th>
+                                    <th>판매 종료일</th>
+
                                 </tr>
-                            ))}
-                            {modifyItem.orderBList?.length > 0 && (
-                                <tr style={{fontWeight: 'bold'}}>
-                                    <td colSpan="6">합계</td>
-                                    <td colSpan="2">
-                                        {modifyItem.orderBList.reduce(
-                                            (total, item) => total + (item.orderProductQty === '' ? 0 : item.orderProductQty * (item.price?.customPrice || 0)),
-                                            0
-                                        ).toLocaleString()}원 {/* toLocaleString() : 숫자를 천 단위로 구분하고, 통화 기호 추가 */}
-                                    </td>
-                                </tr>
-                            )}
+                            </thead>
+                            <tbody>
+                                {modifyItem.orderBList && modifyItem.orderBList.map((item, index) => (
+                                    <tr key={index} className={selectedProductsCheckItem[index] ? 'selected-row' : ''}>
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedProductsCheckItem[index] || false}
+                                                onChange={(e) => handleSelectedProductsCheckboxChange(e, index)}
+                                            />
+                                        </td>
+                                        <td style={{ display: 'none' }}>{index}</td>
+                                        <td>{index + 1}</td>
+                                        <td>{item.product?.productCategory}</td>
+                                        <td>{item.product?.productName}</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value={item.orderProductQty}
+                                                onChange={handleQuantityChange(index)}
+                                            />
+                                        </td>
+                                        {/*<td>{item.price?.customPrice || 0}</td>*/}
+                                        <td>{item.orderProductQty === '' ? 0 : formatPrice(item.orderProductQty * (item.price?.customPrice || 0))}</td>
+                                        <td>{item.price?.startDate || '정보 없음'}</td>
+                                        <td>{item.price?.endDate || '정보 없음'}</td>
+                                    </tr>
+                                ))}
+                                {modifyItem.orderBList?.length > 0 && (
+                                    <tr style={{ fontWeight: 'bold' }}>
+                                        <td colSpan="6">합계</td>
+                                        <td colSpan="2">
+                                            {modifyItem.orderBList.reduce(
+                                                (total, item) => total + (item.orderProductQty === '' ? 0 : item.orderProductQty * (item.price?.customPrice || 0)),
+                                                0
+                                            ).toLocaleString()}원 {/* toLocaleString() : 숫자를 천 단위로 구분하고, 통화 기호 추가 */}
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>

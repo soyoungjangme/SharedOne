@@ -295,6 +295,11 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
     console.log(modifyItem.employee.authorityGrade);
     console.log(JSON.stringify(modifyItem));
 
+      // 판매가를 포맷팅하는 함수
+      const formatPrice = (price) => {
+        return price ? Number(price).toLocaleString() : '';
+    };
+
 
     return isOpen ? (loading ? (
         <div className="loading-overlay">
@@ -499,9 +504,9 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
                                                 <td>{index + 1}</td>
                                                 <td>{item.product?.productCategory}</td>
                                                 <td>{item.product?.productName}</td>
-                                                <td>{item.orderProductQty > 0 ? item.orderProductQty : 0}</td> {/* 수량이 0일 경우 확인 */}
-                                                <td>{customPrice}</td>
-                                                <td>{item.orderProductQty * customPrice}</td>
+                                                <td>{formatPrice(item.orderProductQty > 0 ? item.orderProductQty : 0)}</td> {/* 수량이 0일 경우 확인 */}
+                                                <td>{formatPrice(customPrice)}</td>
+                                                <td>{formatPrice(item.orderProductQty * customPrice)}</td>
                                                 {/* 총 금액 */}
                                                 <td>{`${saleStart} ~ ${saleEnd}`}</td>
                                                 {/* 판매 기간 */}
