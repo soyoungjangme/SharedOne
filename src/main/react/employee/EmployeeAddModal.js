@@ -53,11 +53,13 @@ const validateInputs = () => {
 
 
 
-  // 급여 입력값 검사
-  if (!/^[0-9]*$/.test(salary) && salary >= 0 ) {
-    alert('급여란에는 숫자만 입력하세요.');
-    return false;
-  }
+ // 급여 입력값을 숫자로 변환 (콤마 제거)
+ const salaryNumber = Number(salary.replace(/,/g, ''));
+ if (isNaN(salaryNumber) || salaryNumber < 0) {
+     alert('급여란에는 숫자만 입력하세요.');
+     return false;
+ }
+
 
   // 중복 확인 검사
   if (idResult === false) {
@@ -286,7 +288,7 @@ const validateInputs = () => {
                                                 <td>{item.employeeAddr}</td>
                                                 {/*<td>{item.residentNum}</td>*/}
                                                 <td>{item.hireDate}</td>
-                                                <td>{item.salary}</td>
+                                                <td>{formatSalary(item.salary)}</td>
                                                 <td>{item.employeeManagerId}</td>
                                                 <td>{item.authorityGrade}</td>
                                             </tr>
