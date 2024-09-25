@@ -5,8 +5,8 @@ import PropTypes from "prop-types";
 const PriceTableBody = ({price, currentPage, amount, handleAddClickDetail}) => {
 
     // 상품원가를 포맷팅하는 함수
-    const formatPrice = (price) => {
-        return price ? Number(price).toLocaleString() : '';
+    const formatPrice = (customPrice) => {
+        return customPrice ? Number(customPrice).toLocaleString() : '';
     };
 
     return price.length > 0 ? (
