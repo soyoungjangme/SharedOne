@@ -921,6 +921,7 @@ function Order() {
     const handleButtonClick2 = (index) => {
         setSelectedIndex(index);
         sendSearchCriteria(index);
+        handleReset(); 
     };
 
     // Send a POST request with the selected order status
