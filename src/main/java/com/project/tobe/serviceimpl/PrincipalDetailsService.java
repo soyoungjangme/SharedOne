@@ -1,4 +1,4 @@
-package com.project.tobe.serviceImpl;
+package com.project.tobe.serviceimpl;
 
 import com.project.tobe.entity.Employee;
 import com.project.tobe.repository.EmployeeRepository;

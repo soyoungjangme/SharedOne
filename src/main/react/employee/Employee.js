@@ -209,6 +209,11 @@ useEffect(() => {
     const [list, setList] = useState([]);
     const [emregist, setEmRegist] = useState([]);
 
+    // 직원급여를 포맷팅하는 함수
+    const formatSalary = (salary) => {
+        return salary ? Number(salary).toLocaleString() : '';
+    };
+
     const handleInputAddChange = (e) => {
         const { name, value } = e.target;
         setTest((prevTest) => ({
@@ -222,6 +227,17 @@ useEffect(() => {
                  setButtonColor('#939393');
         }
 
+    // 급여 입력일 경우 포맷팅
+    if (name === 'salary') {
+        // 숫자 외의 문자 제거
+        const numericValue = value.replace(/[^0-9]/g, '');
+        // 포맷팅된 값으로 상태 업데이트 (화면에 보여줄 값)
+        setTest((prev) => ({ ...prev, [name]: formatSalary(numericValue) }));
+        // 실제 숫자 값으로 상태 업데이트
+        setSalaryValue(numericValue); // 따로 숫자 상태를 관리
+    } else {
+        setTest((prev) => ({ ...prev, [name]: value }));
+    }
 
         console.log(test);
     };
@@ -276,11 +292,12 @@ const validateInputs = () => {
 
 
 
-  // 급여 입력값 검사
-  if (!/^[0-9]*$/.test(salary) && salary >= 0 ) {
-    alert('급여란에는 숫자만 입력하세요.');
-    return false;
-  }
+ // 급여 입력값을 숫자로 변환 (콤마 제거)
+ const salaryNumber = Number(salary.replace(/,/g, '')); // 콤마 제거 후 숫자로 변환
+ if (isNaN(salaryNumber) || salaryNumber < 0) {
+     alert('급여란에는 숫자만 입력하세요.');
+     return false;
+ }
 
   // 중복 확인 검사
   if (idResult === false) {
@@ -294,41 +311,46 @@ const validateInputs = () => {
 
 
 const onClickListAdd = () => {
-
- setButtonColor('#939393');
-  if (validateInputs()) {
-    const trimmedTest = {
-      employeeId: test.employeeId,
-      employeePw: test.employeePw,
-      employeeName: test.employeeName.replace(/\s+/g, ''),
-      employeeTel: test.employeeTel,
-      employeeEmail: test.employeeEmail,
-      employeeAddr: test.employeeAddr.replace(/^\s+|\s+$/g, ''),
-      residentNum: test.residentNum,
-      hireDate: test.hireDate,
-      salary: test.salary.replace(/\s+/g, ''),
-/*      employeeManagerId: test.employeeManagerId.replace(/\s+/g, ''),*/
-      authorityGrade : test.authorityGrade
-    };
-
-    setList((prevList) => [...prevList, trimmedTest]);
-
-    // 입력값 초기화
-    setTest({
-      employeeId: '',
-      employeePw: '1234*',
-      employeeName: '',
-      employeeTel: '',
-      employeeEmail: '',
-      employeeAddr: '',
-      residentNum: '',
-      hireDate: '',
-      salary: '',
-/*      employeeManagerId: '',*/
-      authorityGrade: '',
-    });
-  }
-};
+    setButtonColor('#939393');
+    if (validateInputs()) {
+      const trimmedTest = {
+        employeeId: test.employeeId,
+        employeePw: test.employeePw,
+        employeeName: test.employeeName.replace(/\s+/g, ''),
+        employeeTel: test.employeeTel,
+        employeeEmail: test.employeeEmail,
+        employeeAddr: test.employeeAddr.replace(/^\s+|\s+$/g, ''),
+        residentNum: test.residentNum,
+        hireDate: test.hireDate,
+        salary: test.salary.replace(/\s+/g, ''), // 공백 제거
+        /*employeeManagerId: test.employeeManagerId.replace(/\s+/g, ''),*/
+        authorityGrade: test.authorityGrade
+      };
+  
+      // 급여 입력값을 숫자로 변환 (콤마 제거)
+      const salaryNumber = Number(trimmedTest.salary.replace(/,/g, '')); // trimmedTest에서 급여를 숫자로 변환
+      const newEntry = { ...trimmedTest, salary: salaryNumber }; // 숫자로 변환된 급여 값을 포함한 새로운 객체 생성
+  
+      // 리스트에 추가
+      setList((prevList) => [...prevList, newEntry]);
+  
+      // 입력값 초기화
+      setTest({
+        employeeId: '',
+        employeePw: '1234*',
+        employeeName: '',
+        employeeTel: '',
+        employeeEmail: '',
+        employeeAddr: '',
+        residentNum: '',
+        hireDate: '',
+        salary: '',
+        /*employeeManagerId: '',*/
+        authorityGrade: '',
+      });
+    }
+  };
+  
 
 
 
@@ -496,47 +518,44 @@ const [originalItem, setOriginalItem] = useState({}); // 원래 데이터를 저
  console.log("sessionId" +  sessionId);
 
 
-const handleUpdateClick = () => {
-    // 급여 유효성 검사
-    const trimmedSalary = modifyItem.salary.toString().trim(); // 급여값을 문자열로 변환하고 공백 제거
+ const handleUpdateClick = () => {
+    const trimmedSalary = modifyItem.salary.replace(/,/g, '').trim(); // 급여에서 콤마 제거 및 공백 제거
     if (!/^[0-9]+$/.test(trimmedSalary)) {
         alert('급여란에는 숫자만 입력하세요.');
         return;
     }
 
     const hasChanges = Object.keys(modifyItem).some(key => modifyItem[key] !== originalItem[key]);
-    // 변경사항이 없다면 함수 종료
     if (!hasChanges) {
         alert('수정된 내용이 없습니다.');
         return;
     }
 
+    // 급여를 숫자 형식으로 변환하여 객체에 반영
+    const updatedItem = { ...modifyItem, salary: Number(trimmedSalary) };
 
-    // 유효성 검사를 통과한 후, 서버로 데이터 전송
-    axios.post('/employee/employeeUpdate', modifyItem, {
+    // 서버로 데이터 전송
+    axios.post('/employee/employeeUpdate', updatedItem, {
         headers: {
             'Content-Type': 'application/json'
         }
     })
     .then(response => {
-        setEmployee(response.data);  // 서버 응답 데이터로 Customer 상태 업데이트
+        setEmployee(response.data);
         console.log('업데이트 성공:', response.data);
         alert("수정이 완료되었습니다");
-
-
     })
     .catch(error => console.error('서버 요청 중 오류 발생', error))
     .finally(() => {
         setIsModifyModalVisible(false);
         fetchEmployeeList();
-    /*    window.location.reload();*/
-         if(goOut === true) {
-          window.location.href = './logout';
-           alert("로그아웃 되었습니다. 다시 로그인 해주세요.");
-           window.location.href = './login.user';
-         }
+        if (goOut) {
+            alert("로그아웃 되었습니다. 다시 로그인 해주세요.");
+            window.location.href = './logout';
+        }
     });
 };
+
 
 //  [수정] 모달
 const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
@@ -553,7 +572,7 @@ const [goOut, setGoOut] = useState();
            employeeAddr: item.employeeAddr,
            residentNum: item.residentNum,
            hireDate: item.hireDate,
-           salary: item.salary,
+           salary: formatSalary(item.salary),
 /*           employeeManagerId: item.employeeManagerId,*/
            authorityGrade: item.authorityGrade
        }));
@@ -572,9 +591,26 @@ const [goOut, setGoOut] = useState();
     }
 
     const handleModifyItemChange = (e) => {
-        let copy = { ...modifyItem, [e.name]: e.value };
+        const { name, value } = e;
+        let copy = { ...modifyItem, [name]: value };
+    
+        if (name === 'salary') {
+            // 급여 값 포맷 적용
+            const salaryWithoutComma = value.replace(/,/g, ''); // 콤마 제거
+            const salaryNumber = Number(salaryWithoutComma); // 문자열을 숫자로 변환
+    
+            // 유효한 숫자일 경우 포맷팅
+            if (!isNaN(salaryNumber)) {
+                copy.salary = formatSalary(salaryWithoutComma); // 포맷팅
+            } else {
+                copy.salary = value; // 유효하지 않은 입력인 경우 원래의 값 설정
+            }
+        }
+    
         setModifyItem(copy);
-    }
+    };
+    
+
 
 
 // [수정] 비밀번호 변경 버튼
@@ -1078,7 +1114,7 @@ const handleDeletePickClick = () => {
                                     <td>{item.employeeAddr}</td>
                                    <td>{item.residentNum}</td>
                                     <td>{item.hireDate}</td>
-                                    <td>{item.salary}</td>
+                                    <td>{formatSalary(item.salary)}</td>
                                     {/*<td>{item.employeeManagerId}</td>*/}
                                     <td>{item.authorityName}</td>
                                 </tr>
@@ -1241,7 +1277,7 @@ const handleDeletePickClick = () => {
                                                         <td>{item.employeeAddr}</td>
                                                         <td>{item.residentNum}</td>
                                                         <td>{item.hireDate}</td>
-                                                        <td>{item.salary}</td>
+                                                        <td>{formatSalary(item.salary)}</td>
                                                         <td>
                                                             {(() => {
                                                                 switch (item.authorityGrade) {
