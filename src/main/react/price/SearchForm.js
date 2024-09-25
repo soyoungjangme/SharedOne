@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Select from "react-select";
+import axios from "axios";
 
 const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptions, handleSearchBtn, getSearchItems }) => {
     console.log(typeof getSearchItems);
@@ -40,6 +41,7 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
             endDate: '',
             page: 1,
             amount: 30,
+            activated: 'Y'
         };
         setSearchPrice(resetData);
         getSearchItems(resetData);
@@ -54,6 +56,20 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
     //         handleSearchBtn();
     //     }
     // }, [searchPrice]);
+
+    const handleHistoryBtn = () => {
+        const resetData = {
+            registerDate: '',
+            productNo: searchPrice.productNo,
+            customerNo: searchPrice.customerNo,
+            startDate: '',
+            endDate: '',
+            page: 1,
+            amount: 30,
+        };
+
+        getSearchItems(resetData);
+    }
 
     return (
         <div className="main-container">
@@ -86,6 +102,16 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
                                 placeholder="고객 선택"
                                 onChange={(option) => handleSearchPriceChange('customerNo', option)}
                             />
+                        </div>
+
+                        {/* History Filter */}
+                        <div className="filter-item">
+                            <label className="filter-label" htmlFor="history">판매가<br/>이력</label>
+                            { searchPrice.productNo !== '' && searchPrice.customerNo !== '' &&
+                                <button type="button" className="search-btn" onClick={handleHistoryBtn} id="history">
+                                    <i className="bi bi-clock-history"></i>
+                                </button>
+                            }
                         </div>
 
                         {/* Date Filters */}

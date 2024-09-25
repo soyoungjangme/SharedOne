@@ -67,7 +67,7 @@ const PriceTable = ({
             <tbody>
             {price.length > 0 ? (
                 price.map((item, index) => (
-                    <tr key={index} >
+                    <tr key={index} style={{backgroundColor: item.activated === 'Y' ? '' : '#dc3545'}} >
                         <td>{((currentPage-1)*amount) + index + 1}</td>
                         <td>{item.registerDate.substring(0, 10)}</td>
                         <td>

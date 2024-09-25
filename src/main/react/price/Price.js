@@ -27,6 +27,7 @@ const Price = () => {
         endDate: '',
         page: 1,
         amount: 30,
+        activated: 'Y'
     });
     const [isChartVisible, setIsChartVisible] = useState(false);
     const [isVisible, setIsVisible] = useState(false);

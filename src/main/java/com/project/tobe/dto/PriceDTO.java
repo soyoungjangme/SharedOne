@@ -24,7 +24,7 @@ public class PriceDTO {
     private Double discount;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String activated;
+    private YesNo activated;
 
     private int page = 1;
     private int amount = 50;
