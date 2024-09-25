@@ -142,7 +142,7 @@ public class OrderServiceImpl implements OrderService {
         int updatedRows = orderMapper.updateTempOrder(orderHDTO);
 
         // 기존 주문 상세 삭제
-        orderMapper.deleteOrderDetails(orderHDTO.getOrderNo());
+        orderMapper.deleteOrderDetails(orderHDTO.getOhNo());
 
         // 새로운 주문 상세 삽입
         if (orderHDTO.getOrderBList() != null && !orderHDTO.getOrderBList().isEmpty()) {
@@ -150,12 +150,12 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // 업데이트된 주문 정보 조회 및 반환
-        return orderMapper.getOrderDetail(orderHDTO.getOrderNo());
+        return orderMapper.getOrderDetail(orderHDTO.getOhNo());
     }
 
     @Override
-    public boolean deleteOrder(Long orderNo) {
-        int deletedRows = orderMapper.deleteOrder(orderNo);
+    public boolean deleteOrder(Long ohNo) {
+        int deletedRows = orderMapper.deleteOrder(ohNo);
         return deletedRows > 0; // 삭제된 행이 1개 이상이면 true 반환
     }
 

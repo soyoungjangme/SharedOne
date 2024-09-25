@@ -174,7 +174,6 @@ const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchDat
 
         try {
             const orderBList = addCheckProd.map((addProd, index) => ({
-                ohNo: modifyItem.ohNo,
                 orderNo: modifyItem.orderNo,
                 productNo: addProd.product.productNo,
                 priceNo: addProd.price.priceNo,
@@ -184,7 +183,7 @@ const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchDat
 
             setLoading(true);
 
-            await axios.put(`/order/temp/${modifyItem.ohNo}`, {
+            await axios.put(`/order/temp/${modifyItem.orderNo}`, {
                 ...modifyItem,
                 delDate: delDate,
                 confirmStatus: '대기',
