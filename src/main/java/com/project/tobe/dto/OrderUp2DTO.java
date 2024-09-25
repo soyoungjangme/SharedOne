@@ -9,8 +9,7 @@ import lombok.*;
 @ToString
 @Builder
 public class OrderUp2DTO {
-
-
+  private Long orderNo;
   private Long productNo;
   private int orderProductQty;
   private Long prodTotal;

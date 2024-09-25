@@ -211,16 +211,10 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
             console.log('1현재 상태: 반려');
             try {
                 // 주문 업데이트에 필요한 데이터 준비
-                const today = new Date();
-                today.setDate(today.getDate());
-                const todayPlus = today.toISOString(); // 시, 분, 초까지 포함된 ISO 형식
-                console.log(todayPlus);
-
                 const updatedOrderData = {
                     inputOrderNo: modifyItem.orderNo,
                     inputDelDate: modifyItem.delDate,
                     inputStatus: "대기", //고정 값
-                    /*confirmChangeDate: todayPlus,*/ // 인서트이므로, 상태변경일 ㄴㄴ
                     inputCustomerNo: modifyItem.customer.customerNo, // 고객 번호 설정
                     inputManager: modifyItem.employee.employeeId, // 직원 ID 설정
                     inputConfirmer: modifyItem.confirmerId, //담당자 ID 설정
@@ -295,26 +289,26 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
             console.log('2현재 상태: 대기');
 
             try {
-                const today = new Date();
-                today.setDate(today.getDate());
-
-                const todayPlus = today.toISOString(); // 시, 분, 초까지 포함된 ISO 형식
-                console.log(todayPlus);
                 const updatedOrderData = {
                     ohNo: modifyItem.ohNo,
                     orderNo: modifyItem.orderNo,
                     delDate: modifyItem.delDate,
-                    confirmChangeDate: todayPlus,
+                    confirmChangeDate: new Date().toISOString().slice(0, 19),
                     customerNo: modifyItem.customer.customerNo,
                     employeeId: modifyItem.employee.employeeId,
-                    orderBList: modifyItem.orderBList.map(item => ({
-                        productNo: item.product.productNo,
-                        orderProductQty: parseInt(item.orderProductQty, 10),
-                        price: item.price.customPrice,
-                        priceNo: item.priceNo || item.price.priceNo,
-                        prodTotal: parseInt(item.orderProductQty, 10) * item.price.customPrice
-                    }))
+                    orderBList: modifyItem.orderBList.map(item => {
+                        console.log('처리 중인 item:', JSON.stringify(item, null, 2));
+                        return {
+                            productNo: item.product.productNo,
+                            orderProductQty: parseInt(item.orderProductQty, 10),
+                            price: item.price.customPrice,
+                            priceNo: item.price.priceNo,
+                            prodTotal: parseInt(item.orderProductQty, 10) * item.price.customPrice
+                        };
+                    })
                 };
+                console.log('orderNo:', modifyItem.orderNo);
+                console.log('서버로 보내는 데이터:', JSON.stringify(updatedOrderData, null, 2));
                 setLoading(true);
 
                 const response = await axios.put(`/order/update`, updatedOrderData);

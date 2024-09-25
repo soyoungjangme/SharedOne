@@ -104,20 +104,34 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderHDTO updateOrder(OrderUp1DTO orderUp1DTO) {
-        // 주문 헤더 업데이트
-        orderMapper.updateOrderHeader(orderUp1DTO);
+        try {
+            System.out.println("OrderBList: " + orderUp1DTO.getOrderBList());
 
-        // 기존 주문 상세 삭제
-        orderMapper.deleteOrderDetails(orderUp1DTO.getOrderNo());
+            // 주문 헤더 업데이트
+            orderMapper.updateOrderHeader(orderUp1DTO);
 
-        // 새로운 주문 상세 추가
-        for (OrderUp2DTO detail : orderUp1DTO.getOrderBList()) {
-            orderMapper.insertOrderDetail(orderUp1DTO.getOrderNo(), detail);
+            // 기존 주문 상세 삭제
+            orderMapper.deleteOrderDetails(orderUp1DTO.getOrderNo());
+            System.out.println("기존 주문 상세 삭제 완료");
+
+            // 새로운 주문 상세 추가
+            for (OrderUp2DTO detail : orderUp1DTO.getOrderBList()) {
+                detail.setOrderNo(orderUp1DTO.getOrderNo());  // OrderUp1DTO에서 OrderUp2DTO로 orderNo 설정
+                System.out.println("추가할 상품 정보: " + detail);
+                orderMapper.insertOrderDetail(orderUp1DTO.getOhNo(), orderUp1DTO.getOrderNo(), detail); // orderNo 추가
+            }
+
+            System.out.println("업데이트된 주문 정보: " + orderMapper.getOrderDetail(orderUp1DTO.getOrderNo()));
+            // 업데이트된 주문 정보 조회 및 반환
+            return orderMapper.getOrderDetail(orderUp1DTO.getOrderNo());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("오류 제발 그만 나: " + e.getMessage());
+            return null;
         }
-
-        // 업데이트된 주문 정보 조회 및 반환
-        return orderMapper.getOrderDetail(orderUp1DTO.getOrderNo());
     }
 
 
