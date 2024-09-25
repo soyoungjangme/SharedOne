@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useState} from 'react';
 import Select from "react-select";
-import axios from "axios";
+import PropTypes from "prop-types";
 
 const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptions, handleSearchBtn, getSearchItems }) => {
     console.log(typeof getSearchItems);
@@ -8,18 +8,10 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
 
-    const isFirstRender = useRef(true); // 처음 렌더링인지 확인하기 위한 ref
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setSearchPrice((prev) => ({ ...prev, [name]: value }));
     };
-
-    const handleKeyUp = (e) => {
-        if (e.key === 'Enter') {
-            handleSearchBtn();
-        }
-    }
 
     const handleSearchPriceChange = (name, item) => {
         if (name === 'productNo') setSelectedProduct(item);
@@ -46,16 +38,6 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
         setSearchPrice(resetData);
         getSearchItems(resetData);
     }
-
-    // useEffect(() => {
-    //     if (isFirstRender.current) {
-    //         // 첫 렌더링일 때는 실행하지 않음
-    //         isFirstRender.current = false;
-    //     } else {
-    //         // 상태 변경이 완료된 후에만 실행
-    //         handleSearchBtn();
-    //     }
-    // }, [searchPrice]);
 
     const handleHistoryBtn = () => {
         const resetData = {
@@ -164,5 +146,23 @@ const SearchForm = ({ searchPrice, setSearchPrice, productOptions, customerOptio
         </div>
     );
 };
+
+SearchForm.propTypes = {
+    searchPrice: PropTypes.shape({
+        productNo: PropTypes.string,
+        customerNo: PropTypes.string,
+        registerDate: PropTypes.string,
+        startDate: PropTypes.string,
+        endDate: PropTypes.string,
+        currentPage: PropTypes.number,
+        amount: PropTypes.number,
+    }),
+
+    setSearchPrice: PropTypes.func,
+    productOptions: PropTypes.array,
+    customerOptions: PropTypes.array,
+    handleSearchBtn: PropTypes.func,
+    getSearchItems: PropTypes.func,
+}
 
 export default SearchForm;

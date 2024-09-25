@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Chart from '../js/Chart';
 import SearchForm from './SearchForm';
 import PriceTable from './PriceTable';
 import AddPriceModal from './AddPriceModal';
-import useCheckboxManager from '../js/CheckboxManager';
 import useSort from '../js/useSort';
 import ModalDetail from "../js/ModalDetail";
 import RenderPageNumbers from "../js/RenderPageNumbers";
@@ -29,29 +27,15 @@ const Price = () => {
         amount: 30,
         activated: 'Y'
     });
-    const [isChartVisible, setIsChartVisible] = useState(false);
+
     const [isVisible, setIsVisible] = useState(false);
-    const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
     const [isVisibleDetail, setIsVisibleDetail] = useState(false);
     const [modalDetailTitle, setModalDetailTitle] = useState('');
     const [modalDetailData, setModalDetailData] = useState({});
-    const [modifyItem, setModifyItem] = useState({});
-    const { sortedData, sortData, sortConfig } = useSort(price);
+    const { sortedData, sortData, sortConfig, getSortDirection } = useSort(price);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalItems, setTotalItems] = useState(100); // 총 아이템 수
-    const [itemsPerPage, setItemsPerPage] = useState(10); // 페이지당 아이템 수
     const [pageCount, setPageCount] = useState(10); // 총 페이지 수 계산
-    const {
-        allCheck,
-        setAllCheck,
-        checkItem,
-        setCheckItem,
-        showDelete,
-        setShowDelete,
-        handleMasterCheckboxChange,
-        handleCheckboxChange,
-        handleDelete,
-    } = useCheckboxManager();
 
     useEffect(() => {
         fetchData();
@@ -89,7 +73,6 @@ const Price = () => {
         setPrice(data.pageData);
         setCurrentPage(data.page);
         setTotalItems(data.total);
-        setItemsPerPage(data.pageData.length);
         setPageCount(data.realEnd);
         setSearchPrice((prev) => ({ ...prev, page: data.page }));
     };
@@ -106,17 +89,9 @@ const Price = () => {
 
     const handlePageChange = async (selectedPage) => {
         console.log(selectedPage);
-        setCheckItem(new Array(checkItem.length).fill(false));
-        setAllCheck(false);
         let copy = {...searchPrice, page: selectedPage};
         console.log(copy);
         await getSearchItems(copy).then(r => console.log(r));
-        // setCurrentPage(selectedPage);
-    };
-
-    const handleModify = (item) => {
-        setModifyItem(item);
-        setIsModifyModalVisible(true);
     };
 
     const handleAddClickDetail = (title, id) => {
@@ -147,7 +122,6 @@ const Price = () => {
                 handleSearchBtn={handleSearchBtn}
                 getSearchItems={getSearchItems}
             />
-            {isChartVisible && <Chart/>}
             <button className="btn-common add" type="button" onClick={handleAddClick}>
                 판매가 등록
             </button>
@@ -158,15 +132,11 @@ const Price = () => {
                 price={sortedData}
                 handleAddClickDetail={handleAddClickDetail}
                 sortData={sortData}
+                getSortDirection={getSortDirection}
                 sortConfig={sortConfig}
-                showDelete={showDelete}
-                handleDelete={handleDelete}
             />
             <RenderPageNumbers
-                setAllCheckMain={setAllCheck}
                 setCurrentPage={setCurrentPage}
-                setCheckItemMain={setCheckItem}
-                setShowDeleteMain={setShowDelete}
                 onPageChange={handlePageChange}
                 totalPages={pageCount} // 총 페이지 수
                 currentPage={currentPage} // 현재 페이지

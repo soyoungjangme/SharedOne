@@ -3,7 +3,6 @@ package com.project.tobe.dto;
 import com.project.tobe.util.constants.YesNo;
 import lombok.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -29,7 +28,7 @@ public class PriceDTO {
     private int page = 1;
     private int amount = 50;
 
-    public PriceDTO(String productNo, String customerNo, Double customPrice, String currency, Double discount, LocalDate startDate, LocalDate endDate) {
+    public PriceDTO(String productNo, String customerNo, Double customPrice, Double discount, LocalDate startDate, LocalDate endDate) {
         this.productNo = productNo;
         this.customerNo = customerNo;
         this.customPrice = customPrice;
@@ -37,24 +36,6 @@ public class PriceDTO {
         this.startDate = startDate;
         this.endDate = endDate;
     }
-
-    public PriceDTO(LocalDateTime registerDate, String productNo, String customerNo, Double customPrice, String currency, Double discount, LocalDate startDate, LocalDate endDate, int page, int amount) {
-        this.registerDate = registerDate;
-        this.productNo = productNo;
-        this.customerNo = customerNo;
-        this.customPrice = customPrice;
-        this.discount = discount;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.page = page;
-        this.amount = amount;
-    }
-
-    // offset - limit 함수에 앞에 전달될 값
-    public int getPageStart() {
-        return (page - 1) * amount;
-    }
-
 
     //jsy 객체 필요
     private ProductDTO product;

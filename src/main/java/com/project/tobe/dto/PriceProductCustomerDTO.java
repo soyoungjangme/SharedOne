@@ -3,7 +3,7 @@ package com.project.tobe.dto;
 import com.project.tobe.util.constants.YesNo;
 import lombok.*;
 
-import java.sql.Timestamp;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
