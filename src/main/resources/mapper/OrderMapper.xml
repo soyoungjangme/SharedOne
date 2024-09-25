@@ -241,13 +241,18 @@
 
     <delete id="deleteOrderDetails" parameterType="long">
         DELETE FROM order_body
-        WHERE oh_no = #{ohNo}
+        WHERE oh_no = #{ohNo} AND order_no = #{orderNo}
     </delete>
 
     <insert id="insertOrderDetail">
-        INSERT INTO order_body (order_no, product_no, order_product_qty, prod_total)
-        VALUES (#{orderNo}, #{detail.productNo}, #{detail.orderProductQty}, #{detail.prodTotal})
+        INSERT INTO order_body (oh_no, order_no, product_no, order_product_qty, prod_total)
+        VALUES (#{ohNo}, #{orderNo}, #{detail.productNo}, #{detail.orderProductQty}, #{detail.prodTotal})
+            ON CONFLICT (oh_no, order_no, product_no)  -- PK 또는 고유 제약 조건
+    DO UPDATE SET
+            order_product_qty = EXCLUDED.order_product_qty,
+                       prod_total = EXCLUDED.prod_total;
     </insert>
+
 
 
 

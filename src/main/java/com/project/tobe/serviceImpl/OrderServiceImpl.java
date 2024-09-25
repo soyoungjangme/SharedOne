@@ -109,22 +109,30 @@ public class OrderServiceImpl implements OrderService {
         try {
             System.out.println("OrderBList: " + orderUp1DTO.getOrderBList());
 
-            // 주문 헤더 업데이트
+            System.out.println("OrderUp1DTO 전체 데이터: " + orderUp1DTO);
+            System.out.println("주문 헤더 업데이트 전 데이터: " + orderUp1DTO);
             orderMapper.updateOrderHeader(orderUp1DTO);
+            System.out.println("주문 헤더 업데이트 완료");
 
-            // 기존 주문 상세 삭제
+            System.out.println("ohNo 로그 (삭제 전): " + orderUp1DTO.getOhNo() + ", 주문 번호: " + orderUp1DTO.getOrderNo());
+
+            System.out.println("기존 주문 상세 삭제 중... 주문 번호: " + orderUp1DTO.getOrderNo());
             orderMapper.deleteOrderDetails(orderUp1DTO.getOrderNo());
             System.out.println("기존 주문 상세 삭제 완료");
 
-            // 새로운 주문 상세 추가
             for (OrderUp2DTO detail : orderUp1DTO.getOrderBList()) {
-                detail.setOrderNo(orderUp1DTO.getOrderNo());  // OrderUp1DTO에서 OrderUp2DTO로 orderNo 설정
+                detail.setOrderNo(orderUp1DTO.getOrderNo());
+                detail.setOhNo(orderUp1DTO.getOhNo());
+
+                System.out.println("ohNo 로그 (삽입 전): " + detail.getOhNo() + ", 주문 번호: " + detail.getOrderNo());
+
+
                 System.out.println("추가할 상품 정보: " + detail);
-                orderMapper.insertOrderDetail(orderUp1DTO.getOhNo(), orderUp1DTO.getOrderNo(), detail); // orderNo 추가
+                orderMapper.insertOrderDetail(orderUp1DTO.getOhNo(), orderUp1DTO.getOrderNo(), detail);
             }
 
+            System.out.println("최종 업데이트된 주문 정보 조회 중... 주문 번호: " + orderUp1DTO.getOrderNo());
             System.out.println("업데이트된 주문 정보: " + orderMapper.getOrderDetail(orderUp1DTO.getOrderNo()));
-            // 업데이트된 주문 정보 조회 및 반환
             return orderMapper.getOrderDetail(orderUp1DTO.getOrderNo());
 
         } catch (Exception e) {
