@@ -1,13 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
+import {formatPrice} from "../js/util";
 
 
 const PriceTableBody = ({price, currentPage, amount, handleAddClickDetail}) => {
-
-    // 상품원가를 포맷팅하는 함수
-    const formatPrice = (customPrice) => {
-        return customPrice ? Number(customPrice).toLocaleString() : '';
-    };
 
     return price.length > 0 ? (
         price.map((item, index) => (
