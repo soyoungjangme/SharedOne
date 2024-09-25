@@ -4,6 +4,11 @@ import PropTypes from "prop-types";
 
 const PriceTableBody = ({price, currentPage, amount, handleAddClickDetail}) => {
 
+    // 상품원가를 포맷팅하는 함수
+    const formatPrice = (price) => {
+        return price ? Number(price).toLocaleString() : '';
+    };
+
     return price.length > 0 ? (
         price.map((item, index) => (
             <tr key={item.priceNo} style={{backgroundColor: item.activated === 'Y' ? '' : '#dc3545'}}>
@@ -21,7 +26,7 @@ const PriceTableBody = ({price, currentPage, amount, handleAddClickDetail}) => {
                        onClick={() => handleAddClickDetail('customer', item.customerNo)}
                     />
                 </td>
-                <td>{item.customPrice}</td>
+                <td>{formatPrice(item.customPrice)}</td>
                 <td>{item.discount}</td>
                 <td>{item.startDate}</td>
                 <td>{item.endDate}</td>

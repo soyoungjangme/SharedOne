@@ -14,60 +14,7 @@ const PriceTable = ({
                     }) => {
 
 
-     // 상품원가를 포맷팅하는 함수
-     const formatPrice = (price) => {
-        return price ? Number(price).toLocaleString() : '';
-    };
 
-    return (
-        <table className="search-table" style={{marginTop: '50px'}}>
-            {showDelete && <button className="delete-btn btn-common" onClick={handleDelete}>삭제</button>}
-            <thead>
-            <tr>
-                <th>No.</th>
-                <th>
-                    등록일
-                    <button className="sortBtn" onClick={() => sortData('registerDate')}>
-                        {sortConfig.key === 'registerDate' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                    </button>
-                </th>
-                <th>
-                    상품명
-                    <button className="sortBtn" onClick={() => sortData('productName')}>
-                        {sortConfig.key === 'productName' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                    </button>
-                </th>
-                <th>
-                    업체명
-                    <button className="sortBtn" onClick={() => sortData('customerName')}>
-                        {sortConfig.key === 'customerName' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                    </button>
-                </th>
-                <th>
-                    가격
-                    <button className="sortBtn" onClick={() => sortData('customPrice')}>
-                        {sortConfig.key === 'customPrice' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                    </button>
-                </th>
-                <th>
-                    할인율(%)
-                    <button className="sortBtn" onClick={() => sortData('discount')}>
-                        {sortConfig.key === 'discount' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                    </button>
-                </th>
-                <th>
-                    시작일
-                    <button className="sortBtn" onClick={() => sortData('startDate')}>
-                        {sortConfig.key === 'startDate' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                    </button>
-                </th>
-                <th>
-                    종료일
-                    <button className="sortBtn" onClick={() => sortData('endDate')}>
-                        {sortConfig.key === 'endDate' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
-                    </button>
-                </th>
-            </tr>
     const tableHead = <tr>
         <th>No.</th>
         <th>
