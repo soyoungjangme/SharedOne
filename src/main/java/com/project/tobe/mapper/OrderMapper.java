@@ -17,8 +17,9 @@ public interface OrderMapper {
 
 
     /*유선화 START*/
-    OrderHDTO getOrderDetail(Long orderNo); // 상세 조회
-    int updateApproval(@Param("orderNo") Long orderNo,
+    OrderHDTO getOrderDetail(Long ohNo); // 상세 조회
+    int updateApproval(@Param("ohNo") Long ohNo,
+                       @Param("orderNo") Long orderNo,
                        @Param("confirmStatus") String confirmStatus,
                        @Param("confirmChangeDate") LocalDateTime confirmChangeDate,
                        @Param("remarks") String remarks);
