@@ -4,8 +4,8 @@ import React, {useEffect} from 'react';
 const TopSalesTable = ({data}) => {
     console.log(data);
 
-    const formatPrice = (price) => {
-        return price ? Number(price).toLocaleString() : '';
+    const formatSales = (sales) => {
+        return sales ? Number(sales).toLocaleString() : '';
     };
 
     return (
@@ -23,7 +23,7 @@ const TopSalesTable = ({data}) => {
                 <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{Object.keys(item).includes('employeeName') ? item.employeeName : item.productName}</td>
-                    <td>{formatPrice(item.monthlySales)} 원</td>
+                    <td>{formatSales(item.monthlySales)} 원</td>
                 </tr>
             ))}
             </tbody>

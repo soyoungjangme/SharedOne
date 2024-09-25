@@ -26,7 +26,7 @@ function MyPage() {
 
   // Handle modal open/close
   const openModal = () => setIsModalOpen(true);
-  const closeModal = () =>  {
+  const closeModal = () => {
     setIsModalOpen(false);
 
     // 비번 에러메시지, 입력필드 초기화
@@ -170,7 +170,7 @@ function MyPage() {
   };
 
   const getMyId = async () => {
-    let {data} = await axios.get('/mypage/mypageSession');
+    let { data } = await axios.get('/mypage/mypageSession');
 
     console.log(data);
     setSession(data.userId);
@@ -187,7 +187,7 @@ function MyPage() {
   const [salesByMonth, setSalesByMonth] = useState([]);
 
   // session 상태가 변경될 때마다 editData 업데이트
-  useEffect( () => {
+  useEffect(() => {
     // 월별 실적 가져오기
     // axios.get('/mypage/getMySalesByMonth?employeeId=' + session).then(response => setSalesByMonth(response.data));
 
@@ -286,6 +286,11 @@ function MyPage() {
     validPattern.test(newPassword)
   ].filter(Boolean).length;
 
+  // 급여를 포맷팅하는 함수
+  const formatSalary = (salary) => {
+    return salary ? Number(salary).toLocaleString() : '';
+  };
+
 
   return (
     <div>
@@ -294,7 +299,7 @@ function MyPage() {
         <div className="mypage-table">
 
           <h2 className="header">내 정보</h2>
-          
+
           <table>
             <tbody>
               <tr>
@@ -340,8 +345,9 @@ function MyPage() {
               </tr>
               <tr>
                 <td><label htmlFor="salary">급여</label></td>
-                <td><input type="number" id="salary" name="salary" value={mypageAll.salary || ''} disabled /></td>
+                <td><input type="text" id="salary" name="salary" value={formatSalary(mypageAll.salary) || ''} disabled /></td>
               </tr>
+
               <tr>
                 <td><label htmlFor="supervisor">직속상사</label></td>
                 <td><input type="text" id="supervisor" name="employeeManagerId" value={mypageAll.employeeManagerId || ''} disabled /></td>
@@ -372,7 +378,7 @@ function MyPage() {
             {/* <i className="bi bi-graph-up"></i>  */}
             <i className="bi bi-bar-chart-line-fill"></i>
             이번 달 실적</h2>
-          {<EmployeeMonthlySalesChart salesByMonth={salesByMonth}/>}
+          {<EmployeeMonthlySalesChart salesByMonth={salesByMonth} />}
         </div>
       </div>
 

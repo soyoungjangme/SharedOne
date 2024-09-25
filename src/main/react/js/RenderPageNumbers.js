@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import './RenderPageNumbers.css';
+import PropTypes from "prop-types";
 
 const RenderPageNumbers = ({
                                onPageChange,
-                               setAllCheckMain,
-                               setCheckItemMain,
-                               setShowDeleteMain,
                                setCurrentPage,
                                currentPage,
                                totalPages
@@ -17,11 +15,8 @@ const RenderPageNumbers = ({
     const handlePageChange = useCallback((pageNumber) => {
         console.log(pageNumber);
         onPageChange(pageNumber);
-        setAllCheckMain(false);
-        setCheckItemMain(false);
-        setShowDeleteMain(false);
         setCurrentPage(pageNumber);
-    }, [onPageChange, setAllCheckMain, setCheckItemMain, setShowDeleteMain, setCurrentPage]);
+    }, [onPageChange, setCurrentPage]);
 
     useEffect(() => {
         const newPageNumbers = [];
@@ -111,5 +106,12 @@ const RenderPageNumbers = ({
 
     return <div className="pagination">{pageNumbers}</div>;
 };
+
+RenderPageNumbers.propTypes = {
+    onPageChange: PropTypes.func,
+    setCurrentPage: PropTypes.func,
+    currentPage: PropTypes.number,
+    totalPages: PropTypes.number
+}
 
 export default RenderPageNumbers;

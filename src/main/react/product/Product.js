@@ -352,28 +352,28 @@ function Product() {
     });
     const [productList, setProductList] = useState([]);
 
-   // 상품 정보 입력 처리
-const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    // 상품 정보 입력 처리
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
 
-    if (name === 'productPrice') {
-        // 입력값에서 숫자만 유지하고 콤마 추가
-        const numericValue = value.replace(/,/g, '').replace(/\D/g, '');
-        const formattedValue = formatPrice(numericValue);
+        if (name === 'productPrice') {
+            // 입력값에서 숫자만 유지하고 콤마 추가
+            const numericValue = value.replace(/,/g, '').replace(/\D/g, '');
+            const formattedValue = formatPrice(numericValue);
 
-        setProductForm({
-            ...productForm,
-            [name]: numericValue // 실제 값은 숫자만 유지
-        });
+            setProductForm({
+                ...productForm,
+                [name]: numericValue // 실제 값은 숫자만 유지
+            });
 
-        e.target.value = formattedValue; // 화면에 표시할 값 콤마 추가된 상태로
-    } else {
-        setProductForm({
-            ...productForm,
-            [name]: value
-        });
-    }
-};
+            e.target.value = formattedValue; // 화면에 표시할 값 콤마 추가된 상태로
+        } else {
+            setProductForm({
+                ...productForm,
+                [name]: value
+            });
+        }
+    };
 
     // 모달 열기
     const handleAddClick = () => {
@@ -467,7 +467,7 @@ const handleInputChange = (e) => {
                     },
                     body: JSON.stringify({
                         ...product,
-                        productPrice: Number(product.productPrice), 
+                        productPrice: Number(product.productPrice),
                     }),
                 })
             ));
@@ -574,17 +574,17 @@ const handleInputChange = (e) => {
 
     const handleModifyItemChange = (e) => {
         const { name, value } = e.target;
-    
+
         if (name === 'productPrice') {
             // 입력값에서 숫자만 유지하고 콤마 추가
             const numericValue = value.replace(/,/g, '').replace(/\D/g, '');
             const formattedValue = formatPrice(numericValue); // 가격 포맷팅 재사용
-    
+
             setModifyItem((prevItem) => ({
                 ...prevItem,
                 [name]: numericValue // 실제 값은 숫자만 유지
             }));
-    
+
             e.target.value = formattedValue; // 화면에 표시할 값 콤마 추가된 상태로
         } else {
             setModifyItem((prevItem) => ({
@@ -597,43 +597,43 @@ const handleInputChange = (e) => {
     const handleModifySubmit = async () => {
         // 입력값이 비어있는지 확인
         const isInputEmpty = Object.values(modifyItem).some(value => !value);
-    
+
         // 수정된 내용이 있는지 확인
         const hasChanges = Object.keys(modifyItem).some((key) => {
             const originalValue = normalizeString(originalItem[key]?.toString());
             const modifiedValue = normalizeString(modifyItem[key]?.toString());
-    
+
             return originalValue !== modifiedValue;
         });
-    
+
         if (!hasChanges) {
             alert('수정한 내용이 없습니다.');
             return;
         }
-    
+
         if (isInputEmpty) {
             alert('상품 정보를 모두 입력해야 합니다.');
             return;
         }
-    
+
         const normalizedProductName = normalizeString(modifyItem.productName);
-    
+
         // 중복 체크
         const isDuplicate = product.some(item =>
             normalizeString(item.productName) === normalizedProductName &&
             item.productYn === 'Y' &&
             normalizeString(item.productName) !== normalizeString(originalItem.productName)
         );
-    
+
         if (isDuplicate) {
             alert('이미 존재하는 상품명입니다.');
             return;
         }
-    
+
         if (!confirm('상품을 수정하시겠습니까?')) {
             return;
         }
-    
+
         try {
             const response = await fetch('/product/updateProduct', {
                 method: 'POST',
@@ -646,7 +646,7 @@ const handleInputChange = (e) => {
                     productPrice: parseFloat(modifyItem.productPrice) // 숫자 값으로 전송
                 }),
             });
-    
+
             if (response.ok) {
                 alert('상품이 수정되었습니다.');
                 setIsModifyModalVisible(false);
@@ -993,7 +993,7 @@ const handleInputChange = (e) => {
                             </tr>
                         )}
                         <tr>
-                            <td colSpan="5">합계</td>
+                            <td colSpan="5"></td>
                             <td colSpan="1">{visibleCount}건</td>
                         </tr>
                     </tbody>
@@ -1050,14 +1050,14 @@ const handleInputChange = (e) => {
                                             </td>
                                             <th><label htmlFor="productPrice">상품원가</label></th>
                                             <td>
-    <input
-        type="text"
-        name="productPrice"
-        value={productForm.productPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} // 콤마 추가
-        onChange={handleInputChange}
-        placeholder="상품원가"
-    />
-</td>
+                                                <input
+                                                    type="text"
+                                                    name="productPrice"
+                                                    value={productForm.productPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} // 콤마 추가
+                                                    onChange={handleInputChange}
+                                                    placeholder="상품원가"
+                                                />
+                                            </td>
 
                                         </tr>
                                     </tbody>
@@ -1189,14 +1189,14 @@ const handleInputChange = (e) => {
                                             </td>
                                             <th><label htmlFor="productPrice">상품원가</label></th>
                                             <td>
-                                            <input
-                                        type="text"
-                                        name="productPrice"
-                                        placeholder="상품원가"
-                                        value={formatPrice(modifyItem.productPrice)} 
-                                        onChange={handleModifyItemChange}
-                                    />
-                                        </td>
+                                                <input
+                                                    type="text"
+                                                    name="productPrice"
+                                                    placeholder="상품원가"
+                                                    value={formatPrice(modifyItem.productPrice)}
+                                                    onChange={handleModifyItemChange}
+                                                />
+                                            </td>
                                         </tr>
                                     </table>
                                 </div>
