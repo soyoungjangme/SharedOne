@@ -501,7 +501,7 @@ const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchDat
                                     <td>{product.product.productNo}</td>
                                     <td>{product.product.productName}</td>
                                     <td>{product.product.productWriter}</td>
-                                    <td>{product.customPrice}</td>
+                                    <td>{product.customPrice.toLocaleString()}</td>
                                     <td>{`${product.startDate} ~ ${product.endDate}`}</td>
                                 </tr>
                             ))}
@@ -543,7 +543,7 @@ const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchDat
                                         <td>
                                             <input type="text" value={qty} onChange={handleQuantityChange(addProd.price.priceNo)} />
                                         </td>
-                                        <td>{addProd.price.customPrice * qty}</td>
+                                        <td>{(addProd.price.customPrice * qty).toLocaleString()}</td>
                                         <td>{addProd.price.startDate}</td>
                                         <td>{addProd.price.endDate}</td>
                                     </tr>
