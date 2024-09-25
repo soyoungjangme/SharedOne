@@ -63,12 +63,8 @@ public class OrderController {
         String inputOrderCustomerNo = request.get("inputOrderCustomerNo"); //문자열로 단일객체 받아서
         String delDate = request.get("inputOrderDelDate");
 
-        System.out.println(inputOrderCustomerNo);
-        System.out.println(delDate);
-
         if (inputOrderCustomerNo == null || inputOrderCustomerNo.isEmpty()) { //고객명 선택x
             return ResponseEntity.ok(new ArrayList<>()); //빈 리스ㅡㅌ 반환
-
         }
 
         Long iocn = Long.parseLong(inputOrderCustomerNo); //데이터 정수변환
@@ -81,8 +77,12 @@ public class OrderController {
 
     //jsy주문등록 - 등록하기
     @PostMapping("/registOrder")
-    public ResponseEntity<Long> registOrder(@RequestBody OrderRegistDTO request) {
-        Long orderNo = orderService.registOrder(request);
+    public ResponseEntity<Map<String, Long>> registOrder(@RequestBody OrderRegistDTO request) {
+        {/*Long orderNo = orderService.registOrder(request);*/}
+        Map<String, Long> orderResult = orderService.registOrder(request);
+        // 반환된 Map에서 order_no와 oh_no를 가져오기
+        Long orderNo = orderResult.get("orderNo");
+        Long ohNo = orderResult.get("ohNo");
 
         if (request.getInputStatus().equals("대기")) {
             String managerEmail = employeeService.getEmail(request.getInputConfirmer());
@@ -116,7 +116,15 @@ public class OrderController {
             }
         }
 
-        return ResponseEntity.ok(orderNo);
+        // 두 값을 포함하는 Map을 생성하여 반환
+        Map<String, Long> response = new HashMap<>();
+        response.put("orderNo", orderNo);
+        response.put("ohNo", ohNo);
+
+        System.out.println("주문 번호: " + orderNo);
+        System.out.println("OH 번호: " + ohNo);
+
+        return ResponseEntity.ok(response); // Map을 ResponseEntity로 반환
     }
 
     //로그인 시 직원 아이디 추출
@@ -178,9 +186,10 @@ public class OrderController {
 
     /* 유선화 START */
 // 주문 상세 정보 조회
-    @GetMapping("/detail/{orderNo}")
-    public ResponseEntity<OrderHDTO> getOrderDetail(@PathVariable Long orderNo) {
-        OrderHDTO orderDetail = orderService.getOrderDetail(orderNo);
+    @GetMapping("/detail/{ohNo}")
+    public ResponseEntity<OrderHDTO> getOrderDetail(@PathVariable Long ohNo) {
+        System.out.println("주문상세조회ohNo "+ ohNo);
+        OrderHDTO orderDetail = orderService.getOrderDetail(ohNo);
         if (orderDetail != null) {
             System.out.println(orderDetail.getConfirmerName());
             return ResponseEntity.ok(orderDetail);
@@ -194,6 +203,7 @@ public class OrderController {
     public ResponseEntity<?> updateApproval(@RequestBody OrderHDTO orderHDTO) {
         EmployeeDTO employeeDTO = orderHDTO.getEmployee();
         boolean updated = orderService.updateApproval(
+                orderHDTO.getOhNo(),
                 orderHDTO.getOrderNo(),
                 orderHDTO.getConfirmStatus(),
                 LocalDateTime.now(),
@@ -238,11 +248,12 @@ public class OrderController {
 
 
 
-    @PutMapping("/temp/{orderNo}")
-    public ResponseEntity<?> updateTempOrder(@PathVariable Long orderNo, @RequestBody OrderHDTO orderHDTO) {
+    @PutMapping("/temp/{ohNo}")
+    public ResponseEntity<?> updateTempOrder(@PathVariable Long ohNo, @RequestBody OrderHDTO orderHDTO) {
         // customerNo와 employeeId를 중첩된 객체에서 추출
         orderHDTO.setCustomerNo(orderHDTO.getCustomer().getCustomerNo());
         orderHDTO.setEmployeeId(orderHDTO.getEmployee().getEmployeeId());
+        Long orderNo = orderHDTO.getOrderNo();
 
         try {
             OrderHDTO updatedOrder = orderService.updateTempOrder(orderHDTO);
@@ -286,10 +297,10 @@ public class OrderController {
         }
     }
 
-    @DeleteMapping("/delete/{orderNo}")
-    public ResponseEntity<?> deleteOrder(@PathVariable Long orderNo) {
+    @DeleteMapping("/delete/{ohNo}")
+    public ResponseEntity<?> deleteOrder(@PathVariable Long ohNo) {
         try {
-            boolean isDeleted = orderService.deleteOrder(orderNo);
+            boolean isDeleted = orderService.deleteOrder(ohNo);
             if (isDeleted) {
                 return ResponseEntity.ok("주문이 삭제되었습니다.");
             } else {

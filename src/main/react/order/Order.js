@@ -69,8 +69,9 @@ function Order() {
         let effectOrder = async () => {
             try {
                 let data = await fetch('/order/orderList').then(res => res.json());
-
+                console.log("fetched data ", data);
                 const transfomData = data.map(item => ({
+                    ohNo: item.ohNo,
                     orderNo: item.orderNo,
                     customerN: item.customer.customerName,
                     manager: item.employee.employeeName,
@@ -81,7 +82,8 @@ function Order() {
                 }));
 
                 setOrder(transfomData);
-                console.log(transfomData);
+                console.log("tranfomData ", transfomData);
+
             } catch (error) {
                 console.error('error발생함 : ', error);
             }
@@ -105,6 +107,7 @@ function Order() {
         fetchConfirmerIdList();
 
     }, []);
+
 
 
     // --- 테이블 정렬 기능
@@ -146,11 +149,8 @@ function Order() {
     };
 
 
-
-
-
-
     // --- 테이블 정렬 기능
+
 
     /*==============jsy조건 검색==============*/
     const [prod, setProd] = useState([]);
@@ -189,6 +189,8 @@ function Order() {
 
     // 검색 버튼 클릭 시 서버로 검색 조건 전송
     const handleSearchBtn = async () => {
+        setSelectedIndex(false); //내글보기 쪽 필터 초기화
+
         //서버로 데이터 보내기
         const date = form.date || null;
         const orderNo = form.orderNo ? form.orderNo.replace(/\s+/g, '') : null;
@@ -210,6 +212,7 @@ function Order() {
 
         if (Array.isArray(searchOrderData)) {
             const getSearchOrder = searchOrderData.map(item => ({ //res.data.map안된다는 소리
+                ohNo: item.ohNo,
                 orderNo: item.orderNo,
                 customerN: item.customer.customerName,
                 manager: item.employee.employeeName,
@@ -462,22 +465,15 @@ function Order() {
 
             //데이터 유효성 검사(등록하기)
             if (orderStatus === "대기") {
-                const hasInvalidQty = addCheckProd.some((product, index) => {
+                const hasInvalidQty = addCheckProd.some((product) => {
                     const qty = quantities[product.priceNo] || 0; // product의 priceNo를 이용해 수량을 가져옴
 
                     console.log(`상품 ID: ${product.priceNo}, 수량: ${qty}`);
 
                     return qty <= 0; // 수량이 0 이하인 경우
-                }
-            );
+                });
 
                 if (!registCustomer || !delDate || hasInvalidQty || !addCheckProd.length || !modifyItem.confirmerId) {
-                    console.log(registCustomer);
-                    console.log(delDate);
-                    console.log(hasInvalidQty);
-                    console.log(addCheckProd);
-                    console.log(modifyItem);
-
                     alert("모두 입력해 주세요.");
                     return;
                 }
@@ -486,21 +482,20 @@ function Order() {
             //추가된 리스트 반복 돌리기
             const orderBList = addCheckProd.map((addProd, index) => {
                 const orderProdNo = addProd.prodNo || 0; // 상품번호
-                const orderPriceNo = addProd.priceNo || 0; // 판매가 번호
                 const orderProdQty = quantities[addProd.priceNo] || 0; // 각 상품에 맞는 수량 가져오기
                 const orderProdTotal = orderProdQty * addProd.salePrice; // 수량 * 판매가
 
                 return {
                     productNo: orderProdNo,
-                    priceNo: orderPriceNo,
                     orderProductQty: orderProdQty,
                     prodTotal: orderProdTotal
                 };
             });
-
+            console.log("오더바디리스트 ", orderBList);
             setLoading(true);
 
             const response = await axios.post('/order/registOrder',{ // insert into oh
+                inputOrderNo: null, //새로 등록이므로 null입력하면 시퀀스생성함
                 inputDelDate: delDate || null,//납품요청일
                 inputCustomerNo: registCustomer || null,//주문고객번호
                 inputManager: my.id || null,
@@ -509,7 +504,7 @@ function Order() {
                 orderBList: orderBList //ob데이터 배열 전달
             });
 
-            const orderNo = response.data; // 서버에서 받은 주문 번호
+            const {orderNo, ohNo} = response.data;
             handleCloseClick(); // 등록 창 닫기 및 초기화
 
             if(orderStatus === "대기"){
@@ -522,7 +517,9 @@ function Order() {
         } finally {
             setLoading(false);
         }
+/*
         window.location.reload();
+*/
 
     };
 
@@ -626,6 +623,7 @@ function Order() {
 
     // 수정 모달 상태 관리
     const [modifyItem, setModifyItem] = useState({
+        ohNo: 0,
         orderNo: 0,
         title: '',
         details: '',
@@ -641,11 +639,13 @@ function Order() {
     const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
     const [isModifyTempOrderModalOpen, setIsModifyTempOrderModalOpen] = useState(false);
     const [selectedOrderNo, setSelectedOrderNo] = useState(null);
+    const [selectedOhNo, setSelectedOhNo] = useState(null);
     const [selectedOrderData, setSelectedOrderData] = useState(null);
 
     // 주문 상세보기 열기
-    const handleDetailView = (orderNo) => {
+    const handleDetailView = (orderNo, ohNo) => {
         setSelectedOrderNo(orderNo);  // 주문 번호 설정
+        setSelectedOhNo(ohNo); //주문시퀀스 설정
         setIsDetailModalVisible(true);  // 모달 열기
     };
 
@@ -730,6 +730,8 @@ function Order() {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = order.slice(indexOfFirstItem, indexOfLastItem);
+
+    console.log("current items: ", currentItems);
 
     // 페이지 변경 핸들러
     const handlePageChange = (pageNumber) => {
@@ -849,7 +851,7 @@ function Order() {
         switch (trimmedStatus) {
             case '승인':
                 console.log('승인 다 볼수있엉');
-                handleDetailView(item.orderNo);
+                handleDetailView(item.orderNo, item.ohNo);
                 break;
             case '대기':
                 console.log('대기');
@@ -857,7 +859,7 @@ function Order() {
                 console.log(roleHierarchy[item.managerGrade]);
                 if (roleHierarchy[my.role] > roleHierarchy[item.managerGrade] || isManager) {
                     console.log("Access granted for 대기");
-                    handleDetailView(item.orderNo);
+                    handleDetailView(item.orderNo, item.ohNo);
                 } else {
                     alert("접근 권한이 없습니다.");
                 }
@@ -865,7 +867,7 @@ function Order() {
             case '임시저장':
                 console.log('임시저장');
                 if (isManager) {
-                    handleDetailView(item.orderNo);
+                    handleDetailView(item.orderNo, item.ohNo);
                 } else {
                     alert("접근 권한이 없습니다.");
                 }
@@ -875,7 +877,7 @@ function Order() {
                 console.log(roleHierarchy[my.role]);
                 console.log(roleHierarchy[item.managerGrade]);
                 if ((roleHierarchy[my.role] > roleHierarchy[item.managerGrade])  || isManager) {
-                    handleDetailView(item.orderNo);
+                    handleDetailView(item.orderNo, item.ohNo);
                 } else {
                     alert("접근 권한이 없습니다.");
                 }
@@ -885,7 +887,7 @@ function Order() {
                 console.log(roleHierarchy[my.role]);
                 console.log(roleHierarchy[item.managerGrade]);
                 if ((roleHierarchy[my.role] > roleHierarchy[item.managerGrade])  || isManager) {
-                    handleDetailView(item.orderNo);
+                    handleDetailView(item.orderNo, item.ohNo);
                 } else {
                     alert("접근 권한이 없습니다.");
                 }
@@ -935,6 +937,7 @@ function Order() {
 
         if (Array.isArray(confirmRes)) {
             const getConfirmRes = confirmRes.map(item => ({ //res.data.map안된다는 소리
+                ohNo: item.ohNo,
                 orderNo: item.orderNo,
                 customerN: item.customer.customerName,
                 manager: item.employee.employeeName,
@@ -1166,7 +1169,7 @@ function Order() {
 
 
                                 <tr
-                                    key={item.orderNo}
+                                    key={`${item.orderNo}-${item.ohNo}`}
                                     className={checkItem[index + 1] ? 'selected-row' : ''}
                                     /*             onDoubleClick={() => {
                                                      if (roleHierarchy[item.managerGrade] > roleHierarchy[my.role] || my.id === item.managerId) {
@@ -1257,13 +1260,12 @@ function Order() {
 
                                 <div className="btns">
                                     <div className="btn-add2">
-                                        {/* 임시 저장 버튼 */}
                                         <button className='btn-add2' type="button" onClick={() => {handleRegistOrder("임시저장");}}>
                                             임시 저장
                                         </button>
                                           <button className='btn-add2' type="button" onClick={() => {handleRegistOrder("대기"); }} >
-                                                                                    등록하기
-                                                                                </button>
+                                             등록하기
+                                          </button>
 
                                     </div>
                                 </div>
@@ -1427,6 +1429,7 @@ function Order() {
             {/* 상세보기 모달 */}
             {isDetailModalVisible && (
                 <DetailOrderModal
+                    ohNo={selectedOhNo}
                     orderNo={selectedOrderNo}
                     isOpen={isDetailModalVisible}
                     onClose={handleModifyCloseClick}
@@ -1441,6 +1444,7 @@ function Order() {
             {/*수정 모달*/}
             {isModifyModalVisible && (
                 <ModifyOrderModal
+                    ohNo={selectedOhNo}
                     orderData={selectedOrderData}
                     isOpen={isModifyModalVisible}
                     onClose={handleCloseModifyModal}
@@ -1453,6 +1457,7 @@ function Order() {
             {console.log('isModifyTempOrderModalOpen:', isModifyTempOrderModalOpen)}
             {isModifyTempOrderModalOpen && (
                 <ModifyTempOrderModal
+                    ohNo={selectedOhNo}
                     orderNo={selectedOrderData.orderNo}
                     isOpen={isModifyTempOrderModalOpen}
                     onClose={handleCloseModifyTempOrderModal}

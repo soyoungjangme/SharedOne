@@ -18,6 +18,7 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
 
     // 상태 변수: 주문 수정 항목 관리
     const [modifyItem, setModifyItem] = useState({
+        ohNo:'',
         orderNo: '',
         regDate: '',
         employee: {employeeName: '', employeeId: ''},
@@ -216,7 +217,7 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
                 console.log(todayPlus);
 
                 const updatedOrderData = {
-                    orderNo: modifyItem.orderNo,
+                    inputOrderNo: modifyItem.orderNo,
                     inputDelDate: modifyItem.delDate,
                     inputStatus: "대기", //고정 값
                     /*confirmChangeDate: todayPlus,*/ // 인서트이므로, 상태변경일 ㄴㄴ
@@ -228,14 +229,13 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
                         productNo: item.product.productNo,
                         orderProductQty: parseInt(item.orderProductQty, 10),
                         // price: item.price.customPrice,
-                        priceNo: item.price.priceNo,
                         prodTotal: parseInt(item.orderProductQty, 10) * item.price.customPrice,
-                        price: {
+                        /*price: {
                             priceNo: item.price.priceNo,
                             customPrice: item.price.customPrice,
                             startDate: item.price.startDate,
                             endDate: item.price.endDate
-                        }
+                        }*/
                     }))
                 };
 
@@ -247,15 +247,15 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
                 });
 
                 const response = await axios.post('/order/registOrder', updatedOrderData);
-                const orderNo = response.data;
+                const {orderNo, ohNo} = response.data;
 
-                if (response.status === 200 || response.data) {
+                if (response.status === 200 || response.data ) {
                     // 상태를 '반려(처리완료)'로 업데이트
-                    setModifyItem(prev => ({
+                    /*setModifyItem(prev => ({
                         ...prev,
                         confirmStatus: '반려(처리완료)'
                     }));
-
+*/
                     alert(`주문번호 ${orderNo} 등록이 완료되었습니다.`);
 
                     onClose();
@@ -264,6 +264,7 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
                     // 기존 주문 상태 '반려(처리완료)'로 업데이트
                     // const today = new Date().toISOString().split('T')[0];
                     const updateApprovalResponse = await axios.post('/order/updateApproval', {
+                        ohNo: modifyItem.ohNo,
                         orderNo: modifyItem.orderNo,
                         confirmStatus: '반려(처리완료)',
                         // confirmChangeDate: today,  // 상태 변경일 업데이트
@@ -300,6 +301,7 @@ function ModifyOrderModal({orderData, isOpen, onClose, onClose2, onUpdate}) {
                 const todayPlus = today.toISOString(); // 시, 분, 초까지 포함된 ISO 형식
                 console.log(todayPlus);
                 const updatedOrderData = {
+                    ohNo: modifyItem.ohNo,
                     orderNo: modifyItem.orderNo,
                     delDate: modifyItem.delDate,
                     confirmChangeDate: todayPlus,

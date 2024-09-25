@@ -13,6 +13,7 @@ import java.util.List;
 @ToString
 public class OrderRegistDTO {
 
+    private Long inputOrderNo; //주문번호
     private Date inputDelDate; //납품요청일
     private Long inputCustomerNo; //고객번호
     private String inputManager; //담당자

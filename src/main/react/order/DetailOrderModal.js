@@ -5,10 +5,11 @@ import './OrderModalDetail.css'
 import axios from 'axios';
 import Select from "react-select";
 
-const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModal, onOpenModifyTempOrderModal, roleHierarchy, fetchData, my }) => {
+const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModifyModal, onOpenModifyTempOrderModal, roleHierarchy, fetchData, my }) => {
 
     // 수정할 주문 항목의 초기 상태 설정
     const [modifyItem, setModifyItem] = useState({
+        ohNo:'',
         orderNo: '',
         regDate: '',
         employee: { employeeName: '', employeeId: '', authorityGrade: '' },
@@ -66,6 +67,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
 
     // 상세보기 화면을 위한 주문 상태 초기값 설정
     const [orderDetails, setOrderDetails] = useState({
+        ohNo:0,
         orderNo: 0,
         customerNo: '',
         employeeId: '',
@@ -88,10 +90,13 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
                 productNo: item.productNo,           // 원본 값
                 orderProductQty: item.orderProductQty || 0, // 수량 값이 없으면 0으로 설정
                 price: item.price?.customPrice || 0, // 가격이 없으면 0으로 설정
+/*
                 priceNo: item.price?.priceNo || 0    // priceNo가 없으면 0으로 설정
+*/
             }));
 
             setOrderDetails({
+                ohNo: modifyItem.ohNo, //주문시퀀스
                 orderNo: modifyItem.orderNo,        // 주문 번호
                 employeeId: modifyItem.employee.employeeId,
                 customerNo: modifyItem.customer.customerNo,
@@ -141,11 +146,12 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
 
     // 주문 데이터를 서버에서 불러오는 함수
     useEffect(() => {
-        if (isOpen && orderNo) {
+        console.log("현재 ohNo: ", ohNo);
+        if (isOpen && ohNo) {
             console.log('useEffect orderNo: ' + orderNo); // 망할 디버깅
             const fetchOrderDetails = async () => {
                 try {
-                    const response = await axios.get(`/order/detail/${orderNo}`);
+                    const response = await axios.get(`/order/detail/${ohNo}`);
                     console.log('Fetched data:', response.data);
                     console.log('Server response:', JSON.stringify(response.data, null, 2)); // 디버깅
                     setModifyItem(response.data); // 주문 데이터를 상태에 저장
@@ -163,7 +169,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
             };
             fetchOrderDetails();
         }
-    }, [orderNo, isOpen]);
+    }, [ohNo, isOpen]);
 
 
     // 입력 값 변경 가능한 처리
@@ -250,6 +256,7 @@ const DetailOrderModal = ({ orderNo, isOpen, onClose, onUpdate, onOpenModifyModa
             setLoading(true);
 
             const response = await axios.post('/order/updateApproval', {
+                ohNo: modifyItem.ohNo,
                 orderNo: modifyItem.orderNo,
                 confirmStatus: status,
                 remarks: modifyItem.remarks,

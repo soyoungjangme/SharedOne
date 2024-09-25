@@ -15,6 +15,7 @@ import java.util.List;
 @ToString
 @Builder
 public class OrderUp1DTO {
+  private Long ohNO;
   private Long orderNo;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

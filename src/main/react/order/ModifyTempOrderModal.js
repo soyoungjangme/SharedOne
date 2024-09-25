@@ -5,8 +5,9 @@ import './Order.css';
 import './OrderRegist.css';
 import useCheckboxManager from "../js/CheckboxManager";
 
-const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, onUpdate }) => {
+const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchData, onUpdate }) => {
     const [modifyItem, setModifyItem] = useState({
+        ohNo: '',
         orderNo: '',
         regDate: '',
         employee: { employeeName: '', employeeId: '' },
@@ -30,10 +31,10 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
     const [loading, setLoading] = useState(false); // 로딩 상태 관리
 
     useEffect(() => {
-        if (isOpen && orderNo) {
+        if (isOpen && ohNo) {
             const fetchOrderDetails = async () => {
                 try {
-                    const response = await axios.get(`/order/detail/${orderNo}`);
+                    const response = await axios.get(`/order/detail/${ohNo}`);
                     setModifyItem(response.data);
                     setDelDate(response.data.delDate);
                     setAddCheckProd(response.data.orderBList);
@@ -51,7 +52,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
             };
             fetchOrderDetails();
         }
-    }, [orderNo, isOpen]);
+    }, [ohNo, isOpen]);
 
 
     useEffect(() => {
@@ -127,6 +128,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
     // 주문 임시저장 처리
     const handleTempSave = async () => {
         const orderBList = addCheckProd.map((addProd, index) => ({
+            ohNo: modifyItem.ohNo,
             orderNo: modifyItem.orderNo,
             productNo: addProd.product.productNo,
             priceNo: addProd.price.priceNo,
@@ -140,7 +142,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
         });  // 전송 전 데이터 확인
 
         try {
-            await axios.put(`/order/temp/${modifyItem.orderNo}`, {
+            await axios.put(`/order/temp/${modifyItem.ohNo}`, {
                 ...modifyItem,
                 delDate: delDate,
                 confirmStatus: '임시저장',
@@ -172,6 +174,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
 
         try {
             const orderBList = addCheckProd.map((addProd, index) => ({
+                ohNo: modifyItem.ohNo,
                 orderNo: modifyItem.orderNo,
                 productNo: addProd.product.productNo,
                 priceNo: addProd.price.priceNo,
@@ -181,7 +184,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
 
             setLoading(true);
 
-            await axios.put(`/order/temp/${modifyItem.orderNo}`, {
+            await axios.put(`/order/temp/${modifyItem.ohNo}`, {
                 ...modifyItem,
                 delDate: delDate,
                 confirmStatus: '대기',
@@ -200,24 +203,28 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
         } finally {
             setLoading(false);
         }
+        window.location.reload();
+
     };
 
     // 임시저장 삭제
     const handleDeleteOrder = async () => {
         if (window.confirm('주문을 삭제하시겠습니까?')) {
             try {
-                await axios.delete(`/order/delete/${orderNo}`);
+                await axios.delete(`/order/delete/${ohNo}`);
                 alert(`주문 번호 ${orderNo} 삭제되었습니다.`);
 
                 // Order 컴포넌트에 삭제된 주문 업데이트 반영
-                // fetchData();
-                onUpdate({ orderNo });
+                fetchData();
+                onUpdate({ ohNo });
                 onClose();
                 onClose2();
             } catch (error) {
                 console.error('삭제 중 오류 발생:', error);
             }
         }
+        window.location.reload();
+
     };
 
     // 추가 버튼
@@ -541,7 +548,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
                                 <td colSpan="5">합계</td>
                                 <td colSpan="3">
                                     {addCheckProd.reduce((total, addProd, index) => {
-                                        const qty = quantities[index] || 0;
+                                        const qty = quantities[addProd.price.priceNo] || 0;
                                         return total + (addProd.price.customPrice * qty);
                                     }, 0).toLocaleString()} 원
                                 </td>

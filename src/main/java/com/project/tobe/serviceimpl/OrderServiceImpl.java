@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service("orderService")
@@ -32,32 +34,44 @@ public class OrderServiceImpl implements OrderService {
     //jsy 주문등록 - 등록하기
     @Override
     @Transactional
-    public Long registOrder(OrderRegistDTO orderRequest) {
+    public Map<String, Long>  registOrder(OrderRegistDTO orderRequest) {
         //헤더 등록
         OrderHDTO header = OrderHDTO.builder()
+                .orderNo(orderRequest.getInputOrderNo())
                 .delDate(orderRequest.getInputDelDate())
                 .customerNo(orderRequest.getInputCustomerNo())
                 .employeeId(orderRequest.getInputManager())
                 .confirmerId(orderRequest.getInputConfirmer())
                 .confirmStatus(orderRequest.getInputStatus())
                 .build();
+
         orderMapper.registOrderH(header); //헤더 등록
-        Long orderNo = header.getOrderNo(); //시퀀스로 생성된 orderNo
+        Long orderNo = header.getOrderNo(); //등록 된 주문번호
+        Long ohNo = header.getOhNo(); //등록 된 주문시퀀스
+        System.out.println("등록된 헤더: orderNo=" + orderNo + ", ohNo=" + ohNo);
+
 
         //주문번호 추가 후 바디는 배치로 처리하기
         List<OrderBDTO> obList = orderRequest.getOrderBList().stream()
                         .map(orderBody -> OrderBDTO.builder()
+                                .ohNo(ohNo)
                                 .orderNo(orderNo)
-                                .priceNo(orderBody.getPriceNo())
                                 .productNo(orderBody.getProductNo())
                                 .orderProductQty(orderBody.getOrderProductQty())
                                 .prodTotal(orderBody.getProdTotal())
                                 .build())
-                                .collect(Collectors.toList());
+                        .collect(Collectors.toList());
 
         orderMapper.registOrderB(obList); //배치 인서트 처리
+        System.out.println("주문 바디 리스트: " + obList);
 
-        return orderNo;
+
+        // orderNo과 ohNo를 함께 반환
+        Map<String, Long> result = new HashMap<>();
+        result.put("orderNo", header.getOrderNo()); // 시퀀스로 생성된 orderNo
+        result.put("ohNo", header.getOhNo()); // OH 번호 (필요시 DTO에서 가져오기)
+
+        return result;
     }
 
     @Override
@@ -69,18 +83,18 @@ public class OrderServiceImpl implements OrderService {
 
 // 특정 주문 상세 정보
     @Override
-    public OrderHDTO getOrderDetail(Long orderNo) {
-        System.out.println(orderMapper.getOrderDetail(orderNo));
-        return orderMapper.getOrderDetail(orderNo);
+    public OrderHDTO getOrderDetail(Long ohNo) {
+        System.out.println(orderMapper.getOrderDetail(ohNo));
+        return orderMapper.getOrderDetail(ohNo);
     }
 
 
 // 결재 여부 업데이트
     @Override
     @Transactional
-    public boolean updateApproval(Long orderNo, String confirmStatus, LocalDateTime confirmChangeDate, String remarks) {
+    public boolean updateApproval(Long ohNo, Long orderNo, String confirmStatus, LocalDateTime confirmChangeDate, String remarks) {
         try {
-            int updatedRows = orderMapper.updateApproval(orderNo, confirmStatus, confirmChangeDate, remarks);
+            int updatedRows = orderMapper.updateApproval(ohNo, orderNo, confirmStatus, confirmChangeDate, remarks);
             return updatedRows > 0;
         } catch (Exception e) {
             System.out.println("updateApproval 오류");
@@ -127,7 +141,7 @@ public class OrderServiceImpl implements OrderService {
         int updatedRows = orderMapper.updateTempOrder(orderHDTO);
 
         // 기존 주문 상세 삭제
-        orderMapper.deleteOrderDetails(orderHDTO.getOrderNo());
+        orderMapper.deleteOrderDetails(orderHDTO.getOhNo());
 
         // 새로운 주문 상세 삽입
         if (orderHDTO.getOrderBList() != null && !orderHDTO.getOrderBList().isEmpty()) {
@@ -135,12 +149,12 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // 업데이트된 주문 정보 조회 및 반환
-        return orderMapper.getOrderDetail(orderHDTO.getOrderNo());
+        return orderMapper.getOrderDetail(orderHDTO.getOhNo());
     }
 
     @Override
-    public boolean deleteOrder(Long orderNo) {
-        int deletedRows = orderMapper.deleteOrder(orderNo);
+    public boolean deleteOrder(Long ohNo) {
+        int deletedRows = orderMapper.deleteOrder(ohNo);
         return deletedRows > 0; // 삭제된 행이 1개 이상이면 true 반환
     }
 
