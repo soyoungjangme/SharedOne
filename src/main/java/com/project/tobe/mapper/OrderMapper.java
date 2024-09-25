@@ -25,7 +25,7 @@ public interface OrderMapper {
                        @Param("remarks") String remarks);
     void updateOrderHeader(OrderUp1DTO orderUp1DTO);
     void deleteOrderDetails(Long ohNo);
-    void insertOrderDetail(@Param("ohNo") Long ohNo, @Param("detail") OrderUp2DTO detail);
+    void insertOrderDetail(@Param("ohNo") Long ohNo, @Param("orderNo") Long orderNo, @Param("detail") OrderUp2DTO detail);
 
     /*
     void insertBack1(OrderUp1DTO orderUp1DTO);
