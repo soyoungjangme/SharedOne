@@ -424,32 +424,39 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
                         </table>
 
                         <table className="formTable2">
-                            <tbody>{/*조건 변경*/}
-                                {(getConfirmStatus(modifyItem.confirmStatus) !== '승인' && getConfirmStatus(modifyItem.confirmStatus) !== '임시저장') && (
+                            <tbody>
+                            {/* 비고 필드 - 승인 및 임시저장 상태가 아닌 경우에만 렌더링 */}
+                            {modifyItem && modifyItem.confirmStatus && getConfirmStatus(modifyItem.confirmStatus) !== '승인' && getConfirmStatus(modifyItem.confirmStatus) !== '임시저장' && (
+                                // 사원 시점에서 대기 상태일 때만 비고 입력창을 숨김
+                                    !(roleHierarchy[my.role] <= roleHierarchy[modifyItem.employee.authorityGrade] && getConfirmStatus(modifyItem.confirmStatus) === '대기') && (
                                     <tr>
-                                        <th colSpan="1"><label htmlFor="remarks">비고</label></th>
-                                        <td colSpan="3">
-                                            <textarea
-                                                name="remarks"
-                                                value={modifyItem.remarks || ''}
-                                                onChange={handleInputChange}
-                                                disabled={getConfirmStatus(modifyItem.confirmStatus) === '반려'}
-                                            ></textarea>
-                                        </td>
-
-                                        {/*<td colSpan="3">*/}
-                                        {/*    {['반려', '반려(처리완료)', '대기'].includes(getConfirmStatus(modifyItem.confirmStatus)) ? (*/}
-                                        {/*        <div>{modifyItem.remarks || '비고 없음'}</div>*/}
-                                        {/*    ) : (*/}
-                                        {/*        <textarea*/}
-                                        {/*            name="remarks"*/}
-                                        {/*            value={modifyItem.remarks || ''}*/}
-                                        {/*            onChange={handleInputChange}*/}
-                                        {/*        ></textarea>*/}
-                                        {/*    )}*/}
-                                        {/*</td>*/}
-
-                                    </tr>
+                                            <th colSpan="1"><label htmlFor="remarks">비고</label></th>
+                                            <td colSpan="3">
+                                                <textarea
+                                                    name="remarks"
+                                                    value={modifyItem.remarks || ''}
+                                                    onChange={handleInputChange}
+                                                    // 반려 또는 반려(처리완료) 상태에서는 사원과 상사 모두 조회만 가능
+                                                    disabled={getConfirmStatus(modifyItem.confirmStatus) === '반려' || getConfirmStatus(modifyItem.confirmStatus) === '반려(처리완료)'}
+                                                />
+                                            </td>
+                                            {/*<th colSpan="1"><label htmlFor="remarks">비고</label></th>*/}
+                                            {/*<td colSpan="3">*/}
+                                            {/*    <textarea*/}
+                                            {/*        name="remarks"*/}
+                                            {/*        value={modifyItem.remarks || ''}*/}
+                                            {/*        onChange={handleInputChange}*/}
+                                            {/*        // 비고 입력 제어*/}
+                                            {/*        disabled={*/}
+                                            {/*            // 대기 상태에서는 사원이 입력 불가*/}
+                                            {/*            (roleHierarchy[my.role] <= roleHierarchy[modifyItem.employee.authorityGrade] && getConfirmStatus(modifyItem.confirmStatus) === '대기') ||*/}
+                                            {/*            // 반려(처리완료), 반려 상태에서는 사원과 상사 모두 입력 불가*/}
+                                            {/*            getConfirmStatus(modifyItem.confirmStatus) === '반려' || getConfirmStatus(modifyItem.confirmStatus) === '반려(처리완료)'*/}
+                                            {/*        }*/}
+                                            {/*    />*/}
+                                            {/*</td>*/}
+                                        </tr>
+                                    )
                                 )}
 
                             </tbody>
@@ -458,14 +465,14 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
                     </form>
 
                     <div className="RegistFormList">
-                        <div style={{ fontWeight: 'bold' }}>총 {modifyItem.orderBList?.length || 0} 건</div>
+                        <div style={{fontWeight: 'bold'}}>총 {modifyItem.orderBList?.length || 0} 건</div>
                         <table className="formTableList">
                             <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>상품 카테고리
-                                        <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
-                                            {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
+                            <tr>
+                                <th>No</th>
+                                <th>상품 카테고리
+                                    <button className="sortBtn" onClick={() => sortModalData('productCategory')}>
+                                        {modalSortConfig.key === 'productCategory' ? (modalSortConfig.direction === 'ascending' ? '▲' : '▼') : '-'}
                                         </button>
                                     </th>
                                     <th>상품명
