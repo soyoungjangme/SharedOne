@@ -119,9 +119,15 @@ const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchDat
         }
     }, [modifyItem.customer.customerNo, delDate]);
 
-    // 수량
+
+    // 주문 수량 변경 처리
     const handleQuantityChange = (priceNo) => (e) => {
-        const qty = Number(e.target.value) || 0;
+        // 빈 문자열을 허용하고, 숫자가 아닌 입력을 방지
+        let qty = e.target.value;
+        if (qty !== '' && isNaN(qty)) {
+            return; // 숫자가 아닌 값 입력 방지
+        }
+
         setQuantities(prevQuantities => ({ ...prevQuantities, [priceNo]: qty }));
     };
 
@@ -535,8 +541,7 @@ const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchDat
                                         <td>{addProd.product.productCategory}</td>
                                         <td>{addProd.product.productName}</td>
                                         <td>
-                                            <input type="number" id={`prodQty_${addProd.price.priceNo}`} value={qty}
-                                                   onChange={handleQuantityChange(addProd.price.priceNo)} placeholder="수량"/>
+                                            <input type="text" value={qty} onChange={handleQuantityChange(addProd.price.priceNo)} />
                                         </td>
                                         <td>{addProd.price.customPrice * qty}</td>
                                         <td>{addProd.price.startDate}</td>

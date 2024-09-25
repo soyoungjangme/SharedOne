@@ -449,8 +449,14 @@ function Order() {
 
     //상품 수량
     const [quantities, setQuantities] = useState({});
+    // 주문 수량 변경 처리
     const handleQuantityChange = (priceNo) => (e) => {
-        const qty = Number(e.target.value) || 0;
+        // 빈 문자열을 허용하고, 숫자가 아닌 입력을 방지
+        let qty = e.target.value;
+        if (qty !== '' && isNaN(qty)) {
+            return; // 숫자가 아닌 값 입력 방지
+        }
+
         setQuantities(prevQuantities => ({ ...prevQuantities, [priceNo]: qty }));
     };
 
@@ -1394,8 +1400,7 @@ function Order() {
                                                 <td>{addProd.prodCat}</td>
                                                 <td>{addProd.prodName}</td>
                                                 <td>
-                                                    <input type="number" id={`prodQty_${addProd.priceNo}`} value={qty}
-                                                           onChange={handleQuantityChange(addProd.priceNo)} placeholder="수량"/>
+                                                    <input type="text" value={qty} onChange={handleQuantityChange(addProd.priceNo)} />
                                                 </td>
                                                 <td>{addProd.salePrice * qty}</td>
                                                 <td>{addProd.saleStart}</td>
