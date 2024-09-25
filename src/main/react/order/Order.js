@@ -1406,7 +1406,7 @@ function Order() {
                                                 <td>
                                                     <input type="text" value={qty} onChange={handleQuantityChange(addProd.priceNo)} />
                                                 </td>
-                                                <td>{addProd.salePrice * qty}</td>
+                                                <td>{(addProd.salePrice * qty).toLocaleString()}</td>
                                                 <td>{addProd.saleStart}</td>
                                                 <td>{addProd.saleEnd}</td>
                                             </tr>
