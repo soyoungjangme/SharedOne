@@ -5,8 +5,9 @@ import './Order.css';
 import './OrderRegist.css';
 import useCheckboxManager from "../js/CheckboxManager";
 
-const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, onUpdate }) => {
+const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchData, onUpdate }) => {
     const [modifyItem, setModifyItem] = useState({
+        ohNo: '',
         orderNo: '',
         regDate: '',
         employee: { employeeName: '', employeeId: '' },
@@ -30,10 +31,10 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
     const [loading, setLoading] = useState(false); // 로딩 상태 관리
 
     useEffect(() => {
-        if (isOpen && orderNo) {
+        if (isOpen && ohNo) {
             const fetchOrderDetails = async () => {
                 try {
-                    const response = await axios.get(`/order/detail/${orderNo}`);
+                    const response = await axios.get(`/order/detail/${ohNo}`);
                     setModifyItem(response.data);
                     setDelDate(response.data.delDate);
                     setAddCheckProd(response.data.orderBList);
@@ -51,7 +52,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
             };
             fetchOrderDetails();
         }
-    }, [orderNo, isOpen]);
+    }, [ohNo, isOpen]);
 
 
     useEffect(() => {
@@ -127,6 +128,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
     // 주문 임시저장 처리
     const handleTempSave = async () => {
         const orderBList = addCheckProd.map((addProd, index) => ({
+            ohNo: modifyItem.ohNo,
             orderNo: modifyItem.orderNo,
             productNo: addProd.product.productNo,
             priceNo: addProd.price.priceNo,
@@ -172,6 +174,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
 
         try {
             const orderBList = addCheckProd.map((addProd, index) => ({
+                ohNo: modifyItem.ohNo,
                 orderNo: modifyItem.orderNo,
                 productNo: addProd.product.productNo,
                 priceNo: addProd.price.priceNo,
@@ -181,7 +184,7 @@ const ModifyTempOrderModal = ({ orderNo, isOpen, onClose,onClose2, fetchData, on
 
             setLoading(true);
 
-            await axios.put(`/order/temp/${modifyItem.orderNo}`, {
+            await axios.put(`/order/temp/${modifyItem.ohNo}`, {
                 ...modifyItem,
                 delDate: delDate,
                 confirmStatus: '대기',

@@ -10,10 +10,10 @@ import lombok.*;
 @Builder
 public class OrderUp2DTO {
 
+
   private Long productNo;
   private int orderProductQty;
   private Long prodTotal;
-  private Long priceNo;
 
 
 }

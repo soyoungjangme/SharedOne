@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 public class OrderHDTO {
 
-
+    private Long ohNo; //주문시퀀스
     private Long orderNo; //주문 번호
     private LocalDateTime regDate; //주문등록일
     private Date delDate; //납품일
