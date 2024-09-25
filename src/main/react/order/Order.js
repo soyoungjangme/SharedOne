@@ -248,7 +248,8 @@ function Order() {
     // 초기화 후 목록도 리셋
     useEffect(() => {
         const isFormReset = Object.values(form).every(value => value === '');
-        if (isFormReset) {
+        // 특정 조건에서만 실행
+        if (isFormReset && selectedIndex === null) {  // selectedIndex가 변경된 경우에는 실행하지 않음
             handleSearchBtn();
         }
     }, [form]);
@@ -921,7 +922,7 @@ function Order() {
     const handleButtonClick2 = (index) => {
         setSelectedIndex(index);
         sendSearchCriteria(index);
-        handleReset(); 
+        handleReset();
     };
 
     // Send a POST request with the selected order status
