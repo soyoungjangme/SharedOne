@@ -310,8 +310,8 @@
     </select>
 
     <select id="getSalesByMonth" resultType="SalesByMonth">
-        SELECT TO_CHAR(header.confirm_change_date, 'YYYY-MM') AS sales_month,
-               SUM(coalesce(body.prod_total, 0))              AS total_sales
+        SELECT TO_CHAR(header.confirm_change_date, 'YYYY-MM-DD') AS sales_month,
+               SUM(coalesce(body.prod_total, 0)) AS total_sales
         FROM order_header header
                  JOIN
              (SELECT order_no, SUM(coalesce(prod_total, 0)) AS prod_total
@@ -320,7 +320,9 @@
              ON header.order_no = body.order_no
         WHERE header.confirm_status LIKE '%승인%'
           AND header.confirm_change_date IS NOT NULL
-        GROUP BY TO_CHAR(header.confirm_change_date, 'YYYY-MM')
+          AND header.confirm_change_date BETWEEN date_trunc('month', current_date)
+            AND current_date
+        GROUP BY TO_CHAR(header.confirm_change_date, 'YYYY-MM-DD')
         ORDER BY sales_month
     </select>
 

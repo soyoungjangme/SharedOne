@@ -78,7 +78,6 @@ public class OrderController {
     //jsy주문등록 - 등록하기
     @PostMapping("/registOrder")
     public ResponseEntity<Map<String, Long>> registOrder(@RequestBody OrderRegistDTO request) {
-        {/*Long orderNo = orderService.registOrder(request);*/}
         Map<String, Long> orderResult = orderService.registOrder(request);
         // 반환된 Map에서 order_no와 oh_no를 가져오기
         Long orderNo = orderResult.get("orderNo");
