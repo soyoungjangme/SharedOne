@@ -195,12 +195,9 @@ function Customer() {
         }));
     };
 
-    console.log(regist);
-    
     // 서버로 고객 등록 요청
     const onClickRegistBtn = () => {
 
-        console.log(regist);
 
          // 중복 확인 함수
     const checkDuplicateName2 = (name) => {
@@ -308,6 +305,7 @@ function Customer() {
     };
 
     const handleCloseClickDetail = () => {
+
         setIsVisibleDetail(false);
     };
 
@@ -323,6 +321,7 @@ function Customer() {
         setIsVisible(true);
     };
     const handleCloseClick = () => {
+        setRegist(false);
         setIsVisible(false);
     };
 
