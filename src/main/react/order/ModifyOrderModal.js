@@ -356,6 +356,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
             : customPrice.filter((_, index) => availableProductsCheckItem[index]);
 
         const newOrderBList = [...modifyItem.orderBList];
+        let duplicateFound = false;
 
         productsToAdd.forEach(product => {
             // 이미 추가된 상품을 중복으로 추가하지 않도록 체크
@@ -381,9 +382,13 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
                     },
                 });
             } else {
-                alert('이미 추가된 상품이 있습니다.');
+                duplicateFound = true;
             }
         });
+
+        if (duplicateFound) {
+            alert('이미 추가된 상품이 있습니다.');
+        }
 
         setModifyItem(prev => ({
             ...prev,

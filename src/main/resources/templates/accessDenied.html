@@ -13,59 +13,45 @@
       align-items: center;
       height: 100vh;
       margin: 0;
-      background-color: #f8f9fa;
+      background-color: #ffffff;
     }
 
     .container {
       text-align: center;
       padding: 20px;
-      border: 1px solid #dee2e6;
+
       border-radius: 8px;
       background-color: #ffffff;
     }
-
-    h1 {
-      color: #dc3545;
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
-
-    p {
-      color: #6c757d;
-      font-size: 1.2rem;
-    }
   </style>
+  <link href="/css/accessDenied.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
 
   <div class="container">
+    <div class="error-container">
+      <div class="error-icon">
+        <!-- SVG로 삼각형을 그린 후 느낌표 추가 -->
+        <svg class="error-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- 둥근 모서리 있는 삼각형 -->
+          <path d="M 50 5 L 95 95 L 5 95 Z" fill="#D32F2F" stroke="#D32F2F" stroke-width="10" stroke-linejoin="round" />
 
-    <!-- <div className="error-container">
-      <div className="error-icon"></div>
-      <h1>접근 불가</h1>
-      <p>이 페이지에 대한 접근 권한이 없습니다.</p>
-      <p className="error-code">홈 화면으로 이동</p>
-    </div> -->
-
-    <div className="error-container">
-      <div className="error-icon">
-        <div className="exclamation-mark">!</div>
+          <!-- 느낌표 추가 -->
+          <text x="50" y="82" font-size="58" font-weight="800" text-anchor="middle" fill="white">!</text>
+        </svg>
       </div>
+
       <h1>접근 불가</h1>
-      <p className="error-description">
-        이 페이지에 대한 접근 권한이 없습니다.
+      <p class="error-description">
+        페이지에 대한 접근 권한이 없습니다.
       </p>
-      <p className="error-link">
-        <a href="#">홈 화면으로 이동</a>
+      <p class="error-link">
+        <a href="./main.do"> 홈 화면으로 이동</a>
       </p>
     </div>
-
-    <!-- <h1>접근 거부</h1>
-    <p>이 페이지에 대한 접근 권한이 없습니다.</p>
-    <a href="./main.do"> 홈 화면으로 이동</a> -->
-
   </div>
 
 </body>
+
 </html>

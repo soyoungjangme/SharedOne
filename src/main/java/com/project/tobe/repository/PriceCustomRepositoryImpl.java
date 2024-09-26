@@ -50,7 +50,7 @@ public class PriceCustomRepositoryImpl implements PriceCustomRepository {
         Optional<LocalDate> endDate = Optional.ofNullable(dto.getEndDate());
         Optional<YesNo> activated = Optional.ofNullable(dto.getActivated());
 
-        registerDate.ifPresent(localDateTime -> builder.and(price.registerDate.eq(localDateTime)));
+        registerDate.ifPresent(localDateTime -> builder.and(price.registerDate.year().eq(localDateTime.getYear())).and(price.registerDate.month().eq(localDateTime.getMonthValue())).and(price.registerDate.dayOfMonth().eq(localDateTime.getDayOfMonth())));
         productNo.ifPresent(s -> builder.and(price.product.productNo.eq(s)));
         customerNo.ifPresent(s -> builder.and(price.customer.customerNo.eq(s)));
         startDate.ifPresent(localDate -> builder.and(price.startDate.after(localDate)));
