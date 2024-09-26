@@ -475,7 +475,6 @@ function Customer() {
         const ids = checkedCheckboxes.map(checkbox => checkbox.id);
 
         // 상태를 업데이트하여 배열에 저장합니다.
-        console.log(checkedIds);
         setCheckedIds(ids);
     }, [checkItem]);
 
@@ -489,7 +488,6 @@ function Customer() {
                 }
             })
                 .then(response => {
-                    console.log('삭제 요청 성공', response.data);
                     const deletedCount = checkedIds.length;
                     alert(`총 ${deletedCount}개 고객이 삭제되었습니다.`);
                     window.location.reload();
@@ -513,7 +511,6 @@ function Customer() {
     const closeAddressModal = () => setIsAddressModalVisible(false); // 주소 모달 닫기
 
     const handleAddressConfirm = (addrObj, isRegistration) => {
-        console.log('주소:', addrObj.fullAddress, '우편번호:', addrObj.zonecode);
 
         if (isRegistration) {
             // 등록 모달에서 사용할 경우
