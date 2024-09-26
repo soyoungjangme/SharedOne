@@ -61,7 +61,14 @@ const Price = () => {
 
     const getSearchItems = async (item) => {
         console.log(item);
-        const { data } = await axios.post('/price/search', item, {
+
+        let copy = Object.assign({}, item);
+
+        if (copy.registerDate !== '') {
+            copy = {...copy, registerDate: copy.registerDate + 'T00:00:00'};
+        }
+
+        const { data } = await axios.post('/price/search', copy, {
             headers: {
                 'content-type': 'application/json',
                 'Accept': 'application/json',
