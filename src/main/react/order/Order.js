@@ -399,8 +399,17 @@ function Order() {
 
     //추가 클릭
     const handleAddProd = () => {
+        if (!registCustomer) {
+            alert("고객명을 선택해주세요.");
+            return;
+        }
+
         if (!delDate) {
             alert("납품요청일을 입력해주십시오.");
+            return;
+        }
+        if (!modifyItem.confirmerId) {
+            alert("결재자를 선택해주세요.");
             return;
         }
         setAddCheckProd(prevAddCheckProd => {
@@ -489,7 +498,7 @@ function Order() {
                     return;
                 }
             } else {
-                if(!registCustomer || !delDate || !addCheckProd.length){
+                if (!registCustomer || !delDate || !addCheckProd.length) {
                     alert("추가된 상품이 없습니다.");
                     return;
                 }
@@ -1400,33 +1409,33 @@ function Order() {
                                             const qty = quantities[addProd.priceNo] || 0; // index에 맞는 수량 가져옴
                                             // console.log(`렌더링 중: 상품명 = ${addProd.prodName}, 수량 = ${quantities[addProd.priceNo] || 0}`);
 
-                                        return (
-                                            <tr key={index} className={orderAddCheckItem[addProd.priceNo] ? 'selected-row' : ''}>
-                                                <td><input type="checkbox" id="checkProdList"
-                                                           checked={orderAddCheckItem[index] || false}
-                                                           onChange={(e) => handleOrderAddCheckboxChange(e)}/></td>
-                                                <td style={{display: 'none'}}>{index}</td>
-                                                <td>{index + 1}</td>
-                                                <td>{addProd.prodCat}</td>
-                                                <td>{addProd.prodName}</td>
-                                                <td>
-                                                    <input type="text" value={qty} onChange={handleQuantityChange(addProd.priceNo)} />
-                                                </td>
-                                                <td>{(addProd.salePrice * qty).toLocaleString()}</td>
-                                                <td>{addProd.saleStart}</td>
-                                                <td>{addProd.saleEnd}</td>
-                                            </tr>
-                                        );
-                                    })}
-                                    <tr style={{fontWeight: 'bold'}}>
-                                        <td colSpan="5"> 합계</td>
-                                        <td colSpan="3">
-                                            {addCheckProd.reduce((total, addProd, index) => {
-                                                const qty = quantities[addProd.priceNo] || 0; //수량
-                                                return total + (addProd.salePrice * qty);
-                                            },0).toLocaleString()}원 {/*toLocaleString() : 숫자를 천 단위로 구분하고, 통화 기호 추가*/}
-                                        </td>
-                                    </tr>
+                                            return (
+                                                <tr key={index} className={orderAddCheckItem[addProd.priceNo] ? 'selected-row' : ''}>
+                                                    <td><input type="checkbox" id="checkProdList"
+                                                        checked={orderAddCheckItem[index] || false}
+                                                        onChange={(e) => handleOrderAddCheckboxChange(e)} /></td>
+                                                    <td style={{ display: 'none' }}>{index}</td>
+                                                    <td>{index + 1}</td>
+                                                    <td>{addProd.prodCat}</td>
+                                                    <td>{addProd.prodName}</td>
+                                                    <td>
+                                                        <input type="text" value={qty} onChange={handleQuantityChange(addProd.priceNo)} />
+                                                    </td>
+                                                    <td>{(addProd.salePrice * qty).toLocaleString()}</td>
+                                                    <td>{addProd.saleStart}</td>
+                                                    <td>{addProd.saleEnd}</td>
+                                                </tr>
+                                            );
+                                        })}
+                                        <tr style={{ fontWeight: 'bold' }}>
+                                            <td colSpan="5"> 합계</td>
+                                            <td colSpan="3">
+                                                {addCheckProd.reduce((total, addProd, index) => {
+                                                    const qty = quantities[addProd.priceNo] || 0; //수량
+                                                    return total + (addProd.salePrice * qty);
+                                                }, 0).toLocaleString()}원 {/*toLocaleString() : 숫자를 천 단위로 구분하고, 통화 기호 추가*/}
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
