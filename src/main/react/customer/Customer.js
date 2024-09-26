@@ -195,8 +195,33 @@ function Customer() {
         }));
     };
 
+    console.log(regist);
+    
     // 서버로 고객 등록 요청
     const onClickRegistBtn = () => {
+
+        console.log(regist);
+
+         // 중복 확인 함수
+    const checkDuplicateName2 = (name) => {
+        const normalizedCustomerName = normalizeString(name);
+        return customer.some(existingItem => {
+            const normalizedExistingCustomerName = normalizeString(existingItem.customerName);
+            
+            return normalizedExistingCustomerName === normalizedCustomerName && existingItem.customerNo !== regist.customerNo;
+        });
+    };
+
+    const checkDuplicateBusinessRegistrationNo2 = (businessRegistrationNo) => {
+        const normalizedBusinessRegistrationNo = removeHyphensAndSpaces(businessRegistrationNo);
+        return customer.some(existingItem => {
+            const normalizedExistingBusinessRegistrationNo = removeHyphensAndSpaces(existingItem.businessRegistrationNo);
+            
+            return normalizedExistingBusinessRegistrationNo === normalizedBusinessRegistrationNo && existingItem.customerNo !== regist.customerNo;
+        });
+    };
+
+        
         // 필수 입력값 확인
         if (!regist.customerName || !regist.customerTel || !regist.customerAddr ||
             !regist.postNum || !regist.businessRegistrationNo || !regist.nation ||
@@ -206,12 +231,12 @@ function Customer() {
         }
 
         // 중복 검사
-        if (checkDuplicateName(regist.customerName)) {
+        if (checkDuplicateName2(regist.customerName)) {
             alert('고객명이 이미 존재합니다.');
             return;
         }
 
-        if (checkDuplicateBusinessRegistrationNo(regist.businessRegistrationNo)) {
+        if (checkDuplicateBusinessRegistrationNo2(regist.businessRegistrationNo)) {
             alert('사업자 등록번호가 이미 존재합니다.');
             return;
         }
@@ -340,31 +365,35 @@ function Customer() {
     });
 
     // 중복 확인 함수
-    const checkDuplicateName = (name) => {
+    const checkDuplicateName1 = (name) => {
         const normalizedCustomerName = normalizeString(name);
         return customer.some(existingItem => {
             const normalizedExistingCustomerName = normalizeString(existingItem.customerName);
+            
             return normalizedExistingCustomerName === normalizedCustomerName && existingItem.customerNo !== modifyItem.customerNo;
         });
     };
 
-    const checkDuplicateBusinessRegistrationNo = (businessRegistrationNo) => {
+    const checkDuplicateBusinessRegistrationNo1 = (businessRegistrationNo) => {
         const normalizedBusinessRegistrationNo = removeHyphensAndSpaces(businessRegistrationNo);
         return customer.some(existingItem => {
             const normalizedExistingBusinessRegistrationNo = removeHyphensAndSpaces(existingItem.businessRegistrationNo);
+            
             return normalizedExistingBusinessRegistrationNo === normalizedBusinessRegistrationNo && existingItem.customerNo !== modifyItem.customerNo;
         });
     };
 
+
+
     // 수정 클릭 시 호출
     const handleUpdateClick = () => {
-
+        
         // 기존 고객 정보와 비교하여 변경 내용 확인
         const originalItem = customer.find(item => item.customerNo === modifyItem.customerNo);
         const hasChanges = Object.keys(modifyItem).some(key => modifyItem[key] !== originalItem[key]);
-
         if (!hasChanges) {
             alert('수정된 내용이 없습니다.');
+            
             return;
         }
         // 필수 입력값 확인
@@ -374,23 +403,23 @@ function Customer() {
             alert('고객 정보를 모두 입력해야 합니다.');
             return;
         }
-
-        if (checkDuplicateName(modifyItem.customerName)) {
+        
+        if (checkDuplicateName1(modifyItem.customerName)) {
             alert('고객명이 이미 존재합니다.');
             return;
         }
-
+        
         if (!validatePhoneNumber(modifyItem.customerTel) || !validatePhoneNumber(modifyItem.picTel)) {
             alert('전화번호 형식으로 입력해주세요.( - 포함)');
             return;
         }
-
+        
         if (!isValidBusinessRegistrationNo(modifyItem.businessRegistrationNo)) {
             alert('사업자등록번호는 XXX-XX-XXXXX 형식입니다.');
             return;
         }
-
-        if (checkDuplicateBusinessRegistrationNo(modifyItem.businessRegistrationNo)) {
+        
+        if (checkDuplicateBusinessRegistrationNo1(modifyItem.businessRegistrationNo)) {
             alert('사업자 등록번호가 이미 존재합니다.');
             return;
         }
