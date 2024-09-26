@@ -488,6 +488,11 @@ function Order() {
                     alert("모두 입력해 주세요.");
                     return;
                 }
+            } else {
+                if(!registCustomer || !delDate || !addCheckProd.length){
+                    alert("추가된 상품이 없습니다.");
+                    return;
+                }
             }
 
             //추가된 리스트 반복 돌리기
@@ -512,7 +517,7 @@ function Order() {
                 inputManager: my.id || null,
                 inputConfirmer: modifyItem.confirmerId || null, //결재자
                 inputStatus: orderStatus,
-                orderBList: orderBList //ob데이터 배열 전달
+                orderBList: orderBList || null //ob데이터 배열 전달
             });
 
             const { orderNo, ohNo } = response.data;
