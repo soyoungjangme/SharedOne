@@ -28,6 +28,7 @@ const AddPriceModal = ({
 
     const [selectedCurrency, setSelectedCurrency] = useState(null);
     const [productPrice, setProductPrice] = useState(null);
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
     const handleChange = (selectedOption) => {
         handleInsertPrice('currency', selectedOption.value);
@@ -76,6 +77,7 @@ const AddPriceModal = ({
         console.log(insertPrice);
 
         try {
+            setIsSubmitted(true);
             await axios.post('/price/register', insertPrice, {
                 headers: {
                     'content-type': 'application/json',
@@ -86,6 +88,8 @@ const AddPriceModal = ({
             handleCloseClickModal();
         } catch (error) {
             console.error('등록 중 오류 발생:', error);
+        } finally {
+            setIsSubmitted(false);
         }
     };
 
@@ -159,7 +163,7 @@ const AddPriceModal = ({
 
                         <div className="btns">
                             <div className="btn-add2">
-                                <button onClick={handleRegister}>등록하기</button>
+                                <button onClick={handleRegister} disabled={isSubmitted}>등록하기</button>
                             </div>
                         </div>
                     </div>
