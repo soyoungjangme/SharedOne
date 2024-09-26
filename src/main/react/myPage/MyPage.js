@@ -234,9 +234,24 @@ function MyPage() {
   };
   console.log(editData);
 
-  // 세션 값이 업데이트되었을 때 메인 리스트 가져오기
 
+  // 세션 값이 업데이트되었을 때 메인 리스트 가져오기
   const employeeUpdateMypage = () => {
+
+    if (!editData.employeeTel) {
+      alert('전화번호를 입력해야 합니다.');
+      return;
+    }
+    if (!editData.employeeEmail) {
+      alert('이메일을 입력해야 합니다.');
+      return;
+    }
+    if (!editData.employeeAddr) {
+      alert('주소를 입력해야 합니다.');
+      return;
+    }
+
+
     if (window.confirm('수정하시겠습니까?')) {
       axios.post('/mypage/employeeUpdateMypage', editData)
         .then(response => {

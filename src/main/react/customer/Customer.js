@@ -32,14 +32,14 @@ function Customer() {
             .then(response => setCustomer(response.data))  // 응답 데이터를 상태로 설정
             .catch(error => console.error('Error fetching Customer data:', error));
 
-        let {data} = await axios.get('/employee/employeeALL');
-        setEmployee(data.map((item) => ({value: item, label: item.employeeName + ' / ' +  item.employeeEmail + ' / ' + item.employeeTel})));
+        let { data } = await axios.get('/employee/employeeALL');
+        setEmployee(data.map((item) => ({ value: item, label: item.employeeName + ' / ' + item.employeeEmail + ' / ' + item.employeeTel })));
     }, []);
 
 
     const handleEmployeeSelectChange = (item, isAdd) => {
-        if (isAdd) setRegist((prev) => ({...prev, picName: item.employeeName, picEmail: item.employeeEmail, picTel: item.employeeTel}));
-        else setModifyItem((prev) => ({...prev, picName: item.employeeName, picEmail: item.employeeEmail, picTel: item.employeeTel}));
+        if (isAdd) setRegist((prev) => ({ ...prev, picName: item.employeeName, picEmail: item.employeeEmail, picTel: item.employeeTel }));
+        else setModifyItem((prev) => ({ ...prev, picName: item.employeeName, picEmail: item.employeeEmail, picTel: item.employeeTel }));
     }
 
 
@@ -158,8 +158,8 @@ function Customer() {
         setCurrentPage(1);
     };
 
-     // 초기화 후 목록도 리셋
-     useEffect(() => {
+    // 초기화 후 목록도 리셋
+    useEffect(() => {
         const isFormReset = Object.values(customerSearch).every(value => value === '');
         if (isFormReset) {
             handleSearchCustomer();
@@ -199,33 +199,51 @@ function Customer() {
     const onClickRegistBtn = () => {
 
 
-         // 중복 확인 함수
-    const checkDuplicateName2 = (name) => {
-        const normalizedCustomerName = normalizeString(name);
-        return customer.some(existingItem => {
-            const normalizedExistingCustomerName = normalizeString(existingItem.customerName);
-            
-            return normalizedExistingCustomerName === normalizedCustomerName && existingItem.customerNo !== regist.customerNo;
-        });
-    };
+        // 중복 확인 함수
+        const checkDuplicateName2 = (name) => {
+            const normalizedCustomerName = normalizeString(name);
+            return customer.some(existingItem => {
+                const normalizedExistingCustomerName = normalizeString(existingItem.customerName);
 
-    const checkDuplicateBusinessRegistrationNo2 = (businessRegistrationNo) => {
-        const normalizedBusinessRegistrationNo = removeHyphensAndSpaces(businessRegistrationNo);
-        return customer.some(existingItem => {
-            const normalizedExistingBusinessRegistrationNo = removeHyphensAndSpaces(existingItem.businessRegistrationNo);
-            
-            return normalizedExistingBusinessRegistrationNo === normalizedBusinessRegistrationNo && existingItem.customerNo !== regist.customerNo;
-        });
-    };
+                return normalizedExistingCustomerName === normalizedCustomerName && existingItem.customerNo !== regist.customerNo;
+            });
+        };
 
-        
+        const checkDuplicateBusinessRegistrationNo2 = (businessRegistrationNo) => {
+            const normalizedBusinessRegistrationNo = removeHyphensAndSpaces(businessRegistrationNo);
+            return customer.some(existingItem => {
+                const normalizedExistingBusinessRegistrationNo = removeHyphensAndSpaces(existingItem.businessRegistrationNo);
+
+                return normalizedExistingBusinessRegistrationNo === normalizedBusinessRegistrationNo && existingItem.customerNo !== regist.customerNo;
+            });
+        };
+
         // 필수 입력값 확인
-        if (!regist.customerName || !regist.customerTel || !regist.customerAddr ||
-            !regist.postNum || !regist.businessRegistrationNo || !regist.nation ||
-            !regist.picName || !regist.picEmail || !regist.picTel) {
-            alert('고객 정보를 모두 입력해야 합니다.');
+        if (!regist.customerName) {
+            alert('고객명을 입력해야 합니다.');
             return;
         }
+        if (!regist.customerTel) {
+            alert('고객연락처를 입력해야 합니다.');
+            return;
+        }
+        if (!regist.customerAddr) {
+            alert('고객주소를 입력해야 합니다.');
+            return;
+        }
+        if (!regist.nation) {
+            alert('국가를 입력해야 합니다.');
+            return;
+        }
+        if (!regist.businessRegistrationNo) {
+            alert('사업자등록번호를 입력해야 합니다.');
+            return;
+        }
+        if (!regist.picName) {
+            alert('담당자를 선택해야 합니다.');
+            return;
+        }
+
 
         // 중복 검사
         if (checkDuplicateName2(regist.customerName)) {
@@ -368,7 +386,7 @@ function Customer() {
         const normalizedCustomerName = normalizeString(name);
         return customer.some(existingItem => {
             const normalizedExistingCustomerName = normalizeString(existingItem.customerName);
-            
+
             return normalizedExistingCustomerName === normalizedCustomerName && existingItem.customerNo !== modifyItem.customerNo;
         });
     };
@@ -377,7 +395,7 @@ function Customer() {
         const normalizedBusinessRegistrationNo = removeHyphensAndSpaces(businessRegistrationNo);
         return customer.some(existingItem => {
             const normalizedExistingBusinessRegistrationNo = removeHyphensAndSpaces(existingItem.businessRegistrationNo);
-            
+
             return normalizedExistingBusinessRegistrationNo === normalizedBusinessRegistrationNo && existingItem.customerNo !== modifyItem.customerNo;
         });
     };
@@ -386,38 +404,57 @@ function Customer() {
 
     // 수정 클릭 시 호출
     const handleUpdateClick = () => {
-        
+
         // 기존 고객 정보와 비교하여 변경 내용 확인
         const originalItem = customer.find(item => item.customerNo === modifyItem.customerNo);
         const hasChanges = Object.keys(modifyItem).some(key => modifyItem[key] !== originalItem[key]);
         if (!hasChanges) {
             alert('수정된 내용이 없습니다.');
-            
+
             return;
         }
+
         // 필수 입력값 확인
-        if (!modifyItem.customerName || !modifyItem.customerTel || !modifyItem.customerAddr ||
-            !modifyItem.postNum || !modifyItem.businessRegistrationNo || !modifyItem.nation ||
-            !modifyItem.picName || !modifyItem.picEmail || !modifyItem.picTel) {
-            alert('고객 정보를 모두 입력해야 합니다.');
+        if (!modifyItem.customerName) {
+            alert('고객명을 입력해야 합니다.');
             return;
         }
-        
+        if (!modifyItem.customerTel) {
+            alert('고객연락처를 입력해야 합니다.');
+            return;
+        }
+        if (!modifyItem.customerAddr) {
+            alert('고객주소를 입력해야 합니다.');
+            return;
+        }
+        if (!modifyItem.nation) {
+            alert('국가를 입력해야 합니다.');
+            return;
+        }
+        if (!modifyItem.businessRegistrationNo) {
+            alert('사업자등록번호를 입력해야 합니다.');
+            return;
+        }
+        if (!modifyItem.picName) {
+            alert('담당자를 선택해야 합니다.');
+            return;
+        }
+
         if (checkDuplicateName1(modifyItem.customerName)) {
             alert('고객명이 이미 존재합니다.');
             return;
         }
-        
+
         if (!validatePhoneNumber(modifyItem.customerTel) || !validatePhoneNumber(modifyItem.picTel)) {
             alert('전화번호 형식으로 입력해주세요.( - 포함)');
             return;
         }
-        
+
         if (!isValidBusinessRegistrationNo(modifyItem.businessRegistrationNo)) {
             alert('사업자등록번호는 XXX-XX-XXXXX 형식입니다.');
             return;
         }
-        
+
         if (checkDuplicateBusinessRegistrationNo1(modifyItem.businessRegistrationNo)) {
             alert('사업자 등록번호가 이미 존재합니다.');
             return;
@@ -936,7 +973,7 @@ function Customer() {
                         ) : (
                             <tr>
                                 <td colSpan="12">등록된 고객이 없습니다.
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-emoji-tear" viewBox="0 0 16 16" style={{ verticalAlign: 'middle' }}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-emoji-tear" viewBox="0 0 16 16" style={{ verticalAlign: 'middle' }}>
                                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
                                         <path d="M6.831 11.43A3.1 3.1 0 0 1 8 11.196c.916 0 1.607.408 2.25.826.212.138.424-.069.282-.277-.564-.83-1.558-2.049-2.532-2.049-.53 0-1.066.361-1.536.824q.126.27.232.535.069.174.135.373ZM6 11.333C6 12.253 5.328 13 4.5 13S3 12.254 3 11.333c0-.706.882-2.29 1.294-2.99a.238.238 0 0 1 .412 0c.412.7 1.294 2.284 1.294 2.99M7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5m4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5m-1.5-3A.5.5 0 0 1 10 3c1.162 0 2.35.584 2.947 1.776a.5.5 0 1 1-.894.448C11.649 4.416 10.838 4 10 4a.5.5 0 0 1-.5-.5M7 3.5a.5.5 0 0 0-.5-.5c-1.162 0-2.35.584-2.947 1.776a.5.5 0 1 0 .894.448C4.851 4.416 5.662 4 6.5 4a.5.5 0 0 0 .5-.5" />
                                     </svg>
@@ -976,7 +1013,7 @@ function Customer() {
                                         <tr>
                                             <th colSpan="1"><label htmlFor="customerName">고객명</label></th>
                                             <td colSpan="2"><input type="text" placeholder="고객명" id="customerName" name="customerName" value={regist.customerName} onChange={handleInputAddChange} /></td>
-                                            <th style={{width: "10%"}} colSpan="1"><label htmlFor="customerTel">고객연락처</label></th>
+                                            <th style={{ width: "10%" }} colSpan="1"><label htmlFor="customerTel">고객연락처</label></th>
                                             <td colSpan="2"><input type="text" placeholder="고객연락처" id="customerTel" name="customerTel" value={regist.customerTel} onChange={handleInputAddChange} /></td>
                                         </tr>
                                         <tr>
@@ -998,17 +1035,17 @@ function Customer() {
                                             <th colSpan="1"><label htmlFor="picName">담당자</label></th>
                                             <td colSpan="5">
                                                 <Select
-                                                name="employee"
-                                                options={employee}
-                                                placeholder="담당자 선택"
-                                                onChange={(option) => {handleEmployeeSelectChange(option.value, true)}}
+                                                    name="employee"
+                                                    options={employee}
+                                                    placeholder="담당자 선택"
+                                                    onChange={(option) => { handleEmployeeSelectChange(option.value, true) }}
                                                 />
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                          
+
                             {/* 주소 모달 */}
                             {isAddressModalVisible && (
                                 <div className="confirmRegist">
@@ -1057,7 +1094,7 @@ function Customer() {
                                         <tr>
                                             <th colSpan="1"><label htmlFor="customerName">고객명</label></th>
                                             <td colSpan="2"><input type="text" placeholder="고객명" id="customerName" name="customerName" value={modifyItem.customerName || ''} onChange={handleModifyItemChange} /></td>
-                                            <th style={{width: "10%"}} colSpan="1"><label htmlFor="customerTel">고객연락처</label></th>
+                                            <th style={{ width: "10%" }} colSpan="1"><label htmlFor="customerTel">고객연락처</label></th>
                                             <td colSpan="2"><input type="text" placeholder="고객연락처" id="customerTel" name="customerTel" value={modifyItem.customerTel || ''} onChange={handleModifyItemChange} /></td>
                                         </tr>
                                         <tr>
@@ -1070,13 +1107,13 @@ function Customer() {
                                         <tr>
                                             <th><label htmlFor="postNum">우편번호</label></th>
                                             <td><input type="text" placeholder="우편번호" id="postNum" name="postNum" value={modifyItem.postNum || ''} readOnly /></td>
-                                           
+
                                             <th><label htmlFor="nation">국가</label></th>
                                             <td><input type="text" placeholder="국가" id="nation" name="nation" value={modifyItem.nation || ''} onChange={handleModifyItemChange} /></td>
-                                        
+
                                             <th><label htmlFor="businessRegistrationNo">사업자등록번호</label></th>
                                             <td><input type="text" placeholder="사업자등록번호" id="businessRegistrationNo" name="businessRegistrationNo" value={modifyItem.businessRegistrationNo || ''} onChange={handleModifyItemChange} /></td>
-                                            
+
                                         </tr>
                                         <tr>
                                             <th colSpan="1"><label htmlFor="picName">담당자</label></th>
@@ -1103,7 +1140,7 @@ function Customer() {
                             <div className="fullBody">
                                 <div className="form-container">
                                     <button className="close-btn" onClick={closeAddressModal}>
-                                    &times;
+                                        &times;
                                     </button>
                                     <div className="form-header">
                                         <h1>주소 입력</h1>

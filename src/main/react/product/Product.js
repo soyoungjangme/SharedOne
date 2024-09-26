@@ -406,6 +406,24 @@ function Product() {
 
     // 상품 추가 처리
     const handleAddProduct = () => {
+        // 필수 입력값 확인
+        if (!productForm.productName) {
+            alert('상품명을 입력해야 합니다.');
+            return;
+        }
+        if (!productForm.productWriter) {
+            alert('상품저자를 입력해야 합니다.');
+            return;
+        }
+        if (!productForm.productCategory) {
+            alert('상품카테고리를 선택해야 합니다.');
+            return;
+        }
+        if (!productForm.productPrice) {
+            alert('상품원가를 입력해야 합니다.');
+            return;
+        }
+    
         if (isFormValid()) {
             if (isProductNameOnScreen(productForm.productName)) {
                 alert('상품이 이미 등록되어 있습니다.');
@@ -415,7 +433,7 @@ function Product() {
                 alert('상품이 이미 추가되어 있습니다.');
                 return;
             }
-
+    
             const newProductList = [
                 ...productList,
                 {
@@ -424,7 +442,7 @@ function Product() {
                     productPrice: parseInt(productForm.productPrice, 10),
                 }
             ];
-
+    
             setProductList(newProductList);
             setProductForm({
                 productName: '',
@@ -433,13 +451,12 @@ function Product() {
                 productPrice: '',
                 productYn: 'Y',
             });
-
+    
             // 추가 후 정렬 데이터 업데이트
             updateModalOrder(newProductList);
-        } else {
-            alert('상품 정보를 모두 입력해야 합니다.');
-        }
+        } 
     };
+    
 
     // 상품 등록 처리
     const handleSubmit = async () => {
@@ -589,45 +606,55 @@ function Product() {
     };
 
     const handleModifySubmit = async () => {
-        // 입력값이 비어있는지 확인
-        const isInputEmpty = Object.values(modifyItem).some(value => !value);
-
+        // 필수 입력값 확인
+        if (!modifyItem.productName) {
+            alert('상품명을 입력해야 합니다.');
+            return;
+        }
+        if (!modifyItem.productWriter) {
+            alert('상품저자를 입력해야 합니다.');
+            return;
+        }
+        if (!modifyItem.productCategory) {
+            alert('상품카테고리를 선택해야 합니다.');
+            return;
+        }
+        if (!modifyItem.productPrice) {
+            alert('상품원가를 입력해야 합니다.');
+            return;
+        }
+    
         // 수정된 내용이 있는지 확인
         const hasChanges = Object.keys(modifyItem).some((key) => {
             const originalValue = normalizeString(originalItem[key]?.toString());
             const modifiedValue = normalizeString(modifyItem[key]?.toString());
-
+    
             return originalValue !== modifiedValue;
         });
-
+    
         if (!hasChanges) {
             alert('수정한 내용이 없습니다.');
             return;
         }
-
-        if (isInputEmpty) {
-            alert('상품 정보를 모두 입력해야 합니다.');
-            return;
-        }
-
+    
         const normalizedProductName = normalizeString(modifyItem.productName);
-
+    
         // 중복 체크
         const isDuplicate = product.some(item =>
             normalizeString(item.productName) === normalizedProductName &&
             item.productYn === 'Y' &&
             normalizeString(item.productName) !== normalizeString(originalItem.productName)
         );
-
+    
         if (isDuplicate) {
             alert('이미 존재하는 상품명입니다.');
             return;
         }
-
+    
         if (!confirm('상품을 수정하시겠습니까?')) {
             return;
         }
-
+    
         try {
             const response = await fetch('/product/updateProduct', {
                 method: 'POST',
@@ -640,7 +667,7 @@ function Product() {
                     productPrice: parseFloat(modifyItem.productPrice) // 숫자 값으로 전송
                 }),
             });
-
+    
             if (response.ok) {
                 alert('상품이 수정되었습니다.');
                 setIsModifyModalVisible(false);
@@ -654,6 +681,8 @@ function Product() {
             alert('서버 오류가 발생했습니다.');
         }
     };
+    
+
     // 삭제 처리 함수
     const handleDeleteItem = async () => {
         if (!confirm('상품을 삭제하시겠습니까?')) {
