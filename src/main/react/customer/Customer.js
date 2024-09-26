@@ -63,7 +63,6 @@ function Customer() {
     // 필터 변경 핸들러
     const handleInputChange = (e) => {
         const { id, value } = e.target;
-        console.log(e.target);
         // 변경된 필드의 값을 업데이트합니다.
         setEmSearch((prev) => ({
             ...prev,
@@ -246,7 +245,6 @@ function Customer() {
                 },
             })
             .then((response) => {
-                console.log('등록 성공:', response.data);
                 alert('고객이 성공적으로 등록되었습니다.');
 
                 // 입력값 초기화
@@ -413,7 +411,6 @@ function Customer() {
             }
         })
             .then(response => {
-                console.log('업데이트 성공:', response.data);
                 setCustomer(prev => prev.map(item =>
                     item.customerNo === modifyItem.customerNo ? modifyItem : item
                 ));
@@ -455,7 +452,6 @@ function Customer() {
                 }
             })
                 .then(response => {
-                    console.log('삭제 요청 성공', response.data);
                     alert('삭제되었습니다.');
                     window.location.reload();
                 })
@@ -479,7 +475,6 @@ function Customer() {
         const ids = checkedCheckboxes.map(checkbox => checkbox.id);
 
         // 상태를 업데이트하여 배열에 저장합니다.
-        console.log(checkedIds);
         setCheckedIds(ids);
     }, [checkItem]);
 
@@ -493,7 +488,6 @@ function Customer() {
                 }
             })
                 .then(response => {
-                    console.log('삭제 요청 성공', response.data);
                     const deletedCount = checkedIds.length;
                     alert(`총 ${deletedCount}개 고객이 삭제되었습니다.`);
                     window.location.reload();
@@ -517,7 +511,6 @@ function Customer() {
     const closeAddressModal = () => setIsAddressModalVisible(false); // 주소 모달 닫기
 
     const handleAddressConfirm = (addrObj, isRegistration) => {
-        console.log('주소:', addrObj.fullAddress, '우편번호:', addrObj.zonecode);
 
         if (isRegistration) {
             // 등록 모달에서 사용할 경우
