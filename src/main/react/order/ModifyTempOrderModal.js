@@ -172,9 +172,18 @@ const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchDat
             return;
         }
 
-        const InvalidQty = addCheckProd.some((_, index) => quantities[index] <= 0);
-        if (InvalidQty) {
-            alert("수량은 0개 이상이어야 합니다.");
+        // const InvalidQty = addCheckProd.some((_, index) => quantities[index] <= 0);
+        // if (InvalidQty) {
+        //     alert("수량은 0개 이상이어야 합니다.");
+        //     return;
+        // }
+
+        const invalidQuantities = modifyItem.orderBList.filter(item =>
+            item.orderProductQty === '' || item.orderProductQty === 0
+        );
+
+        if (invalidQuantities.length > 0) {
+            alert('모든 상품의 수량을 1개 이상 입력해주세요.');
             return;
         }
 

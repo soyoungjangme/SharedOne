@@ -287,7 +287,7 @@
     <!-- 주문 삭제 쿼리 -->
     <delete id="deleteOrder" parameterType="long">
         DELETE FROM order_header
-        WHERE oh_no = #{ohNo}
+        WHERE oh_no = #{ohNo} and order_no = #{orderNo}
     </delete>
     <!--유선화 END-->
 
