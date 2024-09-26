@@ -434,6 +434,7 @@ useEffect(() => {
                         setIsVisible(false); // Always executed after the request
                         alert("등록이 완료되었습니다"); // Show alert after visibility is set
                         window.location.reload();
+                          setEmSearch();
                          setList([]); // 기존 목록 초기화
                                fetchEmployeeList();
                     });
@@ -547,6 +548,7 @@ const [originalItem, setOriginalItem] = useState({}); // 원래 데이터를 저
     .finally(() => {
         setIsModifyModalVisible(false);
         fetchEmployeeList();
+        window.location.reload();
         if (goOut) {
             alert("로그아웃 되었습니다. 다시 로그인 해주세요.");
             window.location.href = './logout';
@@ -752,6 +754,7 @@ useEffect(() => {
         })
             .then(response => {
                 window.location.reload();
+
             })
             .catch(error => {
                 console.error('서버 요청 중 오류 발생', error);
@@ -778,6 +781,7 @@ const handleDeletePickClick = () => {
         .finally(() => {
             setIsModifyModalVisible(false);
             window.location.reload(); // 모달 숨기기
+                  setEmSearch({});
         });
     } else {
         // 사용자가 취소한 경우

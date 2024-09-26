@@ -75,7 +75,6 @@ public class EmployeeController {
 
   @PostMapping("/employeeDeletePick")
   public void employeeDeletePick(@RequestBody String employeeId) {
-    System.out.println("컨");
     employeeService.employeeDeletePick(employeeId);
   }
 
@@ -90,7 +89,6 @@ public class EmployeeController {
     if (authentication == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
     }
-
     EmployeeDetails user = (EmployeeDetails)authentication.getPrincipal(); //인증객체 안에 principal값을 얻으면 유저객체가 나옵니다.
 
     // 사용자 이름과 권한을 반환
