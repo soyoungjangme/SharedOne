@@ -1079,10 +1079,11 @@ function Order() {
                     </div>
                 </div>
 
-
-                <button className="btn-common add" type="button" onClick={handleAddClick}>
-                    주문 등록
-                </button>
+                {my.role !== "S" && (
+                    <button className="btn-common add" type="button" onClick={handleAddClick}>
+                        주문 등록
+                    </button>
+                )}
 
 
                 <div className="multi-select">

@@ -5,6 +5,7 @@ import com.project.tobe.entity.Employee;
 import com.project.tobe.entity.OrderH;
 import com.project.tobe.security.EmployeeDetails;
 import com.project.tobe.service.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -189,6 +191,7 @@ public class OrderController {
     public ResponseEntity<OrderHDTO> getOrderDetail(@PathVariable Long ohNo) {
         System.out.println("주문상세조회ohNo "+ ohNo);
         OrderHDTO orderDetail = orderService.getOrderDetail(ohNo);
+        System.out.println("orderDetail"+orderDetail);
         if (orderDetail != null) {
             System.out.println(orderDetail.getConfirmerName());
             return ResponseEntity.ok(orderDetail);
