@@ -85,6 +85,7 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
 
     // modifyItem이 업데이트될 때마다 orderDetails와 orderDetailsBList를 업데이트
     useEffect(() => {
+
         if (modifyItem) {
             const updatedOrderDetailsBList = modifyItem.orderBList.map(item => ({
                 productNo: item.productNo,           // 원본 값
@@ -146,9 +147,9 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
 
     // 주문 데이터를 서버에서 불러오는 함수
     useEffect(() => {
-        // console.log("현재 ohNo: ", ohNo);
+        console.log("현재 ohNo: ", ohNo);
         if (isOpen && ohNo) {
-            // console.log('useEffect orderNo: ' + orderNo); // 망할 디버깅
+            console.log('useEffect orderNo: ' + orderNo); // 망할 디버깅
             const fetchOrderDetails = async () => {
                 try {
                     const response = await axios.get(`/order/detail/${ohNo}`);

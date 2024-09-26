@@ -170,7 +170,9 @@
         left join product p on ob.product_no = p.product_no --상품 조인
         left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no --판매가 조인
         where
-        oh.oh_no = #{ohNo};
+        oh.oh_no = #{ohNo}
+        and pr.activated = 'Y'
+        and oh.del_date between pr.start_date and pr.end_date
     </select>
 
     <resultMap id="OrderDetailResultMap" type="OrderHDTO">
