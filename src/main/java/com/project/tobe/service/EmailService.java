@@ -8,5 +8,5 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 public interface EmailService {
-    boolean sendMailReject(EmailDTO inDTO) throws Exception;
+    void sendMailReject(EmailDTO inDTO) throws Exception;
 }
