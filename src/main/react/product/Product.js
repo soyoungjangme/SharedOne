@@ -155,10 +155,8 @@ function Product() {
         // 데이터가 로드된 이후에 삭제된 항목을 로컬 스토리지에서 필터링
         if (product.length > 0) {
             const deletedItems = JSON.parse(localStorage.getItem('deletedItems')) || [];
-            console.log("로컬 스토리지에서 삭제된 항목:", deletedItems);
 
             setOrder(prevOrder => {
-                console.log("초기 상품 리스트:", prevOrder);
                 return prevOrder.filter(item => !deletedItems.includes(item.productNo));
             });
         }
@@ -167,7 +165,6 @@ function Product() {
     useEffect(() => {
         // 삭제된 항목을 로컬 스토리지에 저장
         const deletedItems = order.filter(item => item.deleted).map(item => item.productNo);
-        console.log("저장할 삭제된 항목:", deletedItems);
         localStorage.setItem('deletedItems', JSON.stringify(deletedItems));
     }, [order]);
 
@@ -190,12 +187,10 @@ function Product() {
                 .filter(id => checkItemMain[id])
                 .map(id => parseInt(id) - 1);
 
-            console.log("삭제할 항목 인덱스:", itemsToDelete);
 
             // 삭제 처리
             setOrder(prevOrder => {
                 const updatedOrder = prevOrder.filter((item, index) => !itemsToDelete.includes(index));
-                console.log("업데이트된 상품 리스트:", updatedOrder);
                 return updatedOrder;
             });
 
@@ -203,7 +198,6 @@ function Product() {
             const deletedItems = JSON.parse(localStorage.getItem('deletedItems')) || [];
             const updatedDeletedItems = [...deletedItems, ...itemsToDelete];
             localStorage.setItem('deletedItems', JSON.stringify(updatedDeletedItems));
-            console.log("저장할 삭제된 항목:", updatedDeletedItems);
 
             // 삭제된 항목을 서버에 전송하여 DB 업데이트
             const productNos = itemsToDelete.map(index => order[index].productNo);
