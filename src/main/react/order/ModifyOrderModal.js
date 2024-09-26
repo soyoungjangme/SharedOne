@@ -35,7 +35,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
 
     // 수정된 orderBList 디버깅용 useEffect
     useEffect(() => {
-        console.log('Updated orderBList:', modifyItem.orderBList);
+        // console.log('Updated orderBList:', modifyItem.orderBList);
     }, [modifyItem.orderBList]);
 
 
@@ -98,7 +98,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
     // 고객에 맞는 상품 리스트를 서버에서 가져오기
     const fetchCustomerProducts = async (customerNo) => {
         try {
-            console.log('Fetching products for customerNo:', customerNo);
+            // console.log('Fetching products for customerNo:', customerNo);
 
             const response = await axios.post('/order/getPrice', {
                 inputOrderCustomerNo: parseInt(customerNo, 10),
@@ -152,7 +152,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
                 ...updatedOrderBList[index],
                 orderProductQty: qty === '' ? '' : parseInt(qty, 10)
             };
-            console.log('Updated quantity:', updatedOrderBList); // 디버깅
+            // console.log('Updated quantity:', updatedOrderBList); // 디버깅
             return {
                 ...prev,
                 orderBList: updatedOrderBList
@@ -180,8 +180,8 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
         product.prodName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    console.log('현재 confirmStatus:', modifyItem.confirmStatus);
-    console.log('타입:', typeof modifyItem.confirmStatus);
+    // console.log('현재 confirmStatus:', modifyItem.confirmStatus);
+    // console.log('타입:', typeof modifyItem.confirmStatus);
 
 
     // 주문 업데이트 처리 함수 - 수정하기 버튼에 걸려 있는 함수
@@ -209,7 +209,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
         const status = modifyItem.confirmStatus.trim();
 
         if (status === '반려') {
-            console.log('1현재 상태: 반려');
+            // console.log('1현재 상태: 반려');
             try {
                 // 주문 업데이트에 필요한 데이터 준비
                 const updatedOrderData = {
@@ -235,10 +235,10 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
                 };
 
                 // 요청 전에 데이터 로그 찍기
-                console.log('Updated Order Data:', updatedOrderData);  // 전송 데이터 확인
-                console.log('OrderBList:', modifyItem.orderBList);
+                // console.log('Updated Order Data:', updatedOrderData);  // 전송 데이터 확인
+                // console.log('OrderBList:', modifyItem.orderBList);
                 modifyItem.orderBList.forEach((item, index) => {
-                    console.log(`Item ${index} Price Object:`, item.price);
+                    // console.log(`Item ${index} Price Object:`, item.price);
                 });
 
                 setLoading(true);
@@ -269,7 +269,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
                     });
 
                     if (updateApprovalResponse.data.success) {
-                        console.log('기존 주문 상태가 반려(처리완료)로 업데이트되었습니다.');
+                        // console.log('기존 주문 상태가 반려(처리완료)로 업데이트되었습니다.');
                         onClose();
                         window.location.reload();
                     } else {
@@ -291,7 +291,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
             }
 
         } else if (status === '대기') {
-            console.log('2현재 상태: 대기');
+            // console.log('2현재 상태: 대기');
 
             try {
                 const updatedOrderData = {
@@ -302,7 +302,7 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
                     customerNo: modifyItem.customer.customerNo,
                     employeeId: modifyItem.employee.employeeId,
                     orderBList: modifyItem.orderBList.map(item => {
-                        console.log('처리 중인 item:', JSON.stringify(item, null, 2));
+                        // console.log('처리 중인 item:', JSON.stringify(item, null, 2));
                         return {
                             productNo: item.product.productNo,
                             orderProductQty: parseInt(item.orderProductQty, 10),
@@ -312,8 +312,8 @@ function ModifyOrderModal({ orderData, isOpen, onClose, onClose2, onUpdate }) {
                         };
                     })
                 };
-                console.log('orderNo:', modifyItem.orderNo);
-                console.log('서버로 보내는 데이터:', JSON.stringify(updatedOrderData, null, 2));
+                // console.log('orderNo:', modifyItem.orderNo);
+                // console.log('서버로 보내는 데이터:', JSON.stringify(updatedOrderData, null, 2));
                 setLoading(true);
 
                 const response = await axios.put(`/order/update`, updatedOrderData);

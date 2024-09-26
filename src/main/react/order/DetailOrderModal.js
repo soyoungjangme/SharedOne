@@ -109,7 +109,7 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
     // 주문 수정 데이터를 서버로 전송하는 함수
     const handleUpdate = async () => {
         try {
-            console.log('Sending Order Details:', orderDetails); // 전송 전 데이터 확인
+            // console.log('Sending Order Details:', orderDetails); // 전송 전 데이터 확인
 
             const response = await axios.post('/order/updateOrder', orderDetails, {
                 headers: {
@@ -117,7 +117,7 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
                 }
             });
 
-            console.log('Response:', response.data); // 서버 응답 확인
+            // console.log('Response:', response.data); // 서버 응답 확인
         } catch (error) {
             console.error('Error:', error.response ? error.response.data : error.message); // 에러 상세 확인
         }
@@ -146,14 +146,14 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
 
     // 주문 데이터를 서버에서 불러오는 함수
     useEffect(() => {
-        console.log("현재 ohNo: ", ohNo);
+        // console.log("현재 ohNo: ", ohNo);
         if (isOpen && ohNo) {
-            console.log('useEffect orderNo: ' + orderNo); // 망할 디버깅
+            // console.log('useEffect orderNo: ' + orderNo); // 망할 디버깅
             const fetchOrderDetails = async () => {
                 try {
                     const response = await axios.get(`/order/detail/${ohNo}`);
-                    console.log('Fetched data:', response.data);
-                    console.log('Server response:', JSON.stringify(response.data, null, 2)); // 디버깅
+                    // console.log('Fetched data:', response.data);
+                    // console.log('Server response:', JSON.stringify(response.data, null, 2)); // 디버깅
                     setModifyItem(response.data); // 주문 데이터를 상태에 저장
 
                     const confirmStatus = getConfirmStatus(response.data?.confirmStatus);
@@ -241,7 +241,7 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
     const today = new Date();
     today.setDate(today.getDate());
     const todayPlus = today.toISOString(); // 시, 분, 초까지 포함된 ISO 형식
-    console.log(todayPlus);
+    // console.log(todayPlus);
 
     // 임시로 만든 승인, 반려 버튼 처리 함수
     const handleApproval = async (status) => {
@@ -285,15 +285,15 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
 
     useEffect(() => {
         if (modifyItem && modifyItem.confirmStatus) {
-            console.log('confirmStatus:', modifyItem.confirmStatus);
-            console.log('getConfirmStatus:', getConfirmStatus(modifyItem.confirmStatus));
+            // console.log('confirmStatus:', modifyItem.confirmStatus);
+            // console.log('getConfirmStatus:', getConfirmStatus(modifyItem.confirmStatus));
         } else {
             console.log('modifyItem or confirmStatus is undefined');
         }
     }, [modifyItem]);
 
-    console.log(modifyItem.employee.authorityGrade);
-    console.log(JSON.stringify(modifyItem));
+    // console.log(modifyItem.employee.authorityGrade);
+    // console.log(JSON.stringify(modifyItem));
 
       // 판매가를 포맷팅하는 함수
       const formatPrice = (price) => {
@@ -342,21 +342,21 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
                                                 {roleHierarchy[my.role] > roleHierarchy[modifyItem.employee.authorityGrade] && (
                                                     <>
                                                         <button type="button" onClick={() => {
-                                                            console.log('반려 버튼 클릭됨');
+                                                            // console.log('반려 버튼 클릭됨');
                                                             handleApproval('반려');
                                                         }}>
                                                             반려
                                                         </button>
                                                         <button type="button" onClick={() => {
-                                                            console.log('승인 버튼 클릭됨');
+                                                            // console.log('승인 버튼 클릭됨');
                                                             handleApproval('승인');
                                                         }}>
                                                             승인
                                                         </button>
                                                     </>
                                                 )}
-                                                {console.log('Confirm Status:', getConfirmStatus(modifyItem.confirmStatus))}
-                                                {console.log('My Role:', my.role, 'Authority Grade:', modifyItem.employee.authorityGrade)}
+                                                {/*{console.log('Confirm Status:', getConfirmStatus(modifyItem.confirmStatus))}*/}
+                                                {/*{console.log('My Role:', my.role, 'Authority Grade:', modifyItem.employee.authorityGrade)}*/}
                                             </>
                                         )}
 

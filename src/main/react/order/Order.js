@@ -52,7 +52,7 @@ function Order() {
 
     // 주문 데이터를 저장하는 상태
     const [order, setOrder] = useState([]);
-    console.log("order" + JSON.stringify(order));
+    // console.log("order" + JSON.stringify(order));
 
     // 사용자 정보 상태
     const [userInfo, setUserInfo] = useState(null);
@@ -69,7 +69,7 @@ function Order() {
         let effectOrder = async () => {
             try {
                 let data = await fetch('/order/orderList').then(res => res.json());
-                console.log("fetched data ", data);
+                // console.log("fetched data ", data);
                 const transfomData = data.map(item => ({
                     ohNo: item.ohNo,
                     orderNo: item.orderNo,
@@ -82,7 +82,7 @@ function Order() {
                 }));
 
                 setOrder(transfomData);
-                console.log("tranfomData ", transfomData);
+                // console.log("tranfomData ", transfomData);
 
             } catch (error) {
                 console.error('error발생함 : ', error);
@@ -96,9 +96,9 @@ function Order() {
         // 결재자 리스트 불러오기
         const fetchConfirmerIdList = async () => {
             const response = await axios.get('/employee/user-info', { withCredentials: true });
-            console.log(response);
+            // console.log(response);
             const { data } = await axios.get(`/order/getManagerList/${response.data.userId}`);
-            console.log(data);
+            // console.log(data);
             setConfirmerIdList(data);// 결재자 리스트 상태에 저장
             setConfirmerIdOptions(
                 data.map(manager => ({ value: manager.employeeId, label: manager.employeeName + ' / ' + manager.employeeEmail }))
@@ -305,8 +305,8 @@ function Order() {
     // 세션 정보 가져오기
     const [my, setMy] = useState({ id: '', name: '', role: '' });
     const [roleList, setRoleList] = useState([]);
-    console.log("ㅋㅋ글쓴이 값이야 " + order.managerId);
-    console.log("ㅋㅋ세션값이야" + JSON.stringify(my));
+    // console.log("ㅋㅋ글쓴이 값이야 " + order.managerId);
+    // console.log("ㅋㅋ세션값이야" + JSON.stringify(my));
     //담당자명 세션에서 불러오기
     useEffect(() => {
 
@@ -327,7 +327,7 @@ function Order() {
             const response = await axios.get(`/order/getManagerList/${myId}`);
 
             const data = response.data; // Assuming response.data contains the list
-            console.log(data);
+            // console.log(data);
             // employeeId와 authorityGrade만 추출
             const filteredList = data.map(data => ({
                 employeeId: data.employeeId,
@@ -335,8 +335,8 @@ function Order() {
             }));
 
             setRoleList(filteredList);
-            console.log("Role List" + roleList.employeeId);
-            console.log("Role List" + roleList.employeeId);
+            // console.log("Role List" + roleList.employeeId);
+            // console.log("Role List" + roleList.employeeId);
 
 
 
@@ -471,7 +471,7 @@ function Order() {
     //등록하기 & 임시저장
     const handleRegistOrder = async (orderStatus) => {
 
-        console.log(modifyItem.status);
+        // console.log(modifyItem.status);
         try {
 
             //데이터 유효성 검사(등록하기)
@@ -479,7 +479,7 @@ function Order() {
                 const hasInvalidQty = addCheckProd.some((product) => {
                     const qty = quantities[product.priceNo] || 0; // product의 priceNo를 이용해 수량을 가져옴
 
-                    console.log(`상품 ID: ${product.priceNo}, 수량: ${qty}`);
+                    // console.log(`상품 ID: ${product.priceNo}, 수량: ${qty}`);
 
                     return qty <= 0; // 수량이 0 이하인 경우
                 });
@@ -502,7 +502,7 @@ function Order() {
                     prodTotal: orderProdTotal
                 };
             });
-            console.log("오더바디리스트 ", orderBList);
+            // console.log("오더바디리스트 ", orderBList);
             setLoading(true);
 
             const response = await axios.post('/order/registOrder', { // insert into oh
@@ -671,7 +671,7 @@ function Order() {
 
     const handleCloseModifyModal = () => {
         setIsModifyModalVisible(false);
-        console.log('Closing the modal...');
+        // console.log('Closing the modal...');
     };
 
     // 임시 저장 모달 열기
@@ -682,8 +682,8 @@ function Order() {
     };
 
     const handleCloseModifyTempOrderModal = () => {
-        console.log('Closing the modal...');
-        console.log('isModifyTempOrderModalOpen is now:', isModifyTempOrderModalOpen);  // 상태 확인
+        // console.log('Closing the modal...');
+        // console.log('isModifyTempOrderModalOpen is now:', isModifyTempOrderModalOpen);  // 상태 확인
         setIsModifyTempOrderModalOpen(false);
     };
 
@@ -740,7 +740,7 @@ function Order() {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = order.slice(indexOfFirstItem, indexOfLastItem);
 
-    console.log("current items: ", currentItems);
+    // console.log("current items: ", currentItems);
 
     // 페이지 변경 핸들러
     const handlePageChange = (pageNumber) => {
@@ -859,22 +859,22 @@ function Order() {
 
         switch (trimmedStatus) {
             case '승인':
-                console.log('승인 다 볼수있엉');
+                // console.log('승인 다 볼수있엉');
                 handleDetailView(item.orderNo, item.ohNo);
                 break;
             case '대기':
-                console.log('대기');
-                console.log(roleHierarchy[my.role]);
-                console.log(roleHierarchy[item.managerGrade]);
+                // console.log('대기');
+                // console.log(roleHierarchy[my.role]);
+                // console.log(roleHierarchy[item.managerGrade]);
                 if (roleHierarchy[my.role] > roleHierarchy[item.managerGrade] || isManager) {
-                    console.log("Access granted for 대기");
+                    // console.log("Access granted for 대기");
                     handleDetailView(item.orderNo, item.ohNo);
                 } else {
                     alert("접근 권한이 없습니다.");
                 }
                 break;
             case '임시저장':
-                console.log('임시저장');
+                // console.log('임시저장');
                 if (isManager) {
                     handleDetailView(item.orderNo, item.ohNo);
                 } else {
@@ -882,9 +882,9 @@ function Order() {
                 }
                 break;
             case '반려':
-                console.log('반려');
-                console.log(roleHierarchy[my.role]);
-                console.log(roleHierarchy[item.managerGrade]);
+                // console.log('반려');
+                // console.log(roleHierarchy[my.role]);
+                // console.log(roleHierarchy[item.managerGrade]);
                 if ((roleHierarchy[my.role] > roleHierarchy[item.managerGrade]) || isManager) {
                     handleDetailView(item.orderNo, item.ohNo);
                 } else {
@@ -892,9 +892,9 @@ function Order() {
                 }
                 break;
             case '반려(처리완료)':
-                console.log('반려(처리완료)');
-                console.log(roleHierarchy[my.role]);
-                console.log(roleHierarchy[item.managerGrade]);
+                // console.log('반려(처리완료)');
+                // console.log(roleHierarchy[my.role]);
+                // console.log(roleHierarchy[item.managerGrade]);
                 if ((roleHierarchy[my.role] > roleHierarchy[item.managerGrade]) || isManager) {
                     handleDetailView(item.orderNo, item.ohNo);
                 } else {
@@ -943,7 +943,7 @@ function Order() {
         }); //{매개변수 : 전달 값}
 
         const confirmRes = res.data;
-        console.log(confirmRes);
+        // console.log(confirmRes);
 
         if (Array.isArray(confirmRes)) {
             const getConfirmRes = confirmRes.map(item => ({ //res.data.map안된다는 소리
@@ -1392,7 +1392,7 @@ function Order() {
                                     <tbody>
                                         {addCheckProd.map((addProd, index) => {
                                             const qty = quantities[addProd.priceNo] || 0; // index에 맞는 수량 가져옴
-                                            console.log(`렌더링 중: 상품명 = ${addProd.prodName}, 수량 = ${quantities[addProd.priceNo] || 0}`);
+                                            // console.log(`렌더링 중: 상품명 = ${addProd.prodName}, 수량 = ${quantities[addProd.priceNo] || 0}`);
 
                                         return (
                                             <tr key={index} className={orderAddCheckItem[addProd.priceNo] ? 'selected-row' : ''}>
@@ -1463,7 +1463,7 @@ function Order() {
             )}
 
             {/* 임시 저장 전용 수정 모달 */}
-            {console.log('isModifyTempOrderModalOpen:', isModifyTempOrderModalOpen)}
+            {/*{console.log('isModifyTempOrderModalOpen:', isModifyTempOrderModalOpen)}*/}
             {isModifyTempOrderModalOpen && (
                 <ModifyTempOrderModal
                     ohNo={selectedOhNo}

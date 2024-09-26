@@ -142,10 +142,10 @@ const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchDat
             prodTotal: (quantities[addProd.price.priceNo] || 0) * addProd.price.customPrice
         }));
 
-        console.log('서버로 전송할 데이터 (임시 저장):', {
-            ...modifyItem,
-            orderBList
-        });  // 전송 전 데이터 확인
+        // console.log('서버로 전송할 데이터 (임시 저장):', {
+        //     ...modifyItem,
+        //     orderBList
+        // });  // 전송 전 데이터 확인
 
         try {
             await axios.put(`/order/temp/${modifyItem.ohNo}`, {
