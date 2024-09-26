@@ -130,7 +130,6 @@ useEffect(() => {
     // 필터 변경 핸들러
     const handleInputChange = (e) => {
         const { id, value } = e.target;
-        console.log(e.target);
         // 변경된 필드의 값을 업데이트합니다.
         setEmSearch((prev) => ({
             ...prev,
@@ -148,7 +147,6 @@ useEffect(() => {
                 }
             })
                 .then(response => {
-                    console.log(response.data);
                     setEmployee(response.data);
                 })
                 .catch(error => console.error('에러에러', error));
@@ -166,30 +164,37 @@ useEffect(() => {
         };
 
         // =============== 조회 입력값 초기화 ===============
-        const handleReset = () => {
-            setEmSearch({
-                employeeId: '',
-                employeeName: '',
-                employeeTel: '',
-                employeeEmail: '',
-                employeeAddr: '',
-                hireDate: '',
-                authorityGrade: ''
-            })
-            handleSearchEmployee();
-            setCurrentPage(1);
-        }
-    // 초기화 후 목록도 리셋
-    useEffect(() => {
-        const isFormReset = Object.values(employee).every(value => value === '');
-        if (isFormReset) {
-            handleSearchEmployee();
-        }
-    }, [employee]);
+      const handleReset = () => {
+          setEmSearch({
+              employeeId: '',
+              employeePw: '',
+              employeeName: '',
+              employeeTel: '',
+              employeeEmail: '',
+              employeeAddr: '',
+              residentNum: '',
+              hireDate: null,
+              salary: 0,
+              authorityGrade: '',
+              authorityName: ''
+          });
+             handleSearchEmployee();
+          setCurrentPage(1);
+      };
+
+      // 초기화 후 목록도 리셋
+      useEffect(() => {
+          const isFormReset = Object.entries(emSearch).every(([key, value]) => {
+              if (key === 'hireDate') return value === null;
+              if (key === 'salary') return value === 0;
+              return value === '';
+          });
+          if (isFormReset) {
+              handleSearchEmployee();
+          }
+      }, [emSearch]);
 
 
-
-//----------------------------------------------------
     // 직원 추가  리스트
     const [test, setTest] = useState({
         employeeId: '',
@@ -238,8 +243,6 @@ useEffect(() => {
     } else {
         setTest((prev) => ({ ...prev, [name]: value }));
     }
-
-        console.log(test);
     };
 
 
@@ -385,7 +388,6 @@ const onClickListAdd = () => {
       // 아이디가 사용 가능한지 여부를 서버 응답에서 확인
         const isAvailable = !response.data;
          // 서버가 `true` 반환 시 사용 불가, `false` 반환 시 사용 가능
-        console.log("아이디!!!!" + isAvailable);
         if (isAvailable) {
         setIdResult(true);
         alert('사용 가능한 아이디입니다.');
@@ -405,8 +407,6 @@ const onClickListAdd = () => {
   };
 
 useEffect(() => {
-    console.log("Updated list:", list);
-    console.log("Item IDs:", list.map(item => item.id));
 }, [list]);
 
 
@@ -515,7 +515,6 @@ const [originalItem, setOriginalItem] = useState({}); // 원래 데이터를 저
         fetchUserId();
 
     }, []);
- console.log("sessionId" +  sessionId);
 
 
  const handleUpdateClick = () => {
@@ -542,7 +541,6 @@ const [originalItem, setOriginalItem] = useState({}); // 원래 데이터를 저
     })
     .then(response => {
         setEmployee(response.data);
-        console.log('업데이트 성공:', response.data);
         alert("수정이 완료되었습니다");
     })
     .catch(error => console.error('서버 요청 중 오류 발생', error))
@@ -579,11 +577,8 @@ const [goOut, setGoOut] = useState();
        setIsModifyModalVisible(true);
         if (item.authorityGrade !== modifyItem.authorityGrade && sessionId === item.employeeId) {
                    setGoOut(true);
-                   console.log("아웃`");
         }
    };
-
-   console.log(modifyItem);
 
 
     const handleModifyCloseClick = () => {
@@ -638,7 +633,6 @@ const [goOut, setGoOut] = useState();
   };
 */
 
-/*    console.log(emplPw);*/
 
 // [수정] 비밀번호 변경 기능
      const pwChangeClick = () => {
@@ -648,9 +642,11 @@ const [goOut, setGoOut] = useState();
             }
         })
             .then(response => {
-                console.log('삭제 요청 성공', response.data);
                 alert("비밀번호가 초기화 되었습니다.");
-  fetchEmployeeList();
+                if(modifyItem.employeeId === sessionId){
+                     fetchEmployeeList();
+                }
+
             })
             .catch(error => {
                 console.error('서버 요청 중 오류 발생', error);
@@ -699,7 +695,6 @@ const [goOut, setGoOut] = useState();
 const handleDeleteClick2 = () => {
     // 선택된 항목 삭제 로직
     const itemsToDelete = Object.keys(checkedItems).filter(id => checkedItems[id]);
-    console.log("선택된 삭제 항목:", itemsToDelete);
 
     // 현재 리스트에서 삭제할 항목을 제외한 새로운 리스트 생성
     const updatedList = list.filter(item => !itemsToDelete.includes(item.employeeId));
@@ -731,7 +726,6 @@ const handleDeleteClick2 = () => {
         // 체크된 체크박스의 ID 값을 배열로 저장합니다.
         const ids = checkedCheckboxes.map(checkbox => checkbox.id);
         // 상태를 업데이트하여 배열에 저장합니다.
-        console.log(checkedIds);
         setCheckedIds(ids);
 
     }, [checkItemMain]);
@@ -757,7 +751,6 @@ useEffect(() => {
             }
         })
             .then(response => {
-                console.log('삭제 요청 성공', response.data);
                 window.location.reload();
             })
             .catch(error => {
@@ -777,7 +770,6 @@ const handleDeletePickClick = () => {
             }
         })
         .then(response => {
-            console.log('삭제 요청 성공', response.data);
             alert('비활성화 되었습니다.');
         })
         .catch(error => {
@@ -947,6 +939,8 @@ const handleDeletePickClick = () => {
 
         return pageNumbers;
     };
+
+
 
 
 

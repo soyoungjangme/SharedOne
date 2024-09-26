@@ -158,11 +158,13 @@ function MyPage() {
         },
       });
 
-      alert('비밀번호가 성공적으로 변경되었습니다.');
+      alert('비밀번호가 성공적으로 변경되었습니다. 재로그인 해주세요.');
+      window.location.href = './logout';
       setNewPassword('');
       setCurrentPassword('');
       setConfirmNewPassword('');
       closeModal(); // 모달 닫기
+
     } catch (err) {
       console.error('Error changing password:', err);
       setError('비밀번호 변경에 실패했습니다.');
@@ -348,10 +350,7 @@ function MyPage() {
                 <td><input type="text" id="salary" name="salary" value={formatSalary(mypageAll.salary) || ''} disabled /></td>
               </tr>
 
-              <tr>
-                <td><label htmlFor="supervisor">직속상사</label></td>
-                <td><input type="text" id="supervisor" name="employeeManagerId" value={mypageAll.employeeManagerId || ''} disabled /></td>
-              </tr>
+
               <tr>
                 <td><label htmlFor="role">권한</label></td>
                 <td><input type="text" id="role" name="authorityName" value={mypageAll.authorityName || ''} disabled /></td>
