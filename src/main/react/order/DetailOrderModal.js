@@ -152,8 +152,8 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
             const fetchOrderDetails = async () => {
                 try {
                     const response = await axios.get(`/order/detail/${ohNo}`);
-                    // console.log('Fetched data:', response.data);
-                    // console.log('Server response:', JSON.stringify(response.data, null, 2)); // 디버깅
+                    console.log('Fetched data:', response.data);
+                    console.log('Server response:', JSON.stringify(response.data, null, 2)); // 디버깅
                     setModifyItem(response.data); // 주문 데이터를 상태에 저장
 
                     const confirmStatus = getConfirmStatus(response.data?.confirmStatus);
@@ -285,8 +285,8 @@ const DetailOrderModal = ({ohNo, orderNo, isOpen, onClose, onUpdate, onOpenModif
 
     useEffect(() => {
         if (modifyItem && modifyItem.confirmStatus) {
-            // console.log('confirmStatus:', modifyItem.confirmStatus);
-            // console.log('getConfirmStatus:', getConfirmStatus(modifyItem.confirmStatus));
+            console.log('confirmStatus:', modifyItem.confirmStatus);
+            console.log('getConfirmStatus:', getConfirmStatus(modifyItem.confirmStatus));
         } else {
             console.log('modifyItem or confirmStatus is undefined');
         }

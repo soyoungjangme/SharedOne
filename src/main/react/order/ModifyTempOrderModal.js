@@ -178,6 +178,12 @@ const ModifyTempOrderModal = ({ohNo, orderNo, isOpen, onClose,onClose2, fetchDat
             return;
         }
 
+        if(!modifyItem.confirmerId) {
+            alert("결재자를 선택해 주세요.");
+            return;
+        }
+
+
         try {
             const orderBList = addCheckProd.map((addProd, index) => ({
                 ohNo: modifyItem.ohNo,
