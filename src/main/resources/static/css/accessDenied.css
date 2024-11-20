@@ -1,0 +1,32 @@
+.error-container {
+  text-align: center;
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+}
+
+.error-container h1 {
+  color: #D32F2F;
+}
+
+.error-icon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 25px;
+}
+
+.error-description {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.error-link {
+  font-size: 14px;
+  color: #0052cc;
+}
+
+.error-link a {
+  font-size: 16px;
+  text-decoration: none;
+  color: #0052cc;
+}

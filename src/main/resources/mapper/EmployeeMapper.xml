@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.tobe.mapper.EmployeeMapper">
+    <select id="getAllList" resultType="com.project.tobe.dto.EmployeeDTO">
+        select *
+        from employee e
+                 join authority a
+                      on e.authority_grade = a.authority_grade
+        where e.empl_yn = 'Y'
+        ORDER BY
+        CASE e.authority_grade
+        WHEN 'S' THEN 1
+        WHEN 'A' THEN 2
+        WHEN 'B' THEN 3
+        WHEN 'C' THEN 4
+        WHEN 'D' THEN 5
+        END;
+    </select>
+
+
+    <select id="getPickList" resultType="com.project.tobe.dto.EmployeeDTO">
+        SELECT *
+        FROM employee e
+        join authority a
+        on e.authority_grade = a.authority_grade
+        <where>
+            e.empl_yn = 'Y'
+            <if test="employeeId != '' and employeeId != null">
+                AND e.employee_id LIKE CONCAT('%', #{employeeId}, '%')
+            </if>
+            <if test="employeeName != '' and employeeName != null">
+                AND e.employee_name LIKE CONCAT('%', #{employeeName}, '%')
+            </if>
+            <if test="employeeTel != '' and employeeTel != null">
+                AND e.employee_tel LIKE CONCAT('%', #{employeeTel}, '%')
+            </if>
+            <if test="employeeEmail != '' and employeeEmail != null">
+                AND e.employee_email LIKE CONCAT('%', #{employeeEmail}, '%')
+            </if>
+            <if test="employeeAddr != '' and employeeAddr != null">
+                AND e.employee_addr LIKE CONCAT('%', #{employeeAddr}, '%')
+            </if>
+            <if test="hireDate != null">
+                AND e.hire_date = #{hireDate}
+            </if>
+            <if test="authorityGrade != '' and authorityGrade != null">
+                AND e.authority_grade LIKE CONCAT('%', #{authorityGrade}, '%')
+            </if>
+        </where>
+        ORDER BY
+        CASE e.authority_grade
+        WHEN 'S' THEN 1
+        WHEN 'A' THEN 2
+        WHEN 'B' THEN 3
+        WHEN 'C' THEN 4
+        WHEN 'D' THEN 5
+        END
+    </select>
+
+    <select id="employeeIdCheck" resultType="int">
+        SELECT COUNT(*)
+        FROM employee
+        WHERE employee_id = #{employeeId}
+    </select>
+
+
+    <insert id="employeeRegistTest" parameterType="java.util.List">
+
+        INSERT INTO employee (
+        employee_id,
+        employee_pw,
+        employee_name,
+        employee_tel,
+        employee_email,
+        employee_addr,
+        resident_num,
+        hire_date,
+        salary,
+        employee_manager_id,
+        authority_grade,
+        empl_yn
+        )
+        VALUES
+        <foreach collection="list" item="employee" separator=",">
+            (#{employee.employeeId}, #{employee.employeePw}, #{employee.employeeName},
+            #{employee.employeeTel}, #{employee.employeeEmail}, #{employee.employeeAddr},
+            #{employee.residentNum}, #{employee.hireDate}, #{employee.salary},
+            #{employee.employeeManagerId}, #{employee.authorityGrade},'Y')
+        </foreach>
+    </insert>
+
+    <update id="employeeUpdateUser" parameterType="com.project.tobe.dto.EmployeeDTO">
+        UPDATE employee
+        SET employee_name  = #{employeeName},
+            employee_tel   = #{employeeTel},
+            employee_email = #{employeeEmail},
+            employee_addr  = #{employeeAddr},
+            WHERE employee_id = #{employeeId}
+    </update>
+
+
+    <update id="employeeUpdateMaster" parameterType="com.project.tobe.dto.EmployeeDTO">
+        UPDATE employee
+        SET salary              = #{salary},
+            employee_manager_id = #{employeeManagerId},
+            authority_grade     = #{authorityGrade}
+        WHERE employee_id = #{employeeId}
+    </update>
+
+    <update id="employeePwChange" parameterType="com.project.tobe.dto.EmployeeDTO">
+        UPDATE employee
+        SET employee_pw = #{employeePw}
+        WHERE employee_id = #{employeeId}
+    </update>
+
+    <update id="employeeUpdateMypagePw" parameterType="com.project.tobe.dto.EmployeeDTO">
+        UPDATE employee
+        SET employee_pw = #{employeePw}
+        WHERE employee_id = #{employeeId}
+    </update>
+
+
+    <update id="employeeDeleteTest" parameterType="java.util.List">
+        UPDATE employee
+        SET empl_yn = 'N',
+        employee_id = CONCAT('del-', employee_id)
+        WHERE employee_id IN
+        <foreach collection="list" item="employeeId" open="(" separator="," close=")">
+            #{employeeId}
+        </foreach>
+    </update>
+
+    <update id="employeeDeletePick" parameterType="String">
+        UPDATE employee
+        SET empl_yn     = 'N',
+            employee_id = CONCAT('del-', employee_id)
+        WHERE employee_id = #{employeeId}
+    </update>
+
+
+    <select id="mypageAll" parameterType="String" resultType="com.project.tobe.dto.AuthorityDto">
+
+        select *
+        from employee e
+                 join authority a
+                      on a.authority_grade = e.authority_grade
+        where e.employee_id = #{employeeId}
+
+    </select>
+
+
+    <select id="sessionAuth" parameterType="String" resultType="AuthorityDto">
+
+        select *
+        from employee e
+                 join authority a
+                      on a.authority_grade = e.authority_grade
+        where e.employee_id = #{session};
+
+    </select>
+
+
+    <update id="employeeUpdateMypage" parameterType="com.project.tobe.dto.EmployeeDTO">
+        UPDATE employee
+        SET employee_tel   = #{employeeTel},
+            employee_email = #{employeeEmail},
+            employee_addr  = #{employeeAddr}
+        WHERE employee_id = #{employeeId}
+    </update>
+
+    <select id="getManagerList" resultType="EmployeeDTO">
+    <![CDATA[
+        select *
+        from employee
+        where empl_yn = 'Y'
+          and (
+            authority_grade = 'S' or
+            authority_grade < (select authority_grade
+                               from employee
+                               where employee_id = #{employeeId})
+            )
+        ]]>
+</select>
+
+    <select id="getMySalesByMonth" resultType="SalesByMonth">
+        SELECT TO_CHAR(header.confirm_change_date, 'YYYY-MM') AS sales_month,
+               SUM(coalesce(body.prod_total, 0))              AS total_sales
+        FROM order_header header
+                 JOIN
+             (SELECT order_no, SUM(coalesce(prod_total, 0)) AS prod_total
+              FROM order_body
+              GROUP BY order_no) body
+             ON header.order_no = body.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date IS NOT NULL
+          AND header.employee_id = #{employeeId}
+        GROUP BY TO_CHAR(header.confirm_change_date, 'YYYY-MM')
+        ORDER BY TO_CHAR(header.confirm_change_date, 'YYYY-MM')
+    </select>
+
+    <select id="getEmail" resultType="string">
+        select employee_email from employee where employee_id=#{employeeId}
+    </select>
+</mapper>

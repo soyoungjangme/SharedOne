@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.tobe.mapper.OrderMapper">
+
+    <!-- jsy주문 전체 조회 -->
+    <select id="getOrder" resultMap="GetOrderResultMap">
+        select oh.oh_no, oh.order_no, c.customer_name, emp.employee_name,
+        oh.confirm_status, oh.confirm_change_date, emp.employee_id, emp.authority_grade
+        from order_header oh
+        join employee emp on emp.employee_id = oh.employee_id
+        join customer c on c.customer_no = oh.customer_no
+        join order_body ob on ob.order_no = oh.order_no and ob.oh_no = oh.oh_no
+        join product prod on prod.product_no = ob.product_no
+        <where>
+            <if test="inputDate != null">
+                and date(oh.reg_date) = #{inputDate}
+            </if>
+            <if test="inputOrderNo != null">
+                and cast(oh.order_no as text) like concat('%', #{inputOrderNo}, '%')
+            </if>
+            <if test="inputCustomerName != null">
+                and c.customer_name like concat('%', #{inputCustomerName}, '%')
+            </if>
+            <if test="inputManager != null">
+                and emp.employee_name like concat('%', #{inputManager}, '%')
+            </if>
+            <if test="inputProdName != null">
+                and prod.product_name like concat('%', #{inputProdName}, '%')
+            </if>
+            <if test="inputState != null">
+                and oh.confirm_status = #{inputState}
+            </if>
+            <if test="inputMyId != null and inputMyId != ''">
+                and emp.employee_id = #{inputMyId}
+            </if>
+        </where>
+        order by oh.confirm_change_date desc
+    </select>
+
+    <resultMap id="GetOrderResultMap" type="OrderHDTO">
+        <id column="oh_no" property="ohNo"/> <!--주문시퀀스-->
+        <id column="order_no" property="orderNo"/> <!-- 주문번호 -->
+        <result column="confirm_change_date" property="confirmChangeDate"/> <!-- 작성일 -->
+        <result column="confirm_status" property="confirmStatus"/> <!-- 결재상태 -->
+        <association property="employee" javaType="EmployeeDTO">
+            <result column="employee_name" property="employeeName"/> <!-- 담당자명 -->
+            <result column="employee_id" property="employeeId"/> <!-- 담당자명 -->
+            <result column="authority_grade" property="authorityGrade"/> <!-- 담당자명 -->
+        </association>
+        <association property="customer" javaType="CustomerDTO">
+            <result column="customer_name" property="customerName"/> <!-- 고객명 -->
+        </association>
+
+        <collection property="orderBList" javaType="OrderBDTO">
+            <association property="product" javaType="ProductDTO">
+                <result column="product_name" property="productName"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <!-- 담당자명(작성자) 이름 -->
+    <select id="getMyName" parameterType="string" resultType="string">
+        select employee_name
+        from employee
+        where employee_id = #{myId}
+    </select>
+
+
+    <!--  jsy주문등록 - 고객 별 상품 조회  -->
+    <select id="getPrice" resultMap="GetPriceResultMap">
+        select p.product_no,  --상품번호
+            p.product_name, --상품이름
+            p.product_writer, --저자
+            p.product_category, --카테고리
+            price.custom_price, --판매가
+            price.start_date,  --판매시작일
+            price.end_date, --판매종료일
+            price.price_no --판매가번호
+        from price
+        join product p on p.product_no=price.product_no
+        join customer c on c.customer_no=price.customer_no
+        where price.activated = 'Y'
+          and p.product_yn = 'Y'
+        and price.customer_no = #{iocn}
+        and price.end_date &gt; now()
+        <if test="delDate != null">
+            and (#{delDate}::date) between price.start_date and price.end_date
+        </if>
+    </select>
+
+    <resultMap id="GetPriceResultMap" type="PriceDTO">
+        <result column="price_no" property="priceNo"/>
+        <result column="custom_price" property="customPrice"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <association property="product" javaType="ProductDTO">
+            <result column="product_no" property="productNo"/>
+            <result column="product_category" property="productCategory"/>
+            <result column="product_name" property="productName"/>
+            <result column="product_writer" property="productWriter"/>
+        </association>
+    </resultMap>
+
+    <!--  jsy주문등록 - 등록하기  -->
+    <insert id="registOrderH" useGeneratedKeys="true" keyProperty="orderNo,ohNo">
+        insert into order_header(order_no,
+                                 reg_date,
+                                 del_date,
+                                 confirm_status,
+                                 confirm_change_date,
+                                 customer_no,
+                                 employee_id,
+                                 confirmer_id)
+        values (COALESCE((#{orderNo}), nextval('order_no_seq')),
+                current_timestamp,
+                #{delDate},
+                #{confirmStatus},
+                now(),
+                #{customerNo},
+                #{employeeId},
+                #{confirmerId}
+                )
+        RETURNING order_no AS orderNo, oh_no AS ohNo
+    </insert>
+    <insert id="registOrderB" parameterType="java.util.List">
+        insert into order_body(oh_no, order_no, product_no, order_product_qty, prod_total)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.ohNo}, #{item.orderNo}, #{item.productNo}, #{item.orderProductQty}, #{item.prodTotal})
+        </foreach>
+    </insert>
+
+
+    <!--유선화 START-->
+    <!--상세 조회-->
+    <select id="getOrderDetail" resultMap="OrderDetailResultMap">
+        select
+            oh.oh_no, --주문시퀀스 pk
+            oh.order_no, --주문번호 pk
+            oh.reg_date,
+            oh.del_date,
+            oh.confirm_status,
+            oh.confirm_change_date,
+            oh.remarks,
+            c.customer_no,
+            c.customer_name,
+            e.employee_id, --담당자 아이디
+            e.employee_name, --담당자 이름
+            e.authority_grade,
+            ec.employee_id as confirmer_id, --결재자 아이디
+            ec.employee_name as confirmer_name, --결재자 이름
+            ob.product_no,
+            ob.order_product_qty,
+            p.product_name,
+            p.product_category,
+            p.product_writer,
+            pr.price_no,
+            coalesce(pr.custom_price, 0) as custom_price,
+            pr.start_date,
+            pr.end_date
+        from
+            order_header oh
+        join customer c on oh.customer_no = c.customer_no --고객 조인
+        join employee e on oh.employee_id = e.employee_id  -- 담당자 조인
+        left join employee ec on oh.confirmer_id = ec.employee_id  -- 결재자 조인
+        join order_body ob on oh.order_no = ob.order_no and oh.oh_no = ob.oh_no --오더바디 조인
+        left join product p on ob.product_no = p.product_no --상품 조인
+        left join price pr on p.product_no = pr.product_no and c.customer_no = pr.customer_no --판매가 조인
+        where
+        oh.oh_no = #{ohNo}
+        and pr.activated = 'Y'
+        and oh.del_date between pr.start_date and pr.end_date
+    </select>
+
+    <resultMap id="OrderDetailResultMap" type="OrderHDTO">
+        <id property="ohNo" column="oh_no"/>
+        <id property="orderNo" column="order_no"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="delDate" column="del_date"/>
+        <result property="confirmStatus" column="confirm_status"/>
+        <result property="confirmChangeDate" column="confirm_change_date"/>
+        <result property="remarks" column="remarks"/>
+        <result property="confirmerId" column="confirmer_id"/>
+        <result property="confirmerName" column="confirmer_name"/>
+
+        <association property="customer" javaType="CustomerDTO">
+            <id property="customerNo" column="customer_no"/>
+            <result property="customerName" column="customer_name"/>
+        </association>
+
+        <association property="employee" javaType="EmployeeDTO">
+            <id property="employeeId" column="employee_id"/>
+            <result column="employee_name" property="employeeName"/> <!-- 담당자명 -->
+            <result column="authority_grade" property="authorityGrade"/> <!-- 담당자명 -->
+        </association>
+
+        <collection property="orderBList" ofType="OrderBDTO">
+            <id property="ohNo" column="oh_no"/>
+            <id property="orderNo" column="order_no"/>
+            <id property="productNo" column="product_no"/>
+<!--
+            <result property="priceNo" column="price_no"/>
+-->
+            <result property="orderProductQty" column="order_product_qty"/>
+            <result property="prodTotal" column="prod_total"/>
+
+            <association property="product" javaType="ProductDTO">
+                <id property="productNo" column="product_no"/>
+                <result property="productName" column="product_name"/>
+                <result property="productCategory" column="product_category"/>
+                <result property="productWriter" column="product_writer"/>
+            </association>
+
+            <association property="price" javaType="PriceDTO">
+                <id property="priceNo" column="price_no"/>
+                <result property="customPrice" column="custom_price"/>
+                <result property="startDate" column="start_date"/>
+                <result property="endDate" column="end_date"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <!--결재 여부에 따른 업데이트-->
+    <update id="updateApproval">
+        UPDATE order_header
+        SET confirm_status = #{confirmStatus},
+        confirm_change_date = #{confirmChangeDate},
+        remarks = #{remarks}  <!-- 비고 필드 추가 -->
+        WHERE order_no = #{orderNo} and oh_no = #{ohNo}
+    </update>
+
+
+    <!--주문 업데이트-->
+    <update id="updateOrderHeader" parameterType="com.project.tobe.dto.OrderUp1DTO">
+        UPDATE order_header
+        SET del_date = #{delDate},
+            confirm_change_date = #{confirmChangeDate}
+        WHERE order_no = #{orderNo} and oh_no = #{ohNo}
+    </update>
+
+    <delete id="deleteOrderDetails" parameterType="long">
+        DELETE FROM order_body
+        WHERE oh_no = #{ohNo} AND order_no = #{orderNo}
+    </delete>
+
+    <insert id="insertOrderDetail">
+        INSERT INTO order_body (oh_no, order_no, product_no, order_product_qty, prod_total)
+        VALUES (#{ohNo}, #{orderNo}, #{detail.productNo}, #{detail.orderProductQty}, #{detail.prodTotal})
+            ON CONFLICT (oh_no, order_no, product_no)  -- PK 또는 고유 제약 조건
+    DO UPDATE SET
+            order_product_qty = EXCLUDED.order_product_qty,
+                       prod_total = EXCLUDED.prod_total;
+    </insert>
+
+
+
+
+
+
+    <!-- 임시 저장 주문 전체 업데이트 -->
+    <update id="updateTempOrder" parameterType="OrderHDTO">
+        UPDATE order_header
+        SET del_date = #{delDate},
+            confirm_change_date = CURRENT_TIMESTAMP,
+            customer_no = #{customerNo},
+            confirmer_id = #{confirmerId},
+            confirm_status = #{confirmStatus},
+            remarks = #{remarks},
+            employee_id = #{employeeId}
+        WHERE order_no = #{orderNo} and oh_no = #{ohNo}
+    </update>
+
+    <!-- 임시 저장 주문 상세 삽입 및 중복 시 업데이트 처리 -->
+    <insert id="insertOrderDetails" parameterType="java.util.List">
+        INSERT INTO order_body (oh_no, order_no, product_no, order_product_qty, prod_total)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.ohNo}, #{item.orderNo}, #{item.productNo}, #{item.orderProductQty}, #{item.prodTotal})
+        </foreach>
+        ON CONFLICT (oh_no, order_no, product_no)
+        DO UPDATE SET
+        order_product_qty = EXCLUDED.order_product_qty,
+        prod_total = EXCLUDED.prod_total
+    </insert>
+
+    <!-- 주문 삭제 쿼리 -->
+    <delete id="deleteOrder" parameterType="long">
+        DELETE FROM order_header
+        WHERE oh_no = #{ohNo} and order_no = #{orderNo}
+    </delete>
+    <!--유선화 END-->
+
+    <select id="getEmployeeTopOfMonth" resultType="EmployeeRankDTO">
+        SELECT e.employee_id,
+               e.employee_name,
+               SUM(coalesce(body.total, 0)) AS monthly_sales
+        FROM employee e
+                 JOIN order_header header ON e.employee_id = header.employee_id
+                 JOIN (SELECT order_no,
+                              SUM(coalesce(prod_total, 0)) AS total
+                       FROM order_body
+                       GROUP BY order_no) body ON header.order_no = body.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date BETWEEN date_trunc('month', current_date)::date
+            AND date_trunc('month', current_date + interval '1 months')::date - 1
+        GROUP BY e.employee_id
+        ORDER BY monthly_sales DESC
+        limit 1
+    </select>
+
+    <select id="getSalesByMonth" resultType="SalesByMonth">
+        SELECT TO_CHAR(header.confirm_change_date, 'YYYY-MM-DD') AS sales_month,
+               SUM(coalesce(body.prod_total, 0)) AS total_sales
+        FROM order_header header
+                 JOIN
+             (SELECT order_no, SUM(coalesce(prod_total, 0)) AS prod_total
+              FROM order_body
+              GROUP BY order_no) body
+             ON header.order_no = body.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date IS NOT NULL
+          AND header.confirm_change_date BETWEEN date_trunc('month', current_date)
+            AND current_date
+        GROUP BY TO_CHAR(header.confirm_change_date, 'YYYY-MM-DD')
+        ORDER BY sales_month
+    </select>
+
+    <select id="getEmployeeRank" resultType="EmployeeRankDTO">
+        SELECT e.employee_id,
+               e.employee_name,
+               SUM(coalesce(body.total, 0)) AS monthly_sales
+        FROM employee e
+                 JOIN order_header header ON e.employee_id = header.employee_id
+                 JOIN (SELECT order_no,
+                              SUM(coalesce(prod_total, 0)) AS total
+                       FROM order_body
+                       GROUP BY order_no) body ON header.order_no = body.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date BETWEEN date_trunc('month', current_date)::date
+            AND date_trunc('month', current_date + interval '1 months')::date - 1
+        GROUP BY e.employee_id
+        ORDER BY monthly_sales DESC
+        limit 10
+    </select>
+
+    <select id="getProductRank" resultType="ProductSaleRank">
+        SELECT p.product_no,
+               p.product_name,
+               SUM(coalesce(body.prod_total, 0)) AS monthly_sales
+        FROM product p
+                 JOIN order_body body ON p.product_no = body.product_no
+                 JOIN order_header header ON body.order_no = header.order_no
+        WHERE header.confirm_status LIKE '%승인%'
+          AND header.confirm_change_date BETWEEN date_trunc('month', current_date)::date
+            AND date_trunc('month', current_date + interval '1 months')::date - 1
+        GROUP BY p.product_no, p.product_name
+        ORDER BY monthly_sales DESC
+        LIMIT 10;
+
+    </select>
+
+</mapper>

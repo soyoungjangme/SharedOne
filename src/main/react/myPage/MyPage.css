@@ -1,0 +1,186 @@
+/* * {
+  margin: 0;
+  padding: 0;
+} */
+
+/* body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+} */
+
+.header {
+  color: black;
+  font-size: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid black;
+  padding-bottom: 10px;
+      margin-bottom: 30px;
+}
+
+.my-page-header {
+  color: black;
+  border-bottom: none;
+  font-size:1.8em;
+      margin-top: 27px;
+
+}
+
+.mypage-main {
+ gap: 5%;
+     display: flex;
+     justify-content: space-between;
+     background: white;
+     border-radius: 8px;
+     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+     padding: 40px;
+     font-size : 0.9em;
+}
+
+.header  .bi {
+    margin-right: 10px;
+        margin-bottom: 30px;
+    }
+
+.mypage-table {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.mypage-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mypage-table th,
+.mypage-table td {
+  padding: 12px;
+  text-align: left;
+      font-weight: bold;
+}
+
+.mypage-table th {
+  background-color: #004e90;
+  color: white;
+}
+
+.mypage-table input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding-left: 12px;
+}
+
+.password-row {
+  display: flex;
+  align-items: center;
+}
+
+.password-row input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 78%;
+  margin-right: 10px;
+}
+
+.pw-btn {
+  background-color: #004e90;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.pw-btn:hover {
+  background-color: #0056b3;
+}
+
+.form-actions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.submit-btn {
+  background-color: #004e90;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #bbb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
+}
+
+.cancel-btn:hover {
+  background-color: #ccc;
+}
+
+.mypage-chart {
+  /* 부모 요소 안에서 일정비율 차지 */
+  flex: 1;
+  
+
+  width: 50%;
+  height: 650px;
+
+}
+
+.mypage-chart > canvas {
+ margin-top: 16%;}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  width: 400px;
+}
+
+.modal-content h2 {
+  color: #004e90;
+}
+
+.close {
+  cursor: pointer;
+  float: right;
+  font-size: 20px;
+}
+
+.test123 {
+  height: 500px;
+}
+
+.bi-bar-chart-line-fill {
+  margin: 0 5px;
+}
+
